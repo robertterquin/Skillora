@@ -15,8 +15,8 @@
 ### Key Pillars
 - **Minimalist Aesthetic**: High-signal, typography-driven Swiss design with zero unicode emojis, unified Solar Linear iconography, and warm linen canvas (`#FAFAFA`).
 - **Strict Information Architecture**:
-  - **My Studio (`/dashboard`)**: Distraction-free personal queue showing *only* your enrolled skills, streak tracking, active count, mastered count, and daily workout routines.
-  - **Skill Library (`/library`)**: Full marketplace catalog across Music, Languages, Culinary Craft, Everyday Skills, and Tech with real-time filtering and search.
+  - **The Learning Owl Oracle (`/library`)**: The Skill Library is anchored by a large, interactive Learning Owl character. Speak via microphone or chat to summon any skill in the universe; the Owl deconstructs it and dispatches it straight to My Studio.
+  - **My Studio Workshop (`/dashboard`)**: Your personal repertoire housing all your summoned skills, complete with real-time Category (Music, Languages, Crafts, Tech), Duration, and Search filters, streak tracking, daily 15-minute workouts, and 3D flashcards.
 - **Interactive 3D Flashcard Hub**:
   - Tactile 3D card flips with custom visual diagram aids (Cyrillic alphabet tiles, Guitar P-I-M-A finger anchor guide, 15° knife sharpening coin gauge, tactile home row keycaps, 1:2 espresso extraction dial).
   - Native Web Speech audio pronunciation (Russian `ru-RU`, English `en-US`).

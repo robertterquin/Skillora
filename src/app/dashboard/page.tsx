@@ -6,8 +6,9 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { FlashcardLearningModal } from "@/components/FlashcardLearningModal";
 import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
+import { SkillFilterBar, DurationFilter } from "@/components/SkillFilterBar";
 import { SolarIcon } from "@/components/SolarIcon";
-import { INITIAL_SKILLS } from "@/lib/mock-data";
+import { CATEGORIES, INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -41,6 +42,11 @@ export default function DashboardPage() {
 
   // User's completed step IDs
   const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
+
+  // Category and duration filters for My Studio
+  const [selectedCategory, setSelectedCategory] = useState<string>("cat-all");
+  const [selectedDuration, setSelectedDuration] = useState<DurationFilter>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Modal states
   const [activeLearningSkill, setActiveLearningSkill] = useState<Skill | null>(null);
@@ -247,7 +253,6 @@ export default function DashboardPage() {
       localStorage.setItem("skillora_daily_routine", JSON.stringify(data));
     } catch (e) {
       console.error("Daily routine error:", e);
-      // Fallback routine
       const fallback: DailyRoutine = {
         headline: "15-Minute Mastery Sprint: Micro-Drills",
         totalMinutes: 15,
@@ -274,10 +279,37 @@ export default function DashboardPage() {
     }
   };
 
-  // 5. Filter strictly to skills currently in My Studio
+  // 5. Skills currently enrolled in My Studio
   const myStudioSkills = allSkills.filter((s) => enrolledSkillIds.includes(s.id));
 
-  // 6. Calculate Metrics (Streak, Active, Mastered)
+  // 6. Filter enrolled studio skills by Category, Duration, and Search Query
+  const filteredStudioSkills = myStudioSkills.filter((skill) => {
+    if (selectedCategory !== "cat-all" && skill.category_id !== selectedCategory) {
+      return false;
+    }
+    if (selectedDuration === "quick" && skill.estimated_hours > 2) {
+      return false;
+    }
+    if (
+      selectedDuration === "sprint" &&
+      (skill.estimated_hours <= 2 || skill.estimated_hours > 6)
+    ) {
+      return false;
+    }
+    if (selectedDuration === "deep" && skill.estimated_hours <= 6) {
+      return false;
+    }
+    if (searchQuery.trim() !== "") {
+      const q = searchQuery.toLowerCase();
+      const matchTitle = skill.title.toLowerCase().includes(q);
+      const matchSummary = skill.summary.toLowerCase().includes(q);
+      const matchTime = skill.time_commitment_label.toLowerCase().includes(q);
+      return matchTitle || matchSummary || matchTime;
+    }
+    return true;
+  });
+
+  // 7. Calculate Metrics (Streak, Active, Mastered)
   const masteredSkills = myStudioSkills.filter((skill) => {
     const steps = skill.steps || [];
     return steps.length > 0 && steps.every((st) => completedStepIds.includes(st.id));
@@ -381,11 +413,9 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/* Feature 5: Daily 15-Minute Studio Workout Routine            */}
-        {/* ============================================================ */}
+        {/* Feature 5: Daily 15-Minute Studio Workout Routine */}
         {myStudioSkills.length > 0 && (
-          <section className="mb-10">
+          <section className="mb-8">
             <div className="p-6 sm:p-7 rounded-3xl bg-white border border-brand-500/30 shadow-xs relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-3">
@@ -479,12 +509,36 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* My Studio Section: ONLY displays skills added by the user */}
+        {/* Discipline & Duration Filter Bar in My Studio */}
+        <section className="mb-8">
+          <div className="p-6 bg-white rounded-3xl border border-surface-border shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                <SolarIcon name="filter-linear" className="w-4 h-4 text-brand-600" />
+                <span>Filter My Studio Repertoire</span>
+              </span>
+              <span className="text-xs text-ink-muted">
+                Showing {filteredStudioSkills.length} of {myStudioSkills.length} enrolled skills
+              </span>
+            </div>
+            <SkillFilterBar
+              categories={CATEGORIES}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              selectedDuration={selectedDuration}
+              onSelectDuration={setSelectedDuration}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
+        </section>
+
+        {/* My Studio Section: Filtered Repertoire */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="font-display font-bold text-xl text-ink">
-                My Studio Queue ({myStudioSkills.length})
+                My Studio Queue ({filteredStudioSkills.length})
               </h2>
               <p className="text-xs text-ink-muted mt-0.5">
                 Skills you are currently mastering. Click &quot;Start Learning&quot; to practice with 3D flashcards, voice grading, and technique coaching.
@@ -495,35 +549,53 @@ export default function DashboardPage() {
               href="/library"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/50 text-xs font-semibold text-brand-600 hover:text-brand-700 transition shadow-2xs"
             >
-              <SolarIcon name="add-circle-linear" className="w-4 h-4" />
-              <span>Add More from Library</span>
+              <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4" />
+              <span>Summon More with Owl</span>
             </Link>
           </div>
 
           {/* EMPTY STATE */}
-          {myStudioSkills.length === 0 ? (
+          {filteredStudioSkills.length === 0 ? (
             <div className="p-12 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto shadow-xs">
               <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
                 <SolarIcon name="book-bookmark-linear" className="w-7 h-7" />
               </div>
               <h3 className="font-display font-bold text-lg text-ink mb-1.5">
-                Your Studio Queue is Clean
+                {myStudioSkills.length === 0 ? "Your Studio Queue is Empty" : "No Matching Skills in this Filter"}
               </h3>
               <p className="text-sm text-ink-muted mb-6 max-w-md mx-auto">
-                You haven&apos;t added any disciplines to your studio yet. Visit the Skill Library to pick what you want to master today or deconstruct any skill with AI.
+                {myStudioSkills.length === 0
+                  ? "Talk to the Learning Owl in the Skill Library to deconstruct and add your first micro-skill."
+                  : "Try clearing your search term or selecting 'All Disciplines' above."}
               </p>
-              <Link
-                href="/library"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition"
-              >
-                <span>Explore Full Skill Library</span>
-                <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
-              </Link>
+
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {myStudioSkills.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory("cat-all");
+                      setSelectedDuration("all");
+                      setSearchQuery("");
+                    }}
+                    className="px-4 py-2 rounded-full bg-canvas text-xs font-semibold text-ink border border-surface-border hover:bg-surface-muted transition"
+                  >
+                    Reset Filters
+                  </button>
+                )}
+                <Link
+                  href="/library"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition"
+                >
+                  <span>Talk to the Learning Owl</span>
+                  <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           ) : (
             /* ENROLLED SKILLS GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myStudioSkills.map((skill) => {
+              {filteredStudioSkills.map((skill) => {
                 const steps = skill.steps || [];
                 const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
                 const totalCount = steps.length;
@@ -626,10 +698,10 @@ export default function DashboardPage() {
             </div>
             <div>
               <h4 className="font-display font-bold text-sm text-ink">
-                Looking to expand your repertoire?
+                Want to learn another craft?
               </h4>
               <p className="text-xs text-ink-muted">
-                Explore music, languages, culinary precision, and digital craft in the full catalog.
+                Speak or chat with the Learning Owl in the Skill Library to generate new micro-skills.
               </p>
             </div>
           </div>
@@ -637,7 +709,7 @@ export default function DashboardPage() {
             href="/library"
             className="px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/40 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs whitespace-nowrap"
           >
-            Open Skill Library &rarr;
+            Visit Learning Owl &rarr;
           </Link>
         </section>
       </main>
