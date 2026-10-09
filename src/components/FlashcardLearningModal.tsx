@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
+import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -646,8 +647,11 @@ export function FlashcardLearningModal({
 
               {/* 3D Tactile Flip Card Stage */}
               <div
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="w-full max-w-lg min-h-[340px] sm:min-h-[380px] cursor-pointer select-none relative transition-transform duration-500 rounded-3xl"
+                onClick={() => {
+                  playWoodenThud();
+                  setIsFlipped(!isFlipped);
+                }}
+                className="w-full max-w-lg min-h-[340px] sm:min-h-[380px] cursor-pointer select-none relative transition-transform duration-500 rounded-3xl corner-ticks"
               >
                 <div
                   className={`w-full h-full min-h-[340px] sm:min-h-[380px] p-6 sm:p-7 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 shadow-md ${
@@ -656,11 +660,16 @@ export function FlashcardLearningModal({
                       : "bg-gradient-to-b from-canvas to-white border-surface-border hover:border-brand-500/40"
                   }`}
                 >
-                  {/* Top of Card */}
-                  <div className="flex items-start justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
-                      Step {currentStep.step_number} • {currentStep.estimated_minutes} Mins
-                    </span>
+                  {/* Top Architectural Spec of Card */}
+                  <div className="flex items-start justify-between border-b border-surface-border/60 pb-2.5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="spec-tag text-ink-subtle">
+                        SPEC // DRILL-0{currentStep.step_number}
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
+                        {currentStep.estimated_minutes} Mins
+                      </span>
+                    </div>
 
                     <span className="text-xs text-ink-subtle flex items-center gap-1 font-medium">
                       <span>{isFlipped ? "Instructions" : "Tap to flip"}</span>
@@ -734,9 +743,14 @@ export function FlashcardLearningModal({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (!isCurrentStepDone) {
+                          playChime();
+                        } else {
+                          playMechanicalClick();
+                        }
                         onToggleStep(currentStep.id);
                       }}
-                      className={`px-3 py-1 rounded-lg font-semibold transition flex items-center gap-1.5 ${
+                      className={`px-3 py-1 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer ${
                         isCurrentStepDone
                           ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/30"
                           : "bg-ink text-white hover:bg-neutral-800"
@@ -754,8 +768,11 @@ export function FlashcardLearningModal({
                 <button
                   type="button"
                   disabled={currentCardIndex === 0}
-                  onClick={() => setCurrentCardIndex(Math.max(0, currentCardIndex - 1))}
-                  className="px-4 py-2 rounded-full border border-surface-border bg-white text-xs font-semibold text-ink hover:bg-canvas disabled:opacity-40 transition flex items-center gap-1"
+                  onClick={() => {
+                    playMechanicalClick();
+                    setCurrentCardIndex(Math.max(0, currentCardIndex - 1));
+                  }}
+                  className="px-4 py-2 rounded-full border border-surface-border bg-white text-xs font-semibold text-ink hover:bg-canvas disabled:opacity-40 transition flex items-center gap-1 cursor-pointer"
                 >
                   <SolarIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
                   <span>Previous</span>
@@ -763,8 +780,11 @@ export function FlashcardLearningModal({
 
                 <button
                   type="button"
-                  onClick={() => setIsFlipped(!isFlipped)}
-                  className="px-5 py-2 rounded-full bg-canvas border border-surface-border text-xs font-semibold text-ink hover:bg-surface-muted transition"
+                  onClick={() => {
+                    playWoodenThud();
+                    setIsFlipped(!isFlipped);
+                  }}
+                  className="px-5 py-2 rounded-full bg-canvas border border-surface-border text-xs font-semibold text-ink hover:bg-surface-muted transition cursor-pointer"
                 >
                   {isFlipped ? "Show Front" : "Flip Card"}
                 </button>
@@ -772,8 +792,11 @@ export function FlashcardLearningModal({
                 <button
                   type="button"
                   disabled={currentCardIndex === steps.length - 1}
-                  onClick={() => setCurrentCardIndex(Math.min(steps.length - 1, currentCardIndex + 1))}
-                  className="px-4 py-2 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 disabled:opacity-40 transition flex items-center gap-1"
+                  onClick={() => {
+                    playMechanicalClick();
+                    setCurrentCardIndex(Math.min(steps.length - 1, currentCardIndex + 1));
+                  }}
+                  className="px-4 py-2 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 disabled:opacity-40 transition flex items-center gap-1 cursor-pointer"
                 >
                   <span>Next</span>
                   <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />

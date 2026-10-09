@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { SolarIcon } from "@/components/SolarIcon";
 import { UserAvatar } from "@/components/UserAvatar";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
+import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
 
 interface HeaderProps {
@@ -22,10 +23,12 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
   const [loadingUser, setLoadingUser] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkUser = async () => {
+      setSoundOn(isSoundEnabled());
       try {
         const { data: { user } } = await supabase.auth.getUser();
         setCurrentUser(user);
@@ -149,7 +152,27 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
           </nav>
 
           {/* Right Actions: Avatar & Dropdown when logged in, or Auth buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Tactile Workbench Audio Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                const next = !soundOn;
+                setSoundOn(next);
+                setSoundEnabled(next);
+                if (next) playMechanicalClick();
+              }}
+              className={`p-2 rounded-xl border text-xs font-semibold transition flex items-center justify-center cursor-pointer ${
+                soundOn
+                  ? "bg-canvas border-surface-border text-ink hover:text-brand-600 hover:border-brand-500/30 shadow-2xs"
+                  : "bg-surface-muted border-transparent text-ink-subtle hover:text-ink"
+              }`}
+              title={soundOn ? "Tactile Audio Clicks: Enabled" : "Tactile Audio Clicks: Muted"}
+              aria-label="Toggle mechanical sounds"
+            >
+              <SolarIcon name={soundOn ? "volume-loud-linear" : "volume-cross-linear"} className="w-4 h-4" />
+            </button>
+
             {!loadingUser && currentUser ? (
               // Logged-in DiceBear Big Smile Profile Dropdown
               <div className="relative" ref={dropdownRef}>

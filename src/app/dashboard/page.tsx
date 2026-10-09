@@ -9,6 +9,7 @@ import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
 import { SkillFilterBar, DurationFilter } from "@/components/SkillFilterBar";
 import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
+import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
 import { CATEGORIES, INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
@@ -204,6 +205,12 @@ export default function DashboardPage() {
   // 2. Step Completion Toggle with Supabase Sync
   const handleToggleStep = async (stepId: string) => {
     const isCurrentlyDone = completedStepIds.includes(stepId);
+    if (isCurrentlyDone) {
+      playMechanicalClick();
+    } else {
+      playChime();
+    }
+
     const updated = isCurrentlyDone
       ? completedStepIds.filter((id) => id !== stepId)
       : [...completedStepIds, stepId];
@@ -283,6 +290,7 @@ export default function DashboardPage() {
 
       setDailyRoutine(data);
       localStorage.setItem("skillora_daily_routine", JSON.stringify(data));
+      playChime();
     } catch (e) {
       console.error("Daily routine error:", e);
       const fallback: DailyRoutine = {
@@ -359,7 +367,7 @@ export default function DashboardPage() {
     "Explorer";
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-ink selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
       <Header completedCount={isClient ? masteredSkills.length : 0} activePath="/dashboard" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -381,7 +389,7 @@ export default function DashboardPage() {
 
         {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
         <section className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs corner-ticks relative">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2 flex items-center justify-center flex-shrink-0">
                 <Image
@@ -421,16 +429,22 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm text-ink-muted mt-1">
-                  Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
-                </p>
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-xs sm:text-sm text-ink-muted">
+                    Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
+                  </p>
+                  <span className="spec-tag text-ink-subtle hidden lg:inline">
+                    // WORKBENCH VER 2.4
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Streak & Active & Mastered Metrics with Solar Icons */}
             <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto">
               {/* STREAK */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[95px]">
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
+                <span className="spec-tag text-amber-700 block text-[9px] mb-0.5">SPEC // 01</span>
                 <div className="flex items-center justify-center gap-1.5 text-amber-600 text-xs font-semibold">
                   <SolarIcon name="fire-linear" className="w-4 h-4" />
                   <span>Streak</span>
@@ -441,7 +455,8 @@ export default function DashboardPage() {
               </div>
 
               {/* ACTIVE */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[95px]">
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
+                <span className="spec-tag text-brand-700 block text-[9px] mb-0.5">SPEC // 02</span>
                 <div className="flex items-center justify-center gap-1.5 text-brand-600 text-xs font-semibold">
                   <SolarIcon name="clock-circle-linear" className="w-4 h-4" />
                   <span>Active</span>
@@ -452,7 +467,8 @@ export default function DashboardPage() {
               </div>
 
               {/* MASTERED */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[95px]">
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
+                <span className="spec-tag text-emerald-700 block text-[9px] mb-0.5">SPEC // 03</span>
                 <div className="flex items-center justify-center gap-1.5 text-accent-emerald text-xs font-semibold">
                   <SolarIcon name="cup-first-linear" className="w-4 h-4" />
                   <span>Mastered</span>
@@ -647,7 +663,7 @@ export default function DashboardPage() {
           ) : (
             /* ENROLLED SKILLS GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredStudioSkills.map((skill) => {
+              {filteredStudioSkills.map((skill, idx) => {
                 const steps = skill.steps || [];
                 const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
                 const totalCount = steps.length;
@@ -658,9 +674,15 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={skill.id}
-                    className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-brand-500/30 transition shadow-xs group"
+                    className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-brand-500/40 transition shadow-xs group corner-ticks"
                   >
                     <div>
+                      {/* Blueprint Architectural Spec Header */}
+                      <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/60">
+                        <span>SPEC // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                        <span>EST. {skill.estimated_hours}.0H</span>
+                      </div>
+
                       {/* Top Badges & Remove Option */}
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <div className="flex items-center gap-1.5">
@@ -718,8 +740,11 @@ export default function DashboardPage() {
                       {/* Primary CTA: Start Learning with Flashcard Modal */}
                       <button
                         type="button"
-                        onClick={() => setActiveLearningSkill(skill)}
-                        className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs"
+                        onClick={() => {
+                          playWoodenThud();
+                          setActiveLearningSkill(skill);
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
                       >
                         <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
                         <span>Start Learning & Practice</span>
@@ -728,8 +753,11 @@ export default function DashboardPage() {
                       {/* Secondary: Preview Syllabus */}
                       <button
                         type="button"
-                        onClick={() => setActiveSyllabusSkill(skill)}
-                        className="w-full py-2 px-4 rounded-xl bg-canvas hover:bg-surface-muted border border-surface-border text-ink text-xs font-medium transition flex items-center justify-center gap-1.5"
+                        onClick={() => {
+                          playMechanicalClick();
+                          setActiveSyllabusSkill(skill);
+                        }}
+                        className="w-full py-2 px-4 rounded-xl bg-canvas hover:bg-surface-muted border border-surface-border text-ink text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5 text-ink-subtle" />
                         <span>View Syllabus & Resources</span>

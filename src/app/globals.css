@@ -37,3 +37,54 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9CA3AF;
 }
+
+/* ========================================================
+   ARCHITECT'S WORKBENCH AESTHETIC (ANALOG MEETS DIGITAL)
+   ======================================================== */
+
+/* Drafting grid canvas texture */
+.workbench-grid {
+  background-color: #FAFAF8;
+  background-image: 
+    linear-gradient(to right, rgba(17, 24, 39, 0.038) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 24, 39, 0.038) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Subtle precision dot matrix */
+.workbench-dots {
+  background-image: radial-gradient(circle, rgba(17, 24, 39, 0.065) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Technical corner ticks (+) for architectural cards */
+.corner-ticks {
+  position: relative;
+}
+.corner-ticks::before,
+.corner-ticks::after {
+  content: "+";
+  position: absolute;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1;
+  color: rgba(17, 24, 39, 0.22);
+  pointer-events: none;
+  font-weight: 300;
+}
+.corner-ticks::before {
+  top: 7px;
+  left: 8px;
+}
+.corner-ticks::after {
+  top: 7px;
+  right: 8px;
+}
+
+/* Technical spec badge */
+.spec-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
