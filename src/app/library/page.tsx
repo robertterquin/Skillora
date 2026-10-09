@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { SolarIcon } from "@/components/SolarIcon";
+import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
-import { fetchLiveSkills } from "@/lib/skills-service";
 import { User } from "@supabase/supabase-js";
 
 interface OwlConversation {
@@ -23,6 +23,12 @@ export default function SkillLibraryPage() {
 
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
+
+  // Free Tier & 7-Day Trial Limits
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isLimitReached, setIsLimitReached] = useState(false);
+  const [daysRemaining, setDaysRemaining] = useState(7);
+  const [isPro, setIsPro] = useState(false);
 
   // Owl interaction states
   const [inputText, setInputText] = useState("");
@@ -40,7 +46,6 @@ export default function SkillLibraryPage() {
     },
   ]);
 
-  const [lastGeneratedSkill, setLastGeneratedSkill] = useState<Skill | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<unknown>(null);
 
@@ -49,6 +54,22 @@ export default function SkillLibraryPage() {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
+
+      // Check if user is on Pro plan
+      const userIsPro = user?.user_metadata?.plan === "pro";
+      setIsPro(userIsPro);
+
+      // 7-Day Trial calculation
+      const trialStartKey = "skillora_trial_start_timestamp";
+      let trialStart = localStorage.getItem(trialStartKey);
+      if (!trialStart) {
+        trialStart = Date.now().toString();
+        localStorage.setItem(trialStartKey, trialStart);
+      }
+      const daysElapsed = Math.floor(
+        (Date.now() - parseInt(trialStart, 10)) / (1000 * 60 * 60 * 24)
+      );
+      setDaysRemaining(Math.max(0, 7 - daysElapsed));
 
       if (user) {
         const { data: enrollments } = await supabase
@@ -90,7 +111,7 @@ export default function SkillLibraryPage() {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.95;
-    utterance.pitch = 0.9; // Slightly deeper, wiser owl voice tone
+    utterance.pitch = 0.9;
 
     setIsOwlSpeaking(true);
     utterance.onend = () => setIsOwlSpeaking(false);
@@ -103,7 +124,6 @@ export default function SkillLibraryPage() {
   const toggleVoiceListening = () => {
     if (typeof window === "undefined") return;
 
-    // Check for webkitSpeechRecognition or SpeechRecognition
     const SpeechRecognition =
       (window as unknown as { SpeechRecognition?: new () => unknown }).SpeechRecognition ||
       (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
@@ -168,6 +188,34 @@ export default function SkillLibraryPage() {
     const textToSend = customPrompt || inputText;
     if (!textToSend.trim() || isThinking) return;
 
+    // --- CHECK 1: Free tier 7-day trial expired check ---
+    if (!isPro && daysRemaining <= 0) {
+      setIsLimitReached(true);
+      setIsSubscriptionModalOpen(true);
+      const expiredMsg: OwlConversation = {
+        id: `owl-expired-${Date.now()}`,
+        sender: "owl",
+        text: "Hoo! Your 7-day free AI trial has concluded. Upgrade to Skillora Pro for ₱299/month to continue unlimited AI learning and skill summoning!",
+      };
+      setMessages((prev) => [...prev, expiredMsg]);
+      speakOwlVoice(expiredMsg.text);
+      return;
+    }
+
+    // --- CHECK 2: Free tier maximum 3 skills limit ---
+    if (!isPro && enrolledSkillIds.length >= 3) {
+      setIsLimitReached(true);
+      setIsSubscriptionModalOpen(true);
+      const limitMsg: OwlConversation = {
+        id: `owl-limit-${Date.now()}`,
+        sender: "owl",
+        text: "Hoo! You have reached the Free Explorer limit of 3 active studio skills. Upgrade to Skillora Pro for ₱299/month to learn as many skills as you want simultaneously!",
+      };
+      setMessages((prev) => [...prev, limitMsg]);
+      speakOwlVoice(limitMsg.text);
+      return;
+    }
+
     const userMsg: OwlConversation = {
       id: `user-${Date.now()}`,
       sender: "user",
@@ -214,8 +262,6 @@ export default function SkillLibraryPage() {
           .then(() => {});
       }
 
-      setLastGeneratedSkill(newSkill);
-
       const owlMsg: OwlConversation = {
         id: `owl-${Date.now()}`,
         sender: "owl",
@@ -256,18 +302,40 @@ export default function SkillLibraryPage() {
       <Header activePath="/library" />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-between">
-        {/* Top Header & Studio Link */}
-        <div className="flex items-center justify-between pb-6 border-b border-surface-border mb-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-              The Learning Owl&apos;s Oracle
-            </span>
+        {/* Top Header & Plan Status Banner */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-surface-border mb-6 gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
+              <span className="text-xs font-semibold text-ink uppercase tracking-wider">
+                The Learning Owl&apos;s Oracle
+              </span>
+            </div>
+
+            {/* Free vs Pro Badge with limits */}
+            {isPro ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] font-bold">
+                Pro Member • Unlimited Skills
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLimitReached(false);
+                  setIsSubscriptionModalOpen(true);
+                }}
+                className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold hover:bg-amber-100 transition flex items-center gap-1.5"
+                title="Free trial status"
+              >
+                <span>Free Plan ({enrolledSkillIds.length}/3 Skills • {daysRemaining}d Trial)</span>
+                <span className="font-bold text-amber-900 underline">Upgrade ₱299/m &rarr;</span>
+              </button>
+            )}
           </div>
 
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/40 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/40 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs whitespace-nowrap"
           >
             <span>My Studio Workshop ({enrolledSkillIds.length}) &rarr;</span>
           </Link>
@@ -506,6 +574,14 @@ export default function SkillLibraryPage() {
           </div>
         </section>
       </main>
+
+      {/* Subscription & Pricing Modal (Triggered on limit or click) */}
+      <SubscriptionModal
+        isOpen={isSubscriptionModalOpen}
+        onClose={() => setIsSubscriptionModalOpen(false)}
+        userEmail={currentUser?.email}
+        isLimitReached={isLimitReached}
+      />
     </div>
   );
 }

@@ -130,24 +130,24 @@ export default function LandingPage() {
               <div>
                 <h3 className="font-display font-bold text-lg text-ink">Free Explorer</h3>
                 <div className="mt-3 flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-3xl text-ink">$0</span>
-                  <span className="text-xs text-ink-muted">/ forever</span>
+                  <span className="font-display font-extrabold text-3xl text-ink">₱0</span>
+                  <span className="text-xs text-ink-muted">/ 7-day trial</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  Browse all skills, read step instructions, and launch vetted learning tools.
+                  Start with up to 3 micro-skills and experience the AI Learning Owl for 7 days.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Access to entire open skill catalog</span>
+                    <span>Learn up to <strong>3 active skills</strong></span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Up to 2 active tracked skills</span>
+                    <span><strong>7-day free trial</strong> of AI Owl & Voice grading</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>External curated resource links</span>
+                    <span>3D flashcards & external curated resources</span>
                   </li>
                 </ul>
               </div>
@@ -155,40 +155,40 @@ export default function LandingPage() {
                 href="/signup"
                 className="mt-8 block text-center py-2.5 px-4 rounded-full border border-surface-border bg-white text-xs font-semibold text-ink hover:bg-neutral-100 transition"
               >
-                Get Started Free
+                Start 7-Day Free Trial
               </Link>
             </div>
 
-            {/* Pro Tier (Matching Image 1: Join for $9.99/m) */}
+            {/* Pro Tier (₱299/month) */}
             <div className="p-8 rounded-2xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-lg">
               <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold uppercase tracking-wider">
-                Most Popular
+                Unlimited Access
               </div>
               <div>
                 <h3 className="font-display font-bold text-lg text-ink">Skillora Pro</h3>
                 <div className="mt-3 flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-3xl text-ink">$9.99</span>
+                  <span className="font-display font-extrabold text-3xl text-ink">₱299</span>
                   <span className="text-xs text-ink-muted">/ month</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  For deliberate learners building daily streaks and multi-discipline mastery.
+                  For deliberate learners building daily streaks and unlimited multi-discipline mastery.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span>Unlimited concurrent skill pathways</span>
+                    <span><strong>Learn as many skills as you want</strong></span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span>Daily practice habit reminders & streaks</span>
+                    <span><strong>Unlimited AI Learning Owl</strong> voice & chat summoning</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span>Personal resource bookmark vault</span>
+                    <span><strong>Unlimited Technique Coach</strong> & Whisper voice grading</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span>Verified completion certificates</span>
+                    <span>Daily 15-minute cross-training workout generator</span>
                   </li>
                 </ul>
               </div>
@@ -196,7 +196,7 @@ export default function LandingPage() {
                 href="/signup"
                 className="mt-8 block text-center py-2.5 px-4 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 transition"
               >
-                Join for $9.99/m
+                Join Pro for ₱299/m
               </Link>
             </div>
           </div>
