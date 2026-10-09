@@ -4,6 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
+import {
+  PracticeMetronome,
+  KnifeAngleGauge,
+  EspressoExtractionSimulator,
+  PhoneticSoundboard,
+  FocusRepetitionDrill,
+} from "@/components/TactileMicroSimulators";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -12,288 +19,70 @@ interface FlashcardLearningModalProps {
   onClose: () => void;
 }
 
-// Interactive 3D Visual Diagram & Technique Aid for each discipline
-function Step3DVisualAid({
+// Interactive Tactile Micro-Simulator Suite for each discipline
+function StepMicroSimulatorAid({
   skillSlug,
+  skillTitle,
   stepNumber,
+  stepTitle,
   onSpeak,
 }: {
   skillSlug: string;
+  skillTitle: string;
   stepNumber: number;
+  stepTitle: string;
   onSpeak: (text: string, lang?: string) => void;
 }) {
-  // 1. Language / Cyrillic
-  if (skillSlug.includes("cyrillic") || skillSlug.includes("language")) {
-    if (stepNumber === 1) {
-      const trueFriends = [
-        { cyr: "А", sound: "A", word: "AKULA (Shark)" },
-        { cyr: "К", sound: "K", word: "KOT (Cat)" },
-        { cyr: "М", sound: "M", word: "MAMA (Mom)" },
-        { cyr: "О", sound: "O", word: "OKNO (Window)" },
-        { cyr: "Т", sound: "T", word: "TOM (Volume)" },
-      ];
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>3D Interactive Alphabet Tiles (Click to hear)</span>
-            <span className="text-brand-600 font-semibold">Identical Sounds</span>
-          </div>
-          <div className="grid grid-cols-5 gap-2">
-            {trueFriends.map((item) => (
-              <button
-                key={item.cyr}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSpeak(item.cyr, "ru-RU");
-                }}
-                className="group p-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 hover:shadow-md transition-all flex flex-col items-center justify-center transform hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <span className="font-display font-extrabold text-xl text-brand-700 group-hover:scale-110 transition">
-                  {item.cyr}
-                </span>
-                <span className="text-[10px] text-ink-muted mt-0.5 font-mono">
-                  ={item.sound}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-2.5 text-center text-[11px] text-ink-muted">
-            Tap any tile to hear native pronunciation. Try decoding: <strong>К-О-Т</strong> (KOT = Cat).
-          </div>
-        </div>
-      );
-    }
+  const slug = (skillSlug + " " + skillTitle).toLowerCase();
 
-    if (stepNumber === 2) {
-      const falseFriends = [
-        { cyr: "В", sound: "V", note: "Sounds like V" },
-        { cyr: "Н", sound: "N", note: "Sounds like N" },
-        { cyr: "Р", sound: "R", note: "Rolled R" },
-        { cyr: "С", sound: "S", note: "Sounds like S" },
-        { cyr: "У", sound: "U", note: "Sounds like OO" },
-        { cyr: "Х", sound: "Kh", note: "Throaty H" },
-      ];
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Optical Shift Matrix (Click to test)</span>
-            <span className="text-amber-600 font-semibold">False Friends</span>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-            {falseFriends.map((item) => (
-              <button
-                key={item.cyr}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSpeak(item.cyr, "ru-RU");
-                }}
-                className="p-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 hover:shadow-md transition-all flex flex-col items-center justify-center transform hover:-translate-y-0.5"
-              >
-                <span className="font-display font-extrabold text-xl text-ink">
-                  {item.cyr}
-                </span>
-                <span className="text-[10px] font-bold text-brand-600 mt-0.5">
-                  &rarr; /{item.sound}/
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-2.5 text-center text-[11px] text-ink-secondary">
-            Decodes loanword: <strong className="text-ink">Р Е С Т О Р А Н</strong> &rarr; RESTORAN (Restaurant)
-          </div>
-        </div>
-      );
-    }
+  // 1. Language / Cyrillic Phonetic Soundboard
+  if (slug.includes("cyrillic") || slug.includes("language") || slug.includes("alphabet") || slug.includes("script")) {
+    return <PhoneticSoundboard onSpeak={onSpeak} />;
+  }
 
-    const greekSiblings = [
-      { cyr: "Д", sound: "D", note: "Delta" },
-      { cyr: "Г", sound: "G", note: "Gamma" },
-      { cyr: "П", sound: "P", note: "Pi" },
-      { cyr: "Ж", sound: "Zh", note: "Buzzing" },
-      { cyr: "Ш", sound: "Sh", note: "Soft Hush" },
-    ];
+  // 2. Knife Sharpening 15° Caliper & Whetstone Stroke Simulator
+  if (slug.includes("knife") || slug.includes("sharpen") || slug.includes("blade") || slug.includes("whetstone")) {
+    return <KnifeAngleGauge />;
+  }
+
+  // 3. Espresso 1:2 Shot Extraction Dial & Flow Timer
+  if (slug.includes("espresso") || slug.includes("coffee") || slug.includes("extraction")) {
+    return <EspressoExtractionSimulator />;
+  }
+
+  // 4. Guitar & Rhythm / Typing -> Auditory Metronome
+  if (
+    slug.includes("guitar") ||
+    slug.includes("fingerstyle") ||
+    slug.includes("music") ||
+    slug.includes("typing") ||
+    slug.includes("rhythm") ||
+    slug.includes("tempo")
+  ) {
+    const defaultBpm = slug.includes("typing") ? 60 : 75;
     return (
-      <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl">
-        <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2 flex items-center justify-between">
-          <span>Distinctive Glyphs & Sibilants</span>
-          <span className="text-indigo-600 font-semibold">Greek Roots</span>
-        </div>
-        <div className="grid grid-cols-5 gap-2">
-          {greekSiblings.map((item) => (
-            <button
-              key={item.cyr}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSpeak(item.cyr, "ru-RU");
-              }}
-              className="p-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 hover:shadow-md transition-all flex flex-col items-center justify-center transform hover:-translate-y-0.5"
-            >
-              <span className="font-display font-extrabold text-xl text-ink">
-                {item.cyr}
-              </span>
-              <span className="text-[10px] font-bold text-brand-600 mt-0.5">
-                /{item.sound}/
-              </span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-2.5 text-center text-[11px] text-ink-muted">
-          Subway sign test: <strong>М Е Т Р О</strong> &rarr; METRO (Station)
-        </div>
+      <div className="space-y-2">
+        <PracticeMetronome initialBpm={defaultBpm} />
+        {slug.includes("typing") && (
+          <div className="w-full p-2.5 bg-canvas/60 border border-surface-border rounded-xl text-center">
+            <div className="text-[10px] font-mono font-bold text-ink-muted uppercase mb-1">
+              Tactile Home Row Bumps (Keep Steady Rhythm)
+            </div>
+            <div className="flex items-center justify-center gap-2 font-mono text-xs">
+              <span className="px-2 py-1 bg-white rounded border border-surface-border text-ink-muted">A S D</span>
+              <span className="px-2 py-1 bg-brand-50 rounded border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ F • ]</span>
+              <span className="text-ink-subtle">|</span>
+              <span className="px-2 py-1 bg-brand-50 rounded border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ J • ]</span>
+              <span className="px-2 py-1 bg-white rounded border border-surface-border text-ink-muted">K L ;</span>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  // 2. Guitar Fingerstyle
-  if (skillSlug.includes("guitar")) {
-    if (stepNumber === 1) {
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
-            3D P-I-M-A Finger Anchor Guide
-          </div>
-          <div className="grid grid-cols-4 gap-2 text-center">
-            <div className="p-2 bg-white rounded-xl border border-surface-border">
-              <span className="text-xs font-bold text-brand-600">Thumb (P)</span>
-              <span className="block text-[11px] text-ink-muted mt-1">Strings 6, 5, 4</span>
-            </div>
-            <div className="p-2 bg-white rounded-xl border border-surface-border">
-              <span className="text-xs font-bold text-ink">Index (I)</span>
-              <span className="block text-[11px] text-ink-muted mt-1">3rd String (G)</span>
-            </div>
-            <div className="p-2 bg-white rounded-xl border border-surface-border">
-              <span className="text-xs font-bold text-ink">Middle (M)</span>
-              <span className="block text-[11px] text-ink-muted mt-1">2nd String (B)</span>
-            </div>
-            <div className="p-2 bg-white rounded-xl border border-surface-border">
-              <span className="text-xs font-bold text-ink">Ring (A)</span>
-              <span className="block text-[11px] text-ink-muted mt-1">1st String (e)</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    if (stepNumber === 2) {
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
-            Travis Picking 4/4 Beat Timeline
-          </div>
-          <div className="flex items-center justify-between gap-1 text-xs font-mono">
-            <div className="p-2 flex-1 bg-brand-50 border border-brand-200 rounded-lg text-brand-800 font-bold">1: Thumb 6</div>
-            <span>&rarr;</span>
-            <div className="p-2 flex-1 bg-white border border-surface-border rounded-lg text-ink font-bold">&: Pinch (I+M)</div>
-            <span>&rarr;</span>
-            <div className="p-2 flex-1 bg-brand-50 border border-brand-200 rounded-lg text-brand-800 font-bold">2: Thumb 4</div>
-            <span>&rarr;</span>
-            <div className="p-2 flex-1 bg-white border border-surface-border rounded-lg text-ink font-bold">&: Free Pick</div>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-        <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
-          Steady Bass Transition Progression
-        </div>
-        <div className="flex items-center justify-center gap-3">
-          <span className="px-3 py-1.5 rounded-xl bg-white border border-surface-border font-bold text-ink">C Major</span>
-          <span>&rarr;</span>
-          <span className="px-3 py-1.5 rounded-xl bg-white border border-surface-border font-bold text-ink">G Major</span>
-          <span>&rarr;</span>
-          <span className="px-3 py-1.5 rounded-xl bg-white border border-surface-border font-bold text-ink">A Minor</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. Knife Sharpening
-  if (skillSlug.includes("knife") || skillSlug.includes("sharpening")) {
-    if (stepNumber === 1) {
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">
-            Tactile 15° Angle Gauge
-          </div>
-          <div className="flex items-center justify-center gap-4 py-2">
-            <div className="px-4 py-2 rounded-xl bg-white border border-surface-border shadow-xs text-xs font-semibold text-ink">
-              Two 25¢ Coins under blade spine = Exact 15°
-            </div>
-          </div>
-        </div>
-      );
-    }
-    if (stepNumber === 2) {
-      return (
-        <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">
-            Burr Detection Protocol
-          </div>
-          <p className="text-xs text-ink-secondary py-1">
-            Sweep Heel &rarr; Belly &rarr; Tip with moderate pressure. Feel reverse edge with thumb pad.
-          </p>
-        </div>
-      );
-    }
-    return (
-      <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-        <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">
-          Finishing Polish & Stropping
-        </div>
-        <p className="text-xs text-ink-secondary py-1">
-          Feather-light trailing strokes on 6000-grit stone, followed by smooth leather stropping.
-        </p>
-      </div>
-    );
-  }
-
-  // 4. Touch Typing
-  if (skillSlug.includes("typing")) {
-    return (
-      <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-        <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
-          Tactile Home Row Bumps
-        </div>
-        <div className="flex items-center justify-center gap-2 font-mono text-sm">
-          <span className="p-2 bg-white rounded-lg border border-surface-border text-ink-muted">A S D</span>
-          <span className="p-2 bg-brand-50 rounded-lg border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ F • ]</span>
-          <span className="text-ink-subtle">|</span>
-          <span className="p-2 bg-brand-50 rounded-lg border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ J • ]</span>
-          <span className="p-2 bg-white rounded-lg border border-surface-border text-ink-muted">K L ;</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 5. Espresso Dialing
-  if (skillSlug.includes("espresso")) {
-    return (
-      <div className="w-full my-3 p-3.5 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-        <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
-          1:2 Specialty Extraction Dial
-        </div>
-        <div className="flex items-center justify-center gap-3 text-xs font-semibold">
-          <div className="p-2 bg-white rounded-xl border border-surface-border">18.0g Dry Dose</div>
-          <span>&rarr;</span>
-          <div className="p-2 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold">36.0g Liquid Yield</div>
-          <span>@</span>
-          <div className="p-2 bg-white rounded-xl border border-surface-border">28–30 Seconds</div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback visual cue
-  return (
-    <div className="w-full my-3 p-3 bg-canvas/80 border border-surface-border rounded-2xl text-center">
-      <span className="text-[11px] font-semibold text-ink-muted">
-        Tactile Step Drill • Focus on repetition and muscle memory
-      </span>
-    </div>
-  );
+  // 5. Universal Repetition Counter & 60-second Interval Clock (Juggling, Rubik's Cube, Sourdough, Custom skills)
+  return <FocusRepetitionDrill stepTitle={stepTitle} targetReps={10} />;
 }
 
 export function FlashcardLearningModal({
@@ -651,10 +440,10 @@ export function FlashcardLearningModal({
                   playWoodenThud();
                   setIsFlipped(!isFlipped);
                 }}
-                className="w-full max-w-lg min-h-[340px] sm:min-h-[380px] cursor-pointer select-none relative transition-transform duration-500 rounded-3xl corner-ticks"
+                className="w-full max-w-xl min-h-[360px] sm:min-h-[400px] cursor-pointer select-none relative transition-transform duration-500 rounded-3xl corner-ticks"
               >
                 <div
-                  className={`w-full h-full min-h-[340px] sm:min-h-[380px] p-6 sm:p-7 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 shadow-md ${
+                  className={`w-full h-full min-h-[360px] sm:min-h-[400px] p-6 sm:p-7 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 shadow-md ${
                     isFlipped
                       ? "bg-white border-brand-600/60 shadow-lg"
                       : "bg-gradient-to-b from-canvas to-white border-surface-border hover:border-brand-500/40"
@@ -680,21 +469,23 @@ export function FlashcardLearningModal({
                   {/* Center of Card */}
                   <div className="my-auto py-3 text-center">
                     {!isFlipped ? (
-                      /* FRONT: Technique title + 3D tactile visual cue */
+                      /* FRONT: Technique title + Tactile Micro-Simulator Suite */
                       <div>
                         <h3 className="font-display font-extrabold text-xl sm:text-2xl text-ink max-w-md mx-auto leading-snug">
                           {currentStep.title}
                         </h3>
 
-                        {/* Interactive 3D Visual Diagram Aid */}
-                        <Step3DVisualAid
+                        {/* Interactive Tactile Micro-Simulator */}
+                        <StepMicroSimulatorAid
                           skillSlug={skill.slug}
+                          skillTitle={skill.title}
                           stepNumber={currentStep.step_number}
+                          stepTitle={currentStep.title}
                           onSpeak={speakText}
                         />
 
                         <p className="mt-2 text-xs text-ink-muted">
-                          Tap card or press flip to inspect instructions & drills &rarr;
+                          Tap card edges or press flip to inspect detailed instructions &rarr;
                         </p>
                       </div>
                     ) : (
