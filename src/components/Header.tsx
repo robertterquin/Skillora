@@ -97,7 +97,7 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
               <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-ink">
                 Skillora
               </span>
-              <span className="text-[9px] font-semibold text-brand-600 -mt-1 tracking-wider uppercase">
+              <span className="text-[9px] font-mono font-medium text-ink-subtle -mt-0.5 tracking-widest uppercase">
                 Master Anything
               </span>
             </div>

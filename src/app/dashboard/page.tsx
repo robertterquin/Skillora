@@ -389,9 +389,9 @@ export default function DashboardPage() {
 
         {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
         <section className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs corner-ticks relative">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs relative">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2 flex items-center justify-center flex-shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 flex items-center justify-center flex-shrink-0">
                 <Image
                   src="/logo.svg"
                   alt="Skillora Owl"
@@ -402,18 +402,18 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
+                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
                     {displayName}&apos;s Studio
                   </h1>
                   {isPro ? (
-                    <span className="px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] font-bold inline-flex items-center gap-1.5">
-                      <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5 text-brand-600" />
+                    <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-[11px] font-semibold inline-flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
                       Pro Member • Unlimited Skills
                     </span>
                   ) : (
                     <div className="inline-flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium inline-flex items-center gap-1">
-                        <SolarIcon name="clock-circle-linear" className="w-3 h-3 text-amber-600" />
+                      <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium inline-flex items-center gap-1">
+                        <SolarIcon name="clock-circle-linear" className="w-3 h-3 text-ink-muted" />
                         Free Trial: {isClient ? myStudioSkills.length : 0}/3 Skills • {daysRemaining}d Left
                       </span>
                       <button
@@ -422,31 +422,28 @@ export default function DashboardPage() {
                           setIsLimitReached(false);
                           setIsSubscriptionModalOpen(true);
                         }}
-                        className="px-2.5 py-0.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-semibold transition shadow-2xs cursor-pointer"
+                        className="px-3 py-1 rounded-full bg-ink hover:bg-neutral-800 text-white text-[11px] font-semibold transition shadow-2xs cursor-pointer"
                       >
                         Upgrade ₱299/mo &rarr;
                       </button>
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-3 mt-1">
-                  <p className="text-xs sm:text-sm text-ink-muted">
+                <div className="flex items-center gap-3 mt-1.5">
+                  <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
                     Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
                   </p>
-                  <span className="spec-tag text-ink-subtle hidden lg:inline">
-                    // WORKBENCH VER 2.4
-                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Streak & Active & Mastered Metrics with Solar Icons */}
+            {/* Streak & Active & Mastered Metrics (Monochromatic Architectural Styling) */}
             <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto">
               {/* STREAK */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
-                <span className="spec-tag text-amber-700 block text-[9px] mb-0.5">SPEC // 01</span>
-                <div className="flex items-center justify-center gap-1.5 text-amber-600 text-xs font-semibold">
-                  <SolarIcon name="fire-linear" className="w-4 h-4" />
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 01</span>
+                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
+                  <SolarIcon name="fire-linear" className="w-3.5 h-3.5 text-amber-600" />
                   <span>Streak</span>
                 </div>
                 <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
@@ -455,10 +452,10 @@ export default function DashboardPage() {
               </div>
 
               {/* ACTIVE */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
-                <span className="spec-tag text-brand-700 block text-[9px] mb-0.5">SPEC // 02</span>
-                <div className="flex items-center justify-center gap-1.5 text-brand-600 text-xs font-semibold">
-                  <SolarIcon name="clock-circle-linear" className="w-4 h-4" />
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 02</span>
+                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
+                  <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
                   <span>Active</span>
                 </div>
                 <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
@@ -467,10 +464,10 @@ export default function DashboardPage() {
               </div>
 
               {/* MASTERED */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[100px] corner-ticks">
-                <span className="spec-tag text-emerald-700 block text-[9px] mb-0.5">SPEC // 03</span>
-                <div className="flex items-center justify-center gap-1.5 text-accent-emerald text-xs font-semibold">
-                  <SolarIcon name="cup-first-linear" className="w-4 h-4" />
+              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 03</span>
+                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
+                  <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-accent-emerald" />
                   <span>Mastered</span>
                 </div>
                 <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
@@ -481,26 +478,23 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Feature 5: Daily 15-Minute Studio Workout Routine */}
+        {/* Feature 5: Daily 15-Minute Deliberate Practice Circuit */}
         {myStudioSkills.length > 0 && (
           <section className="mb-8">
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-brand-500/30 shadow-xs relative overflow-hidden">
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-surface-border shadow-xs relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
-                    <SolarIcon name="stars-minimalistic-linear" className="w-5 h-5" />
+                  <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
+                    <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider">
-                        AI Practice Coach
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-brand-50 text-[10px] font-bold text-brand-700">
-                        15 Min Session
+                      <span className="spec-tag text-ink-subtle">
+                        CIRCUIT // 15-MIN DELIBERATE PRACTICE
                       </span>
                     </div>
                     <h3 className="font-display font-bold text-lg text-ink">
-                      {dailyRoutine ? dailyRoutine.headline : "Today's 15-Minute Cross-Training Workout"}
+                      {dailyRoutine ? dailyRoutine.headline : "Today's 15-Minute Cross-Training Circuit"}
                     </h3>
                   </div>
                 </div>
@@ -510,13 +504,13 @@ export default function DashboardPage() {
                     type="button"
                     disabled={routineLoading}
                     onClick={handleGenerateDailyRoutine}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer"
                   >
                     <SolarIcon
                       name="refresh-linear"
                       className={`w-3.5 h-3.5 ${routineLoading ? "animate-spin" : ""}`}
                     />
-                    <span>{routineLoading ? "Designing Workout..." : dailyRoutine ? "Regenerate Plan" : "Generate Today's Workout"}</span>
+                    <span>{routineLoading ? "Synthesizing Circuit..." : dailyRoutine ? "Recompile Circuit" : "Synthesize Today's Circuit"}</span>
                   </button>
                 </div>
               </div>
@@ -530,11 +524,11 @@ export default function DashboardPage() {
                         key={idx}
                         className="p-4 rounded-2xl bg-canvas border border-surface-border flex items-start gap-3.5"
                       >
-                        <div className="w-8 h-8 rounded-xl bg-white border border-surface-border flex items-center justify-center font-bold text-xs text-brand-700 font-mono flex-shrink-0">
+                        <div className="w-8 h-8 rounded-xl bg-white border border-surface-border flex items-center justify-center font-bold text-xs text-ink font-mono flex-shrink-0">
                           {block.minutes}m
                         </div>
                         <div className="flex-1">
-                          <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wider block">
+                          <span className="text-[10px] font-mono font-medium text-ink-muted uppercase tracking-wider block">
                             {block.skillTitle}
                           </span>
                           <h4 className="font-display font-bold text-sm text-ink mb-1">
@@ -549,28 +543,28 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Mantra & Complete Action */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-brand-50/60 border border-brand-100 text-xs">
-                    <p className="text-brand-950 italic">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-canvas border border-surface-border text-xs">
+                    <p className="text-ink-secondary italic">
                       &ldquo;{dailyRoutine.dailyMantra}&rdquo;
                     </p>
 
                     <button
                       type="button"
                       onClick={() => setRoutineCompleted(!routineCompleted)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-1.5 ${
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-1.5 cursor-pointer ${
                         routineCompleted
                           ? "bg-accent-emerald text-white"
-                          : "bg-white text-ink border border-surface-border hover:border-brand-500"
+                          : "bg-ink hover:bg-neutral-800 text-white"
                       }`}
                     >
                       <SolarIcon name="check-circle-linear" className="w-4 h-4" />
-                      <span>{routineCompleted ? "Completed Today!" : "Mark Workout Done"}</span>
+                      <span>{routineCompleted ? "Circuit Completed Today!" : "Mark Circuit Complete"}</span>
                     </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-ink-muted pt-2 border-t border-surface-border">
-                  Click <strong>&ldquo;Generate Today&apos;s Workout&rdquo;</strong> to have OpenAI analyze your active skills and build a high-efficiency 15-minute cross-training routine.
+                <p className="text-xs text-ink-muted pt-2 border-t border-surface-border leading-relaxed">
+                  Synthesize a daily 15-minute cross-training routine compiled from your active micro-drills to build automatic physical and cognitive muscle memory.
                 </p>
               )}
             </div>
@@ -609,23 +603,23 @@ export default function DashboardPage() {
                 My Studio Queue ({filteredStudioSkills.length})
               </h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Skills you are currently mastering. Click &quot;Start Learning&quot; to practice with 3D flashcards, voice grading, and technique coaching.
+                Disciplines you are currently mastering. Open any skill to practice with tactile micro-simulators, voice grading, and technique coaching.
               </p>
             </div>
 
             <Link
               href="/library"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/50 text-xs font-semibold text-brand-600 hover:text-brand-700 transition shadow-2xs"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs"
             >
-              <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4" />
-              <span>Summon More with Owl</span>
+              <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
+              <span>Explore Archimedes&apos; Library &rarr;</span>
             </Link>
           </div>
 
           {/* EMPTY STATE */}
           {filteredStudioSkills.length === 0 ? (
             <div className="p-12 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto shadow-xs">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
                 <SolarIcon name="book-bookmark-linear" className="w-7 h-7" />
               </div>
               <h3 className="font-display font-bold text-lg text-ink mb-1.5">
@@ -633,7 +627,7 @@ export default function DashboardPage() {
               </h3>
               <p className="text-sm text-ink-muted mb-6 max-w-md mx-auto">
                 {myStudioSkills.length === 0
-                  ? "Talk to the Learning Owl in the Skill Library to deconstruct and add your first micro-skill."
+                  ? "Talk to Archimedes in the Library to deconstruct and add your first micro-skill."
                   : "Try clearing your search term or selecting 'All Disciplines' above."}
               </p>
 
@@ -648,14 +642,15 @@ export default function DashboardPage() {
                     }}
                     className="px-4 py-2 rounded-full bg-canvas text-xs font-semibold text-ink border border-surface-border hover:bg-surface-muted transition"
                   >
-                    Reset Filters
+                    Reset Filter
                   </button>
                 )}
+
                 <Link
                   href="/library"
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition"
                 >
-                  <span>Talk to the Learning Owl</span>
+                  <span>Explore Archimedes&apos; Library</span>
                   <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
                 </Link>
               </div>
@@ -674,7 +669,7 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={skill.id}
-                    className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-brand-500/40 transition shadow-xs group corner-ticks"
+                    className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/40 transition shadow-xs group corner-ticks"
                   >
                     <div>
                       {/* Blueprint Architectural Spec Header */}
@@ -687,8 +682,8 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <div className="flex items-center gap-1.5">
                           {isCustomAi && (
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">
-                              AI Built
+                            <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border">
+                              Custom Drill
                             </span>
                           )}
                           <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-canvas border border-surface-border text-ink-muted">
@@ -707,7 +702,7 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Title & Description */}
-                      <h3 className="font-display font-bold text-lg text-ink group-hover:text-brand-600 transition mb-2">
+                      <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition mb-2">
                         {skill.title}
                       </h3>
                       <p className="text-xs sm:text-sm text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
@@ -727,7 +722,7 @@ export default function DashboardPage() {
                         <div className="w-full h-2 rounded-full bg-surface-muted overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
-                              isCompleted ? "bg-accent-emerald" : "bg-brand-600"
+                              isCompleted ? "bg-accent-emerald" : "bg-ink"
                             }`}
                             style={{ width: `${percent}%` }}
                           />

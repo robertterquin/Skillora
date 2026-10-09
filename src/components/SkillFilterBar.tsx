@@ -37,7 +37,7 @@ export function SkillFilterBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search skills by title, domain, or technique..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-white text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 transition"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-white text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-ink/10 focus:border-ink transition"
           />
         </div>
 
@@ -109,7 +109,7 @@ export function SkillFilterBar({
               onClick={() => onSelectCategory(cat.id)}
               className={`px-3.5 py-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                 isActive
-                  ? "border-brand-600 text-brand-600 font-semibold"
+                  ? "border-ink text-ink font-semibold"
                   : "border-transparent text-ink-muted hover:text-ink hover:border-surface-border"
               }`}
             >

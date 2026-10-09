@@ -308,15 +308,15 @@ export default function SkillLibraryPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-surface-border mb-6 gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
-              <span className="text-xs font-semibold text-ink uppercase tracking-wider">
-                The Learning Owl&apos;s Oracle
+              <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+              <span className="text-xs font-mono font-semibold text-ink uppercase tracking-wider">
+                Archimedes&apos; Study
               </span>
             </div>
 
             {/* Free vs Pro Badge with limits */}
             {isPro ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-[11px] font-semibold">
                 Pro Member • Unlimited Skills
               </span>
             ) : (
@@ -326,20 +326,20 @@ export default function SkillLibraryPage() {
                   setIsLimitReached(false);
                   setIsSubscriptionModalOpen(true);
                 }}
-                className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold hover:bg-amber-100 transition flex items-center gap-1.5"
+                className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium hover:bg-neutral-100 transition flex items-center gap-1.5 cursor-pointer"
                 title="Free trial status"
               >
                 <span>Free Plan ({enrolledSkillIds.length}/3 Skills • {daysRemaining}d Trial)</span>
-                <span className="font-bold text-amber-900 underline">Upgrade ₱299/m &rarr;</span>
+                <span className="font-semibold text-ink underline">Upgrade ₱299/m &rarr;</span>
               </button>
             )}
           </div>
 
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/40 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs whitespace-nowrap"
           >
-            <span>My Studio Workshop ({enrolledSkillIds.length}) &rarr;</span>
+            <span>My Studio Repertoire ({enrolledSkillIds.length}) &rarr;</span>
           </Link>
         </div>
 
@@ -356,11 +356,11 @@ export default function SkillLibraryPage() {
             size={180}
           />
 
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight mt-6">
-            Tell the Owl what you want to learn.
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight mt-6">
+            Tell Archimedes what you want to learn.
           </h1>
-          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md">
-            Speak into your mic or type below. The Owl will immediately deconstruct it into realistic steps and dispatch it to <strong>My Studio</strong>.
+          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md leading-relaxed">
+            Speak into your mic or type below. Archimedes will deconstruct it into realistic micro-drills and dispatch it to <strong>My Studio</strong>.
           </p>
 
           {/* Voice Mute Toggle */}
@@ -368,9 +368,9 @@ export default function SkillLibraryPage() {
             <button
               type="button"
               onClick={() => setVoiceAudioEnabled(!voiceAudioEnabled)}
-              className={`text-[11px] font-semibold px-3 py-1 rounded-full border transition flex items-center gap-1.5 ${
+              className={`text-[11px] font-medium px-3 py-1 rounded-full border transition flex items-center gap-1.5 ${
                 voiceAudioEnabled
-                  ? "bg-brand-50 text-brand-700 border-brand-200"
+                  ? "bg-surface-muted text-ink border-surface-border"
                   : "bg-canvas text-ink-muted border-surface-border"
               }`}
             >
@@ -378,7 +378,7 @@ export default function SkillLibraryPage() {
                 name={voiceAudioEnabled ? "volume-loud-linear" : "volume-cross-linear"}
                 className="w-3.5 h-3.5"
               />
-              <span>{voiceAudioEnabled ? "Owl Voice: On" : "Owl Voice: Muted"}</span>
+              <span>{voiceAudioEnabled ? "Voice Audio: Active" : "Voice Audio: Muted"}</span>
             </button>
           </div>
         </section>
@@ -400,9 +400,9 @@ export default function SkillLibraryPage() {
                 }`}
               >
                 {msg.sender === "owl" && (
-                  <div className="flex items-center gap-2 mb-1.5 text-[11px] font-bold text-brand-600 uppercase tracking-wider">
-                    <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
-                    <span>The Learning Owl</span>
+                  <div className="flex items-center gap-2 mb-1.5 text-[10px] font-mono font-medium text-ink-muted uppercase tracking-wider">
+                    <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5 text-ink-muted" />
+                    <span>Archimedes</span>
                   </div>
                 )}
                 <p>{msg.text}</p>
@@ -410,15 +410,15 @@ export default function SkillLibraryPage() {
 
               {/* Archimedes Field Notes Index Card */}
               {msg.skill && (
-                <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border-2 border-brand-500/50 shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
+                <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border border-surface-border shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
                   {/* Field Notes Architectural Header */}
-                  <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/70">
+                  <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border">
                     <span>ARCHIMEDES FIELD NOTES // SPEC-BLUEPRINT</span>
-                    <span className="text-brand-600 font-bold">EST. {msg.skill.estimated_hours}.0H</span>
+                    <span className="text-ink font-bold font-mono">EST. {msg.skill.estimated_hours}.0H</span>
                   </div>
 
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">
+                    <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink border border-surface-border">
                       {msg.skill.difficulty} • {msg.skill.time_commitment_label}
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald text-[11px] font-bold border border-accent-emerald/30 flex items-center gap-1">
