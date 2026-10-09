@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
+import { InteractiveOwlAvatar } from "@/components/InteractiveOwlAvatar";
+import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -343,55 +345,16 @@ export default function SkillLibraryPage() {
 
         {/* Center Stage: The Big Learning Owl Character */}
         <section className="flex flex-col items-center text-center my-4">
-          <div className="relative group cursor-pointer" onClick={() => speakOwlVoice("Hoo! I am listening.")}>
-            {/* Glowing Backdrop Ring */}
-            <div className={`absolute -inset-4 rounded-full blur-xl transition-all duration-700 ${
-              isOwlSpeaking
-                ? "bg-brand-500/25 scale-110"
-                : isListening
-                ? "bg-rose-500/25 scale-110"
-                : "bg-brand-500/10 group-hover:bg-brand-500/20"
-            }`} />
-
-            {/* Owl Icon Container */}
-            <div className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white border-2 flex items-center justify-center p-6 shadow-xl transition-transform duration-500 ${
-              isListening ? "border-rose-500 scale-105" : "border-surface-border hover:scale-105"
-            }`}>
-              <Image
-                src="/logo.svg"
-                alt="Skillora Learning Owl"
-                width={130}
-                height={130}
-                className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
-                priority
-              />
-
-              {/* Status Badge on Owl */}
-              <div className="absolute -bottom-2 px-3 py-1 rounded-full bg-ink text-white text-[10px] font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5">
-                {isListening ? (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                    <span>Listening...</span>
-                  </>
-                ) : isThinking ? (
-                  <>
-                    <SolarIcon name="refresh-linear" className="w-3 h-3 animate-spin text-brand-300" />
-                    <span>Deconstructing...</span>
-                  </>
-                ) : isOwlSpeaking ? (
-                  <>
-                    <SolarIcon name="volume-loud-linear" className="w-3 h-3 text-brand-300 animate-pulse" />
-                    <span>Speaking...</span>
-                  </>
-                ) : (
-                  <>
-                    <SolarIcon name="stars-minimalistic-linear" className="w-3 h-3 text-brand-300" />
-                    <span>Archimedes</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+          <InteractiveOwlAvatar
+            isListening={isListening}
+            isThinking={isThinking}
+            isSpeaking={isOwlSpeaking}
+            onClick={() => {
+              playChime();
+              speakOwlVoice("Hoo! I am listening. What craft shall we deconstruct today?");
+            }}
+            size={180}
+          />
 
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight mt-6">
             Tell the Owl what you want to learn.
@@ -445,10 +408,16 @@ export default function SkillLibraryPage() {
                 <p>{msg.text}</p>
               </div>
 
-              {/* If Owl generated a skill, render dispatch preview */}
+              {/* Archimedes Field Notes Index Card */}
               {msg.skill && (
-                <div className="mt-3 w-full max-w-xl p-5 rounded-3xl bg-white border-2 border-brand-500/40 shadow-sm animate-fade-in text-left">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border-2 border-brand-500/50 shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
+                  {/* Field Notes Architectural Header */}
+                  <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/70">
+                    <span>ARCHIMEDES FIELD NOTES // SPEC-BLUEPRINT</span>
+                    <span className="text-brand-600 font-bold">EST. {msg.skill.estimated_hours}.0H</span>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">
                       {msg.skill.difficulty} • {msg.skill.time_commitment_label}
                     </span>
@@ -458,24 +427,29 @@ export default function SkillLibraryPage() {
                     </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-base text-ink mb-1">
+                  <h3 className="font-display font-extrabold text-lg text-ink mb-1">
                     {msg.skill.title}
                   </h3>
-                  <p className="text-xs text-ink-secondary mb-4">
+                  <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
                     {msg.skill.summary}
                   </p>
 
-                  {/* Steps preview */}
-                  <div className="space-y-1.5 mb-4">
+                  {/* Sequential Micro-Drills */}
+                  <div className="space-y-2 mb-5">
                     {msg.skill.steps?.map((st) => (
                       <div
                         key={st.id}
-                        className="p-2.5 rounded-xl bg-canvas border border-surface-border text-xs flex items-center justify-between"
+                        className="p-3 rounded-2xl bg-canvas border border-surface-border text-xs flex items-center justify-between hover:border-brand-500/30 transition"
                       >
-                        <span className="font-semibold text-ink">
-                          Step {st.step_number}: {st.title}
-                        </span>
-                        <span className="text-[10px] text-ink-muted">
+                        <div className="flex items-center gap-2">
+                          <span className="spec-tag text-brand-600 bg-white px-1.5 py-0.5 rounded border border-surface-border font-bold">
+                            DRILL 0{st.step_number}
+                          </span>
+                          <span className="font-semibold text-ink">
+                            {st.title}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-ink-muted font-mono">
                           ~{st.estimated_minutes}m
                         </span>
                       </div>
@@ -484,10 +458,11 @@ export default function SkillLibraryPage() {
 
                   <Link
                     href="/dashboard"
-                    className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs"
+                    onClick={() => playWoodenThud()}
+                    className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs group cursor-pointer"
                   >
                     <span>Practice in My Studio with Flashcards</span>
-                    <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                    <SolarIcon name="arrow-right-linear" className="w-4 h-4 group-hover:translate-x-0.5 transition" />
                   </Link>
                 </div>
               )}
