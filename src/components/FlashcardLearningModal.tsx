@@ -13,6 +13,7 @@ import {
   PhoneticSoundboard,
   FocusRepetitionDrill,
 } from "@/components/TactileMicroSimulators";
+import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -97,6 +98,7 @@ export function FlashcardLearningModal({
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<{ url: string; title: string; stepTitle?: string } | null>(null);
 
   // --- Feature 2: Technique Coach States ---
   const [coachOpen, setCoachOpen] = useState(false);
@@ -526,19 +528,46 @@ export function FlashcardLearningModal({
                               External tools for this step:
                             </span>
                             <div className="flex flex-wrap gap-2">
-                              {currentStep.resources.map((res) => (
-                                <a
-                                  key={res.id}
-                                  href={res.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-muted hover:bg-brand-50 border border-surface-border text-xs font-medium text-ink hover:text-brand-700 transition"
-                                >
-                                  <span>{res.platform_name}</span>
-                                  <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
-                                </a>
-                              ))}
+                              {currentStep.resources.map((res) => {
+                                const isYouTube = Boolean(extractYouTubeId(res.url));
+                                if (isYouTube) {
+                                  return (
+                                    <button
+                                      key={res.id}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveVideo({
+                                          url: res.url,
+                                          title: res.platform_name,
+                                          stepTitle: currentStep.title,
+                                        });
+                                      }}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100/80 border border-rose-200 text-xs font-medium text-rose-950 transition cursor-pointer group shadow-2xs"
+                                    >
+                                      <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                      <span>{res.platform_name}</span>
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                        Watch Tutorial
+                                      </span>
+                                    </button>
+                                  );
+                                }
+
+                                return (
+                                  <a
+                                    key={res.id}
+                                    href={res.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-muted hover:bg-brand-50 border border-surface-border text-xs font-medium text-ink hover:text-brand-700 transition"
+                                  >
+                                    <span>{res.platform_name}</span>
+                                    <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
+                                  </a>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
@@ -907,18 +936,44 @@ export function FlashcardLearningModal({
 
                     {step.resources && step.resources.length > 0 && (
                       <div className="mt-3 pl-9 pt-2 border-t border-surface-border flex flex-wrap gap-2">
-                        {step.resources.map((res) => (
-                          <a
-                            key={res.id}
-                            href={res.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-muted text-xs font-medium text-ink hover:text-brand-700"
-                          >
-                            <span>{res.platform_name}</span>
-                            <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
-                          </a>
-                        ))}
+                        {step.resources.map((res) => {
+                          const isYouTube = Boolean(extractYouTubeId(res.url));
+                          if (isYouTube) {
+                            return (
+                              <button
+                                key={res.id}
+                                type="button"
+                                onClick={() =>
+                                  setActiveVideo({
+                                    url: res.url,
+                                    title: res.platform_name,
+                                    stepTitle: step.title,
+                                  })
+                                }
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100/80 border border-rose-200 text-xs font-medium text-rose-950 transition cursor-pointer group shadow-2xs"
+                              >
+                                <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                <span>{res.platform_name}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                  Watch Tutorial
+                                </span>
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <a
+                              key={res.id}
+                              href={res.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-muted text-xs font-medium text-ink hover:text-brand-700"
+                            >
+                              <span>{res.platform_name}</span>
+                              <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
+                            </a>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -944,6 +999,17 @@ export function FlashcardLearningModal({
           </button>
         </div>
       </motion.div>
+
+      {/* Distraction-Free Video Modal */}
+      {activeVideo && (
+        <VideoPlayerModal
+          isOpen={!!activeVideo}
+          onClose={() => setActiveVideo(null)}
+          videoUrl={activeVideo.url}
+          title={activeVideo.title}
+          stepTitle={activeVideo.stepTitle}
+        />
+      )}
     </motion.div>
   );
 }

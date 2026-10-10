@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Skill } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
+import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
 
 interface SkillSyllabusModalProps {
   skill: Skill | null;
@@ -21,6 +22,8 @@ export function SkillSyllabusModal({
   onClose,
   isViewOnly = false,
 }: SkillSyllabusModalProps) {
+  const [activeVideo, setActiveVideo] = useState<{ url: string; title: string; stepTitle?: string } | null>(null);
+
   if (!skill) return null;
 
   const steps = skill.steps || [];
@@ -191,21 +194,48 @@ export function SkillSyllabusModal({
                         Where to practice & learn this step:
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {step.resources.map((res) => (
-                          <a
-                            key={res.id}
-                            href={res.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-muted hover:bg-brand-50 border border-surface-border hover:border-brand-500/30 text-xs font-medium text-ink hover:text-brand-700 transition"
-                          >
-                            <span>{res.platform_name}</span>
-                            <span className="text-[10px] px-1 py-0.2 rounded bg-white text-ink-muted font-normal">
-                              {res.is_free ? "Free" : "Course"}
-                            </span>
-                            <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                          </a>
-                        ))}
+                        {step.resources.map((res) => {
+                          const isYouTube = !!extractYouTubeId(res.url);
+
+                          if (isYouTube) {
+                            return (
+                              <button
+                                key={res.id}
+                                type="button"
+                                onClick={() =>
+                                  setActiveVideo({
+                                    url: res.url,
+                                    title: res.platform_name,
+                                    stepTitle: step.title,
+                                  })
+                                }
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100/80 border border-rose-200 text-xs font-medium text-rose-950 transition cursor-pointer group shadow-2xs"
+                              >
+                                <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                <span>{res.platform_name}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                  Watch Tutorial
+                                </span>
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <a
+                              key={res.id}
+                              href={res.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-muted hover:bg-brand-50 border border-surface-border hover:border-brand-500/30 text-xs font-medium text-ink hover:text-brand-700 transition"
+                            >
+                              <span>{res.platform_name}</span>
+                              <span className="text-[10px] px-1 py-0.2 rounded bg-white text-ink-muted font-normal">
+                                {res.is_free ? "Free" : "Course"}
+                              </span>
+                              <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5 text-ink-subtle" />
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -241,6 +271,17 @@ export function SkillSyllabusModal({
           </div>
         </div>
       </motion.div>
+
+      {/* Distraction-Free Video Modal */}
+      {activeVideo && (
+        <VideoPlayerModal
+          isOpen={!!activeVideo}
+          onClose={() => setActiveVideo(null)}
+          videoUrl={activeVideo.url}
+          title={activeVideo.title}
+          stepTitle={activeVideo.stepTitle}
+        />
+      )}
     </motion.div>
   );
 }
