@@ -52,6 +52,20 @@ export default function SkillLibraryPage() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<unknown>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCacheRef = useRef<Map<string, string>>(new Map());
+
+  // Cleanup audio on component unmount
+  useEffect(() => {
+    return () => {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+      }
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Check auth user & existing enrollments
@@ -113,21 +127,69 @@ export default function SkillLibraryPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isThinking]);
 
-  // Voice speech synthesis for the Owl
-  const speakOwlVoice = (text: string) => {
-    if (!voiceAudioEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) {
+  // Realistic AI Mentor Voice for Archimedes (OpenAI TTS with browser fallback)
+  const speakOwlVoice = async (text: string) => {
+    if (!voiceAudioEnabled || typeof window === "undefined") {
       return;
     }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 0.9;
+
+    // Stop any existing speech playback immediately
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+    }
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
 
     setIsOwlSpeaking(true);
-    utterance.onend = () => setIsOwlSpeaking(false);
-    utterance.onerror = () => setIsOwlSpeaking(false);
 
-    window.speechSynthesis.speak(utterance);
+    try {
+      // 1. Check in-memory audio blob cache to avoid redundant API calls
+      let audioUrl = audioCacheRef.current.get(text);
+
+      if (!audioUrl) {
+        const res = await fetch("/api/ai/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, voice: "fable" }),
+        });
+
+        if (!res.ok) {
+          throw new Error("TTS API unavailable");
+        }
+
+        const blob = await res.blob();
+        audioUrl = URL.createObjectURL(blob);
+        audioCacheRef.current.set(text, audioUrl);
+      }
+
+      // 2. Play high-fidelity realistic audio stream
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+
+      audio.onended = () => {
+        setIsOwlSpeaking(false);
+      };
+      audio.onerror = () => {
+        setIsOwlSpeaking(false);
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.warn("Falling back to native browser speech synthesis:", err);
+      // Graceful fallback to browser speech synthesis
+      if ("speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        utterance.pitch = 0.9;
+        utterance.onend = () => setIsOwlSpeaking(false);
+        utterance.onerror = () => setIsOwlSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setIsOwlSpeaking(false);
+      }
+    }
   };
 
   // Browser Speech Recognition for voice interaction
@@ -393,8 +455,20 @@ export default function SkillLibraryPage() {
           <div className="mt-3 flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setVoiceAudioEnabled(!voiceAudioEnabled)}
-              className={`text-[11px] font-medium px-3 py-1 rounded-full border transition flex items-center gap-1.5 ${
+              onClick={() => {
+                const next = !voiceAudioEnabled;
+                setVoiceAudioEnabled(next);
+                if (!next) {
+                  if (currentAudioRef.current) {
+                    currentAudioRef.current.pause();
+                  }
+                  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+                    window.speechSynthesis.cancel();
+                  }
+                  setIsOwlSpeaking(false);
+                }
+              }}
+              className={`text-[11px] font-medium px-3 py-1 rounded-full border transition flex items-center gap-1.5 cursor-pointer ${
                 voiceAudioEnabled
                   ? "bg-surface-muted text-ink border-surface-border"
                   : "bg-canvas text-ink-muted border-surface-border"
