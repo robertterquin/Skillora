@@ -391,31 +391,39 @@ export default function DashboardPage() {
         )}
 
         {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
-        <section className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs relative">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 flex items-center justify-center flex-shrink-0">
+        <section className="mb-8 sm:mb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs relative">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 flex items-center justify-center flex-shrink-0 shadow-2xs">
                 <Image
                   src="/logo.svg"
                   alt="Skillora Owl"
                   width={38}
                   height={38}
-                  className="w-9 h-9 object-contain"
+                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
                 />
               </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
                     {displayName}&apos;s Studio
                   </h1>
-                  {isPro ? (
+                  {isPro && (
                     <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-[11px] font-semibold inline-flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
                       Pro Member • Unlimited Skills
                     </span>
-                  ) : (
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
+                  Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
+                </p>
+
+                {/* Status Badges & Quick Action Row */}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {!isPro && (
                     <div className="inline-flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium inline-flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium inline-flex items-center gap-1">
                         <SolarIcon name="clock-circle-linear" className="w-3 h-3 text-ink-muted" />
                         Free Trial: {isClient ? myStudioSkills.length : 0}/3 Skills • {daysRemaining}d Left
                       </span>
@@ -446,18 +454,13 @@ export default function DashboardPage() {
                     <span>Mastery Passport ({isClient ? masteredSkills.length : 0} Seals)</span>
                   </button>
                 </div>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-                    Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
-                  </p>
-                </div>
               </div>
             </div>
 
             {/* Streak & Active & Mastered Metrics (Monochromatic Architectural Styling) */}
-            <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto">
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
               {/* STREAK */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
                 <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 01</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="fire-linear" className="w-3.5 h-3.5 text-amber-600" />
@@ -469,7 +472,7 @@ export default function DashboardPage() {
               </div>
 
               {/* ACTIVE */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
                 <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 02</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
@@ -481,7 +484,7 @@ export default function DashboardPage() {
               </div>
 
               {/* MASTERED */}
-              <div className="p-3.5 px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-[96px]">
+              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
                 <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 03</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-accent-emerald" />
@@ -576,7 +579,7 @@ export default function DashboardPage() {
                         <span className="text-[10px] font-mono font-bold text-ink-muted uppercase tracking-wider">
                           WEEKLY SEALS:
                         </span>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                           {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => {
                             const isStamped = dIdx < 3 || (dIdx === 3 && routineCompleted);
                             const isToday = dIdx === 3;
@@ -633,7 +636,7 @@ export default function DashboardPage() {
                     <p className="text-xs text-ink-muted leading-relaxed">
                       Synthesize a daily 15-minute cross-training routine compiled from your active micro-drills to build automatic physical and cognitive muscle memory.
                     </p>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar py-0.5">
                       <span className="text-[10px] font-mono text-ink-muted uppercase mr-1">CURRENT STAMP STREAK:</span>
                       {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => (
                         <div

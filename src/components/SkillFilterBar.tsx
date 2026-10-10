@@ -42,7 +42,7 @@ export function SkillFilterBar({
         </div>
 
         {/* Duration Segmented Pills with Solar Clock */}
-        <div className="flex items-center gap-1 p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-medium overflow-x-auto">
+        <div className="flex items-center gap-1 p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-medium overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 px-2 text-ink-muted">
             <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Time:</span>

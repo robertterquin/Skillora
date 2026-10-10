@@ -57,6 +57,17 @@ body {
   background: #A1A1AA;
 }
 
+/* Utility to hide scrollbar while preserving touch and trackpad momentum scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ========================================================
    SWISS ATELIER MINIMALIST AESTHETIC (QUIET LUXURY)
    ======================================================== */

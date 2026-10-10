@@ -85,7 +85,7 @@ export function HeroFanDeck({ skills, onSelectSkill }: HeroFanDeckProps) {
       </div>
 
       {/* Fanned Cards Stage */}
-      <div className="flex items-center justify-center -space-x-8 sm:-space-x-12 md:-space-x-14 pt-8 pb-12 overflow-x-auto sm:overflow-visible">
+      <div className="flex items-center justify-center -space-x-8 sm:-space-x-12 md:-space-x-14 pt-8 pb-12 overflow-x-auto sm:overflow-visible no-scrollbar">
         {deckSkills.map((skill, idx) => {
           const theme = CARD_THEMES[idx % CARD_THEMES.length];
           const isHovered = hoveredIdx === idx;
