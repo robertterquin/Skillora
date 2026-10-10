@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { openai } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -133,6 +134,41 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
         };
       }),
     };
+
+    // Auto-persist to Supabase using service role client
+    try {
+      const admin = createAdminClient();
+      await admin.from("skills").upsert(
+        {
+          id: formattedSkill.id,
+          category_id: formattedSkill.category_id,
+          title: formattedSkill.title,
+          slug: formattedSkill.slug,
+          summary: formattedSkill.summary,
+          difficulty: formattedSkill.difficulty,
+          estimated_hours: formattedSkill.estimated_hours,
+          time_commitment_label: formattedSkill.time_commitment_label,
+          is_featured: false,
+        },
+        { onConflict: "id" }
+      );
+
+      if (formattedSkill.steps && formattedSkill.steps.length > 0) {
+        await admin.from("skill_steps").upsert(
+          formattedSkill.steps.map((st: { id: string; step_number: number; title: string; instructions: string; estimated_minutes: number }) => ({
+            id: st.id,
+            skill_id: formattedSkill.id,
+            step_number: st.step_number,
+            title: st.title,
+            instructions: st.instructions,
+            estimated_minutes: st.estimated_minutes,
+          })),
+          { onConflict: "id" }
+        );
+      }
+    } catch (persistErr) {
+      console.warn("Supabase auto-persist in owl-chat notice:", persistErr);
+    }
 
     return NextResponse.json({
       owlMessage: parsed.owlMessage || `I have structured your curriculum for ${formattedSkill.title} and dispatched it to My Studio!`,

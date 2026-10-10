@@ -211,54 +211,23 @@ export default function SkillLibraryPage() {
     const updatedCustom = [updatedSkill, ...currentCustom.filter((s) => normalizeSkillId(s.id) !== normId)];
     localStorage.setItem("skillora_custom_ai_skills", JSON.stringify(updatedCustom));
 
-    // 3. Sync to Supabase project
-    if (currentUser) {
-      try {
-        const isCanonical =
-          normId.startsWith("a1") ||
-          normId.startsWith("a2") ||
-          normId.startsWith("a3") ||
-          normId.startsWith("a4") ||
-          normId.startsWith("a5") ||
-          normId.startsWith("a6");
+    // 3. Sync to Supabase project via secure server endpoint (service role bypasses RLS)
+    try {
+      const res = await fetch("/api/skills/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          skill: updatedSkill,
+          userId: currentUser?.id,
+        }),
+      });
 
-        if (!isCanonical) {
-          try {
-            await supabase.from("skills").upsert(
-              {
-                id: normId,
-                category_id: updatedSkill.category_id,
-                title: updatedSkill.title,
-                slug: updatedSkill.slug,
-                summary: updatedSkill.summary,
-                difficulty: updatedSkill.difficulty,
-                estimated_hours: updatedSkill.estimated_hours,
-                time_commitment_label: updatedSkill.time_commitment_label,
-                is_featured: false,
-              },
-              { onConflict: "id" }
-            );
-          } catch (e) {
-            console.warn("Could not upsert custom skill into Supabase skills table:", e);
-          }
-        }
-
-        // Upsert into user_enrollments
-        const { error: enrollErr } = await supabase.from("user_enrollments").upsert(
-          {
-            user_id: currentUser.id,
-            skill_id: normId,
-            status: "active",
-          },
-          { onConflict: "user_id,skill_id" }
-        );
-
-        if (enrollErr) {
-          console.warn("Supabase user_enrollments note:", enrollErr.message);
-        }
-      } catch (err) {
-        console.warn("Enrollment sync error:", err);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.warn("Supabase enrollment API note:", errorData.error);
       }
+    } catch (err) {
+      console.warn("Enrollment network sync error:", err);
     }
   };
 

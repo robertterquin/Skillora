@@ -284,11 +284,14 @@ export default function DashboardPage() {
 
     if (currentUser) {
       try {
-        await supabase
-          .from("user_enrollments")
-          .delete()
-          .eq("user_id", currentUser.id)
-          .eq("skill_id", targetNorm);
+        await fetch("/api/skills/enroll", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            skillId: targetNorm,
+            userId: currentUser.id,
+          }),
+        });
       } catch (err) {
         console.error("Failed to remove enrollment from Supabase", err);
       }
