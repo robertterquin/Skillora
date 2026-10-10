@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "motion/react";
 
 interface HankoSealProps {
   label?: string;
@@ -52,14 +53,16 @@ export function HankoSeal({
 
   return (
     <div
-      className={`relative inline-flex items-center justify-center select-none ${
-        animate ? "animate-bounce duration-500 scale-100" : ""
-      } ${className}`}
+      className={`relative inline-flex items-center justify-center select-none ${className}`}
       title={`Archimedes Atelier Seal // ${subtext}`}
     >
-      {/* Outer Seal Stamp with Double Hairline Ring */}
-      <div
-        className={`relative ${sizeStyles[size]} rounded-full border-2 ${curVariant.border} ${curVariant.glow} flex flex-col items-center justify-center rotate-[-4deg] shadow-xs transition-transform duration-300 hover:rotate-0`}
+      {/* Outer Seal Stamp with Motion Spring Impact */}
+      <motion.div
+        initial={animate ? { scale: 1.45, opacity: 0.4, rotate: -12 } : false}
+        animate={{ scale: 1, opacity: 1, rotate: -4 }}
+        transition={{ type: "spring", stiffness: 480, damping: 22 }}
+        whileHover={{ scale: 1.05, rotate: 0 }}
+        className={`relative ${sizeStyles[size]} rounded-full border-2 ${curVariant.border} ${curVariant.glow} flex flex-col items-center justify-center shadow-xs transition-shadow`}
       >
         {/* Inner concentric ring */}
         <div
@@ -79,7 +82,7 @@ export function HankoSeal({
             {subtext}
           </span>
         )}
-      </div>
+      </motion.div>
 
       {/* Ink impact ripple when animated */}
       {animate && (

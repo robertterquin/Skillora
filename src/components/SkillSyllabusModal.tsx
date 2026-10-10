@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { Skill } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
@@ -29,8 +30,19 @@ export function SkillSyllabusModal({
   const isAllComplete = totalSteps > 0 && completedCount === totalSteps;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-ink/60 backdrop-blur-sm animate-fade-in">
-      <div 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-ink/60 backdrop-blur-sm"
+    >
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ type: "spring", stiffness: 360, damping: 28 }}
         className="relative w-full max-w-3xl bg-white rounded-3xl border border-surface-border shadow-2xl overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
@@ -228,7 +240,7 @@ export function SkillSyllabusModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

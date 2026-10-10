@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import { Skill } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 import { HankoSeal } from "@/components/HankoSeal";
@@ -66,11 +67,19 @@ export function MasteryPassportModal({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-ink/75 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-ink/75 backdrop-blur-md"
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 14 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        transition={{ type: "spring", stiffness: 360, damping: 28 }}
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-3xl bg-[#FAF8F5] border-2 border-stone-300 rounded-3xl shadow-2xl overflow-hidden my-6 flex flex-col max-h-[92vh] text-ink select-none corner-ticks"
       >
@@ -337,7 +346,7 @@ export function MasteryPassportModal({
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

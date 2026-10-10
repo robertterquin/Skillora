@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "motion/react";
 import { Header } from "@/components/Header";
 import { FlashcardLearningModal } from "@/components/FlashcardLearningModal";
 import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
@@ -734,109 +735,116 @@ export default function DashboardPage() {
           ) : (
             /* ENROLLED SKILLS GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredStudioSkills.map((skill, idx) => {
-                const steps = skill.steps || [];
-                const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
-                const totalCount = steps.length;
-                const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-                const isCompleted = totalCount > 0 && doneCount === totalCount;
-                const isCustomAi = skill.id.startsWith("ai-skill-");
+              <AnimatePresence mode="popLayout">
+                {filteredStudioSkills.map((skill, idx) => {
+                  const steps = skill.steps || [];
+                  const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
+                  const totalCount = steps.length;
+                  const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+                  const isCompleted = totalCount > 0 && doneCount === totalCount;
+                  const isCustomAi = skill.id.startsWith("ai-skill-");
 
-                return (
-                  <div
-                    key={skill.id}
-                    className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/40 transition shadow-xs group corner-ticks"
-                  >
-                    <div>
-                      {/* Blueprint Architectural Spec Header */}
-                      <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/60">
-                        <span>SPEC // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
-                        <span>EST. {skill.estimated_hours}.0H</span>
-                      </div>
-
-                      {/* Top Badges & Remove Option */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <div className="flex items-center gap-1.5">
-                          {isCustomAi && (
-                            <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border">
-                              Custom Drill
-                            </span>
-                          )}
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-canvas border border-surface-border text-ink-muted">
-                            {skill.difficulty}
-                          </span>
+                  return (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                      key={skill.id}
+                      className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/40 transition shadow-xs group corner-ticks"
+                    >
+                      <div>
+                        {/* Blueprint Architectural Spec Header */}
+                        <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/60">
+                          <span>SPEC // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                          <span>EST. {skill.estimated_hours}.0H</span>
                         </div>
 
+                        {/* Top Badges & Remove Option */}
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-1.5">
+                            {isCustomAi && (
+                              <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border">
+                                Custom Drill
+                              </span>
+                            )}
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-canvas border border-surface-border text-ink-muted">
+                              {skill.difficulty}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFromStudio(skill.id)}
+                            className="text-[11px] text-ink-subtle hover:text-rose-600 transition"
+                            title="Remove from My Studio"
+                          >
+                            Remove
+                          </button>
+                        </div>
+
+                        {/* Title & Description */}
+                        <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition mb-2">
+                          {skill.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
+                          {skill.summary}
+                        </p>
+
+                        {/* Progress Bar & Status */}
+                        <div className="mb-5 p-3 rounded-2xl bg-canvas border border-surface-border">
+                          <div className="flex items-center justify-between text-xs mb-1.5">
+                            <span className="font-semibold text-ink">
+                              {isCompleted ? "Mastered" : "Progress"}
+                            </span>
+                            <span className="text-ink-muted font-mono text-[11px]">
+                              {doneCount} / {totalCount} steps ({percent}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-surface-muted overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                isCompleted ? "bg-accent-emerald" : "bg-ink"
+                              }`}
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="space-y-2 pt-2 border-t border-surface-border">
+                        {/* Primary CTA: Start Learning with Flashcard Modal */}
                         <button
                           type="button"
-                          onClick={() => handleRemoveFromStudio(skill.id)}
-                          className="text-[11px] text-ink-subtle hover:text-rose-600 transition"
-                          title="Remove from My Studio"
+                          onClick={() => {
+                            playWoodenThud();
+                            setActiveLearningSkill(skill);
+                          }}
+                          className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
                         >
-                          Remove
+                          <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
+                          <span>Start Learning & Practice</span>
+                        </button>
+
+                        {/* Secondary: Preview Syllabus */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playMechanicalClick();
+                            setActiveSyllabusSkill(skill);
+                          }}
+                          className="w-full py-2 px-4 rounded-xl bg-canvas hover:bg-surface-muted border border-surface-border text-ink text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5 text-ink-subtle" />
+                          <span>View Syllabus & Resources</span>
                         </button>
                       </div>
-
-                      {/* Title & Description */}
-                      <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition mb-2">
-                        {skill.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
-                        {skill.summary}
-                      </p>
-
-                      {/* Progress Bar & Status */}
-                      <div className="mb-5 p-3 rounded-2xl bg-canvas border border-surface-border">
-                        <div className="flex items-center justify-between text-xs mb-1.5">
-                          <span className="font-semibold text-ink">
-                            {isCompleted ? "Mastered" : "Progress"}
-                          </span>
-                          <span className="text-ink-muted font-mono text-[11px]">
-                            {doneCount} / {totalCount} steps ({percent}%)
-                          </span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-surface-muted overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              isCompleted ? "bg-accent-emerald" : "bg-ink"
-                            }`}
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="space-y-2 pt-2 border-t border-surface-border">
-                      {/* Primary CTA: Start Learning with Flashcard Modal */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          playWoodenThud();
-                          setActiveLearningSkill(skill);
-                        }}
-                        className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
-                      >
-                        <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
-                        <span>Start Learning & Practice</span>
-                      </button>
-
-                      {/* Secondary: Preview Syllabus */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          playMechanicalClick();
-                          setActiveSyllabusSkill(skill);
-                        }}
-                        className="w-full py-2 px-4 rounded-xl bg-canvas hover:bg-surface-muted border border-surface-border text-ink text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                        <span>View Syllabus & Resources</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           )}
         </section>
@@ -895,43 +903,55 @@ export default function DashboardPage() {
       </main>
 
       {/* 1. Flashcard & Voice Pronunciation Learning Modal */}
-      {activeLearningSkill && (
-        <FlashcardLearningModal
-          skill={activeLearningSkill}
-          completedStepIds={completedStepIds}
-          onToggleStep={handleToggleStep}
-          onClose={() => setActiveLearningSkill(null)}
-        />
-      )}
+      <AnimatePresence>
+        {activeLearningSkill && (
+          <FlashcardLearningModal
+            skill={activeLearningSkill}
+            completedStepIds={completedStepIds}
+            onToggleStep={handleToggleStep}
+            onClose={() => setActiveLearningSkill(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* 2. Step Syllabus & External Resources Modal */}
-      {activeSyllabusSkill && (
-        <SkillSyllabusModal
-          skill={activeSyllabusSkill}
-          completedStepIds={completedStepIds}
-          onToggleStep={handleToggleStep}
-          onClose={() => setActiveSyllabusSkill(null)}
-          isViewOnly={false}
-        />
-      )}
+      <AnimatePresence>
+        {activeSyllabusSkill && (
+          <SkillSyllabusModal
+            skill={activeSyllabusSkill}
+            completedStepIds={completedStepIds}
+            onToggleStep={handleToggleStep}
+            onClose={() => setActiveSyllabusSkill(null)}
+            isViewOnly={false}
+          />
+        )}
+      </AnimatePresence>
 
       {/* 3. Subscription & Upgrade Modal */}
-      <SubscriptionModal
-        isOpen={isSubscriptionModalOpen}
-        onClose={() => setIsSubscriptionModalOpen(false)}
-        userEmail={currentUser?.email}
-        isLimitReached={isLimitReached}
-      />
+      <AnimatePresence>
+        {isSubscriptionModalOpen && (
+          <SubscriptionModal
+            isOpen={isSubscriptionModalOpen}
+            onClose={() => setIsSubscriptionModalOpen(false)}
+            userEmail={currentUser?.email}
+            isLimitReached={isLimitReached}
+          />
+        )}
+      </AnimatePresence>
 
       {/* 4. Japanese Archival Mastery Passport Modal */}
-      <MasteryPassportModal
-        isOpen={isPassportOpen}
-        onClose={() => setIsPassportOpen(false)}
-        user={currentUser}
-        enrolledSkills={myStudioSkills}
-        completedStepIds={completedStepIds}
-        userStreak={currentUser ? 4 : 1}
-      />
+      <AnimatePresence>
+        {isPassportOpen && (
+          <MasteryPassportModal
+            isOpen={isPassportOpen}
+            onClose={() => setIsPassportOpen(false)}
+            user={currentUser}
+            enrolledSkills={myStudioSkills}
+            completedStepIds={completedStepIds}
+            userStreak={currentUser ? 4 : 1}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
 import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 import { HankoSeal } from "@/components/HankoSeal";
@@ -328,8 +329,19 @@ export function FlashcardLearningModal({
     : currentStep.title;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-ink/70 backdrop-blur-md animate-fade-in">
-      <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-ink/70 backdrop-blur-md"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ type: "spring", stiffness: 360, damping: 28 }}
         className="relative w-full max-w-3xl bg-white rounded-3xl border border-surface-border shadow-2xl overflow-hidden my-6 flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -929,7 +941,7 @@ export function FlashcardLearningModal({
             Done Practicing
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

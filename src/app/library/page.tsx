@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence } from "motion/react";
 import { Header } from "@/components/Header";
 import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
@@ -551,12 +552,16 @@ export default function SkillLibraryPage() {
       </main>
 
       {/* Subscription & Pricing Modal (Triggered on limit or click) */}
-      <SubscriptionModal
-        isOpen={isSubscriptionModalOpen}
-        onClose={() => setIsSubscriptionModalOpen(false)}
-        userEmail={currentUser?.email}
-        isLimitReached={isLimitReached}
-      />
+      <AnimatePresence>
+        {isSubscriptionModalOpen && (
+          <SubscriptionModal
+            isOpen={isSubscriptionModalOpen}
+            onClose={() => setIsSubscriptionModalOpen(false)}
+            userEmail={currentUser?.email}
+            isLimitReached={isLimitReached}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

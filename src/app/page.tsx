@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence } from "motion/react";
 import { Header } from "@/components/Header";
 import { HeroFanDeck } from "@/components/HeroFanDeck";
 import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
@@ -229,13 +230,15 @@ export default function LandingPage() {
       </footer>
 
       {/* Curriculum View Modal for Landing Page */}
-      {activeModalSkill && (
-        <SkillSyllabusModal
-          skill={activeModalSkill}
-          isViewOnly={true}
-          onClose={() => setActiveModalSkill(null)}
-        />
-      )}
+      <AnimatePresence>
+        {activeModalSkill && (
+          <SkillSyllabusModal
+            skill={activeModalSkill}
+            isViewOnly={true}
+            onClose={() => setActiveModalSkill(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
