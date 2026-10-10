@@ -135,6 +135,7 @@ export function FlashcardLearningModal({
   const currentStep: SkillStep | undefined = steps[currentCardIndex];
   const isLanguageSkill =
     skill?.category_id === "cat-language" ||
+    skill?.category_id === "22222222-2222-2222-2222-222222222222" ||
     skill?.slug.includes("cyrillic") ||
     skill?.slug.includes("language");
 

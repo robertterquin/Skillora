@@ -100,11 +100,20 @@ create policy "Public can view categories" on public.categories for select using
 drop policy if exists "Public can view skills" on public.skills;
 create policy "Public can view skills" on public.skills for select using (true);
 
+drop policy if exists "Users can insert skills" on public.skills;
+create policy "Users can insert skills" on public.skills for insert with check (true);
+
 drop policy if exists "Public can view skill_steps" on public.skill_steps;
 create policy "Public can view skill_steps" on public.skill_steps for select using (true);
 
+drop policy if exists "Users can insert skill_steps" on public.skill_steps;
+create policy "Users can insert skill_steps" on public.skill_steps for insert with check (true);
+
 drop policy if exists "Public can view learning_resources" on public.learning_resources;
 create policy "Public can view learning_resources" on public.learning_resources for select using (true);
+
+drop policy if exists "Users can insert learning_resources" on public.learning_resources;
+create policy "Users can insert learning_resources" on public.learning_resources for insert with check (true);
 
 -- User Private Data Policies
 drop policy if exists "Users can view own profile" on public.profiles;

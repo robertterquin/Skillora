@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { openai } from "@/lib/openai";
+import { normalizeCategoryId } from "@/lib/mock-data";
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,12 +69,12 @@ Generate between 3 and 4 sequential steps. Make the instructions concrete and ph
     }
 
     const parsed = JSON.parse(content);
-    const skillId = `ai-skill-${Date.now()}`;
+    const skillId = crypto.randomUUID();
     const slug = parsed.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
     const formattedSkill = {
       id: skillId,
-      category_id: parsed.category_id || categoryId || "cat-life",
+      category_id: normalizeCategoryId(parsed.category_id || categoryId),
       title: parsed.title,
       slug: `${slug}-${Math.floor(Math.random() * 1000)}`,
       summary: parsed.summary,
@@ -92,22 +94,25 @@ Generate between 3 and 4 sequential steps. Make the instructions concrete and ph
           resource_type: string;
           is_free: boolean;
         }[];
-      }, idx: number) => ({
-        id: `step-${skillId}-${idx + 1}`,
-        skill_id: skillId,
-        step_number: st.step_number || idx + 1,
-        title: st.title,
-        instructions: st.instructions,
-        estimated_minutes: st.estimated_minutes || 20,
-        resources: (st.resources || []).map((r, rIdx) => ({
-          id: `res-${skillId}-${idx + 1}-${rIdx + 1}`,
-          step_id: `step-${skillId}-${idx + 1}`,
-          platform_name: r.platform_name || "Web Guide",
-          url: r.url || "https://google.com",
-          resource_type: r.resource_type || "article",
-          is_free: r.is_free !== undefined ? r.is_free : true,
-        })),
-      })),
+      }, idx: number) => {
+        const stepId = crypto.randomUUID();
+        return {
+          id: stepId,
+          skill_id: skillId,
+          step_number: st.step_number || idx + 1,
+          title: st.title,
+          instructions: st.instructions,
+          estimated_minutes: st.estimated_minutes || 20,
+          resources: (st.resources || []).map((r) => ({
+            id: crypto.randomUUID(),
+            step_id: stepId,
+            platform_name: r.platform_name || "Web Guide",
+            url: r.url || "https://google.com",
+            resource_type: r.resource_type || "article",
+            is_free: r.is_free !== undefined ? r.is_free : true,
+          })),
+        };
+      }),
     };
 
     return NextResponse.json({ skill: formattedSkill });

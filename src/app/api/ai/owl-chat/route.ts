@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { openai } from "@/lib/openai";
-import { INITIAL_SKILLS } from "@/lib/mock-data";
+import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
 
 export async function POST(req: NextRequest) {
   try {
@@ -85,16 +86,16 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
     const parsed = JSON.parse(content);
     const skillData = parsed.skill || canonicalMatch;
 
-    const skillId = canonicalMatch ? canonicalMatch.id : `ai-skill-${Date.now()}`;
+    const skillId = canonicalMatch ? canonicalMatch.id : crypto.randomUUID();
     const slug = skillData.title
       ? skillData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
       : "custom-skill";
 
     const formattedSkill = {
       id: skillId,
-      category_id: skillData.category_id || "cat-life",
+      category_id: canonicalMatch ? canonicalMatch.category_id : normalizeCategoryId(skillData.category_id),
       title: skillData.title,
-      slug: `${slug}-${Math.floor(Math.random() * 1000)}`,
+      slug: canonicalMatch ? canonicalMatch.slug : `${slug}-${Math.floor(Math.random() * 1000)}`,
       summary: skillData.summary,
       difficulty: skillData.difficulty || "beginner",
       estimated_hours: Number(skillData.estimated_hours) || 2.0,
@@ -112,22 +113,25 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
           resource_type: string;
           is_free: boolean;
         }[];
-      }, idx: number) => ({
-        id: `step-${skillId}-${idx + 1}`,
-        skill_id: skillId,
-        step_number: st.step_number || idx + 1,
-        title: st.title,
-        instructions: st.instructions,
-        estimated_minutes: st.estimated_minutes || 20,
-        resources: (st.resources || []).map((r, rIdx) => ({
-          id: `res-${skillId}-${idx + 1}-${rIdx + 1}`,
-          step_id: `step-${skillId}-${idx + 1}`,
-          platform_name: r.platform_name || "Online Tutorial",
-          url: r.url || "https://google.com",
-          resource_type: r.resource_type || "video",
-          is_free: r.is_free !== undefined ? r.is_free : true,
-        })),
-      })),
+      }, idx: number) => {
+        const stepId = canonicalMatch?.steps?.[idx]?.id || crypto.randomUUID();
+        return {
+          id: stepId,
+          skill_id: skillId,
+          step_number: st.step_number || idx + 1,
+          title: st.title,
+          instructions: st.instructions,
+          estimated_minutes: st.estimated_minutes || 20,
+          resources: (st.resources || []).map((r, rIdx) => ({
+            id: canonicalMatch?.steps?.[idx]?.resources?.[rIdx]?.id || crypto.randomUUID(),
+            step_id: stepId,
+            platform_name: r.platform_name || "Online Tutorial",
+            url: r.url || "https://google.com",
+            resource_type: r.resource_type || "video",
+            is_free: r.is_free !== undefined ? r.is_free : true,
+          })),
+        };
+      }),
     };
 
     return NextResponse.json({

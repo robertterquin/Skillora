@@ -8,8 +8,9 @@ import { Header } from "@/components/Header";
 import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { InteractiveOwlAvatar } from "@/components/InteractiveOwlAvatar";
-import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
+import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
+import { normalizeSkillId } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 
@@ -74,28 +75,34 @@ export default function SkillLibraryPage() {
       );
       setDaysRemaining(Math.max(0, 7 - daysElapsed));
 
-      if (user) {
-        const { data: enrollments } = await supabase
-          .from("user_enrollments")
-          .select("skill_id")
-          .eq("user_id", user.id);
-
-        if (enrollments && enrollments.length > 0) {
-          const ids = enrollments.map((e: { skill_id: string }) => e.skill_id);
-          setEnrolledSkillIds(ids);
-          localStorage.setItem("skillora_enrolled_skills", JSON.stringify(ids));
-          return;
-        }
-      }
-
       const savedEnrolled = localStorage.getItem("skillora_enrolled_skills");
+      let localIds: string[] = [];
       if (savedEnrolled) {
         try {
-          setEnrolledSkillIds(JSON.parse(savedEnrolled));
+          localIds = (JSON.parse(savedEnrolled) as string[]).map(normalizeSkillId);
         } catch {
           // ignore
         }
       }
+
+      if (user) {
+        try {
+          const { data: enrollments } = await supabase
+            .from("user_enrollments")
+            .select("skill_id")
+            .eq("user_id", user.id);
+
+          const remoteIds = (enrollments || []).map((e: { skill_id: string }) => normalizeSkillId(e.skill_id));
+          const merged = Array.from(new Set([...remoteIds, ...localIds]));
+          setEnrolledSkillIds(merged);
+          localStorage.setItem("skillora_enrolled_skills", JSON.stringify(merged));
+          return;
+        } catch (err) {
+          console.warn("Failed to fetch user enrollments:", err);
+        }
+      }
+
+      setEnrolledSkillIds(localIds);
     };
 
     init();
@@ -186,6 +193,75 @@ export default function SkillLibraryPage() {
     }
   };
 
+  // Robust skill enrollment in both LocalStorage and Supabase project
+  const enrollSkill = async (skillToEnroll: Skill) => {
+    const normId = normalizeSkillId(skillToEnroll.id);
+    const updatedSkill = { ...skillToEnroll, id: normId };
+
+    // 1. Update state & localStorage
+    setEnrolledSkillIds((prev) => {
+      const next = Array.from(new Set([...prev.map(normalizeSkillId), normId]));
+      localStorage.setItem("skillora_enrolled_skills", JSON.stringify(next));
+      return next;
+    });
+
+    // 2. Save custom skill locally
+    const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
+    const currentCustom: Skill[] = savedCustom ? JSON.parse(savedCustom) : [];
+    const updatedCustom = [updatedSkill, ...currentCustom.filter((s) => normalizeSkillId(s.id) !== normId)];
+    localStorage.setItem("skillora_custom_ai_skills", JSON.stringify(updatedCustom));
+
+    // 3. Sync to Supabase project
+    if (currentUser) {
+      try {
+        const isCanonical =
+          normId.startsWith("a1") ||
+          normId.startsWith("a2") ||
+          normId.startsWith("a3") ||
+          normId.startsWith("a4") ||
+          normId.startsWith("a5") ||
+          normId.startsWith("a6");
+
+        if (!isCanonical) {
+          try {
+            await supabase.from("skills").upsert(
+              {
+                id: normId,
+                category_id: updatedSkill.category_id,
+                title: updatedSkill.title,
+                slug: updatedSkill.slug,
+                summary: updatedSkill.summary,
+                difficulty: updatedSkill.difficulty,
+                estimated_hours: updatedSkill.estimated_hours,
+                time_commitment_label: updatedSkill.time_commitment_label,
+                is_featured: false,
+              },
+              { onConflict: "id" }
+            );
+          } catch (e) {
+            console.warn("Could not upsert custom skill into Supabase skills table:", e);
+          }
+        }
+
+        // Upsert into user_enrollments
+        const { error: enrollErr } = await supabase.from("user_enrollments").upsert(
+          {
+            user_id: currentUser.id,
+            skill_id: normId,
+            status: "active",
+          },
+          { onConflict: "user_id,skill_id" }
+        );
+
+        if (enrollErr) {
+          console.warn("Supabase user_enrollments note:", enrollErr.message);
+        }
+      } catch (err) {
+        console.warn("Enrollment sync error:", err);
+      }
+    }
+  };
+
   // Handle message sending & dispatching skill to My Studio
   const handleSendMessage = async (customPrompt?: string) => {
     const textToSend = customPrompt || inputText;
@@ -242,28 +318,8 @@ export default function SkillLibraryPage() {
       const owlReply = data.owlMessage;
       const newSkill: Skill = data.skill;
 
-      // Automatically add skill to My Studio
-      const updatedEnrolled = Array.from(new Set([...enrolledSkillIds, newSkill.id]));
-      setEnrolledSkillIds(updatedEnrolled);
-      localStorage.setItem("skillora_enrolled_skills", JSON.stringify(updatedEnrolled));
-
-      // Save custom skill locally
-      const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
-      const currentCustom: Skill[] = savedCustom ? JSON.parse(savedCustom) : [];
-      const updatedCustom = [newSkill, ...currentCustom.filter((s) => s.id !== newSkill.id)];
-      localStorage.setItem("skillora_custom_ai_skills", JSON.stringify(updatedCustom));
-
-      // Sync with Supabase if logged in
-      if (currentUser) {
-        supabase
-          .from("user_enrollments")
-          .insert({
-            user_id: currentUser.id,
-            skill_id: newSkill.id,
-            status: "active",
-          })
-          .then(() => {});
-      }
+      // Automatically enroll skill in My Studio queue
+      await enrollSkill(newSkill);
 
       const owlMsg: OwlConversation = {
         id: `owl-${Date.now()}`,
@@ -418,53 +474,85 @@ export default function SkillLibraryPage() {
                     <span className="text-ink font-bold font-mono">EST. {msg.skill.estimated_hours}.0H</span>
                   </div>
 
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink border border-surface-border">
-                      {msg.skill.difficulty} • {msg.skill.time_commitment_label}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald text-[11px] font-bold border border-accent-emerald/30 flex items-center gap-1">
-                      <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                      <span>Dispatched to My Studio</span>
-                    </span>
-                  </div>
+                  {(() => {
+                    const normSkillId = normalizeSkillId(msg.skill.id);
+                    const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
 
-                  <h3 className="font-display font-extrabold text-lg text-ink mb-1">
-                    {msg.skill.title}
-                  </h3>
-                  <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
-                    {msg.skill.summary}
-                  </p>
-
-                  {/* Sequential Micro-Drills */}
-                  <div className="space-y-2 mb-5">
-                    {msg.skill.steps?.map((st) => (
-                      <div
-                        key={st.id}
-                        className="p-3 rounded-2xl bg-canvas border border-surface-border text-xs flex items-center justify-between hover:border-brand-500/30 transition"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="spec-tag text-brand-600 bg-white px-1.5 py-0.5 rounded border border-surface-border font-bold">
-                            DRILL 0{st.step_number}
+                    return (
+                      <>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink border border-surface-border">
+                            {msg.skill.difficulty} • {msg.skill.time_commitment_label}
                           </span>
-                          <span className="font-semibold text-ink">
-                            {st.title}
-                          </span>
+                          {isEnrolled ? (
+                            <span className="px-2.5 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald text-[11px] font-bold border border-accent-emerald/30 flex items-center gap-1">
+                              <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
+                              <span>Saved in Studio Queue</span>
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-semibold border border-amber-200">
+                              Ready to Learn
+                            </span>
+                          )}
                         </div>
-                        <span className="text-[10px] text-ink-muted font-mono">
-                          ~{st.estimated_minutes}m
-                        </span>
-                      </div>
-                    ))}
-                  </div>
 
-                  <Link
-                    href="/dashboard"
-                    onClick={() => playWoodenThud()}
-                    className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs group cursor-pointer"
-                  >
-                    <span>Practice in My Studio with Flashcards</span>
-                    <SolarIcon name="arrow-right-linear" className="w-4 h-4 group-hover:translate-x-0.5 transition" />
-                  </Link>
+                        <h3 className="font-display font-extrabold text-lg text-ink mb-1">
+                          {msg.skill.title}
+                        </h3>
+                        <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
+                          {msg.skill.summary}
+                        </p>
+
+                        {/* Sequential Micro-Drills */}
+                        <div className="space-y-2 mb-5">
+                          {msg.skill.steps?.map((st) => (
+                            <div
+                              key={st.id}
+                              className="p-3 rounded-2xl bg-canvas border border-surface-border text-xs flex items-center justify-between hover:border-brand-500/30 transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="spec-tag text-brand-600 bg-white px-1.5 py-0.5 rounded border border-surface-border font-bold">
+                                  DRILL 0{st.step_number}
+                                </span>
+                                <span className="font-semibold text-ink">
+                                  {st.title}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-ink-muted font-mono">
+                                ~{st.estimated_minutes}m
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Action CTA: Either Learn This Skill (Add to Queue) or Open Studio */}
+                        <div className="pt-2 border-t border-surface-border flex items-center gap-2">
+                          {isEnrolled ? (
+                            <Link
+                              href="/dashboard"
+                              onClick={() => playWoodenThud()}
+                              className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs group cursor-pointer"
+                            >
+                              <span>Practice in Studio Queue with Flashcards</span>
+                              <SolarIcon name="arrow-right-linear" className="w-4 h-4 group-hover:translate-x-0.5 transition" />
+                            </Link>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                playStampThud();
+                                await enrollSkill(msg.skill!);
+                              }}
+                              className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                            >
+                              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-accent-emerald" />
+                              <span>Learn This Skill (Add to Studio Queue)</span>
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>

@@ -1,17 +1,44 @@
 import { Category, Skill } from "@/types/database";
 
+export const LEGACY_SKILL_ID_MAP: Record<string, string> = {
+  "skill-guitar-fingerstyle": "a1111111-1111-1111-1111-111111111111",
+  "skill-fingerstyle-guitar": "a1111111-1111-1111-1111-111111111111",
+  "skill-cyrillic-script": "a2222222-2222-2222-2222-222222222222",
+  "skill-knife-sharpening": "a3333333-3333-3333-3333-333333333333",
+  "skill-touch-typing": "a4444444-4444-4444-4444-444444444444",
+  "skill-espresso": "a5555555-5555-5555-5555-555555555555",
+  "skill-espresso-dialing": "a5555555-5555-5555-5555-555555555555",
+  "skill-rubiks-cube": "a6666666-6666-6666-6666-666666666666",
+  "skill-sourdough": "a7777777-7777-7777-7777-777777777777",
+  "skill-juggling": "a8888888-8888-8888-8888-888888888888",
+};
+
+export function normalizeSkillId(id: string): string {
+  if (!id) return id;
+  return LEGACY_SKILL_ID_MAP[id] || id;
+}
+
+export function normalizeCategoryId(catId?: string): string {
+  if (!catId) return "33333333-3333-3333-3333-333333333333";
+  if (catId === "cat-music" || catId === "music") return "11111111-1111-1111-1111-111111111111";
+  if (catId === "cat-language" || catId === "languages") return "22222222-2222-2222-2222-222222222222";
+  if (catId === "cat-life" || catId === "life-skills") return "33333333-3333-3333-3333-333333333333";
+  if (catId === "cat-tech" || catId === "tech") return "44444444-4444-4444-4444-444444444444";
+  return catId;
+}
+
 export const CATEGORIES: Category[] = [
   { id: "cat-all", name: "All Disciplines", slug: "all", description: "Explore all skill tracks" },
-  { id: "cat-music", name: "Music & Audio", slug: "music", description: "Instruments, ear training, rhythm, and acoustic fundamentals" },
-  { id: "cat-language", name: "Languages & Scripts", slug: "languages", description: "Alphabets, phonetic systems, and conversational fluency" },
-  { id: "cat-life", name: "Everyday Craft & Life Skills", slug: "life-skills", description: "Tactile micro-skills, culinary essentials, and daily mastery" },
-  { id: "cat-tech", name: "Tech & Creation", slug: "tech", description: "Tools, command line speed, typing, and digital workflows" },
+  { id: "11111111-1111-1111-1111-111111111111", name: "Music & Audio", slug: "music", description: "Instruments, ear training, rhythm, and acoustic fundamentals" },
+  { id: "22222222-2222-2222-2222-222222222222", name: "Languages & Scripts", slug: "languages", description: "Alphabets, phonetic systems, and conversational fluency" },
+  { id: "33333333-3333-3333-3333-333333333333", name: "Everyday Craft & Life Skills", slug: "life-skills", description: "Tactile micro-skills, culinary essentials, and daily mastery" },
+  { id: "44444444-4444-4444-4444-444444444444", name: "Tech & Creation", slug: "tech", description: "Tools, command line speed, typing, and digital workflows" },
 ];
 
 export const INITIAL_SKILLS: Skill[] = [
   {
-    id: "skill-guitar-fingerstyle",
-    category_id: "cat-music",
+    id: "a1111111-1111-1111-1111-111111111111",
+    category_id: "11111111-1111-1111-1111-111111111111",
     title: "Fingerstyle Acoustic Guitar Basics",
     slug: "fingerstyle-acoustic-guitar",
     summary: "Develop thumb independence, alternating bass lines, and fluid arpeggio picking patterns without relying on a plectrum.",
@@ -86,8 +113,8 @@ export const INITIAL_SKILLS: Skill[] = [
     ],
   },
   {
-    id: "skill-cyrillic-script",
-    category_id: "cat-language",
+    id: "a2222222-2222-2222-2222-222222222222",
+    category_id: "22222222-2222-2222-2222-222222222222",
     title: "Read the Cyrillic Alphabet in One Afternoon",
     slug: "read-cyrillic-alphabet",
     summary: "De-mystify Russian, Ukrainian, and Serbian signage and script by mapping false friends, Greek cognates, and unfamiliar phonetic glyphs.",
@@ -154,8 +181,8 @@ export const INITIAL_SKILLS: Skill[] = [
     ],
   },
   {
-    id: "skill-knife-sharpening",
-    category_id: "cat-life",
+    id: "a3333333-3333-3333-3333-333333333333",
+    category_id: "33333333-3333-3333-3333-333333333333",
     title: "Whetstone Knife Sharpening: Razor Edge",
     slug: "whetstone-knife-sharpening",
     summary: "Achieve paper-slicing sharpness on chef knives using a 1000/6000 grit water stone, consistent 15-degree angle control, and burr alignment.",
@@ -222,8 +249,8 @@ export const INITIAL_SKILLS: Skill[] = [
     ],
   },
   {
-    id: "skill-touch-typing",
-    category_id: "cat-tech",
+    id: "a4444444-4444-4444-4444-444444444444",
+    category_id: "44444444-4444-4444-4444-444444444444",
     title: "Touch Typing at 80+ Words Per Minute",
     slug: "touch-typing-speed",
     summary: "Recondition tactile muscle memory to eliminate keyboard glancing, master home row anchors, and build effortless typing velocity.",
@@ -298,8 +325,8 @@ export const INITIAL_SKILLS: Skill[] = [
     ],
   },
   {
-    id: "skill-espresso-dialing",
-    category_id: "cat-life",
+    id: "a5555555-5555-5555-5555-555555555555",
+    category_id: "33333333-3333-3333-3333-333333333333",
     title: "Dialing In Specialty Espresso Extraction",
     slug: "dialing-in-espresso",
     summary: "Control grind size, dose, yield, and extraction time (1:2 ratio in 28–32s) to eliminate sour under-extraction and bitter astringency.",
@@ -348,8 +375,8 @@ export const INITIAL_SKILLS: Skill[] = [
     ],
   },
   {
-    id: "skill-rubiks-cube",
-    category_id: "cat-life",
+    id: "a6666666-6666-6666-6666-666666666666",
+    category_id: "44444444-4444-4444-4444-444444444444",
     title: "Solve the 3x3 Rubik's Cube (CFOP Layer-by-Layer)",
     slug: "solve-rubiks-cube",
     summary: "Memorize 5 simple sequential algorithms to consistently solve any scrambled 3x3 puzzle in under two minutes.",

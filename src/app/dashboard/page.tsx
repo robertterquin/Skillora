@@ -13,7 +13,7 @@ import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { HankoSeal } from "@/components/HankoSeal";
 import { MasteryPassportModal } from "@/components/MasteryPassportModal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
-import { CATEGORIES, INITIAL_SKILLS } from "@/lib/mock-data";
+import { CATEGORIES, INITIAL_SKILLS, normalizeSkillId, normalizeCategoryId } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -92,50 +92,61 @@ export default function DashboardPage() {
       } catch (err) {
         console.error("Failed to fetch step completions", err);
       }
+    }
 
       // --- Load Enrollments ---
-      try {
-        const { data: enrollData } = await supabase
-          .from("user_enrollments")
-          .select("skill_id")
-          .eq("user_id", user.id);
-
-        if (enrollData && enrollData.length > 0) {
-          const ids = enrollData.map((row: { skill_id: string }) => row.skill_id);
-          setEnrolledSkillIds(ids);
-          localStorage.setItem("skillora_enrolled_skills", JSON.stringify(ids));
-          return;
+      const savedEnrolled = localStorage.getItem("skillora_enrolled_skills");
+      let localIds: string[] = [];
+      if (savedEnrolled) {
+        try {
+          localIds = (JSON.parse(savedEnrolled) as string[]).map(normalizeSkillId);
+        } catch (e) {
+          console.error("Error parsing enrolled skills", e);
         }
-      } catch (err) {
-        console.error("Failed to fetch enrollments", err);
       }
-    }
 
-    // Fallback to localStorage for Enrollments
-    const savedEnrolled = localStorage.getItem("skillora_enrolled_skills");
-    if (savedEnrolled) {
-      try {
-        setEnrolledSkillIds(JSON.parse(savedEnrolled));
-      } catch (e) {
-        console.error("Error parsing enrolled skills", e);
-      }
-    } else {
-      // Default seed for first-time / guest testing: Cyrillic script
-      const defaultEnrolled = ["skill-cyrillic-script"];
-      setEnrolledSkillIds(defaultEnrolled);
-      localStorage.setItem("skillora_enrolled_skills", JSON.stringify(defaultEnrolled));
-    }
+      if (user) {
+        try {
+          const { data: enrollData } = await supabase
+            .from("user_enrollments")
+            .select("skill_id")
+            .eq("user_id", user.id);
 
-    // Fallback to localStorage for Step Completions
-    const savedSteps = localStorage.getItem("skillora_completed_steps");
-    if (savedSteps) {
-      try {
-        setCompletedStepIds(JSON.parse(savedSteps));
-      } catch (e) {
-        console.error("Error parsing completed steps", e);
+          const remoteIds = (enrollData || []).map((row: { skill_id: string }) => normalizeSkillId(row.skill_id));
+          // MERGE remote and local so newly added skills in the same session are NEVER lost!
+          const merged = Array.from(new Set([...remoteIds, ...localIds]));
+          if (merged.length > 0) {
+            setEnrolledSkillIds(merged);
+            localStorage.setItem("skillora_enrolled_skills", JSON.stringify(merged));
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to fetch enrollments", err);
+        }
       }
-    }
-  }, [supabase]);
+
+      // Fallback to local or default seed
+      if (localIds.length > 0) {
+        setEnrolledSkillIds(localIds);
+      } else {
+        // Default seed for first-time / guest testing: Cyrillic script
+        const defaultEnrolled = ["a2222222-2222-2222-2222-222222222222"];
+        setEnrolledSkillIds(defaultEnrolled);
+        localStorage.setItem("skillora_enrolled_skills", JSON.stringify(defaultEnrolled));
+      }
+
+      // Fallback to localStorage for Step Completions
+      const savedSteps = localStorage.getItem("skillora_completed_steps");
+      if (savedSteps) {
+        try {
+          setCompletedStepIds(JSON.parse(savedSteps));
+        } catch (e) {
+          console.error("Error parsing completed steps", e);
+        }
+      }
+    },
+    [supabase]
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -173,16 +184,34 @@ export default function DashboardPage() {
 
     fetchLiveSkills(supabase).then((live) => {
       const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
+      let customList: Skill[] = [];
       if (savedCustom) {
         try {
-          const customList: Skill[] = JSON.parse(savedCustom);
-          setAllSkills([...customList, ...(live || INITIAL_SKILLS)]);
-          return;
+          customList = (JSON.parse(savedCustom) as Skill[]).map((s) => ({
+            ...s,
+            id: normalizeSkillId(s.id),
+          }));
         } catch {
           // ignore
         }
       }
-      if (live && live.length > 0) setAllSkills(live);
+
+      const baseSkills = live && live.length > 0 ? live : INITIAL_SKILLS;
+      const allSkillsMap = new Map<string, Skill>();
+
+      // Put base skills
+      baseSkills.forEach((s) => {
+        const id = normalizeSkillId(s.id);
+        allSkillsMap.set(id, { ...s, id });
+      });
+
+      // Put custom AI skills
+      customList.forEach((s) => {
+        const id = normalizeSkillId(s.id);
+        allSkillsMap.set(id, { ...s, id });
+      });
+
+      setAllSkills(Array.from(allSkillsMap.values()));
     });
 
     // Load saved daily routine if exists
@@ -248,7 +277,8 @@ export default function DashboardPage() {
 
   // 3. Remove Skill from My Studio
   const handleRemoveFromStudio = async (skillId: string) => {
-    const updated = enrolledSkillIds.filter((id) => id !== skillId);
+    const targetNorm = normalizeSkillId(skillId);
+    const updated = enrolledSkillIds.filter((id) => normalizeSkillId(id) !== targetNorm);
     setEnrolledSkillIds(updated);
     localStorage.setItem("skillora_enrolled_skills", JSON.stringify(updated));
 
@@ -258,7 +288,7 @@ export default function DashboardPage() {
           .from("user_enrollments")
           .delete()
           .eq("user_id", currentUser.id)
-          .eq("skill_id", skillId);
+          .eq("skill_id", targetNorm);
       } catch (err) {
         console.error("Failed to remove enrollment from Supabase", err);
       }
@@ -324,11 +354,16 @@ export default function DashboardPage() {
   };
 
   // 5. Skills currently enrolled in My Studio
-  const myStudioSkills = allSkills.filter((s) => enrolledSkillIds.includes(s.id));
+  const myStudioSkills = allSkills.filter((s) =>
+    enrolledSkillIds.map(normalizeSkillId).includes(normalizeSkillId(s.id))
+  );
 
   // 6. Filter enrolled studio skills by Category, Duration, and Search Query
   const filteredStudioSkills = myStudioSkills.filter((skill) => {
-    if (selectedCategory !== "cat-all" && skill.category_id !== selectedCategory) {
+    if (
+      selectedCategory !== "cat-all" &&
+      normalizeCategoryId(skill.category_id) !== normalizeCategoryId(selectedCategory)
+    ) {
       return false;
     }
     if (selectedDuration === "quick" && skill.estimated_hours > 2) {
