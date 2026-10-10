@@ -73,28 +73,23 @@ export function SkillSyllabusModal({
             {skill.summary}
           </p>
 
-          {/* Time & Metric Ribbon */}
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-xs">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-surface-border text-ink">
-              <SolarIcon name="clock-circle-linear" className="w-4 h-4 text-brand-600" />
-              <span>Time Commitment: <strong className="tabular-nums font-semibold">{skill.time_commitment_label}</strong></span>
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-surface-border text-ink">
-              <SolarIcon name="book-bookmark-linear" className="w-4 h-4 text-brand-600" />
-              <span>Estimated Duration: <strong className="tabular-nums font-semibold">{skill.estimated_hours} hrs</strong></span>
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-surface-border text-ink">
-              <SolarIcon name="layers-minimalistic-linear" className="w-4 h-4 text-brand-600" />
-              <span>Modular Steps: <strong className="tabular-nums font-semibold">{totalSteps}</strong></span>
-            </div>
-
+          {/* Unified Metadata Strip */}
+          <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted font-medium">
+            <span className="capitalize">{skill.difficulty}</span>
+            <span className="text-ink-subtle">·</span>
+            <span>{skill.time_commitment_label}</span>
+            <span className="text-ink-subtle">·</span>
+            <span>{skill.estimated_hours}h estimated</span>
+            <span className="text-ink-subtle">·</span>
+            <span>{totalSteps} practice steps</span>
             {!isViewOnly && isAllComplete && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald font-semibold">
-                <SolarIcon name="cup-first-linear" className="w-4 h-4" />
-                <span>Skill Fully Mastered!</span>
-              </div>
+              <>
+                <span className="text-ink-subtle">·</span>
+                <span className="text-accent-emerald font-semibold inline-flex items-center gap-1">
+                  <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5" />
+                  <span>Mastered</span>
+                </span>
+              </>
             )}
           </div>
 

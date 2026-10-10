@@ -437,30 +437,29 @@ export default function SkillLibraryPage() {
               {/* Archimedes Field Notes Index Card */}
               {msg.skill && (
                 <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border border-surface-border shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
-                  {/* Field Notes Architectural Header */}
-                  <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border">
-                    <span>ARCHIMEDES FIELD NOTES // SPEC-BLUEPRINT</span>
-                    <span className="text-ink font-bold font-mono">EST. {msg.skill.estimated_hours}.0H</span>
-                  </div>
-
+                  {/* Unified Field Notes Header */}
                   {(() => {
                     const normSkillId = normalizeSkillId(msg.skill.id);
                     const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
 
                     return (
                       <>
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink border border-surface-border">
-                            {msg.skill.difficulty} • {msg.skill.time_commitment_label}
-                          </span>
+                        <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
+                          <div className="flex items-center gap-1.5 font-medium">
+                            <span className="capitalize">{msg.skill.difficulty}</span>
+                            <span className="text-ink-subtle">·</span>
+                            <span>{msg.skill.time_commitment_label}</span>
+                            <span className="text-ink-subtle">·</span>
+                            <span>{msg.skill.steps?.length || 0} drills</span>
+                          </div>
                           {isEnrolled ? (
-                            <span className="px-2.5 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald text-[11px] font-bold border border-accent-emerald/30 flex items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent-emerald">
                               <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                              <span>Saved in Studio Queue</span>
+                              <span>In Studio Queue</span>
                             </span>
                           ) : (
-                            <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-semibold border border-amber-200">
-                              Ready to Learn
+                            <span className="text-[11px] font-medium text-ink-subtle">
+                              New Drill
                             </span>
                           )}
                         </div>

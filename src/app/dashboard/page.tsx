@@ -496,11 +496,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Streak & Active & Mastered Metrics (Monochromatic Architectural Styling) */}
+            {/* Streak & Active & Mastered Metrics */}
             <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
               {/* STREAK */}
               <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 01</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="fire-linear" className="w-3.5 h-3.5 text-amber-600" />
                   <span>Streak</span>
@@ -512,7 +511,6 @@ export default function DashboardPage() {
 
               {/* ACTIVE */}
               <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 02</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
                   <span>Active</span>
@@ -524,7 +522,6 @@ export default function DashboardPage() {
 
               {/* MASTERED */}
               <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <span className="spec-tag text-ink-subtle block text-[8px] mb-0.5 font-mono">SPEC // 03</span>
                 <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
                   <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-accent-emerald" />
                   <span>Mastered</span>
@@ -793,29 +790,25 @@ export default function DashboardPage() {
                       className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/40 transition shadow-xs group corner-ticks"
                     >
                       <div>
-                        {/* Blueprint Architectural Spec Header */}
-                        <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-2 border-b border-surface-border/60">
-                          <span>SPEC // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
-                          <span>EST. {skill.estimated_hours}.0H</span>
-                        </div>
-
-                        {/* Top Badges & Remove Option */}
-                        <div className="flex items-center justify-between gap-2 mb-3">
-                          <div className="flex items-center gap-1.5">
+                        {/* Unified Editorial Metadata Header */}
+                        <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
+                          <div className="flex items-center gap-1.5 font-medium">
                             {isCustomAi && (
-                              <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border">
-                                Custom Drill
+                              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border/70">
+                                AI
                               </span>
                             )}
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-canvas border border-surface-border text-ink-muted">
-                              {skill.difficulty}
-                            </span>
+                            <span className="capitalize">{skill.difficulty}</span>
+                            <span className="text-ink-subtle">·</span>
+                            <span>{skill.estimated_hours}h</span>
+                            <span className="text-ink-subtle">·</span>
+                            <span>{totalCount} steps</span>
                           </div>
 
                           <button
                             type="button"
                             onClick={() => handleRemoveFromStudio(skill.id)}
-                            className="text-[11px] text-ink-subtle hover:text-rose-600 transition"
+                            className="text-[11px] text-ink-subtle hover:text-rose-600 transition cursor-pointer"
                             title="Remove from My Studio"
                           >
                             Remove

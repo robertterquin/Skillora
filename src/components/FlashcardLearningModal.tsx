@@ -353,10 +353,12 @@ export function FlashcardLearningModal({
               <SolarIcon name="book-bookmark-linear" className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-brand-600 uppercase tracking-wider">
-                <span>Learning Studio</span>
-                <span>•</span>
-                <span className="text-ink-muted">{skill.difficulty}</span>
+              <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-0.5 font-medium">
+                <span className="capitalize">{skill.difficulty}</span>
+                <span className="text-ink-subtle">·</span>
+                <span>{skill.steps?.length || 0} steps</span>
+                <span className="text-ink-subtle">·</span>
+                <span>{skill.time_commitment_label}</span>
               </div>
               <h2 className="font-display font-bold text-lg sm:text-xl text-ink leading-tight">
                 {skill.title}

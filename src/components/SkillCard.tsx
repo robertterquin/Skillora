@@ -18,16 +18,13 @@ export function SkillCard({ skill, completedStepCount, onOpenSyllabus }: SkillCa
   return (
     <div className="group relative flex flex-col justify-between p-6 bg-white rounded-xl border border-surface-border hover:border-brand-500/40 hover:shadow-sm transition-all">
       <div>
-        {/* Header Metadata */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-            <span className="font-medium text-ink tabular-nums">{skill.time_commitment_label}</span>
-          </div>
-
-          <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded bg-canvas border border-surface-border text-ink-muted">
-            {skill.difficulty}
-          </span>
+        {/* Unified Inline Metadata Header */}
+        <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-3 font-medium">
+          <span className="capitalize">{skill.difficulty}</span>
+          <span className="text-ink-subtle">·</span>
+          <span>{skill.time_commitment_label}</span>
+          <span className="text-ink-subtle">·</span>
+          <span>{totalSteps} steps</span>
         </div>
 
         {/* Title */}
