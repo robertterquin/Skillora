@@ -105,22 +105,48 @@ export function VideoPlayerModal({
                   className="w-full h-full border-0"
                 />
               ) : (
-                <div className="p-8 text-center text-neutral-400 text-sm">
-                  <p>Could not extract video player. Use the external link above.</p>
+                <div className="p-8 text-center text-neutral-400 text-sm space-y-3">
+                  <p>Could not extract video player for this URL.</p>
+                  <a
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                      `${stepTitle ? stepTitle + " " : ""}${title} tutorial`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white transition"
+                  >
+                    <span>Search Tutorials on YouTube</span>
+                    <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* Quiet Footer Note */}
-            <div className="p-3.5 sm:p-4 bg-neutral-900/60 border-t border-neutral-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-neutral-400 font-medium">
-              <span className="text-[11px] text-neutral-400 font-mono">
-                No recommended videos or algorithmic feeds. Deliberate practice focus only.
-              </span>
+            {/* Quiet Footer Note with Fallback */}
+            <div className="p-3.5 sm:p-4 bg-neutral-900/60 border-t border-neutral-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-neutral-400 font-medium">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] text-neutral-400 font-mono">
+                  Distraction-free deliberate practice mode.
+                </span>
+                <span className="text-neutral-600 hidden sm:inline">·</span>
+                <a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                    `${stepTitle ? stepTitle + " " : ""}${title} tutorial`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-brand-300 hover:text-white underline underline-offset-4 flex items-center gap-1 transition"
+                  title="Search curated YouTube tutorials for this step"
+                >
+                  <span>Video unavailable or need alternative? Search YouTube</span>
+                  <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3" />
+                </a>
+              </div>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-1.5 rounded-xl bg-white text-neutral-950 font-semibold text-xs hover:bg-neutral-200 transition cursor-pointer shadow-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-white text-neutral-950 font-semibold text-xs hover:bg-neutral-200 transition cursor-pointer shadow-xs shrink-0"
               >
                 Return to Workshop
               </button>

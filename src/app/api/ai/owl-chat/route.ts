@@ -123,14 +123,28 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
           title: st.title,
           instructions: st.instructions,
           estimated_minutes: st.estimated_minutes || 20,
-          resources: (st.resources || []).map((r, rIdx) => ({
-            id: canonicalMatch?.steps?.[idx]?.resources?.[rIdx]?.id || crypto.randomUUID(),
-            step_id: stepId,
-            platform_name: r.platform_name || "Online Tutorial",
-            url: r.url || "https://google.com",
-            resource_type: r.resource_type || "video",
-            is_free: r.is_free !== undefined ? r.is_free : true,
-          })),
+          resources: (st.resources || []).map((r, rIdx) => {
+            const canonicalRes = canonicalMatch?.steps?.[idx]?.resources?.[rIdx];
+            let finalUrl = canonicalRes?.url || r.url || "https://google.com";
+
+            // If it's an AI-generated YouTube link without a verified canonical match, avoid dead IDs with targeted search
+            if (!canonicalRes && (r.resource_type === "video" || finalUrl.includes("youtube.com") || finalUrl.includes("youtu.be"))) {
+              if (finalUrl === "https://www.youtube.com" || finalUrl.includes("watch?v=")) {
+                finalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                  `${formattedSkill.title} ${st.title} tutorial`
+                )}`;
+              }
+            }
+
+            return {
+              id: canonicalRes?.id || crypto.randomUUID(),
+              step_id: stepId,
+              platform_name: canonicalRes?.platform_name || r.platform_name || "Online Tutorial",
+              url: finalUrl,
+              resource_type: r.resource_type || "video",
+              is_free: r.is_free !== undefined ? r.is_free : true,
+            };
+          }),
         };
       }),
     };

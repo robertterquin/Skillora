@@ -103,14 +103,33 @@ Generate between 3 and 4 sequential steps. Make the instructions concrete and ph
           title: st.title,
           instructions: st.instructions,
           estimated_minutes: st.estimated_minutes || 20,
-          resources: (st.resources || []).map((r) => ({
-            id: crypto.randomUUID(),
-            step_id: stepId,
-            platform_name: r.platform_name || "Web Guide",
-            url: r.url || "https://google.com",
-            resource_type: r.resource_type || "article",
-            is_free: r.is_free !== undefined ? r.is_free : true,
-          })),
+          resources: (st.resources || []).map((r) => {
+            let finalUrl = r.url || "https://google.com";
+            // Prevent hallucinated dead YouTube video IDs by transforming unverified AI video URLs into targeted search links
+            if (
+              r.resource_type === "video" ||
+              finalUrl.includes("youtube.com") ||
+              finalUrl.includes("youtu.be")
+            ) {
+              if (
+                finalUrl === "https://www.youtube.com" ||
+                finalUrl.includes("watch?v=")
+              ) {
+                finalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                  `${parsed.title} ${st.title} tutorial`
+                )}`;
+              }
+            }
+
+            return {
+              id: crypto.randomUUID(),
+              step_id: stepId,
+              platform_name: r.platform_name || "YouTube Tutorial",
+              url: finalUrl,
+              resource_type: r.resource_type || "video",
+              is_free: r.is_free !== undefined ? r.is_free : true,
+            };
+          }),
         };
       }),
     };

@@ -67,8 +67,8 @@ export const INITIAL_SKILLS: Skill[] = [
           {
             id: "res-g2",
             step_id: "step-g1",
-            platform_name: "YouTube (Paul Davids)",
-            url: "https://www.youtube.com/watch?v=0hY7l3sMtzI",
+            platform_name: "JustinGuitar Beginner Tutorial",
+            url: "https://www.youtube.com/watch?v=BBz-Jyr23M4",
             resource_type: "video",
             is_free: true,
           },
@@ -239,8 +239,8 @@ export const INITIAL_SKILLS: Skill[] = [
           {
             id: "res-k3",
             step_id: "step-k3",
-            platform_name: "YouTube (Burrfection)",
-            url: "https://www.youtube.com/c/Burrfection",
+            platform_name: "Whetstone Sharpening (OUTDOORS55)",
+            url: "https://www.youtube.com/watch?v=pagPuiuA9cY",
             resource_type: "video",
             is_free: true,
           },
@@ -366,7 +366,7 @@ export const INITIAL_SKILLS: Skill[] = [
             id: "res-e2",
             step_id: "step-e2",
             platform_name: "YouTube (James Hoffmann)",
-            url: "https://www.youtube.com/watch?v=DFhuoxl3s4E",
+            url: "https://www.youtube.com/watch?v=k6JHe794k14",
             resource_type: "video",
             is_free: true,
           },
@@ -479,7 +479,16 @@ export const INITIAL_SKILLS: Skill[] = [
         title: "Bulk Fermentation & Gentle Coil Folds",
         instructions: "Incorporate levain and 10g salt. Perform 4 sets of coil folds spaced 30 minutes apart to develop gluten matrix without degassing.",
         estimated_minutes: 45,
-        resources: [],
+        resources: [
+          {
+            id: "c7777777-7777-7777-7777-777777777702",
+            step_id: "b7777777-7777-7777-7777-777777777702",
+            platform_name: "Bake With Jack (Sourdough 101)",
+            url: "https://www.youtube.com/watch?v=vmb0wWKITBQ",
+            resource_type: "video",
+            is_free: true,
+          },
+        ],
       },
       {
         id: "b7777777-7777-7777-7777-777777777703",
@@ -538,7 +547,16 @@ export const INITIAL_SKILLS: Skill[] = [
         title: "Two-Ball Exchange (Throw-Throw-Catch-Catch)",
         instructions: "Hold one ball per hand. Throw first ball; at peak, launch second ball underneath before catching both in rhythm. Avoid handing across.",
         estimated_minutes: 30,
-        resources: [],
+        resources: [
+          {
+            id: "c8888888-8888-8888-8888-888888888802",
+            step_id: "b8888888-8888-8888-8888-888888888802",
+            platform_name: "Taylor Tries (3-Ball Cascade)",
+            url: "https://www.youtube.com/watch?v=dCYDZDlcO6g",
+            resource_type: "video",
+            is_free: true,
+          },
+        ],
       },
       {
         id: "b8888888-8888-8888-8888-888888888803",
