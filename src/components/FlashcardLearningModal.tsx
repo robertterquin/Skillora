@@ -532,25 +532,42 @@ export function FlashcardLearningModal({
                                 const isYouTube = Boolean(extractYouTubeId(res.url));
                                 if (isYouTube) {
                                   return (
-                                    <button
+                                    <div
                                       key={res.id}
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setActiveVideo({
-                                          url: res.url,
-                                          title: res.platform_name,
-                                          stepTitle: currentStep.title,
-                                        });
-                                      }}
-                                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100/80 border border-rose-200 text-xs font-medium text-rose-950 transition cursor-pointer group shadow-2xs"
+                                      className="inline-flex items-center rounded-lg overflow-hidden border border-rose-200 bg-rose-50 hover:bg-rose-100/80 transition shadow-2xs group"
+                                      onClick={(e) => e.stopPropagation()}
                                     >
-                                      <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
-                                      <span>{res.platform_name}</span>
-                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
-                                        Watch Tutorial
-                                      </span>
-                                    </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setActiveVideo({
+                                            url: res.url,
+                                            title: res.platform_name,
+                                            stepTitle: currentStep.title,
+                                          });
+                                        }}
+                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-rose-950 transition cursor-pointer"
+                                        title="Watch tutorial inside workbench player"
+                                      >
+                                        <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                        <span>{res.platform_name}</span>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                          Watch
+                                        </span>
+                                      </button>
+
+                                      <a
+                                        href={res.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="px-2 py-1 text-rose-700 hover:text-rose-950 hover:bg-rose-200/60 border-l border-rose-200 transition flex items-center"
+                                        title="Open directly on YouTube (external link)"
+                                      >
+                                        <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                                      </a>
+                                    </div>
                                   );
                                 }
 
@@ -940,24 +957,39 @@ export function FlashcardLearningModal({
                           const isYouTube = Boolean(extractYouTubeId(res.url));
                           if (isYouTube) {
                             return (
-                              <button
+                              <div
                                 key={res.id}
-                                type="button"
-                                onClick={() =>
-                                  setActiveVideo({
-                                    url: res.url,
-                                    title: res.platform_name,
-                                    stepTitle: step.title,
-                                  })
-                                }
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100/80 border border-rose-200 text-xs font-medium text-rose-950 transition cursor-pointer group shadow-2xs"
+                                className="inline-flex items-center rounded-lg overflow-hidden border border-rose-200 bg-rose-50 hover:bg-rose-100/80 transition shadow-2xs group"
                               >
-                                <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
-                                <span>{res.platform_name}</span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
-                                  Watch Tutorial
-                                </span>
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setActiveVideo({
+                                      url: res.url,
+                                      title: res.platform_name,
+                                      stepTitle: step.title,
+                                    })
+                                  }
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-rose-950 transition cursor-pointer"
+                                  title="Watch tutorial inside workbench player"
+                                >
+                                  <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                  <span>{res.platform_name}</span>
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                    Watch
+                                  </span>
+                                </button>
+
+                                <a
+                                  href={res.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-2 py-1 text-rose-700 hover:text-rose-950 hover:bg-rose-200/60 border-l border-rose-200 transition flex items-center"
+                                  title="Open directly on YouTube (external link)"
+                                >
+                                  <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                                </a>
+                              </div>
                             );
                           }
 
