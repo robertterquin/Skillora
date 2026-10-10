@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "motion/react";
 import { Category } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 
@@ -16,6 +17,13 @@ interface SkillFilterBarProps {
   onSearchChange: (query: string) => void;
 }
 
+const DURATION_OPTIONS: { id: DurationFilter; label: string }[] = [
+  { id: "all", label: "All Tracks" },
+  { id: "quick", label: "< 2 Hours" },
+  { id: "sprint", label: "1–7 Days" },
+  { id: "deep", label: "Multi-Week" },
+];
+
 export function SkillFilterBar({
   categories,
   selectedCategory,
@@ -26,80 +34,70 @@ export function SkillFilterBar({
   onSearchChange,
 }: SkillFilterBarProps) {
   return (
-    <div className="w-full space-y-4">
-      {/* Search and Duration Filter Row */}
-      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        {/* Search Input with Solar Magnifier */}
-        <div className="relative flex-1 max-w-lg">
-          <SolarIcon name="magnifer-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
+    <div className="w-full space-y-3.5">
+      {/* Search Bar & Duration Hardware Controls Row */}
+      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+        {/* Minimal Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <SolarIcon
+            name="magnifer-linear"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle pointer-events-none"
+          />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search skills by title, domain, or technique..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-white text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-ink/10 focus:border-ink transition"
+            placeholder="Search disciplines or drills..."
+            className="w-full pl-10 pr-9 py-2 rounded-xl border border-surface-border bg-white text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink transition shadow-2xs"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-ink-subtle hover:text-ink hover:bg-surface-muted transition cursor-pointer"
+              aria-label="Clear search"
+            >
+              <SolarIcon name="close-circle-linear" className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
-        {/* Duration Segmented Pills with Solar Clock */}
-        <div className="flex items-center gap-1 p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-medium overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 px-2 text-ink-muted">
-            <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Time:</span>
+        {/* Duration Segmented Track with Gliding Indicator */}
+        <div className="flex items-center gap-1 p-1 bg-surface-muted/80 border border-surface-border/70 rounded-2xl text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
+          <div className="flex items-center gap-1.5 px-2 text-ink-muted shrink-0">
+            <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-subtle" />
+            <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-wider text-ink-subtle">
+              Time
+            </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => onSelectDuration("all")}
-            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-              selectedDuration === "all"
-                ? "bg-white text-ink shadow-xs font-semibold"
-                : "text-ink-muted hover:text-ink"
-            }`}
-          >
-            All Durations
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectDuration("quick")}
-            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-              selectedDuration === "quick"
-                ? "bg-white text-ink shadow-xs font-semibold"
-                : "text-ink-muted hover:text-ink"
-            }`}
-          >
-            Under 2 Hours
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectDuration("sprint")}
-            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-              selectedDuration === "sprint"
-                ? "bg-white text-ink shadow-xs font-semibold"
-                : "text-ink-muted hover:text-ink"
-            }`}
-          >
-            1–7 Days
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelectDuration("deep")}
-            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-              selectedDuration === "deep"
-                ? "bg-white text-ink shadow-xs font-semibold"
-                : "text-ink-muted hover:text-ink"
-            }`}
-          >
-            Multi-Week
-          </button>
+          {DURATION_OPTIONS.map((dur) => {
+            const isActive = selectedDuration === dur.id;
+            return (
+              <button
+                key={dur.id}
+                type="button"
+                onClick={() => onSelectDuration(dur.id)}
+                className={`relative px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap cursor-pointer text-xs ${
+                  isActive ? "text-ink font-semibold" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="activeDurationPill"
+                    transition={{ type: "spring", stiffness: 440, damping: 32 }}
+                    className="absolute inset-0 bg-white rounded-xl shadow-2xs border border-surface-border/80"
+                  />
+                )}
+                <span className="relative z-10">{dur.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar border-b border-surface-border">
+      {/* Category Segmented Track with Gliding Indicator */}
+      <div className="flex items-center gap-1.5 overflow-x-auto p-1 bg-surface-muted/80 border border-surface-border/70 rounded-2xl no-scrollbar">
         {categories.map((cat) => {
           const isActive = selectedCategory === cat.id;
           return (
@@ -107,13 +105,18 @@ export function SkillFilterBar({
               key={cat.id}
               type="button"
               onClick={() => onSelectCategory(cat.id)}
-              className={`px-3.5 py-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                isActive
-                  ? "border-ink text-ink font-semibold"
-                  : "border-transparent text-ink-muted hover:text-ink hover:border-surface-border"
+              className={`relative px-3.5 py-1.5 text-xs font-medium rounded-xl transition-colors whitespace-nowrap cursor-pointer ${
+                isActive ? "text-ink font-semibold" : "text-ink-muted hover:text-ink"
               }`}
             >
-              {cat.name}
+              {isActive && (
+                <motion.span
+                  layoutId="activeCategoryPill"
+                  transition={{ type: "spring", stiffness: 440, damping: 32 }}
+                  className="absolute inset-0 bg-white rounded-xl shadow-2xs border border-surface-border/80"
+                />
+              )}
+              <span className="relative z-10">{cat.name}</span>
             </button>
           );
         })}
