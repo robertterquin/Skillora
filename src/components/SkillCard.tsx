@@ -16,7 +16,7 @@ export function SkillCard({ skill, completedStepCount, onOpenSyllabus }: SkillCa
   const progressPercent = totalSteps > 0 ? Math.round((completedStepCount / totalSteps) * 100) : 0;
 
   return (
-    <div className="group relative flex flex-col justify-between p-6 bg-white rounded-xl border border-surface-border hover:border-brand-500/40 hover:shadow-sm transition-all">
+    <div className="group relative flex flex-col justify-between p-6 bg-white rounded-2xl border border-surface-border hover:border-ink/30 hover:-translate-y-1 hover:shadow-md transition-all duration-200 ease-out">
       <div>
         {/* Unified Inline Metadata Header */}
         <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-3 font-medium">

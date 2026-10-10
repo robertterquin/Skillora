@@ -787,7 +787,7 @@ export default function DashboardPage() {
                       exit={{ opacity: 0, scale: 0.96 }}
                       transition={{ duration: 0.22, ease: "easeOut" }}
                       key={skill.id}
-                      className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/40 transition shadow-xs group corner-ticks"
+                      className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/30 hover:-translate-y-1 hover:shadow-md transition-all duration-200 ease-out group corner-ticks"
                     >
                       <div>
                         {/* Unified Editorial Metadata Header */}
@@ -823,17 +823,17 @@ export default function DashboardPage() {
                           {skill.summary}
                         </p>
 
-                        {/* Progress Bar & Status */}
-                        <div className="mb-5 p-3 rounded-2xl bg-canvas border border-surface-border">
-                          <div className="flex items-center justify-between text-xs mb-1.5">
-                            <span className="font-semibold text-ink">
-                              {isCompleted ? "Mastered" : "Progress"}
+                        {/* Precision Architectural Progress Line */}
+                        <div className="mb-5 space-y-1.5">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-[11px] font-mono uppercase tracking-wider text-ink-subtle">
+                              {isCompleted ? "Mastered" : "Discipline Progress"}
                             </span>
-                            <span className="text-ink-muted font-mono text-[11px]">
-                              {doneCount} / {totalCount} steps ({percent}%)
+                            <span className="text-ink font-mono text-[11px] font-semibold tabular-nums">
+                              {doneCount}/{totalCount} ({percent}%)
                             </span>
                           </div>
-                          <div className="w-full h-2 rounded-full bg-surface-muted overflow-hidden">
+                          <div className="w-full h-1 rounded-full bg-surface-muted overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${
                                 isCompleted ? "bg-accent-emerald" : "bg-ink"

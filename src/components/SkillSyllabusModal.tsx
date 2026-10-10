@@ -95,14 +95,18 @@ export function SkillSyllabusModal({
 
           {/* Progress Bar (Only shown for authenticated / tracked mode) */}
           {!isViewOnly && (
-            <div className="mt-6">
-              <div className="flex justify-between text-xs font-medium text-ink-muted mb-2">
-                <span>Path Progress</span>
-                <span className="tabular-nums font-semibold text-ink">{completedCount} of {totalSteps} steps completed ({progressPercent}%)</span>
+            <div className="mt-5 space-y-1.5">
+              <div className="flex justify-between text-xs text-ink-muted">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-ink-subtle">Path Progress</span>
+                <span className="tabular-nums font-mono text-[11px] font-semibold text-ink">
+                  {completedCount}/{totalSteps} ({progressPercent}%)
+                </span>
               </div>
-              <div className="w-full h-2 bg-surface-muted rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-surface-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-brand-600 transition-all duration-300 ease-out"
+                  className={`h-full rounded-full transition-all duration-300 ease-out ${
+                    isAllComplete ? "bg-accent-emerald" : "bg-ink"
+                  }`}
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
