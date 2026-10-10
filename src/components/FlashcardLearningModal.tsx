@@ -467,13 +467,10 @@ export function FlashcardLearningModal({
                 >
                   {/* Top Architectural Spec of Card */}
                   <div className="flex items-start justify-between border-b border-surface-border/60 pb-2.5 mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="spec-tag text-ink-subtle">
-                        SPEC // DRILL-0{currentStep.step_number}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
-                        {currentStep.estimated_minutes} Mins
-                      </span>
+                    <div className="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
+                      <span>Drill {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
+                      <span className="text-ink-subtle">·</span>
+                      <span>~{currentStep.estimated_minutes} mins</span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -860,16 +857,18 @@ export function FlashcardLearningModal({
                         <button
                           type="button"
                           onClick={() => onToggleStep(step.id)}
-                          className="mt-0.5 text-ink-subtle hover:text-brand-600 transition"
+                          className="mt-0.5 text-ink-subtle hover:text-ink transition cursor-pointer"
+                          aria-label={isDone ? "Mark step incomplete" : "Mark step complete"}
                         >
-                          <SolarIcon
-                            name={isDone ? "check-circle-linear" : "radio-buttons-linear"}
-                            className={`w-6 h-6 ${isDone ? "text-accent-emerald" : "text-ink-subtle"}`}
-                          />
+                          {isDone ? (
+                            <SolarIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full border border-surface-border hover:border-ink bg-white transition shadow-2xs" />
+                          )}
                         </button>
                         <div>
-                          <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wider">
-                            Step {step.step_number} • {step.estimated_minutes} Minutes
+                          <span className="text-[11px] font-mono text-ink-subtle mb-0.5 block">
+                            Step {step.step_number} · ~{step.estimated_minutes} mins
                           </span>
                           <h4 className={`font-display font-semibold text-base ${isDone ? "line-through text-ink-muted" : "text-ink"}`}>
                             {step.title}

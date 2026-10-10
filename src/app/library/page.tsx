@@ -476,17 +476,17 @@ export default function SkillLibraryPage() {
                           {msg.skill.steps?.map((st) => (
                             <div
                               key={st.id}
-                              className="p-3 rounded-2xl bg-canvas border border-surface-border text-xs flex items-center justify-between hover:border-brand-500/30 transition"
+                              className="p-3 rounded-2xl bg-canvas/80 border border-surface-border text-xs flex items-center justify-between hover:border-ink/20 transition"
                             >
-                              <div className="flex items-center gap-2">
-                                <span className="spec-tag text-brand-600 bg-white px-1.5 py-0.5 rounded border border-surface-border font-bold">
-                                  DRILL 0{st.step_number}
+                              <div className="flex items-center gap-2.5">
+                                <span className="w-5 h-5 rounded-md bg-white border border-surface-border/80 flex items-center justify-center font-mono text-[10px] font-semibold text-ink-muted">
+                                  {st.step_number < 10 ? `0${st.step_number}` : st.step_number}
                                 </span>
-                                <span className="font-semibold text-ink">
+                                <span className="font-medium text-ink">
                                   {st.title}
                                 </span>
                               </div>
-                              <span className="text-[10px] text-ink-muted font-mono">
+                              <span className="text-[11px] text-ink-subtle font-mono tabular-nums">
                                 ~{st.estimated_minutes}m
                               </span>
                             </div>

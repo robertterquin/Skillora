@@ -135,27 +135,28 @@ export function SkillSyllabusModal({
                 >
                   {/* Step Top Bar */}
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3">
                       {!isViewOnly ? (
                         <button
                           type="button"
                           onClick={() => onToggleStep && onToggleStep(step.id)}
-                          className="mt-0.5 text-ink-subtle hover:text-brand-600 transition"
+                          className="mt-0.5 text-ink-subtle hover:text-ink transition cursor-pointer"
+                          aria-label={isStepDone ? "Mark step incomplete" : "Mark step completed"}
                         >
                           {isStepDone ? (
-                            <SolarIcon name="check-circle-linear" className="w-6 h-6 text-accent-emerald" />
+                            <SolarIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
                           ) : (
-                            <div className="w-6 h-6 rounded-full border-2 border-surface-border hover:border-ink-muted transition" />
+                            <div className="w-5 h-5 rounded-full border border-surface-border hover:border-ink bg-white transition shadow-2xs" />
                           )}
                         </button>
                       ) : (
-                        <div className="w-7 h-7 rounded-lg bg-canvas border border-surface-border flex items-center justify-center font-display font-bold text-xs text-ink mt-0.5">
+                        <div className="w-5 h-5 rounded-md bg-canvas border border-surface-border flex items-center justify-center font-mono text-[10px] font-semibold text-ink mt-0.5">
                           {step.step_number}
                         </div>
                       )}
                       <div>
-                        <div className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">
-                          Step {step.step_number} • {step.estimated_minutes} Minutes
+                        <div className="text-[11px] font-mono text-ink-subtle mb-0.5">
+                          Step {step.step_number} · ~{step.estimated_minutes} mins
                         </div>
                         <h4 className={`font-display font-semibold text-base ${isStepDone ? "line-through text-ink-muted" : "text-ink"}`}>
                           {step.title}
@@ -163,18 +164,18 @@ export function SkillSyllabusModal({
                       </div>
                     </div>
 
-                    {!isViewOnly && (
-                      <button
-                        type="button"
-                        onClick={() => onToggleStep && onToggleStep(step.id)}
-                        className={`text-xs font-medium px-3 py-1 rounded-lg transition ${
-                          isStepDone
-                            ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20"
-                            : "bg-canvas hover:bg-surface-muted text-ink border border-surface-border"
-                        }`}
-                      >
-                        {isStepDone ? "Completed" : "Mark Done"}
-                      </button>
+                    {!isViewOnly ? (
+                      <span className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded-full transition ${
+                        isStepDone
+                          ? "bg-accent-emerald/10 text-accent-emerald"
+                          : "text-ink-subtle bg-surface-muted"
+                      }`}>
+                        {isStepDone ? "Done" : `${step.estimated_minutes}m`}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-mono text-ink-subtle">
+                        ~{step.estimated_minutes}m
+                      </span>
                     )}
                   </div>
 
