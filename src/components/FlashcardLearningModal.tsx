@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
-import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
+import { HankoSeal } from "@/components/HankoSeal";
+import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import {
   PracticeMetronome,
   KnifeAngleGauge,
@@ -460,10 +461,18 @@ export function FlashcardLearningModal({
                       </span>
                     </div>
 
-                    <span className="text-xs text-ink-subtle flex items-center gap-1 font-medium">
-                      <span>{isFlipped ? "Instructions" : "Tap to flip"}</span>
-                      <SolarIcon name="refresh-linear" className="w-3.5 h-3.5" />
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {isCurrentStepDone && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-accent-vermilion font-bold bg-accent-vermilion/10 px-2 py-0.5 rounded-full border border-accent-vermilion/20">
+                          <HankoSeal size="xs" variant="vermilion" label="済" />
+                          <span>VERIFIED</span>
+                        </span>
+                      )}
+                      <span className="text-xs text-ink-subtle flex items-center gap-1 font-medium">
+                        <span>{isFlipped ? "Instructions" : "Tap to flip"}</span>
+                        <SolarIcon name="refresh-linear" className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
                   </div>
 
                   {/* Center of Card */}
@@ -527,28 +536,38 @@ export function FlashcardLearningModal({
 
                   {/* Bottom of Card */}
                   <div className="pt-3 border-t border-surface-border/60 flex items-center justify-between text-xs">
-                    <span className="text-ink-muted text-[11px]">
-                      {isCurrentStepDone ? "Completed Step" : "Pending practice"}
+                    <span className="text-ink-muted text-[11px] font-mono">
+                      {isCurrentStepDone ? "AFFIXED // 済 VERIFIED" : "PENDING DRILL"}
                     </span>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!isCurrentStepDone) {
+                          playStampThud();
                           playChime();
                         } else {
                           playMechanicalClick();
                         }
                         onToggleStep(currentStep.id);
                       }}
-                      className={`px-3 py-1 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer ${
+                      className={`px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
                         isCurrentStepDone
-                          ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/30"
+                          ? "bg-accent-vermilion/10 text-accent-vermilion border border-accent-vermilion/30 shadow-xs hover:bg-accent-vermilion/15"
                           : "bg-ink text-white hover:bg-neutral-800"
                       }`}
                     >
-                      <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                      <span>{isCurrentStepDone ? "Mastered" : "Mark Mastered"}</span>
+                      {isCurrentStepDone ? (
+                        <>
+                          <HankoSeal size="xs" variant="vermilion" label="済" />
+                          <span>HANKŌ AFFIXED</span>
+                        </>
+                      ) : (
+                        <>
+                          <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
+                          <span>AFFIX HANKŌ SEAL</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

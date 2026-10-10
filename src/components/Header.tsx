@@ -207,8 +207,17 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
-                        <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600" />
+                        <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
                         <span>My Studio</span>
+                      </Link>
+
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
+                      >
+                        <span className="font-serif text-xs text-rose-700 font-bold px-0.5">済</span>
+                        <span>Mastery Passport</span>
                       </Link>
 
                       <Link

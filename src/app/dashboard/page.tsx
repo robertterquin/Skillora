@@ -9,7 +9,9 @@ import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
 import { SkillFilterBar, DurationFilter } from "@/components/SkillFilterBar";
 import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
-import { playMechanicalClick, playChime, playWoodenThud } from "@/lib/workbench-audio";
+import { HankoSeal } from "@/components/HankoSeal";
+import { MasteryPassportModal } from "@/components/MasteryPassportModal";
+import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { CATEGORIES, INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
@@ -59,6 +61,7 @@ export default function DashboardPage() {
   // Modal states
   const [activeLearningSkill, setActiveLearningSkill] = useState<Skill | null>(null);
   const [activeSyllabusSkill, setActiveSyllabusSkill] = useState<Skill | null>(null);
+  const [isPassportOpen, setIsPassportOpen] = useState(false);
 
   // Feature 5: Daily 15-Minute Studio Workout States
   const [dailyRoutine, setDailyRoutine] = useState<DailyRoutine | null>(null);
@@ -428,6 +431,20 @@ export default function DashboardPage() {
                       </button>
                     </div>
                   )}
+
+                  {/* Japanese Hankō Mastery Passport Trigger */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playWoodenThud();
+                      setIsPassportOpen(true);
+                    }}
+                    className="px-3 py-1 rounded-full bg-[#FAF8F5] hover:bg-stone-200 border border-stone-300 text-ink text-[11px] font-semibold transition cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
+                    title="Open your Archival Deliberate Practice Passport"
+                  >
+                    <HankoSeal size="sm" label="済" className="w-3.5 h-3.5 scale-75" />
+                    <span>Mastery Passport ({isClient ? masteredSkills.length : 0} Seals)</span>
+                  </button>
                 </div>
                 <div className="flex items-center gap-3 mt-1.5">
                   <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
@@ -542,30 +559,95 @@ export default function DashboardPage() {
                     ))}
                   </div>
 
-                  {/* Mantra & Complete Action */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-canvas border border-surface-border text-xs">
-                    <p className="text-ink-secondary italic">
-                      &ldquo;{dailyRoutine.dailyMantra}&rdquo;
-                    </p>
+                  {/* Mantra & Hankō Practice Seal Registry */}
+                  <div className="p-4 rounded-2xl bg-canvas border border-surface-border text-xs space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <p className="text-ink-secondary italic font-serif">
+                        &ldquo;{dailyRoutine.dailyMantra}&rdquo;
+                      </p>
+                      <span className="spec-tag text-stone-500 font-mono">
+                        {currentUser ? "4 DAYS STAMPED" : "1 DAY STAMPED"}
+                      </span>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setRoutineCompleted(!routineCompleted)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-1.5 cursor-pointer ${
-                        routineCompleted
-                          ? "bg-accent-emerald text-white"
-                          : "bg-ink hover:bg-neutral-800 text-white"
-                      }`}
-                    >
-                      <SolarIcon name="check-circle-linear" className="w-4 h-4" />
-                      <span>{routineCompleted ? "Circuit Completed Today!" : "Mark Circuit Complete"}</span>
-                    </button>
+                    {/* 7-Day Deliberate Streak Hankō Registry Strip */}
+                    <div className="pt-3 border-t border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-ink-muted uppercase tracking-wider">
+                          WEEKLY SEALS:
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => {
+                            const isStamped = dIdx < 3 || (dIdx === 3 && routineCompleted);
+                            const isToday = dIdx === 3;
+                            return (
+                              <div
+                                key={dIdx}
+                                className={`w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-mono transition-all relative ${
+                                  isStamped
+                                    ? "bg-rose-50 border-rose-300 text-rose-700 font-bold"
+                                    : isToday
+                                    ? "bg-white border-dashed border-ink/40 text-ink"
+                                    : "bg-canvas border-surface-border text-ink-subtle"
+                                }`}
+                                title={`Day ${dIdx + 1}: ${isStamped ? "Hankō Stamped Verified" : isToday ? "Today (Pending Seal)" : "Upcoming"}`}
+                              >
+                                {isStamped ? (
+                                  <span className="font-serif text-[11px] text-rose-700 font-bold">済</span>
+                                ) : (
+                                  <span>{day}</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playStampThud();
+                          setRoutineCompleted(!routineCompleted);
+                        }}
+                        className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-2 cursor-pointer shadow-xs ${
+                          routineCompleted
+                            ? "bg-rose-700 text-white"
+                            : "bg-ink hover:bg-neutral-800 text-white"
+                        }`}
+                      >
+                        <HankoSeal
+                          size="sm"
+                          label="済"
+                          variant={routineCompleted ? "vermilion" : "obsidian"}
+                          className="w-4 h-4 scale-75"
+                          animate={routineCompleted}
+                        />
+                        <span>{routineCompleted ? "Hankō Stamped for Today!" : "Stamp Today's Circuit"}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-ink-muted pt-2 border-t border-surface-border leading-relaxed">
-                  Synthesize a daily 15-minute cross-training routine compiled from your active micro-drills to build automatic physical and cognitive muscle memory.
-                </p>
+                <div className="pt-2 border-t border-surface-border space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <p className="text-xs text-ink-muted leading-relaxed">
+                      Synthesize a daily 15-minute cross-training routine compiled from your active micro-drills to build automatic physical and cognitive muscle memory.
+                    </p>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-[10px] font-mono text-ink-muted uppercase mr-1">CURRENT STAMP STREAK:</span>
+                      {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => (
+                        <div
+                          key={dIdx}
+                          className={`w-6 h-6 rounded-full border flex items-center justify-center text-[9px] font-mono ${
+                            dIdx < 3 ? "bg-rose-50 border-rose-300 text-rose-700 font-bold font-serif" : "bg-canvas border-surface-border text-ink-subtle"
+                          }`}
+                        >
+                          {dIdx < 3 ? "済" : day}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </section>
@@ -845,6 +927,16 @@ export default function DashboardPage() {
         onClose={() => setIsSubscriptionModalOpen(false)}
         userEmail={currentUser?.email}
         isLimitReached={isLimitReached}
+      />
+
+      {/* 4. Japanese Archival Mastery Passport Modal */}
+      <MasteryPassportModal
+        isOpen={isPassportOpen}
+        onClose={() => setIsPassportOpen(false)}
+        user={currentUser}
+        enrolledSkills={myStudioSkills}
+        completedStepIds={completedStepIds}
+        userStreak={currentUser ? 4 : 1}
       />
     </div>
   );

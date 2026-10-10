@@ -208,3 +208,43 @@ export function playWaterDrop() {
   }
 }
 
+// 7. Authentic Japanese Hankō Seal / Wax Stamp heavy desk thud
+export function playStampThud() {
+  if (!isSoundEnabled()) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+
+    // 1. Initial wooden block strike click
+    const clickOsc = ctx.createOscillator();
+    const clickGain = ctx.createGain();
+    clickOsc.type = "triangle";
+    clickOsc.frequency.setValueAtTime(380, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(110, now + 0.025);
+    clickGain.gain.setValueAtTime(0.18, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    clickOsc.start(now);
+    clickOsc.stop(now + 0.035);
+
+    // 2. Heavy acoustic desk resonance thud
+    const thudOsc = ctx.createOscillator();
+    const thudGain = ctx.createGain();
+    thudOsc.type = "sine";
+    thudOsc.frequency.setValueAtTime(140, now + 0.01);
+    thudOsc.frequency.exponentialRampToValueAtTime(45, now + 0.09);
+    thudGain.gain.setValueAtTime(0.22, now + 0.01);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    thudOsc.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    thudOsc.start(now + 0.01);
+    thudOsc.stop(now + 0.13);
+  } catch {
+    // ignore
+  }
+}
+
+
