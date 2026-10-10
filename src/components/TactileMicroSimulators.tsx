@@ -108,8 +108,11 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
             <span className="font-mono font-extrabold text-base text-ink block leading-none">
               {bpm}
             </span>
-            <span className="text-[9px] text-ink-muted uppercase font-bold tracking-wider">
+            <span className="text-[9px] text-ink-muted uppercase font-bold tracking-wider font-mono">
               BPM
+            </span>
+            <span className="text-[10px] font-serif italic text-ink-secondary block -mt-0.5">
+              {bpm < 60 ? "Largo" : bpm < 76 ? "Adagio" : bpm < 108 ? "Andante" : bpm < 120 ? "Moderato" : bpm < 168 ? "Allegro" : "Presto"}
             </span>
           </div>
 

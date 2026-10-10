@@ -34,7 +34,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Hero Headline */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
-            A place to master your next craft.
+            A place to master your next <span className="font-serif italic font-normal text-ink/90">craft</span>.
           </h1>
 
           {/* Fanned Tactile Deck of Skill Cards with Floating @learner Tags */}
@@ -74,7 +74,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              Built for how adults actually learn.
+              Built for how curious minds <span className="font-serif italic font-normal">actually learn</span>.
             </h2>
             <p className="mt-3 text-ink-muted text-sm sm:text-base">
               Traditional courses have an 8% completion rate. Skillora replaces 40-hour lectures with actionable sequential micro-steps.
