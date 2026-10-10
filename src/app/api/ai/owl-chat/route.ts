@@ -34,7 +34,7 @@ Your goal is to:
 
 Return STRICT JSON matching this schema:
 {
-  "owlMessage": "Hoo! A brilliant pursuit. Fingerstyle guitar builds extraordinary thumb independence. I have crafted your 3-step pathway and sent it directly to your Studio!",
+  "owlMessage": "A brilliant pursuit. Fingerstyle guitar builds extraordinary thumb independence. I have structured your 3-step pathway and dispatched it directly to your Studio.",
   "skill": {
     "title": "Concise skill title (max 6 words)",
     "summary": "1-2 sentence high-signal summary of the physical mechanics, techniques, or mental models.",
@@ -131,7 +131,7 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
     };
 
     return NextResponse.json({
-      owlMessage: parsed.owlMessage || `Hoo! I've prepared your curriculum for ${formattedSkill.title} and added it to My Studio!`,
+      owlMessage: parsed.owlMessage || `I have structured your curriculum for ${formattedSkill.title} and dispatched it to My Studio!`,
       skill: formattedSkill,
     });
   } catch (err: unknown) {

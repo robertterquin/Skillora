@@ -65,25 +65,7 @@ export function HeroFanDeck({ skills, onSelectSkill }: HeroFanDeckProps) {
   const deckSkills = skills.slice(0, 6);
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto py-10 px-4 sm:px-6 select-none">
-      {/* Floating Speech Tag 1: Left (@mateo) */}
-      <div className="absolute -top-3 left-6 sm:left-16 z-40 animate-bounce duration-1000">
-        <div className="relative inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#2563EB] text-white text-xs font-semibold shadow-md">
-          <span>@mateo</span>
-          <span className="text-white/80 font-normal hidden sm:inline">• 20m practice</span>
-          <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-[#2563EB] rotate-45 transform" />
-        </div>
-      </div>
-
-      {/* Floating Speech Tag 2: Right (@elena) */}
-      <div className="absolute -top-1 right-6 sm:right-20 z-40 animate-bounce duration-1000 delay-300">
-        <div className="relative inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#059669] text-white text-xs font-semibold shadow-md">
-          <span>@elena</span>
-          <span className="text-white/80 font-normal hidden sm:inline">• Cyrillic unlocked</span>
-          <div className="absolute -bottom-1.5 right-4 w-3 h-3 bg-[#059669] rotate-45 transform" />
-        </div>
-      </div>
-
+    <div className="relative w-full max-w-5xl mx-auto py-6 sm:py-8 px-4 sm:px-6 select-none">
       {/* Fanned Cards Stage */}
       <div className="flex items-center justify-center -space-x-8 sm:-space-x-12 md:-space-x-14 pt-8 pb-12 overflow-x-auto sm:overflow-visible no-scrollbar">
         {deckSkills.map((skill, idx) => {

@@ -134,7 +134,7 @@ export default function LandingPage() {
                   <span className="text-xs text-ink-muted">/ 7-day trial</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  Start with up to 3 micro-skills and experience the AI Learning Owl for 7 days.
+                  Start with up to 3 micro-skills and experience Archimedes Studio mentor for 7 days.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>7-day free trial</strong> of AI Owl & Voice grading</span>
+                    <span><strong>7-day free trial</strong> of Archimedes & Voice coaching</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
@@ -176,15 +176,15 @@ export default function LandingPage() {
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Learn as many skills as you want</strong></span>
+                    <span><strong>Learn as many skills as you want</strong> (unlimited studio slots)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited AI Learning Owl</strong> voice & chat summoning</span>
+                    <span><strong>Unlimited Archimedes Studio</strong> voice & curriculum deconstruction</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited Technique Coach</strong> & Whisper voice grading</span>
+                    <span><strong>Unlimited Technique Coach</strong> & voice pronunciation diagnostics</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />

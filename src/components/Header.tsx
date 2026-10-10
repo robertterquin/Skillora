@@ -226,7 +226,7 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
                         <SolarIcon name="book-bookmark-linear" className="w-4 h-4 text-ink-muted" />
-                        <span>Browse Skill Library</span>
+                        <span>Skill Library</span>
                       </Link>
 
                       <button

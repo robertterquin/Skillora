@@ -658,16 +658,7 @@ export default function DashboardPage() {
 
         {/* Discipline & Duration Filter Bar in My Studio */}
         <section className="mb-8">
-          <div className="p-6 bg-white rounded-3xl border border-surface-border shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
-                <SolarIcon name="filter-linear" className="w-4 h-4 text-brand-600" />
-                <span>Filter My Studio Repertoire</span>
-              </span>
-              <span className="text-xs text-ink-muted">
-                Showing {filteredStudioSkills.length} of {myStudioSkills.length} enrolled skills
-              </span>
-            </div>
+          <div className="p-5 sm:p-6 bg-white rounded-3xl border border-surface-border shadow-xs">
             <SkillFilterBar
               categories={CATEGORIES}
               selectedCategory={selectedCategory}
@@ -852,17 +843,17 @@ export default function DashboardPage() {
 
         {/* Slot Limit Callout if Free Tier and at 3 skills */}
         {!isPro && isClient && myStudioSkills.length >= 3 && (
-          <section className="mb-6 p-6 rounded-3xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
-                <SolarIcon name="cup-first-linear" className="w-5 h-5" />
+          <section className="mb-6 p-6 rounded-3xl bg-white border border-surface-border shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
+                <SolarIcon name="cup-first-linear" className="w-5 h-5 text-ink-muted" />
               </div>
               <div>
                 <h4 className="font-display font-bold text-sm text-ink">
                   Free Explorer Plan: 3/3 Skill Slots Filled
                 </h4>
                 <p className="text-xs text-ink-muted">
-                  You have filled all 3 active skill slots on the Free plan. Upgrade to Skillora Pro for ₱299/month to learn unlimited skills simultaneously!
+                  You have filled all 3 active discipline slots. Upgrade to Skillora Pro for ₱299/month to study unlimited concurrent crafts.
                 </p>
               </div>
             </div>
@@ -872,33 +863,33 @@ export default function DashboardPage() {
                 setIsLimitReached(true);
                 setIsSubscriptionModalOpen(true);
               }}
-              className="px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-700 text-xs font-semibold text-white transition shadow-2xs whitespace-nowrap cursor-pointer"
+              className="px-4 py-2 rounded-full bg-ink hover:bg-neutral-800 text-xs font-semibold text-white transition shadow-2xs whitespace-nowrap cursor-pointer"
             >
-              Unlock Unlimited (₱299/mo) &rarr;
+              Unlock Unlimited &rarr;
             </button>
           </section>
         )}
 
         {/* Discovery Callout Footer */}
-        <section className="p-6 rounded-3xl bg-gradient-to-r from-canvas via-white to-canvas border border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 flex-shrink-0">
-              <SolarIcon name="compass-linear" className="w-5 h-5" />
+        <section className="p-6 rounded-3xl bg-white border border-surface-border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
+              <SolarIcon name="compass-linear" className="w-5 h-5 text-ink-muted" />
             </div>
             <div>
               <h4 className="font-display font-bold text-sm text-ink">
-                Want to learn another craft?
+                Ready to deconstruct another craft?
               </h4>
               <p className="text-xs text-ink-muted">
-                Speak or chat with the Learning Owl in the Skill Library to generate new micro-skills.
+                Speak or chat with Archimedes in the Study to sculpt new techniques into step-by-step drills.
               </p>
             </div>
           </div>
           <Link
             href="/library"
-            className="px-4 py-2 rounded-full bg-white border border-surface-border hover:border-brand-500/40 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs whitespace-nowrap"
+            className="px-4 py-2 rounded-full bg-canvas border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs whitespace-nowrap"
           >
-            Visit Learning Owl &rarr;
+            Consult Archimedes in Study &rarr;
           </Link>
         </section>
       </main>

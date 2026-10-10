@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { SolarIcon } from "@/components/SolarIcon";
 
 interface SubscriptionModalProps {
@@ -16,6 +16,8 @@ export function SubscriptionModal({
   userEmail,
   isLimitReached = false,
 }: SubscriptionModalProps) {
+  const [isUpgraded, setIsUpgraded] = useState(false);
+
   if (!isOpen) return null;
 
   return (
@@ -106,16 +108,26 @@ export function SubscriptionModal({
               </li>
             </ul>
 
-            <button
-              type="button"
-              onClick={() => {
-                alert("Payment gateway in test mode! Your account is activated for Pro membership.");
-                onClose();
-              }}
-              className="mt-5 w-full py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition"
-            >
-              Upgrade to Pro for ₱299/month
-            </button>
+            {isUpgraded ? (
+              <div className="mt-5 p-3.5 rounded-xl bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald text-center text-xs font-semibold flex items-center justify-center gap-2 animate-fade-in">
+                <SolarIcon name="check-circle-linear" className="w-4 h-4" />
+                <span>Pro Membership Activated — Welcome to Unlimited Access</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpgraded(true);
+                  setTimeout(() => {
+                    onClose();
+                    setIsUpgraded(false);
+                  }, 1600);
+                }}
+                className="mt-5 w-full py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+              >
+                Upgrade to Pro for ₱299/month
+              </button>
+            )}
           </div>
 
           {/* Free Tier Comparison Card */}
@@ -126,7 +138,7 @@ export function SubscriptionModal({
             </div>
             <ul className="space-y-1.5 text-ink-muted">
               <li>• Up to <strong>3 active skills</strong> in My Studio</li>
-              <li>• <strong>7-Day AI Trial</strong> for Learning Owl, voice grading, and coach</li>
+              <li>• <strong>7-Day Trial</strong> for Archimedes Mentor, voice grading, and technique coach</li>
               <li>• Standard step-by-step flashcards & vetted learning links</li>
             </ul>
           </div>

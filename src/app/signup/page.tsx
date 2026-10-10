@@ -101,15 +101,6 @@ export default function SignUpPage() {
       {/* Main Sign Up Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-4">
         <div className="w-full max-w-lg">
-          {/* Floating Tag */}
-          <div className="flex justify-center mb-4">
-            <div className="relative inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold shadow-xs">
-              <span>@first_step</span>
-              <span className="text-white/80 font-normal">• Pick a craft and begin</span>
-              <div className="absolute -bottom-1 left-6 w-2 h-2 bg-emerald-600 rotate-45" />
-            </div>
-          </div>
-
           <div className="p-8 sm:p-10 bg-white rounded-3xl border border-surface-border shadow-sm">
             <div className="text-center mb-8">
               <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">

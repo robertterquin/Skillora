@@ -44,7 +44,7 @@ export default function SkillLibraryPage() {
     {
       id: "intro",
       sender: "owl",
-      text: "Hoo! Welcome to my study. What craft, instrument, or technique do you wish to master today? Speak to me or type your request below.",
+      text: "Welcome to the Archimedes Study. What craft, instrument, or discipline do you wish to deconstruct today? Speak or type your request below.",
     },
   ]);
 
@@ -197,7 +197,7 @@ export default function SkillLibraryPage() {
       const expiredMsg: OwlConversation = {
         id: `owl-expired-${Date.now()}`,
         sender: "owl",
-        text: "Hoo! Your 7-day free AI trial has concluded. Upgrade to Skillora Pro for ₱299/month to continue unlimited AI learning and skill summoning!",
+        text: "Your 7-day free trial has concluded. Upgrade to Skillora Pro for ₱299/month to continue unlimited deliberate practice deconstructions.",
       };
       setMessages((prev) => [...prev, expiredMsg]);
       speakOwlVoice(expiredMsg.text);
@@ -211,7 +211,7 @@ export default function SkillLibraryPage() {
       const limitMsg: OwlConversation = {
         id: `owl-limit-${Date.now()}`,
         sender: "owl",
-        text: "Hoo! You have reached the Free Explorer limit of 3 active studio skills. Upgrade to Skillora Pro for ₱299/month to learn as many skills as you want simultaneously!",
+        text: "You have reached the Free Explorer limit of 3 active studio skills. Upgrade to Skillora Pro for ₱299/month to study unlimited simultaneous disciplines.",
       };
       setMessages((prev) => [...prev, limitMsg]);
       speakOwlVoice(limitMsg.text);
@@ -280,7 +280,7 @@ export default function SkillLibraryPage() {
       const errorMsg: OwlConversation = {
         id: `owl-err-${Date.now()}`,
         sender: "owl",
-        text: "Hoo! My thoughts were momentarily interrupted. Let us try once more — what skill shall we break down?",
+        text: "My analysis was momentarily interrupted. Let us try once more — what discipline shall we deconstruct?",
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -351,7 +351,7 @@ export default function SkillLibraryPage() {
             isSpeaking={isOwlSpeaking}
             onClick={() => {
               playChime();
-              speakOwlVoice("Hoo! I am listening. What craft shall we deconstruct today?");
+              speakOwlVoice("I am listening. What discipline shall we deconstruct today?");
             }}
             size={180}
           />
@@ -473,7 +473,7 @@ export default function SkillLibraryPage() {
             <div className="flex items-start">
               <div className="p-4 rounded-3xl bg-white border border-surface-border text-xs text-brand-600 font-semibold flex items-center gap-2 shadow-xs animate-pulse">
                 <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                <span>The Owl is analyzing biomechanics and sculpting steps...</span>
+                <span>Archimedes is analyzing biomechanics and sculpting sequential drills...</span>
               </div>
             </div>
           )}
