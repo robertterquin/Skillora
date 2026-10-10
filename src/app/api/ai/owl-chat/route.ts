@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { openai } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enrichStepsWithYouTube } from "@/lib/youtube-service";
 
 export async function POST(req: NextRequest) {
   try {
@@ -103,51 +104,50 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
       time_commitment_label: skillData.time_commitment_label || "20 mins/day for 1 week",
       is_featured: false,
       steps_count: skillData.steps?.length || 3,
-      steps: (skillData.steps || []).map((st: {
-        step_number: number;
-        title: string;
-        instructions: string;
-        estimated_minutes: number;
-        resources?: {
-          platform_name: string;
-          url: string;
-          resource_type: string;
-          is_free: boolean;
-        }[];
-      }, idx: number) => {
-        const stepId = canonicalMatch?.steps?.[idx]?.id || crypto.randomUUID();
-        return {
-          id: stepId,
-          skill_id: skillId,
-          step_number: st.step_number || idx + 1,
-          title: st.title,
-          instructions: st.instructions,
-          estimated_minutes: st.estimated_minutes || 20,
-          resources: (st.resources || []).map((r, rIdx) => {
-            const canonicalRes = canonicalMatch?.steps?.[idx]?.resources?.[rIdx];
-            let finalUrl = canonicalRes?.url || r.url || "https://google.com";
-
-            // If it's an AI-generated YouTube link without a verified canonical match, avoid dead IDs with targeted search
-            if (!canonicalRes && (r.resource_type === "video" || finalUrl.includes("youtube.com") || finalUrl.includes("youtu.be"))) {
-              if (finalUrl === "https://www.youtube.com" || finalUrl.includes("watch?v=")) {
-                finalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                  `${formattedSkill.title} ${st.title} tutorial`
-                )}`;
-              }
-            }
-
-            return {
-              id: canonicalRes?.id || crypto.randomUUID(),
-              step_id: stepId,
-              platform_name: canonicalRes?.platform_name || r.platform_name || "Online Tutorial",
-              url: finalUrl,
-              resource_type: r.resource_type || "video",
-              is_free: r.is_free !== undefined ? r.is_free : true,
-            };
-          }),
-        };
-      }),
+      steps: [] as unknown[],
     };
+
+    // Prepare steps
+    const initialSteps = (skillData.steps || []).map((st: {
+      step_number: number;
+      title: string;
+      instructions: string;
+      estimated_minutes: number;
+      resources?: {
+        platform_name: string;
+        url: string;
+        resource_type: string;
+        is_free: boolean;
+      }[];
+    }, idx: number) => {
+      const stepId = canonicalMatch?.steps?.[idx]?.id || crypto.randomUUID();
+      return {
+        id: stepId,
+        skill_id: skillId,
+        step_number: st.step_number || idx + 1,
+        title: st.title,
+        instructions: st.instructions,
+        estimated_minutes: st.estimated_minutes || 20,
+        resources: (st.resources || []).map((r, rIdx) => {
+          const canonicalRes = canonicalMatch?.steps?.[idx]?.resources?.[rIdx];
+          return {
+            id: canonicalRes?.id || crypto.randomUUID(),
+            step_id: stepId,
+            platform_name: canonicalRes?.platform_name || r.platform_name || "YouTube Tutorial",
+            url: canonicalRes?.url || r.url || "https://www.youtube.com",
+            resource_type: canonicalRes?.resource_type || r.resource_type || "video",
+            is_free: r.is_free !== undefined ? r.is_free : true,
+          };
+        }),
+      };
+    });
+
+    // Auto-resolve real, verified YouTube video tutorials for newly prompted skills!
+    const finalSteps = canonicalMatch
+      ? initialSteps
+      : await enrichStepsWithYouTube(skillData.title, initialSteps);
+
+    formattedSkill.steps = finalSteps;
 
     // Auto-persist to Supabase using service role client
     try {
@@ -167,10 +167,10 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
         { onConflict: "id" }
       );
 
-      if (formattedSkill.steps && formattedSkill.steps.length > 0) {
+      if (finalSteps && finalSteps.length > 0) {
         await admin.from("skill_steps").upsert(
-          formattedSkill.steps.map((st: { id: string; step_number: number; title: string; instructions: string; estimated_minutes: number }) => ({
-            id: st.id,
+          finalSteps.map((st: { id?: string; step_number: number; title: string; instructions: string; estimated_minutes: number }) => ({
+            id: st.id || crypto.randomUUID(),
             skill_id: formattedSkill.id,
             step_number: st.step_number,
             title: st.title,
@@ -179,6 +179,35 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
           })),
           { onConflict: "id" }
         );
+
+        // Persist real video learning_resources to Supabase
+        const resourcesToUpsert: {
+          id: string;
+          step_id: string;
+          platform_name: string;
+          url: string;
+          resource_type: string;
+          is_free: boolean;
+        }[] = [];
+
+        finalSteps.forEach((st: { id?: string; resources?: { id?: string; platform_name: string; url: string; resource_type: string; is_free: boolean }[] }) => {
+          if (st.id && st.resources) {
+            st.resources.forEach((r) => {
+              resourcesToUpsert.push({
+                id: r.id && r.id.length > 20 ? r.id : crypto.randomUUID(),
+                step_id: st.id!,
+                platform_name: r.platform_name || "YouTube Tutorial",
+                url: r.url || "https://www.youtube.com",
+                resource_type: r.resource_type || "video",
+                is_free: r.is_free !== false,
+              });
+            });
+          }
+        });
+
+        if (resourcesToUpsert.length > 0) {
+          await admin.from("learning_resources").upsert(resourcesToUpsert, { onConflict: "id" });
+        }
       }
     } catch (persistErr) {
       console.warn("Supabase auto-persist in owl-chat notice:", persistErr);

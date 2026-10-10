@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { openai } from "@/lib/openai";
 import { normalizeCategoryId } from "@/lib/mock-data";
+import { enrichStepsWithYouTube } from "@/lib/youtube-service";
 
 export async function POST(req: NextRequest) {
   try {
@@ -83,56 +84,42 @@ Generate between 3 and 4 sequential steps. Make the instructions concrete and ph
       time_commitment_label: parsed.time_commitment_label || "20 mins/day for 1 week",
       is_featured: false,
       steps_count: parsed.steps?.length || 3,
-      steps: (parsed.steps || []).map((st: {
-        step_number: number;
-        title: string;
-        instructions: string;
-        estimated_minutes: number;
-        resources?: {
-          platform_name: string;
-          url: string;
-          resource_type: string;
-          is_free: boolean;
-        }[];
-      }, idx: number) => {
-        const stepId = crypto.randomUUID();
-        return {
-          id: stepId,
-          skill_id: skillId,
-          step_number: st.step_number || idx + 1,
-          title: st.title,
-          instructions: st.instructions,
-          estimated_minutes: st.estimated_minutes || 20,
-          resources: (st.resources || []).map((r) => {
-            let finalUrl = r.url || "https://google.com";
-            // Prevent hallucinated dead YouTube video IDs by transforming unverified AI video URLs into targeted search links
-            if (
-              r.resource_type === "video" ||
-              finalUrl.includes("youtube.com") ||
-              finalUrl.includes("youtu.be")
-            ) {
-              if (
-                finalUrl === "https://www.youtube.com" ||
-                finalUrl.includes("watch?v=")
-              ) {
-                finalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                  `${parsed.title} ${st.title} tutorial`
-                )}`;
-              }
-            }
-
-            return {
-              id: crypto.randomUUID(),
-              step_id: stepId,
-              platform_name: r.platform_name || "YouTube Tutorial",
-              url: finalUrl,
-              resource_type: r.resource_type || "video",
-              is_free: r.is_free !== undefined ? r.is_free : true,
-            };
-          }),
-        };
-      }),
+      steps: [] as unknown[],
     };
+
+    const initialSteps = (parsed.steps || []).map((st: {
+      step_number: number;
+      title: string;
+      instructions: string;
+      estimated_minutes: number;
+      resources?: {
+        platform_name: string;
+        url: string;
+        resource_type: string;
+        is_free: boolean;
+      }[];
+    }, idx: number) => {
+      const stepId = crypto.randomUUID();
+      return {
+        id: stepId,
+        skill_id: skillId,
+        step_number: st.step_number || idx + 1,
+        title: st.title,
+        instructions: st.instructions,
+        estimated_minutes: st.estimated_minutes || 20,
+        resources: (st.resources || []).map((r) => ({
+          id: crypto.randomUUID(),
+          step_id: stepId,
+          platform_name: r.platform_name || "YouTube Tutorial",
+          url: r.url || "https://www.youtube.com",
+          resource_type: r.resource_type || "video",
+          is_free: r.is_free !== undefined ? r.is_free : true,
+        })),
+      };
+    });
+
+    // Auto-resolve real, embeddable YouTube video tutorials for newly prompted skills!
+    formattedSkill.steps = await enrichStepsWithYouTube(parsed.title, initialSteps);
 
     return NextResponse.json({ skill: formattedSkill });
   } catch (err: unknown) {
