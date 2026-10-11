@@ -13,6 +13,8 @@ import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { HankoSeal } from "@/components/HankoSeal";
 import { MasteryPassportModal } from "@/components/MasteryPassportModal";
 import { GuildExamModal } from "@/components/GuildExamModal";
+import { GuidedPracticeSessionModal } from "@/components/GuidedPracticeSessionModal";
+import { getDailyDocket, DocketItem } from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { CATEGORIES, INITIAL_SKILLS, normalizeSkillId, normalizeCategoryId } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
@@ -386,6 +388,27 @@ export default function DashboardPage() {
     enrolledSkillIds.map(normalizeSkillId).includes(normalizeSkillId(s.id))
   );
 
+  // Spaced Repetition Docket State
+  const [docketItems, setDocketItems] = useState<DocketItem[]>([]);
+  const [isGuidedPracticeOpen, setIsGuidedPracticeOpen] = useState(false);
+  const [guidedPracticeInitialIndex, setGuidedPracticeInitialIndex] = useState(0);
+
+  const refreshDocket = useCallback(() => {
+    if (myStudioSkills.length > 0) {
+      const docket = getDailyDocket(myStudioSkills, completedStepIds);
+      setDocketItems(docket.items);
+      if (docket.isTodayComplete) {
+        setRoutineCompleted(true);
+      }
+    } else {
+      setDocketItems([]);
+    }
+  }, [myStudioSkills, completedStepIds]);
+
+  useEffect(() => {
+    refreshDocket();
+  }, [refreshDocket]);
+
   // 6. Filter enrolled studio skills by Category, Duration, and Search Query
   const filteredStudioSkills = myStudioSkills.filter((skill) => {
     if (
@@ -559,78 +582,134 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Feature 5: Daily 15-Minute Deliberate Practice Circuit */}
+        {/* Spaced Repetition Daily Practice Docket */}
         {myStudioSkills.length > 0 && (
           <section className="mb-8">
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-surface-border shadow-xs relative overflow-hidden">
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-surface-border shadow-xs relative overflow-hidden corner-ticks">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
+                  <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
                     <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="spec-tag text-ink-subtle">
-                        CIRCUIT // 15-MIN DELIBERATE PRACTICE
+                        ATELIER DOCKET // SPACED REPETITION PRACTICE
                       </span>
+                      {docketItems.some((i) => i.urgency === "overdue") && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                          DECAY DETECTED
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-display font-bold text-lg text-ink">
-                      {dailyRoutine ? dailyRoutine.headline : "Today's 15-Minute Cross-Training Circuit"}
+                      Today&apos;s Deliberate Practice Docket
                     </h3>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-start sm:self-auto">
-                  <button
-                    type="button"
-                    disabled={routineLoading}
-                    onClick={handleGenerateDailyRoutine}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer"
-                  >
-                    <SolarIcon
-                      name="refresh-linear"
-                      className={`w-3.5 h-3.5 ${routineLoading ? "animate-spin" : ""}`}
-                    />
-                    <span>{routineLoading ? "Synthesizing Circuit..." : dailyRoutine ? "Recompile Circuit" : "Synthesize Today's Circuit"}</span>
-                  </button>
+                  {docketItems.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playMechanicalClick();
+                        setGuidedPracticeInitialIndex(0);
+                        setIsGuidedPracticeOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-mono font-bold shadow-2xs transition cursor-pointer"
+                    >
+                      <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-amber-300" />
+                      <span>
+                        {docketItems.every((i) => i.isCompletedToday)
+                          ? "Review Docket Session"
+                          : "Begin Guided Practice (15 mins)"}
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {dailyRoutine ? (
+              {docketItems.length > 0 ? (
                 <div className="space-y-4 animate-fade-in pt-2 border-t border-surface-border">
-                  {/* Workout Blocks */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {dailyRoutine.blocks.map((block, idx) => (
-                      <div
-                        key={idx}
-                        className="p-4 rounded-2xl bg-canvas border border-surface-border flex items-start gap-3.5"
-                      >
-                        <div className="w-8 h-8 rounded-xl bg-white border border-surface-border flex items-center justify-center font-bold text-xs text-ink font-mono flex-shrink-0">
-                          {block.minutes}m
+                  {/* Docket Drill Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {docketItems.map((item, idx) => {
+                      const isOverdue = item.urgency === "overdue";
+                      const isDueToday = item.urgency === "due_today";
+
+                      return (
+                        <div
+                          key={item.step.id}
+                          onClick={() => {
+                            playMechanicalClick();
+                            setGuidedPracticeInitialIndex(idx);
+                            setIsGuidedPracticeOpen(true);
+                          }}
+                          className={`p-4 rounded-2xl border transition-all cursor-pointer group flex flex-col justify-between ${
+                            item.isCompletedToday
+                              ? "bg-canvas border-emerald-300/80 shadow-2xs"
+                              : isOverdue
+                              ? "bg-rose-50/40 border-rose-300 hover:border-rose-400 shadow-xs"
+                              : isDueToday
+                              ? "bg-amber-50/40 border-amber-300 hover:border-amber-400 shadow-xs"
+                              : "bg-white border-surface-border hover:border-ink/40 shadow-2xs"
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between text-[10px] font-mono mb-1.5">
+                              <span className="text-stone-500 uppercase font-semibold truncate max-w-[140px]">
+                                {item.skill.title}
+                              </span>
+                              {item.isCompletedToday ? (
+                                <span className="px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                                  <span>✓ STAMPED</span>
+                                </span>
+                              ) : isOverdue ? (
+                                <span className="px-1.5 py-0.2 rounded font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                                  OVERDUE (+{item.daysOverdue}d)
+                                </span>
+                              ) : isDueToday ? (
+                                <span className="px-1.5 py-0.2 rounded font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                  DUE TODAY
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.2 rounded font-semibold bg-stone-100 text-stone-600">
+                                  NEW DRILL
+                                </span>
+                              )}
+                            </div>
+
+                            <h4 className="font-display font-bold text-sm text-ink mb-1 group-hover:text-brand-700 transition">
+                              {item.step.title}
+                            </h4>
+                            <p className="text-xs text-ink-secondary line-clamp-2 leading-relaxed">
+                              {item.step.instructions}
+                            </p>
+                          </div>
+
+                          <div className="mt-3 pt-2.5 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
+                            <span className="text-[11px] text-stone-500">
+                              ~{item.step.estimated_minutes} mins
+                            </span>
+                            <span className="text-[11px] font-bold text-ink group-hover:text-brand-600 flex items-center gap-1">
+                              <span>{item.isCompletedToday ? "Review Again" : "Practice Now"}</span>
+                              <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <span className="text-[10px] font-mono font-medium text-ink-muted uppercase tracking-wider block">
-                            {block.skillTitle}
-                          </span>
-                          <h4 className="font-display font-bold text-sm text-ink mb-1">
-                            {block.drillTitle}
-                          </h4>
-                          <p className="text-xs text-ink-secondary leading-relaxed">
-                            {block.action}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  {/* Mantra & Hankō Practice Seal Registry */}
+                  {/* Bottom Streak Strip & Philosophy */}
                   <div className="p-4 rounded-2xl bg-canvas border border-surface-border text-xs space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <p className="text-ink-secondary italic font-serif">
-                        &ldquo;{dailyRoutine.dailyMantra}&rdquo;
+                        &ldquo;Repetition without tension creates speed without effort.&rdquo;
                       </p>
                       <span className="spec-tag text-stone-500 font-mono">
-                        {currentUser ? "4 DAYS STAMPED" : "1 DAY STAMPED"}
+                        {docketItems.filter((i) => i.isCompletedToday).length} OF {docketItems.length} DRILLS COMPLETED TODAY
                       </span>
                     </div>
 
@@ -642,8 +721,9 @@ export default function DashboardPage() {
                         </span>
                         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                           {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => {
-                            const isStamped = dIdx < 3 || (dIdx === 3 && routineCompleted);
                             const isToday = dIdx === 3;
+                            const isDocketAllDone = docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday);
+                            const isStamped = dIdx < 3 || (isToday && (routineCompleted || isDocketAllDone));
                             return (
                               <div
                                 key={dIdx}
@@ -674,7 +754,7 @@ export default function DashboardPage() {
                           setRoutineCompleted(!routineCompleted);
                         }}
                         className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-2 cursor-pointer shadow-xs ${
-                          routineCompleted
+                          routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday))
                             ? "bg-rose-700 text-white"
                             : "bg-ink hover:bg-neutral-800 text-white"
                         }`}
@@ -682,35 +762,22 @@ export default function DashboardPage() {
                         <HankoSeal
                           size="sm"
                           label="済"
-                          variant={routineCompleted ? "vermilion" : "obsidian"}
+                          variant={routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday)) ? "vermilion" : "obsidian"}
                           className="w-4 h-4 scale-75"
                           animate={routineCompleted}
                         />
-                        <span>{routineCompleted ? "Hankō Stamped for Today!" : "Stamp Today's Circuit"}</span>
+                        <span>
+                          {routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday))
+                            ? "Hankō Stamped for Today!"
+                            : "Stamp Today's Docket"}
+                        </span>
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="pt-2 border-t border-surface-border space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <p className="text-xs text-ink-muted leading-relaxed">
-                      Synthesize a daily 15-minute cross-training routine compiled from your active micro-drills to build automatic physical and cognitive muscle memory.
-                    </p>
-                    <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar py-0.5">
-                      <span className="text-[10px] font-mono text-ink-muted uppercase mr-1">CURRENT STAMP STREAK:</span>
-                      {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => (
-                        <div
-                          key={dIdx}
-                          className={`w-6 h-6 rounded-full border flex items-center justify-center text-[9px] font-mono ${
-                            dIdx < 3 ? "bg-rose-50 border-rose-300 text-rose-700 font-bold font-serif" : "bg-canvas border-surface-border text-ink-subtle"
-                          }`}
-                        >
-                          {dIdx < 3 ? "済" : day}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div className="pt-2 border-t border-surface-border text-xs text-ink-muted">
+                  Enroll in disciplines from the library to populate your Spaced Repetition Docket.
                 </div>
               )}
             </div>
@@ -1067,6 +1134,20 @@ export default function DashboardPage() {
               currentUser?.email?.split("@")[0] ||
               "Journeyman Craftsman"
             }
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 6. Guided Deliberate Practice Session Modal (SM-2 Spaced Repetition) */}
+      <AnimatePresence>
+        {isGuidedPracticeOpen && docketItems.length > 0 && (
+          <GuidedPracticeSessionModal
+            isOpen={isGuidedPracticeOpen}
+            onClose={() => setIsGuidedPracticeOpen(false)}
+            docketItems={docketItems}
+            initialIndex={guidedPracticeInitialIndex}
+            onDocketUpdated={refreshDocket}
+            onStepCompleted={handleToggleStep}
           />
         )}
       </AnimatePresence>
