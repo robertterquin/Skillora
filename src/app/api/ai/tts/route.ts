@@ -3,7 +3,7 @@ import { openai } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, voice = "fable" } = await req.json();
+    const { text, voice = "onyx", speed = 0.92 } = await req.json();
 
     if (!text || typeof text !== "string" || text.trim().length === 0) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
@@ -19,14 +19,19 @@ export async function POST(req: NextRequest) {
     // Limit length to 600 characters for concise, high-signal mentor responses
     const cleanText = text.trim().slice(0, 600);
 
-    const validVoices = ["fable", "onyx", "alloy", "echo", "nova", "shimmer"];
-    const chosenVoice = validVoices.includes(voice) ? voice : "fable";
+    // Onyx is the deep, resonant, professorial voice ideal for Archimedes the Sage Owl
+    const validVoices = ["onyx", "echo", "fable", "alloy", "nova", "shimmer"];
+    const chosenVoice = validVoices.includes(voice) ? voice : "onyx";
 
+    // Clamp speed between 0.85 and 1.1 for natural, deliberate cadence
+    const cleanSpeed = typeof speed === "number" ? Math.max(0.85, Math.min(1.1, speed)) : 0.92;
+
+    // Use tts-1-hd for rich acoustic warmth and deep baritone harmonics
     const mp3 = await openai.audio.speech.create({
-      model: "tts-1",
-      voice: chosenVoice as "fable" | "onyx" | "alloy" | "echo" | "nova" | "shimmer",
+      model: "tts-1-hd",
+      voice: chosenVoice as "onyx" | "echo" | "fable" | "alloy" | "nova" | "shimmer",
       input: cleanText,
-      speed: 1.0,
+      speed: cleanSpeed,
     });
 
     const buffer = Buffer.from(await mp3.arrayBuffer());

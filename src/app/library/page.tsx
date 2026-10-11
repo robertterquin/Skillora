@@ -160,7 +160,7 @@ export default function SkillLibraryPage() {
         const res = await fetch("/api/ai/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, voice: "fable" }),
+          body: JSON.stringify({ text, voice: "onyx", speed: 0.92 }),
         });
 
         if (!res.ok) {
@@ -186,11 +186,26 @@ export default function SkillLibraryPage() {
       await audio.play();
     } catch (err) {
       console.warn("Falling back to native browser speech synthesis:", err);
-      // Graceful fallback to browser speech synthesis
+      // Graceful fallback to browser speech synthesis with deep sage register
       if ("speechSynthesis" in window) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.95;
-        utterance.pitch = 0.9;
+        const voices = window.speechSynthesis.getVoices();
+        // Look for deep, resonant British or US male voices to emulate a sage owl
+        const deepVoice =
+          voices.find(
+            (v) =>
+              v.lang.startsWith("en") &&
+              (v.name.includes("Daniel") ||
+                v.name.includes("UK English Male") ||
+                v.name.includes("Oliver") ||
+                v.name.includes("Arthur") ||
+                v.name.includes("Alex") ||
+                v.name.includes("Natural"))
+          ) || voices.find((v) => v.lang.startsWith("en"));
+
+        if (deepVoice) utterance.voice = deepVoice;
+        utterance.rate = 0.90; // Measured, thoughtful cadence
+        utterance.pitch = 0.82; // Lower, warmer baritone pitch
         utterance.onend = () => setIsOwlSpeaking(false);
         utterance.onerror = () => setIsOwlSpeaking(false);
         window.speechSynthesis.speak(utterance);
