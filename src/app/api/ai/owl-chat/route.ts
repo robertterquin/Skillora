@@ -63,7 +63,8 @@ Return STRICT JSON matching this schema:
     ]
   }
 }
-Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused on physical sensations.`;
+Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused on physical sensations.
+CRITICAL FOR ESTIMATED TIME: "estimated_minutes" must strictly be a focused 15 to 25 minute deliberate practice sprint (e.g. 15, 20, or 25). Never output marathon blocks like 60 minutes.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -127,7 +128,7 @@ Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused 
         step_number: st.step_number || idx + 1,
         title: st.title,
         instructions: st.instructions,
-        estimated_minutes: st.estimated_minutes || 20,
+        estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
         resources: (st.resources || []).map((r, rIdx) => {
           const canonicalRes = canonicalMatch?.steps?.[idx]?.resources?.[rIdx];
           return {

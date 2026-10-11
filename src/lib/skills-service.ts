@@ -90,7 +90,7 @@ export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]
             step_number: st.step_number,
             title: st.title,
             instructions: st.instructions,
-            estimated_minutes: st.estimated_minutes,
+            estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
             resources,
           };
         });

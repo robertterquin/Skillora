@@ -683,14 +683,208 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
 }
 
 // ============================================================================
-// 5. UNIVERSAL FOCUS REPETITION DRILL (Juggling, Rubik's Cube, Custom Skills)
+// 5. CODE MILESTONE & TEST RUNNER TERMINAL (Software, Web, Algorithms)
+// ============================================================================
+export function CodeMilestoneTerminalSimulator({
+  stepTitle,
+  targetMilestones = 5,
+}: {
+  stepTitle: string;
+  targetMilestones?: number;
+}) {
+  const [milestones, setMilestones] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState(1200); // 20m deliberate focus sprint
+  const [timerActive, setTimerActive] = useState(false);
+  const [isTestRunning, setIsTestRunning] = useState(false);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([
+    `$ skillora init-step --focus "${stepTitle.slice(0, 32)}..."`,
+    `> Ready. Work in your local IDE/editor. Log code runs below:`,
+  ]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!timerActive) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      setTimerSeconds((prev) => {
+        if (prev <= 1) {
+          playChime();
+          setTimerActive(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [timerActive]);
+
+  const handleRunVerification = () => {
+    if (isTestRunning) return;
+    playMechanicalClick();
+    setIsTestRunning(true);
+
+    setTimeout(() => {
+      playChime();
+      setIsTestRunning(false);
+      const nextCount = milestones + 1;
+      setMilestones(nextCount);
+      setTerminalLogs((prev) => [
+        ...prev.slice(-3),
+        `$ npm test --passWithNoTests`,
+        `✓ PASS: Syntax validation passed (0 errors)`,
+        `✓ Milestone [${nextCount}/${targetMilestones}] etched: ${stepTitle.slice(0, 24)}...`,
+      ]);
+    }, 450);
+  };
+
+  const handleManualMinus = () => {
+    playMechanicalClick();
+    setMilestones((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleManualPlus = () => {
+    playMechanicalClick();
+    setMilestones((prev) => {
+      const next = prev + 1;
+      if (next === targetMilestones) {
+        playChime();
+      }
+      return next;
+    });
+  };
+
+  const formatMinSec = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="w-full my-3 p-4 bg-[#18181B] text-stone-200 border-2 border-stone-700 rounded-2xl corner-ticks shadow-2xs select-none font-mono"
+    >
+      <div className="flex items-center justify-between text-[10px] tracking-widest text-stone-400 uppercase mb-2 pb-1.5 border-b border-stone-800">
+        <span className="flex items-center gap-1.5">
+          <SolarIcon name="code-linear" className="w-3.5 h-3.5 text-emerald-400" />
+          <span>MICRO-SIMULATOR // CODE TEST RUNNER</span>
+        </span>
+        <span className="text-emerald-400 font-bold">
+          TARGET: {targetMilestones} MILESTONES
+        </span>
+      </div>
+
+      {/* Mini Monospace Terminal Display */}
+      <div className="p-3 bg-black/70 rounded-xl border border-stone-800 text-[11px] leading-relaxed mb-3 space-y-1 overflow-x-auto text-stone-300">
+        {terminalLogs.map((log, i) => (
+          <div
+            key={i}
+            className={
+              log.startsWith("✓")
+                ? "text-emerald-400 font-bold"
+                : log.startsWith("$")
+                ? "text-sky-400 font-semibold"
+                : "text-stone-400"
+            }
+          >
+            {log}
+          </div>
+        ))}
+        {isTestRunning && (
+          <div className="text-amber-400 animate-pulse">
+            &gt; Executing test runner... [••••]
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 my-2">
+        {/* Milestone Logger */}
+        <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
+          <span className="text-[10px] font-mono font-bold text-stone-400 uppercase">
+            CODE MILESTONES
+          </span>
+          <div className="flex items-center justify-center gap-2.5 my-1">
+            <button
+              type="button"
+              onClick={handleManualMinus}
+              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold transition text-xs cursor-pointer"
+            >
+              -
+            </button>
+            <span className="font-mono font-extrabold text-2xl text-stone-100 tabular-nums">
+              {milestones} / {targetMilestones}
+            </span>
+            <button
+              type="button"
+              onClick={handleManualPlus}
+              className="w-7 h-7 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-400 font-bold transition text-xs cursor-pointer"
+            >
+              +
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={handleRunVerification}
+            disabled={isTestRunning}
+            className="w-full mt-1 py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+          >
+            <SolarIcon name="play-linear" className="w-3 h-3" />
+            <span>Run Test Suite (+1)</span>
+          </button>
+        </div>
+
+        {/* 20-min Focus Sprint Clock */}
+        <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
+          <span className="text-[10px] font-mono font-bold text-stone-400 uppercase">
+            20M FOCUS SPRINT
+          </span>
+          <span className="font-mono font-extrabold text-2xl text-amber-400 my-1 tabular-nums">
+            {formatMinSec(timerSeconds)}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              playMechanicalClick();
+              if (timerSeconds === 0) setTimerSeconds(1200);
+              setTimerActive(!timerActive);
+            }}
+            className={`w-full mt-1 py-1.5 px-2 rounded-lg font-mono text-[11px] font-bold transition cursor-pointer ${
+              timerActive
+                ? "bg-rose-950/70 border border-rose-800 text-rose-300 hover:bg-rose-900"
+                : "bg-stone-800 text-stone-200 hover:bg-stone-700"
+            }`}
+          >
+            {timerActive ? "Pause Sprint" : timerSeconds === 0 ? "Reset (20m)" : "Start Sprint"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// 6. UNIVERSAL FOCUS REPETITION DRILL (Juggling, Rubik's Cube, Custom Skills)
 // ============================================================================
 export function FocusRepetitionDrill({
   stepTitle,
   targetReps = 10,
+  metricHeading = "COMPLETED DRILLS",
+  metricNoun = "clean repetitions",
+  actionLabel = "Click (+) on each clean repetition",
+  guidanceTip,
 }: {
   stepTitle: string;
   targetReps?: number;
+  metricHeading?: string;
+  metricNoun?: string;
+  actionLabel?: string;
+  guidanceTip?: string;
 }) {
   const [reps, setReps] = useState(0);
   const [timerSeconds, setTimerSeconds] = useState(60);
@@ -743,22 +937,24 @@ export function FocusRepetitionDrill({
       <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
           <SolarIcon name="stopwatch-linear" className="w-3.5 h-3.5 text-brand-600" />
-          <span>MICRO-SIMULATOR // TACTILE REPETITION COUNTER</span>
+          <span>MICRO-SIMULATOR // {metricHeading}</span>
         </span>
-        <span className="text-brand-600 font-bold">TARGET: {targetReps} REPS</span>
+        <span className="text-brand-600 font-bold">
+          TARGET: {targetReps} {metricNoun.toUpperCase()}
+        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 my-2">
-        {/* Rep Counter */}
+        {/* Rep / Drill Counter */}
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-between">
           <span className="text-[10px] font-mono font-bold text-ink-muted uppercase">
-            COMPLETED DRILLS
+            {metricHeading}
           </span>
           <div className="flex items-center justify-center gap-3 my-1">
             <button
               type="button"
               onClick={handleMinusRep}
-              className="w-8 h-8 rounded-lg bg-surface-muted hover:bg-surface-border text-ink font-bold transition"
+              className="w-8 h-8 rounded-lg bg-surface-muted hover:bg-surface-border text-ink font-bold transition cursor-pointer"
             >
               -
             </button>
@@ -768,13 +964,13 @@ export function FocusRepetitionDrill({
             <button
               type="button"
               onClick={handleAddRep}
-              className="w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold transition"
+              className="w-8 h-8 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold transition cursor-pointer"
             >
               +
             </button>
           </div>
           <span className="text-[10px] text-ink-subtle font-mono">
-            {reps >= targetReps ? "★ TARGET REACHED!" : "Click (+) on each clean repetition"}
+            {reps >= targetReps ? "★ TARGET REACHED!" : actionLabel}
           </span>
         </div>
 
@@ -793,7 +989,7 @@ export function FocusRepetitionDrill({
               if (timerSeconds === 0) setTimerSeconds(60);
               setTimerActive(!timerActive);
             }}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
               timerActive
                 ? "bg-rose-50 text-rose-700 border border-rose-200"
                 : "bg-brand-600 text-white hover:bg-brand-700"
@@ -803,6 +999,12 @@ export function FocusRepetitionDrill({
           </button>
         </div>
       </div>
+
+      {guidanceTip && (
+        <div className="mt-2 text-[11px] font-mono text-ink-muted bg-surface-muted/40 px-2.5 py-1 rounded-lg border border-surface-border/50 text-left">
+          {guidanceTip}
+        </div>
+      )}
     </div>
   );
 }

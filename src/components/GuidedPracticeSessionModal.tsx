@@ -15,6 +15,7 @@ import {
   RecallQuality,
   recordDrillPractice,
 } from "@/lib/spaced-repetition";
+import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 
 interface GuidedPracticeSessionModalProps {
   isOpen: boolean;
@@ -74,6 +75,7 @@ export function GuidedPracticeSessionModal({
   }, [isOpen, initialIndex, docketItems, sessionItems.length]);
 
   const activeItem: DocketItem | undefined = sessionItems[currentIndex];
+  const profile = getDisciplinePracticeProfile(activeItem?.skill, activeItem?.step);
 
   // Configure timer and rep count ONLY when active drill step ID changes
   useEffect(() => {
@@ -82,15 +84,22 @@ export function GuidedPracticeSessionModal({
     const stepId = activeItem.step.id;
     if (stepId !== activeStepIdRef.current) {
       activeStepIdRef.current = stepId;
-      const minutes = Number(activeItem.step.estimated_minutes) || 5;
-      const totalSec = Math.max(60, minutes * 60);
+      const stepMinutes = Number(activeItem.step.estimated_minutes) || 15;
+      // Deliberate practice is high-intensity focused sprint:
+      // If step's estimated time is > 25 mins (e.g. 60m), default to discipline sprint (15-20m)
+      const sprintMinutes = stepMinutes > 25 ? profile.suggestedSprintMinutes : stepMinutes;
+      const totalSec = Math.max(60, sprintMinutes * 60);
       setSecondsRemaining(totalSec);
       setTargetSeconds(totalSec);
       setIsRunning(false);
       setIsEvaluationReady(false);
       setRepCount(0);
+      setMetronomeActive(false);
+      if (profile.defaultBpm) {
+        setMetronomeBpm(profile.defaultBpm);
+      }
     }
-  }, [activeItem]);
+  }, [activeItem, profile]);
 
   // Main countdown timer interval
   useEffect(() => {
@@ -157,16 +166,25 @@ export function GuidedPracticeSessionModal({
     setTargetSeconds((prev) => Math.max(30, prev - 60));
   }, []);
 
+  const setSprintDuration = useCallback((minutes: number) => {
+    playMechanicalClick();
+    const totalSec = Math.max(60, minutes * 60);
+    setSecondsRemaining(totalSec);
+    setTargetSeconds(totalSec);
+    setIsRunning(false);
+  }, []);
+
   const resetTimer = useCallback(() => {
     playMechanicalClick();
     setIsRunning(false);
     if (activeItem) {
-      const minutes = Number(activeItem.step.estimated_minutes) || 5;
-      const totalSec = Math.max(60, minutes * 60);
+      const stepMinutes = Number(activeItem.step.estimated_minutes) || 15;
+      const sprintMinutes = stepMinutes > 25 ? profile.suggestedSprintMinutes : stepMinutes;
+      const totalSec = Math.max(60, sprintMinutes * 60);
       setSecondsRemaining(totalSec);
       setTargetSeconds(totalSec);
     }
-  }, [activeItem]);
+  }, [activeItem, profile]);
 
   const toggleMetronome = useCallback(() => {
     playMechanicalClick();
@@ -332,9 +350,15 @@ export function GuidedPracticeSessionModal({
             <div className="space-y-6">
               {/* Drill Headline & Instructions */}
               <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
-                <div className="flex items-center justify-between text-xs text-stone-500 font-mono mb-1">
-                  <span>STEP {step.step_number} MICRO-MECHANIC</span>
-                  <span>EST. {step.estimated_minutes} MINS</span>
+                <div className="flex items-center justify-between text-xs text-stone-500 font-mono mb-2 flex-wrap gap-2">
+                  <span className="text-[10px] tracking-wider uppercase font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
+                    {profile.tagLabel}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>STEP {step.step_number}</span>
+                    <span>·</span>
+                    <span>EST. {step.estimated_minutes} MINS</span>
+                  </div>
                 </div>
                 <h3 className="font-display font-bold text-xl text-ink mb-2">
                   {step.title}
@@ -367,6 +391,48 @@ export function GuidedPracticeSessionModal({
                       ✓ Time Completed! Rate your recall below.
                     </div>
                   )}
+
+                  {/* Sprint Preset Selectors */}
+                  <div className="flex items-center justify-center gap-1.5 mb-3 flex-wrap">
+                    <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider mr-1">
+                      Sprint Mode:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSprintDuration(15)}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-bold transition cursor-pointer ${
+                        targetSeconds === 15 * 60
+                          ? "bg-ink text-white shadow-2xs"
+                          : "bg-white border border-stone-300 text-stone-700 hover:bg-stone-100"
+                      }`}
+                    >
+                      15m Sprint
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSprintDuration(20)}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-bold transition cursor-pointer ${
+                        targetSeconds === 20 * 60
+                          ? "bg-ink text-white shadow-2xs"
+                          : "bg-white border border-stone-300 text-stone-700 hover:bg-stone-100"
+                      }`}
+                    >
+                      20m Focus
+                    </button>
+                    {Number(step.estimated_minutes) > 20 && (
+                      <button
+                        type="button"
+                        onClick={() => setSprintDuration(Number(step.estimated_minutes))}
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-bold transition cursor-pointer ${
+                          targetSeconds === Number(step.estimated_minutes) * 60
+                            ? "bg-ink text-white shadow-2xs"
+                            : "bg-white border border-stone-300 text-stone-700 hover:bg-stone-100"
+                        }`}
+                      >
+                        Full Step ({step.estimated_minutes}m)
+                      </button>
+                    )}
+                  </div>
 
                   {/* Timer Controls Row */}
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
@@ -415,75 +481,92 @@ export function GuidedPracticeSessionModal({
                       <SolarIcon name="restart-linear" className="w-3.5 h-3.5" />
                     </button>
 
-                    {/* Metronome Beat Module */}
-                    <div className="inline-flex items-center rounded-full border border-stone-300 bg-white overflow-hidden shadow-2xs">
-                      <button
-                        type="button"
-                        onClick={toggleMetronome}
-                        className={`px-3 py-2 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                          metronomeActive
-                            ? "bg-amber-500 text-white"
-                            : "text-stone-700 hover:bg-stone-100"
-                        }`}
-                        title={metronomeActive ? "Metronome active (click to mute)" : "Activate rhythmic click metronome"}
-                      >
-                        <SolarIcon
-                          name={metronomeActive ? "volume-loud-linear" : "tuning-2-linear"}
-                          className={`w-3.5 h-3.5 ${metronomeActive ? "animate-pulse" : ""}`}
-                        />
-                        <span>{metronomeActive ? `Pulse: ${metronomeBpm}` : `${metronomeBpm} BPM`}</span>
-                      </button>
+                    {/* Cadence / Metronome (Music, Typing, Juggling) OR Deep Focus Badge (Coding, Languages, Culinary) */}
+                    {profile.isRhythmCadenceSupported ? (
+                      <div className="inline-flex items-center rounded-full border border-stone-300 bg-white overflow-hidden shadow-2xs">
+                        <button
+                          type="button"
+                          onClick={toggleMetronome}
+                          className={`px-3 py-2 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                            metronomeActive
+                              ? "bg-amber-500 text-white"
+                              : "text-stone-700 hover:bg-stone-100"
+                          }`}
+                          title={metronomeActive ? "Cadence active (click to mute)" : `Activate rhythmic ${profile.cadenceLabel || "metronome"}`}
+                        >
+                          <SolarIcon
+                            name={metronomeActive ? "volume-loud-linear" : "tuning-2-linear"}
+                            className={`w-3.5 h-3.5 ${metronomeActive ? "animate-pulse" : ""}`}
+                          />
+                          <span>{metronomeActive ? `${profile.cadenceLabel || "Pulse"}: ${metronomeBpm}` : `${metronomeBpm} BPM`}</span>
+                        </button>
 
-                      <div className="flex border-l border-stone-200">
-                        <button
-                          type="button"
-                          onClick={() => changeBpm(-10)}
-                          className="px-2 py-2 text-[10px] font-mono text-stone-600 hover:bg-stone-100 transition cursor-pointer"
-                          title="Slow tempo (-10 BPM)"
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => changeBpm(+10)}
-                          className="px-2 py-2 text-[10px] font-mono text-stone-600 hover:bg-stone-100 border-l border-stone-200 transition cursor-pointer"
-                          title="Increase tempo (+10 BPM)"
-                        >
-                          +
-                        </button>
+                        <div className="flex border-l border-stone-200">
+                          <button
+                            type="button"
+                            onClick={() => changeBpm(-10)}
+                            className="px-2 py-2 text-[10px] font-mono text-stone-600 hover:bg-stone-100 transition cursor-pointer"
+                            title="Slow tempo (-10 BPM)"
+                          >
+                            -
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => changeBpm(+10)}
+                            className="px-2 py-2 text-[10px] font-mono text-stone-600 hover:bg-stone-100 border-l border-stone-200 transition cursor-pointer"
+                            title="Increase tempo (+10 BPM)"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-stone-300 text-stone-600 text-xs font-mono shadow-2xs">
+                        <SolarIcon name="target-linear" className="w-3.5 h-3.5 text-stone-400" />
+                        <span>Deep Focus Sprint</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Tactile Repetition Logger */}
-                <div className="mt-6 pt-4 border-t border-stone-300/80 flex items-center justify-between text-xs font-mono">
-                  <div className="text-left">
-                    <span className="text-[10px] text-stone-500 uppercase block">REPETITIONS LOGGED</span>
-                    <strong className="text-base text-ink font-bold tabular-nums">
-                      {repCount} reps completed
-                    </strong>
-                  </div>
+                {/* Discipline-Specific Repetition / Milestone Logger */}
+                <div className="mt-6 pt-4 border-t border-stone-300/80 space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <div className="text-left">
+                      <span className="text-[10px] text-stone-500 uppercase block tracking-wider font-semibold">
+                        {profile.metricHeading}
+                      </span>
+                      <strong className="text-base text-ink font-bold tabular-nums">
+                        {repCount} {profile.metricUnitNoun}
+                      </strong>
+                    </div>
 
-                  <div className="flex items-center gap-1.5">
-                    {repCount > 0 && (
+                    <div className="flex items-center gap-1.5">
+                      {repCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={decrementRep}
+                          className="px-2.5 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-stone-600 font-mono text-xs font-bold transition shadow-2xs cursor-pointer"
+                          title="Subtract 1"
+                        >
+                          -1
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={decrementRep}
-                        className="px-2.5 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-stone-600 font-mono text-xs font-bold transition shadow-2xs cursor-pointer"
-                        title="Subtract repetition"
+                        onClick={incrementRep}
+                        className="px-4 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-ink font-mono text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer hover:bg-stone-50"
                       >
-                        -1
+                        <SolarIcon name="add-circle-linear" className="w-4 h-4 text-amber-700" />
+                        <span>{profile.actionButtonLabel}</span>
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={incrementRep}
-                      className="px-4 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-ink font-mono text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <SolarIcon name="add-circle-linear" className="w-4 h-4 text-brand-600" />
-                      <span>Log Repetition (+1)</span>
-                    </button>
+                    </div>
+                  </div>
+
+                  {/* Micro-Guidance Explaining What Counts for this Craft */}
+                  <div className="flex items-start gap-1.5 text-[11px] font-sans text-stone-600 bg-white/70 px-3 py-1.5 rounded-lg border border-stone-200/70 text-left">
+                    <SolarIcon name="info-circle-linear" className="w-3.5 h-3.5 text-stone-400 mt-0.5 flex-shrink-0" />
+                    <span>{profile.guidanceTip}</span>
                   </div>
                 </div>
               </div>
@@ -514,11 +597,11 @@ export function GuidedPracticeSessionModal({
                     className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-amber-600 bg-[#FAF8F5] hover:bg-amber-50/60 text-left transition group cursor-pointer shadow-2xs"
                   >
                     <div className="flex items-center justify-between font-mono text-xs font-bold text-amber-800 mb-1">
-                      <span>[ 1 ] Hard / Stiff</span>
+                      <span>{profile.recallPrompts.hard.title}</span>
                       <span className="text-[10px] bg-amber-100 px-1.5 py-0.5 rounded font-mono">1 Day</span>
                     </div>
                     <p className="text-[11px] text-stone-600 leading-tight">
-                      Felt rusty or required active cerebral effort. Review tomorrow.
+                      {profile.recallPrompts.hard.desc}
                     </p>
                   </button>
 
@@ -529,11 +612,11 @@ export function GuidedPracticeSessionModal({
                     className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-sky-600 bg-[#FAF8F5] hover:bg-sky-50/60 text-left transition group cursor-pointer shadow-2xs"
                   >
                     <div className="flex items-center justify-between font-mono text-xs font-bold text-sky-800 mb-1">
-                      <span>[ 2 ] Solid / Fluid</span>
+                      <span>{profile.recallPrompts.solid.title}</span>
                       <span className="text-[10px] bg-sky-100 px-1.5 py-0.5 rounded font-mono">3-4 Days</span>
                     </div>
                     <p className="text-[11px] text-stone-600 leading-tight">
-                      Good accuracy and steady motor rhythm. Review in a few days.
+                      {profile.recallPrompts.solid.desc}
                     </p>
                   </button>
 
@@ -544,11 +627,11 @@ export function GuidedPracticeSessionModal({
                     className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-emerald-600 bg-[#FAF8F5] hover:bg-emerald-50/60 text-left transition group cursor-pointer shadow-2xs"
                   >
                     <div className="flex items-center justify-between font-mono text-xs font-bold text-emerald-800 mb-1">
-                      <span>[ 3 ] Effortless</span>
+                      <span>{profile.recallPrompts.effortless.title}</span>
                       <span className="text-[10px] bg-emerald-100 px-1.5 py-0.5 rounded font-mono">7-10 Days</span>
                     </div>
                     <p className="text-[11px] text-stone-600 leading-tight">
-                      Automatic subconscious execution. Cemented in memory.
+                      {profile.recallPrompts.effortless.desc}
                     </p>
                   </button>
                 </div>

@@ -13,6 +13,7 @@ import {
   EspressoExtractionSimulator,
   PhoneticSoundboard,
   FocusRepetitionDrill,
+  CodeMilestoneTerminalSimulator,
 } from "@/components/TactileMicroSimulators";
 import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
 
@@ -87,8 +88,75 @@ function StepMicroSimulatorAid({
     );
   }
 
-  // 5. Universal Repetition Counter & 60-second Interval Clock (Juggling, Rubik's Cube, Sourdough, Custom skills)
-  return <FocusRepetitionDrill stepTitle={stepTitle} targetReps={10} />;
+  // 5. Software / Web / Programming -> Code Milestone & Test Runner Terminal
+  if (
+    slug.includes("code") ||
+    slug.includes("coding") ||
+    slug.includes("program") ||
+    slug.includes("software") ||
+    slug.includes("python") ||
+    slug.includes("javascript") ||
+    slug.includes("typescript") ||
+    slug.includes("react") ||
+    slug.includes("web") ||
+    slug.includes("frontend") ||
+    slug.includes("backend") ||
+    slug.includes("database") ||
+    slug.includes("function")
+  ) {
+    return <CodeMilestoneTerminalSimulator stepTitle={stepTitle} targetMilestones={5} />;
+  }
+
+  // 6. Universal Focus Repetition with Discipline Accuracy
+  if (slug.includes("rubik") || slug.includes("cube") || slug.includes("puzzle")) {
+    return (
+      <FocusRepetitionDrill
+        stepTitle={stepTitle}
+        targetReps={5}
+        metricHeading="ALGORITHM DRILLS & SOLVES"
+        metricNoun="algorithm solves"
+        actionLabel="Log Solve / Sequence (+1)"
+        guidanceTip="Execute fingertrick algorithm without pausing to eye-track."
+      />
+    );
+  }
+
+  if (slug.includes("juggle") || slug.includes("juggling")) {
+    return (
+      <FocusRepetitionDrill
+        stepTitle={stepTitle}
+        targetReps={10}
+        metricHeading="CLEAN CATCH CYCLES"
+        metricNoun="catch sequences"
+        actionLabel="Log Catch Sequence (+1)"
+        guidanceTip="Count clean 3-ball cascades caught cleanly without lunging forward."
+      />
+    );
+  }
+
+  if (slug.includes("dough") || slug.includes("bread") || slug.includes("sourdough") || slug.includes("baking")) {
+    return (
+      <FocusRepetitionDrill
+        stepTitle={stepTitle}
+        targetReps={4}
+        metricHeading="FOLD CYCLES & SHAPES"
+        metricNoun="technique cycles"
+        actionLabel="Log Technique Cycle (+1)"
+        guidanceTip="Log each stretch-and-fold pass or shaping round completed."
+      />
+    );
+  }
+
+  // 7. Fallback Deliberate Practice Drill
+  return (
+    <FocusRepetitionDrill
+      stepTitle={stepTitle}
+      targetReps={10}
+      metricHeading="DELIBERATE PRACTICE DRILLS"
+      metricNoun="focused repetitions"
+      actionLabel="Log Practice Cycle (+1)"
+    />
+  );
 }
 
 export function FlashcardLearningModal({

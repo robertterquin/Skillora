@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
           step_number: st.step_number || idx + 1,
           title: st.title,
           instructions: st.instructions || "",
-          estimated_minutes: st.estimated_minutes || 20,
+          estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
         };
       });
 
