@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { SolarIcon } from "@/components";
+import { Button, Card, SolarIcon } from "@/components";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#FAFAFA] text-ink selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between bg-canvas text-ink selection:bg-brand-500 selection:text-white">
       {/* Top minimal header */}
       <header className="p-6 max-w-7xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
@@ -79,7 +79,7 @@ export default function SignInPage() {
       {/* Main Sign In Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          <div className="p-8 sm:p-10 bg-white rounded-3xl border border-surface-border shadow-sm">
+          <Card className="p-8 sm:p-10">
             <div className="text-center mb-8">
               <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
                 Welcome back.
@@ -104,13 +104,15 @@ export default function SignInPage() {
             {/* Email / Password Form with Show Password Eye Toggle */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1.5">
-                  Email Address
+                <label htmlFor="signin-email" className="block text-xs font-semibold text-ink mb-1.5">
+                  Email address
                 </label>
                 <div className="relative">
                   <SolarIcon name="letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
                   <input
+                    id="signin-email"
                     type="email"
+                    autoComplete="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -122,13 +124,12 @@ export default function SignInPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-ink">
+                  <label htmlFor="signin-password" className="block text-xs font-semibold text-ink">
                     Password
                   </label>
-                  <a
-                    href="#"
-                    onClick={async (e) => {
-                      e.preventDefault();
+                  <button
+                    type="button"
+                    onClick={async () => {
                       if (!email) {
                         setErrorMsg("Please enter your email above to receive a password reset link.");
                         return;
@@ -137,15 +138,17 @@ export default function SignInPage() {
                       if (error) setErrorMsg(error.message);
                       else setSuccessMsg("Password reset email sent! Check your inbox.");
                     }}
-                    className="text-[11px] font-medium text-brand-600 hover:underline"
+                    className="text-2xs font-medium text-brand-600 hover:underline"
                   >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
                 <div className="relative">
                   <SolarIcon name="lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
                   <input
+                    id="signin-password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -157,7 +160,7 @@ export default function SignInPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-subtle hover:text-ink transition"
-                    title={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     <SolarIcon
                       name={showPassword ? "eye-closed-linear" : "eye-linear"}
@@ -167,14 +170,10 @@ export default function SignInPage() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 py-3 px-4 rounded-full bg-ink text-white text-sm font-semibold hover:bg-neutral-800 transition flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
-              >
-                <span>{loading ? "Signing in..." : "Sign in to Skillora"}</span>
+              <Button type="submit" size="lg" disabled={loading} className="w-full mt-2">
+                <span>{loading ? "Signing in..." : "Sign in"}</span>
                 <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
-              </button>
+              </Button>
             </form>
 
             <div className="mt-8 text-center text-xs text-ink-muted">
@@ -183,7 +182,7 @@ export default function SignInPage() {
                 Create one now
               </Link>
             </div>
-          </div>
+          </Card>
         </div>
       </main>
 

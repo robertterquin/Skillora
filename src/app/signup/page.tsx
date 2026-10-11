@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { SolarIcon } from "@/components";
+import { Button, Card, SolarIcon } from "@/components";
 
 const INTEREST_AREAS = [
   { id: "music", label: "Music & Audio", desc: "Guitar, Piano, Beatbox" },
@@ -73,7 +73,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#FAFAFA] text-ink selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between bg-canvas text-ink selection:bg-brand-500 selection:text-white">
       {/* Top minimal header */}
       <header className="p-6 max-w-7xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
@@ -101,7 +101,7 @@ export default function SignUpPage() {
       {/* Main Sign Up Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-4">
         <div className="w-full max-w-lg">
-          <div className="p-8 sm:p-10 bg-white rounded-3xl border border-surface-border shadow-sm">
+          <Card className="p-8 sm:p-10">
             <div className="text-center mb-8">
               <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
                 Create your learning account.
@@ -126,15 +126,16 @@ export default function SignUpPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Primary Interest Picker (Zero emojis, pure minimal typography) */}
               <div>
-                <label className="block text-xs font-semibold text-ink mb-2">
-                  What skill do you want to conquer first?
-                </label>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div id="signup-interest-label" className="block text-xs font-semibold text-ink mb-2">
+                  What do you want to learn first?
+                </div>
+                <div role="group" aria-labelledby="signup-interest-label" className="grid grid-cols-2 gap-2.5">
                   {INTEREST_AREAS.map((item) => (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => setSelectedInterest(item.id)}
+                      aria-pressed={selectedInterest === item.id}
                       className={`p-3.5 rounded-2xl border text-left transition ${
                         selectedInterest === item.id
                           ? "border-brand-600 bg-brand-50/50 text-brand-900 ring-1 ring-brand-600"
@@ -142,7 +143,7 @@ export default function SignUpPage() {
                       }`}
                     >
                       <div className="text-xs font-semibold">{item.label}</div>
-                      <div className="text-[10px] text-ink-muted mt-0.5 truncate">
+                      <div className="text-2xs text-ink-muted mt-0.5 truncate">
                         {item.desc}
                       </div>
                     </button>
@@ -152,13 +153,15 @@ export default function SignUpPage() {
 
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1.5">
-                  Your Name
+                <label htmlFor="signup-name" className="block text-xs font-semibold text-ink mb-1.5">
+                  Your name
                 </label>
                 <div className="relative">
                   <SolarIcon name="user-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
                   <input
+                    id="signup-name"
                     type="text"
+                    autoComplete="name"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -170,13 +173,15 @@ export default function SignUpPage() {
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1.5">
-                  Email Address
+                <label htmlFor="signup-email" className="block text-xs font-semibold text-ink mb-1.5">
+                  Email address
                 </label>
                 <div className="relative">
                   <SolarIcon name="letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
                   <input
+                    id="signup-email"
                     type="email"
+                    autoComplete="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -188,13 +193,15 @@ export default function SignUpPage() {
 
               {/* Password with See Password Toggle */}
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1.5">
+                <label htmlFor="signup-password" className="block text-xs font-semibold text-ink mb-1.5">
                   Password
                 </label>
                 <div className="relative">
                   <SolarIcon name="lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
                   <input
+                    id="signup-password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
                     required
                     minLength={6}
                     value={password}
@@ -207,7 +214,7 @@ export default function SignUpPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-subtle hover:text-ink transition"
-                    title={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     <SolarIcon
                       name={showPassword ? "eye-closed-linear" : "eye-linear"}
@@ -217,18 +224,14 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              <div className="text-[11px] text-ink-muted leading-relaxed">
+              <div className="text-2xs text-ink-muted leading-relaxed">
                 By creating an account, you agree to Skillora&apos;s Terms of Service and Privacy Policy.
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 rounded-full bg-ink text-white text-sm font-semibold hover:bg-neutral-800 transition flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
-              >
-                <span>{loading ? "Creating your account..." : "Create Account & Start Learning"}</span>
+              <Button type="submit" size="lg" disabled={loading} className="w-full">
+                <span>{loading ? "Creating your account..." : "Create account"}</span>
                 <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
-              </button>
+              </Button>
             </form>
 
             <div className="mt-8 text-center text-xs text-ink-muted">
@@ -237,7 +240,7 @@ export default function SignUpPage() {
                 Sign in
               </Link>
             </div>
-          </div>
+          </Card>
         </div>
       </main>
 
