@@ -9,6 +9,7 @@ interface SubscriptionModalProps {
   onClose: () => void;
   userEmail?: string;
   isLimitReached?: boolean;
+  onUpgradeSuccess?: () => void;
 }
 
 export function SubscriptionModal({
@@ -16,6 +17,7 @@ export function SubscriptionModal({
   onClose,
   userEmail,
   isLimitReached = false,
+  onUpgradeSuccess,
 }: SubscriptionModalProps) {
   const [isUpgraded, setIsUpgraded] = useState(false);
 
@@ -129,7 +131,11 @@ export function SubscriptionModal({
               <button
                 type="button"
                 onClick={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("skillora_pro_membership", "true");
+                  }
                   setIsUpgraded(true);
+                  if (onUpgradeSuccess) onUpgradeSuccess();
                   setTimeout(() => {
                     onClose();
                     setIsUpgraded(false);

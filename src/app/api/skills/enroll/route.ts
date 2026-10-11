@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { normalizeSkillId, normalizeCategoryId } from "@/lib/mock-data";
+import { normalizeSkillId, normalizeCategoryId, normalizeStepId, isValidUuid } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
     }
 
     const admin = createAdminClient();
-    const normId = normalizeSkillId(skill.id || crypto.randomUUID());
+    const rawNormId = normalizeSkillId(skill.id || "");
+    const normId = isValidUuid(rawNormId) ? rawNormId : crypto.randomUUID();
     const normCatId = normalizeCategoryId(skill.category_id);
 
     // 1. Ensure category exists or fallback
@@ -54,14 +55,18 @@ export async function POST(req: NextRequest) {
 
     // 3. Upsert steps if provided
     if (skill.steps && Array.isArray(skill.steps) && skill.steps.length > 0) {
-      const stepsToUpsert = skill.steps.map((st, idx) => ({
-        id: st.id && st.id.length > 20 ? st.id : crypto.randomUUID(),
-        skill_id: normId,
-        step_number: st.step_number || idx + 1,
-        title: st.title,
-        instructions: st.instructions || "",
-        estimated_minutes: st.estimated_minutes || 20,
-      }));
+      const stepsToUpsert = skill.steps.map((st, idx) => {
+        const rawStepId = st.id ? normalizeStepId(st.id) : "";
+        const validStepId = isValidUuid(rawStepId) ? rawStepId : crypto.randomUUID();
+        return {
+          id: validStepId,
+          skill_id: normId,
+          step_number: st.step_number || idx + 1,
+          title: st.title,
+          instructions: st.instructions || "",
+          estimated_minutes: st.estimated_minutes || 20,
+        };
+      });
 
       const { error: stepsError } = await admin.from("skill_steps").upsert(stepsToUpsert, {
         onConflict: "id",
@@ -147,6 +152,11 @@ export async function DELETE(req: NextRequest) {
 
     const admin = createAdminClient();
     const normId = normalizeSkillId(skillId);
+
+    if (!isValidUuid(normId)) {
+      return NextResponse.json({ success: true, removedLocally: true });
+    }
+
     const { error } = await admin
       .from("user_enrollments")
       .delete()

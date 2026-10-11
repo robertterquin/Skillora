@@ -13,9 +13,72 @@ export const LEGACY_SKILL_ID_MAP: Record<string, string> = {
   "skill-juggling": "a8888888-8888-8888-8888-888888888888",
 };
 
+export const LEGACY_STEP_ID_MAP: Record<string, string> = {
+  "step-g1": "b1111111-1111-1111-1111-111111111101",
+  "step-g2": "b1111111-1111-1111-1111-111111111102",
+  "step-g3": "b1111111-1111-1111-1111-111111111103",
+  "step-c1": "b2222222-2222-2222-2222-222222222201",
+  "step-c2": "b2222222-2222-2222-2222-222222222202",
+  "step-c3": "b2222222-2222-2222-2222-222222222203",
+  "step-k1": "b3333333-3333-3333-3333-333333333301",
+  "step-k2": "b3333333-3333-3333-3333-333333333302",
+  "step-k3": "b3333333-3333-3333-3333-333333333303",
+  "step-t1": "b4444444-4444-4444-4444-444444444401",
+  "step-t2": "b4444444-4444-4444-4444-444444444402",
+  "step-t3": "b4444444-4444-4444-4444-444444444403",
+  "step-e1": "b5555555-5555-5555-5555-555555555501",
+  "step-e2": "b5555555-5555-5555-5555-555555555502",
+  "step-r1": "b6666666-6666-6666-6666-666666666601",
+  "step-r2": "b6666666-6666-6666-6666-666666666602",
+  "step-r3": "b6666666-6666-6666-6666-666666666603",
+  "step-s1": "b7777777-7777-7777-7777-777777777701",
+  "step-s2": "b7777777-7777-7777-7777-777777777702",
+  "step-s3": "b7777777-7777-7777-7777-777777777703",
+  "step-j1": "b8888888-8888-8888-8888-888888888801",
+  "step-j2": "b8888888-8888-8888-8888-888888888802",
+  "step-j3": "b8888888-8888-8888-8888-888888888803",
+};
+
+export const UUID_TO_LEGACY_STEP_ID_MAP: Record<string, string> = Object.entries(LEGACY_STEP_ID_MAP).reduce(
+  (acc, [legacy, uuid]) => {
+    acc[uuid] = legacy;
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
+export const UUID_TO_LEGACY_SKILL_ID_MAP: Record<string, string> = Object.entries(LEGACY_SKILL_ID_MAP).reduce(
+  (acc, [legacy, uuid]) => {
+    acc[uuid] = legacy;
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
 export function normalizeSkillId(id: string): string {
   if (!id) return id;
   return LEGACY_SKILL_ID_MAP[id] || id;
+}
+
+export function normalizeStepId(id: string): string {
+  if (!id) return id;
+  return LEGACY_STEP_ID_MAP[id] || id;
+}
+
+export function isValidUuid(str: string): boolean {
+  if (!str) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
+export function isStepCompleted(stepId: string, completedIds: string[]): boolean {
+  if (!stepId || !completedIds || completedIds.length === 0) return false;
+  const norm = normalizeStepId(stepId);
+  const legacy = UUID_TO_LEGACY_STEP_ID_MAP[stepId] || UUID_TO_LEGACY_STEP_ID_MAP[norm];
+  return (
+    completedIds.includes(stepId) ||
+    completedIds.includes(norm) ||
+    (legacy ? completedIds.includes(legacy) : false)
+  );
 }
 
 export function normalizeCategoryId(catId?: string): string {

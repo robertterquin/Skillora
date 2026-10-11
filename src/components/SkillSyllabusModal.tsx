@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Skill } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
+import { isStepCompleted } from "@/lib/mock-data";
 
 interface SkillSyllabusModalProps {
   skill: Skill | null;
@@ -32,7 +33,7 @@ export function SkillSyllabusModal({
 
   const steps = skill.steps || [];
   const totalSteps = steps.length;
-  const completedCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
+  const completedCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
   const progressPercent = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
   const isAllComplete = totalSteps > 0 && completedCount === totalSteps;
 
@@ -161,7 +162,7 @@ export function SkillSyllabusModal({
 
           <div className="space-y-4">
             {steps.map((step) => {
-              const isStepDone = !isViewOnly && completedStepIds.includes(step.id);
+              const isStepDone = !isViewOnly && isStepCompleted(step.id, completedStepIds);
 
               return (
                 <div

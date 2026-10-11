@@ -2,6 +2,7 @@
 // Calibrated for physical micro-mechanics, motor memory decay, and tactile drills.
 
 import { Skill, SkillStep } from "@/types/database";
+import { normalizeStepId } from "@/lib/mock-data";
 
 export type RecallQuality = 1 | 2 | 3; // 1 = Hard/Rusty, 2 = Solid/Fluid, 3 = Effortless/Cemented
 
@@ -199,10 +200,15 @@ export function recordDrillPractice(
     lastQuality: quality,
   };
 
+  const normStepId = normalizeStepId(stepId);
   store.records[stepId] = updatedRecord;
+  store.records[normStepId] = updatedRecord;
 
   if (!store.todayCompletedStepIds.includes(stepId)) {
     store.todayCompletedStepIds.push(stepId);
+  }
+  if (!store.todayCompletedStepIds.includes(normStepId)) {
+    store.todayCompletedStepIds.push(normStepId);
   }
   store.totalPracticeSecondsToday += practiceSeconds;
 
@@ -232,8 +238,11 @@ export function getDailyDocket(
   for (const skill of enrolledSkills) {
     const steps = skill.steps || [];
     for (const step of steps) {
-      const record = store.records[step.id];
-      const isCompletedToday = store.todayCompletedStepIds.includes(step.id);
+      const normStepId = normalizeStepId(step.id);
+      const record = store.records[step.id] || store.records[normStepId];
+      const isCompletedToday =
+        store.todayCompletedStepIds.includes(step.id) ||
+        store.todayCompletedStepIds.includes(normStepId);
       const decay = getDecayStatus(record);
 
       let urgency: DocketItem["urgency"] = "recommended";

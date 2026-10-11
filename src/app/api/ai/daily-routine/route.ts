@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { isStepCompleted } from "@/lib/mock-data";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
         steps?: { id: string; step_number: number; title: string }[];
       }) => {
         const pendingSteps = (s.steps || [])
-          .filter((st) => !completedStepIds.includes(st.id))
+          .filter((st) => !isStepCompleted(st.id, completedStepIds))
           .map((st) => `Step ${st.step_number}: ${st.title}`)
           .join(", ");
         return `- ${s.title} (${s.difficulty}). Pending: [${pendingSteps || "Review & polish"}]`;

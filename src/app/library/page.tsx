@@ -74,7 +74,8 @@ export default function SkillLibraryPage() {
       setCurrentUser(user);
 
       // Check if user is on Pro plan
-      const userIsPro = user?.user_metadata?.plan === "pro";
+      const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
+      const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
       setIsPro(userIsPro);
 
       // 7-Day Trial calculation
@@ -689,6 +690,7 @@ export default function SkillLibraryPage() {
             onClose={() => setIsSubscriptionModalOpen(false)}
             userEmail={currentUser?.email}
             isLimitReached={isLimitReached}
+            onUpgradeSuccess={() => setIsPro(true)}
           />
         )}
       </AnimatePresence>

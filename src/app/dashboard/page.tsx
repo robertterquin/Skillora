@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -16,7 +16,15 @@ import { GuildExamModal } from "@/components/GuildExamModal";
 import { GuidedPracticeSessionModal } from "@/components/GuidedPracticeSessionModal";
 import { getDailyDocket, DocketItem } from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
-import { CATEGORIES, INITIAL_SKILLS, normalizeSkillId, normalizeCategoryId } from "@/lib/mock-data";
+import {
+  CATEGORIES,
+  INITIAL_SKILLS,
+  normalizeSkillId,
+  normalizeCategoryId,
+  normalizeStepId,
+  isValidUuid,
+  isStepCompleted,
+} from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -164,7 +172,8 @@ export default function DashboardPage() {
         setCurrentUser(user);
 
         // Check if user is on Pro plan
-        const userIsPro = user?.user_metadata?.plan === "pro";
+        const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
+        const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
         setIsPro(userIsPro);
 
         // 7-Day Trial calculation
@@ -264,7 +273,8 @@ export default function DashboardPage() {
 
   // 2. Step Completion Toggle with Supabase Sync
   const handleToggleStep = async (stepId: string) => {
-    const isCurrentlyDone = completedStepIds.includes(stepId);
+    const normStepId = normalizeStepId(stepId);
+    const isCurrentlyDone = isStepCompleted(stepId, completedStepIds);
     if (isCurrentlyDone) {
       playMechanicalClick();
     } else {
@@ -272,28 +282,28 @@ export default function DashboardPage() {
     }
 
     const updated = isCurrentlyDone
-      ? completedStepIds.filter((id) => id !== stepId)
-      : [...completedStepIds, stepId];
+      ? completedStepIds.filter((id) => id !== stepId && id !== normStepId)
+      : Array.from(new Set([...completedStepIds, stepId, normStepId]));
 
     setCompletedStepIds(updated);
     if (typeof window !== "undefined") {
       localStorage.setItem("skillora_completed_steps", JSON.stringify(updated));
     }
 
-    if (currentUser) {
+    if (currentUser && isValidUuid(normStepId)) {
       try {
         if (isCurrentlyDone) {
           await supabase
             .from("user_step_completions")
             .delete()
             .eq("user_id", currentUser.id)
-            .eq("step_id", stepId);
+            .eq("step_id", normStepId);
         } else {
           await supabase
             .from("user_step_completions")
             .insert({
               user_id: currentUser.id,
-              step_id: stepId,
+              step_id: normStepId,
             });
         }
       } catch (err) {
@@ -383,10 +393,11 @@ export default function DashboardPage() {
     }
   };
 
-  // 5. Skills currently enrolled in My Studio
-  const myStudioSkills = allSkills.filter((s) =>
-    enrolledSkillIds.map(normalizeSkillId).includes(normalizeSkillId(s.id))
-  );
+  // 5. Skills currently enrolled in My Studio (Memoized to prevent infinite re-render cycles)
+  const myStudioSkills = useMemo(() => {
+    const enrolledSet = new Set(enrolledSkillIds.map(normalizeSkillId));
+    return allSkills.filter((s) => enrolledSet.has(normalizeSkillId(s.id)));
+  }, [allSkills, enrolledSkillIds]);
 
   // Spaced Repetition Docket State
   const [docketItems, setDocketItems] = useState<DocketItem[]>([]);
@@ -410,46 +421,52 @@ export default function DashboardPage() {
   }, [refreshDocket]);
 
   // 6. Filter enrolled studio skills by Category, Duration, and Search Query
-  const filteredStudioSkills = myStudioSkills.filter((skill) => {
-    if (
-      selectedCategory !== "cat-all" &&
-      normalizeCategoryId(skill.category_id) !== normalizeCategoryId(selectedCategory)
-    ) {
-      return false;
-    }
-    if (selectedDuration === "quick" && skill.estimated_hours > 2) {
-      return false;
-    }
-    if (
-      selectedDuration === "sprint" &&
-      (skill.estimated_hours <= 2 || skill.estimated_hours > 6)
-    ) {
-      return false;
-    }
-    if (selectedDuration === "deep" && skill.estimated_hours <= 6) {
-      return false;
-    }
-    if (searchQuery.trim() !== "") {
-      const q = searchQuery.toLowerCase();
-      const matchTitle = skill.title.toLowerCase().includes(q);
-      const matchSummary = skill.summary.toLowerCase().includes(q);
-      const matchTime = skill.time_commitment_label.toLowerCase().includes(q);
-      return matchTitle || matchSummary || matchTime;
-    }
-    return true;
-  });
+  const filteredStudioSkills = useMemo(() => {
+    return myStudioSkills.filter((skill) => {
+      if (
+        selectedCategory !== "cat-all" &&
+        normalizeCategoryId(skill.category_id) !== normalizeCategoryId(selectedCategory)
+      ) {
+        return false;
+      }
+      if (selectedDuration === "quick" && skill.estimated_hours > 2) {
+        return false;
+      }
+      if (
+        selectedDuration === "sprint" &&
+        (skill.estimated_hours <= 2 || skill.estimated_hours > 6)
+      ) {
+        return false;
+      }
+      if (selectedDuration === "deep" && skill.estimated_hours <= 6) {
+        return false;
+      }
+      if (searchQuery.trim() !== "") {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = skill.title.toLowerCase().includes(q);
+        const matchSummary = skill.summary.toLowerCase().includes(q);
+        const matchTime = skill.time_commitment_label.toLowerCase().includes(q);
+        return matchTitle || matchSummary || matchTime;
+      }
+      return true;
+    });
+  }, [myStudioSkills, selectedCategory, selectedDuration, searchQuery]);
 
   // 7. Calculate Metrics (Streak, Active, Mastered)
-  const masteredSkills = myStudioSkills.filter((skill) => {
-    const steps = skill.steps || [];
-    return steps.length > 0 && steps.every((st) => completedStepIds.includes(st.id));
-  });
+  const masteredSkills = useMemo(() => {
+    return myStudioSkills.filter((skill) => {
+      const steps = skill.steps || [];
+      return steps.length > 0 && steps.every((st) => isStepCompleted(st.id, completedStepIds));
+    });
+  }, [myStudioSkills, completedStepIds]);
 
-  const activeSkills = myStudioSkills.filter((skill) => {
-    const steps = skill.steps || [];
-    const isMastered = steps.length > 0 && steps.every((st) => completedStepIds.includes(st.id));
-    return !isMastered;
-  });
+  const activeSkills = useMemo(() => {
+    return myStudioSkills.filter((skill) => {
+      const steps = skill.steps || [];
+      const isMastered = steps.length > 0 && steps.every((st) => isStepCompleted(st.id, completedStepIds));
+      return !isMastered;
+    });
+  }, [myStudioSkills, completedStepIds]);
 
   const displayName =
     currentUser?.user_metadata?.full_name ||
@@ -865,7 +882,7 @@ export default function DashboardPage() {
               <AnimatePresence mode="popLayout">
                 {filteredStudioSkills.map((skill, idx) => {
                   const steps = skill.steps || [];
-                  const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
+                  const doneCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
                   const totalCount = steps.length;
                   const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
                   const isCompleted = totalCount > 0 && doneCount === totalCount;
@@ -1097,6 +1114,7 @@ export default function DashboardPage() {
             onClose={() => setIsSubscriptionModalOpen(false)}
             userEmail={currentUser?.email}
             isLimitReached={isLimitReached}
+            onUpgradeSuccess={() => setIsPro(true)}
           />
         )}
       </AnimatePresence>

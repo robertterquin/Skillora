@@ -6,6 +6,7 @@ import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "@/components/SolarIcon";
 import { HankoSeal } from "@/components/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
+import { isStepCompleted } from "@/lib/mock-data";
 import {
   PracticeMetronome,
   KnifeAngleGauge,
@@ -326,8 +327,8 @@ export function FlashcardLearningModal({
 
   if (!skill || !currentStep) return null;
 
-  const isCurrentStepDone = completedStepIds.includes(currentStep.id);
-  const completedCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
+  const isCurrentStepDone = isStepCompleted(currentStep.id, completedStepIds);
+  const completedCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
   const progressPercent = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
   // Voice sample text
@@ -892,7 +893,7 @@ export function FlashcardLearningModal({
             /* ============================================================ */
             <div className="space-y-4">
               {steps.map((step, idx) => {
-                const isDone = completedStepIds.includes(step.id);
+                const isDone = isStepCompleted(step.id, completedStepIds);
                 return (
                   <div
                     key={step.id}

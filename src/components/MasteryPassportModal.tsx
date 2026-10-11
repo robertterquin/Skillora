@@ -7,6 +7,7 @@ import { SolarIcon } from "@/components/SolarIcon";
 import { HankoSeal } from "@/components/HankoSeal";
 import { playMechanicalClick, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
+import { isStepCompleted, normalizeSkillId } from "@/lib/mock-data";
 
 interface MasteryPassportModalProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export function MasteryPassportModal({
   // Calculate mastered skills
   const masteredSkills = enrolledSkills.filter((s) => {
     const steps = s.steps || [];
-    return steps.length > 0 && steps.every((st) => completedStepIds.includes(st.id));
+    return steps.length > 0 && steps.every((st) => isStepCompleted(st.id, completedStepIds));
   });
 
   const inProgressSkills = enrolledSkills.filter((s) => !masteredSkills.includes(s));
@@ -49,13 +50,15 @@ export function MasteryPassportModal({
   // Calculate total accumulated practice hours
   const totalHours = enrolledSkills.reduce((acc, s) => {
     const steps = s.steps || [];
-    const doneSteps = steps.filter((st) => completedStepIds.includes(st.id));
+    const doneSteps = steps.filter((st) => isStepCompleted(st.id, completedStepIds));
     const stepHours = doneSteps.reduce((sub, st) => sub + st.estimated_minutes / 60, 0);
     return acc + stepHours;
   }, 0);
 
   // Calculate certified skills
-  const certifiedCount = enrolledSkills.filter((s) => certifiedSkillIds.includes(s.id)).length;
+  const certifiedCount = enrolledSkills.filter((s) =>
+    certifiedSkillIds.includes(normalizeSkillId(s.id))
+  ).length;
 
   // Guild Rank Calculation
   const rank =
@@ -278,9 +281,9 @@ export function MasteryPassportModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {enrolledSkills.map((skill, idx) => {
                   const steps = skill.steps || [];
-                  const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
+                  const doneCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
                   const isDone = steps.length > 0 && doneCount === steps.length;
-                  const isCertified = certifiedSkillIds.includes(skill.id);
+                  const isCertified = certifiedSkillIds.includes(normalizeSkillId(skill.id));
 
                   return (
                     <div
