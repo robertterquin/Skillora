@@ -5,26 +5,40 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/cn";
 import { SolarIcon } from "./SolarIcon";
+import { buttonClasses } from "./Button";
 import { UserAvatar } from "./UserAvatar";
 import { SubscriptionModal } from "../modals/SubscriptionModal";
 import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
 
 interface HeaderProps {
-  completedCount?: number;
   activePath?: string;
 }
 
-export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
+const SIGNED_IN_LINKS = [
+  { href: "/dashboard", label: "My Studio" },
+  { href: "/library", label: "Skill Library" },
+];
+
+const SIGNED_OUT_LINKS = [
+  { href: "/", label: "Overview" },
+  { href: "/library", label: "Skill Library" },
+  { href: "/#pricing", label: "Pricing" },
+];
+
+export function Header({ activePath = "/" }: HeaderProps) {
   const router = useRouter();
   const supabase = createClient();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -51,15 +65,29 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
     };
   }, [supabase]);
 
-  // Click outside to close dropdown
+  // Close the account dropdown and mobile menu on outside click or Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setIsDropdownOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+        setIsMobileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -76,17 +104,18 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
     "Learner";
 
   const userSeed = currentUser?.email || displayName;
+  const navLinks = currentUser ? SIGNED_IN_LINKS : SIGNED_OUT_LINKS;
 
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-white/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
           {/* Brand Logo & Title with Learning Owl */}
-          <Link href={currentUser ? "/dashboard" : "/"} className="flex items-center gap-3 group">
-            <div className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-canvas border border-surface-border transition-all group-hover:scale-105 group-hover:border-ink/20">
+          <Link href={currentUser ? "/dashboard" : "/"} className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
+            <div className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-canvas border border-surface-border transition-all group-hover:scale-105 group-hover:border-ink/20">
               <Image
                 src="/logo.svg"
-                alt="Skillora Learning Owl"
+                alt=""
                 width={26}
                 height={26}
                 className="w-6 h-6 object-contain"
@@ -97,62 +126,33 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
               <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-ink">
                 Skillora
               </span>
-              <span className="text-[9px] font-mono font-medium text-ink-subtle -mt-0.5 tracking-widest uppercase">
+              <span className="hidden sm:block text-3xs font-mono font-medium text-ink-subtle -mt-0.5 tracking-widest uppercase">
                 Master Anything
               </span>
             </div>
           </Link>
 
-          {/* Navigation Links: Depends on Auth Status */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-muted">
-            {currentUser ? (
-              // LOGGED IN NAV: My Studio & Skill Library (no overview)
-              <>
-                <Link
-                  href="/dashboard"
-                  className={`transition-colors hover:text-ink ${
-                    activePath === "/dashboard" ? "text-ink font-semibold" : ""
-                  }`}
-                >
-                  My Studio
-                </Link>
-                <Link
-                  href="/library"
-                  className={`transition-colors hover:text-ink ${
-                    activePath === "/library" ? "text-ink font-semibold" : ""
-                  }`}
-                >
-                  Skill Library
-                </Link>
-              </>
-            ) : (
-              // LOGGED OUT NAV: Overview, Skill Library, Pricing
-              <>
-                <Link
-                  href="/"
-                  className={`transition-colors hover:text-ink ${
-                    activePath === "/" ? "text-ink font-semibold" : ""
-                  }`}
-                >
-                  Overview
-                </Link>
-                <Link
-                  href="/library"
-                  className={`transition-colors hover:text-ink ${
-                    activePath === "/library" ? "text-ink font-semibold" : ""
-                  }`}
-                >
-                  Skill Library
-                </Link>
-                <a href="/#pricing" className="transition-colors hover:text-ink">
-                  Pricing
-                </a>
-              </>
-            )}
-          </nav>
+          {/* Desktop navigation */}
+          {!loadingUser && (
+            <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-muted">
+              {navLinks.map((link) => {
+                const isActive = activePath === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn("transition-colors hover:text-ink", isActive && "text-ink font-semibold")}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
 
           {/* Right Actions: Avatar & Dropdown when logged in, or Auth buttons */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {/* Tactile Workbench Audio Toggle */}
             <button
               type="button"
@@ -162,27 +162,32 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                 setSoundEnabled(next);
                 if (next) playMechanicalClick();
               }}
-              className={`p-2 rounded-xl border text-xs font-semibold transition flex items-center justify-center cursor-pointer ${
+              className={`w-9 h-9 rounded-xl border transition flex items-center justify-center cursor-pointer ${
                 soundOn
-                  ? "bg-canvas border-surface-border text-ink hover:text-brand-600 hover:border-brand-500/30 shadow-2xs"
+                  ? "bg-canvas border-surface-border text-ink hover:border-ink/30 shadow-2xs"
                   : "bg-surface-muted border-transparent text-ink-subtle hover:text-ink"
               }`}
-              title={soundOn ? "Tactile Audio Clicks: Enabled" : "Tactile Audio Clicks: Muted"}
-              aria-label="Toggle mechanical sounds"
+              aria-label={soundOn ? "Mute interface sounds" : "Turn on interface sounds"}
+              aria-pressed={soundOn}
             >
               <SolarIcon name={soundOn ? "volume-loud-linear" : "volume-cross-linear"} className="w-4 h-4" />
             </button>
 
-            {!loadingUser && currentUser ? (
+            {loadingUser ? (
+              // Reserve space so the header doesn't flash signed-out actions for signed-in users
+              <div className="w-9 h-9 rounded-full bg-surface-muted animate-pulse" aria-hidden="true" />
+            ) : currentUser ? (
               // Logged-in DiceBear Big Smile Profile Dropdown
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2.5 p-1 rounded-full border border-surface-border hover:border-ink/30 bg-white transition hover:scale-105"
-                  aria-label="Open user settings"
+                  className="flex items-center gap-2.5 p-1 rounded-full border border-surface-border hover:border-ink/30 bg-white transition"
+                  aria-label="Account menu"
+                  aria-haspopup="menu"
+                  aria-expanded={isDropdownOpen}
                 >
-                  <UserAvatar seed={userSeed} size={34} />
+                  <UserAvatar seed={userSeed} size={30} />
                   <span className="text-xs font-semibold text-ink max-w-[100px] truncate hidden sm:inline pr-2">
                     {displayName}
                   </span>
@@ -190,13 +195,13 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-surface-border shadow-xl p-2 z-50 animate-fade-in text-xs">
+                  <div role="menu" className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-surface-border shadow-xl p-2 z-50 animate-fade-in text-xs">
                     {/* User Info Header */}
                     <div className="p-3 border-b border-surface-border/80 flex items-center gap-3 mb-1">
                       <UserAvatar seed={userSeed} size={36} />
                       <div className="overflow-hidden">
                         <div className="font-semibold text-ink text-sm truncate">{displayName}</div>
-                        <div className="text-[11px] text-ink-muted truncate">{currentUser.email}</div>
+                        <div className="text-2xs text-ink-muted truncate">{currentUser.email}</div>
                       </div>
                     </div>
 
@@ -204,6 +209,7 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                     <div className="py-1">
                       <Link
                         href="/dashboard"
+                        role="menuitem"
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
@@ -212,16 +218,18 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                       </Link>
 
                       <Link
-                        href="/dashboard"
+                        href="/dashboard?open=passport"
+                        role="menuitem"
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
-                        <span className="font-serif text-xs text-rose-700 font-bold px-0.5">済</span>
+                        <span className="font-serif text-xs text-rose-700 font-bold px-0.5" aria-hidden="true">済</span>
                         <span>Mastery Passport</span>
                       </Link>
 
                       <Link
                         href="/library"
+                        role="menuitem"
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
@@ -231,6 +239,7 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
 
                       <button
                         type="button"
+                        role="menuitem"
                         onClick={() => {
                           setIsDropdownOpen(false);
                           setIsSubscriptionOpen(true);
@@ -239,9 +248,9 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                       >
                         <div className="flex items-center gap-2.5">
                           <SolarIcon name="cup-first-linear" className="w-4 h-4 text-amber-500" />
-                          <span>Subscription & Pricing</span>
+                          <span>Plan &amp; billing</span>
                         </div>
-                        <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+                        <span className="text-2xs font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
                           Pro
                         </span>
                       </button>
@@ -251,6 +260,7 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                     <div className="pt-1 mt-1 border-t border-surface-border">
                       <button
                         type="button"
+                        role="menuitem"
                         onClick={handleSignOut}
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 transition text-left font-medium"
                       >
@@ -262,21 +272,63 @@ export function Header({ completedCount = 0, activePath = "/" }: HeaderProps) {
                 )}
               </div>
             ) : (
-              // Logged out buttons
+              // Logged out actions (Sign in moves into the mobile menu on small screens)
               <>
-                <Link
-                  href="/signin"
-                  className="text-xs sm:text-sm font-medium text-ink-muted hover:text-ink transition-colors px-2.5 py-1.5"
-                >
+                <Link href="/signin" className={buttonClasses({ variant: "ghost", size: "sm", className: "hidden sm:inline-flex" })}>
                   Sign in
                 </Link>
 
-                <Link
-                  href="/signup"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink text-white text-xs sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs"
-                >
-                  <span>Get Started</span>
+                <Link href="/signup" className={buttonClasses({ size: "sm" })}>
+                  Get started
                 </Link>
+
+                <div className="md:hidden" ref={mobileMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="w-9 h-9 rounded-xl border border-surface-border bg-white text-ink flex items-center justify-center hover:border-ink/30 transition cursor-pointer"
+                    aria-label="Menu"
+                    aria-expanded={isMobileMenuOpen}
+                    aria-controls="mobile-nav"
+                  >
+                    <SolarIcon name={isMobileMenuOpen ? "ph:x-light" : "ph:list-light"} className="w-5 h-5" />
+                  </button>
+
+                  {isMobileMenuOpen && (
+                    <nav
+                      id="mobile-nav"
+                      aria-label="Main"
+                      className="absolute left-0 right-0 top-full border-b border-surface-border bg-white shadow-lg animate-fade-in"
+                    >
+                      <div className="px-4 py-3 flex flex-col">
+                        {navLinks.map((link) => {
+                          const isActive = activePath === link.href;
+                          return (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              aria-current={isActive ? "page" : undefined}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className={cn(
+                                "px-3 py-3 rounded-xl text-sm transition hover:bg-canvas",
+                                isActive ? "text-ink font-semibold" : "text-ink-secondary"
+                              )}
+                            >
+                              {link.label}
+                            </Link>
+                          );
+                        })}
+                        <Link
+                          href="/signin"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="mt-1 pt-4 pb-3 px-3 border-t border-surface-border text-sm text-ink-secondary"
+                        >
+                          Sign in
+                        </Link>
+                      </div>
+                    </nav>
+                  )}
+                </div>
               </>
             )}
           </div>
