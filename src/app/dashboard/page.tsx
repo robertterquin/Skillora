@@ -1,10 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { Suspense, useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
+  Badge,
+  Button,
+  Card,
+  buttonClasses,
   Header,
   FlashcardLearningModal,
   SkillSyllabusModal,
@@ -17,7 +22,14 @@ import {
   GuildExamModal,
   GuidedPracticeSessionModal,
 } from "@/components";
-import { getDailyDocket, DocketItem } from "@/lib/spaced-repetition";
+import {
+  getDailyDocket,
+  getPracticeStreak,
+  getSpacedRepetitionStore,
+  getWeekActivity,
+  logPracticeDay,
+  DocketItem,
+} from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import {
   CATEGORIES,
@@ -33,22 +45,19 @@ import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { fetchLiveSkills } from "@/lib/skills-service";
 
-interface DailyRoutineBlock {
-  minutes: number;
-  skillTitle: string;
-  drillTitle: string;
-  action: string;
-}
-
-interface DailyRoutine {
-  headline: string;
-  totalMinutes: number;
-  blocks: DailyRoutineBlock[];
-  dailyMantra: string;
-}
-
 export default function DashboardPage() {
+  // useSearchParams needs a Suspense boundary in the App Router
+  return (
+    <Suspense>
+      <Dashboard />
+    </Suspense>
+  );
+}
+
+function Dashboard() {
   const supabase = createClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -82,10 +91,8 @@ export default function DashboardPage() {
   // Craftsman's Guild Certified Skills
   const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
 
-  // Feature 5: Daily 15-Minute Studio Workout States
-  const [dailyRoutine, setDailyRoutine] = useState<DailyRoutine | null>(null);
-  const [routineLoading, setRoutineLoading] = useState(false);
-  const [routineCompleted, setRoutineCompleted] = useState(false);
+  // Days with any practice, used for the streak and this week's seals
+  const [practiceDates, setPracticeDates] = useState<string[]>([]);
 
   const [isClient, setIsClient] = useState(false);
 
@@ -233,16 +240,6 @@ export default function DashboardPage() {
       setAllSkills(Array.from(allSkillsMap.values()));
     });
 
-    // Load saved daily routine if exists
-    const savedRoutine = localStorage.getItem("skillora_daily_routine");
-    if (savedRoutine) {
-      try {
-        setDailyRoutine(JSON.parse(savedRoutine));
-      } catch {
-        // ignore
-      }
-    }
-
     // Load saved Guild certified skills
     const savedCertified = localStorage.getItem("skillora_guild_certified_skills");
     if (savedCertified) {
@@ -292,6 +289,10 @@ export default function DashboardPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("skillora_completed_steps", JSON.stringify(updated));
     }
+    if (!isCurrentlyDone) {
+      logPracticeDay();
+      setPracticeDates(getSpacedRepetitionStore().practiceDates);
+    }
 
     if (currentUser && isValidUuid(normStepId)) {
       try {
@@ -338,64 +339,6 @@ export default function DashboardPage() {
     }
   };
 
-  // 4. Feature 5 Handler: Generate Daily 15-Minute Workout via OpenAI
-  const handleGenerateDailyRoutine = async () => {
-    if (myStudioSkills.length === 0) return;
-
-    // Check if free trial has expired for AI generation
-    if (!isPro && daysRemaining <= 0) {
-      setIsLimitReached(true);
-      setIsSubscriptionModalOpen(true);
-      return;
-    }
-
-    setRoutineLoading(true);
-    setRoutineCompleted(false);
-
-    try {
-      const res = await fetch("/api/ai/daily-routine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          enrolledSkills: myStudioSkills,
-          completedStepIds,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to generate routine");
-
-      setDailyRoutine(data);
-      localStorage.setItem("skillora_daily_routine", JSON.stringify(data));
-      playChime();
-    } catch (e) {
-      console.error("Daily routine error:", e);
-      const fallback: DailyRoutine = {
-        headline: "15-Minute Mastery Sprint: Micro-Drills",
-        totalMinutes: 15,
-        blocks: [
-          {
-            minutes: 5,
-            skillTitle: myStudioSkills[0]?.title || "Active Skill",
-            drillTitle: "Warmup Anchor & Sensation Check",
-            action: "Focus on relaxed posture and isolated muscle memory repetitions.",
-          },
-          {
-            minutes: 10,
-            skillTitle: myStudioSkills[1]?.title || myStudioSkills[0]?.title || "Deep Practice",
-            drillTitle: "Continuous Rhythm or Recall Drill",
-            action: "Drill transitions with a metronome or flashcard recall at 75% speed.",
-          },
-        ],
-        dailyMantra: "Repetition without tension creates speed without effort.",
-      };
-      setDailyRoutine(fallback);
-      localStorage.setItem("skillora_daily_routine", JSON.stringify(fallback));
-    } finally {
-      setRoutineLoading(false);
-    }
-  };
-
   // 5. Skills currently enrolled in My Studio (Memoized to prevent infinite re-render cycles)
   const myStudioSkills = useMemo(() => {
     const enrolledSet = new Set(enrolledSkillIds.map(normalizeSkillId));
@@ -408,12 +351,10 @@ export default function DashboardPage() {
   const [guidedPracticeInitialIndex, setGuidedPracticeInitialIndex] = useState(0);
 
   const refreshDocket = useCallback(() => {
+    setPracticeDates(getSpacedRepetitionStore().practiceDates);
     if (myStudioSkills.length > 0) {
       const docket = getDailyDocket(myStudioSkills, completedStepIds);
       setDocketItems(docket.items);
-      if (docket.isTodayComplete) {
-        setRoutineCompleted(true);
-      }
     } else {
       setDocketItems([]);
     }
@@ -422,6 +363,19 @@ export default function DashboardPage() {
   useEffect(() => {
     refreshDocket();
   }, [refreshDocket]);
+
+  const streak = getPracticeStreak(practiceDates);
+  const weekActivity = getWeekActivity(practiceDates);
+  const docketDoneCount = docketItems.filter((i) => i.isCompletedToday).length;
+  const isDocketDone = docketItems.length > 0 && docketDoneCount === docketItems.length;
+
+  // Deep link from the account menu: /dashboard?open=passport
+  useEffect(() => {
+    if (searchParams.get("open") === "passport") {
+      setIsPassportOpen(true);
+      router.replace("/dashboard", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   // 6. Filter enrolled studio skills by Category, Duration, and Search Query
   const filteredStudioSkills = useMemo(() => {
@@ -478,7 +432,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
-      <Header completedCount={isClient ? masteredSkills.length : 0} activePath="/dashboard" />
+      <Header activePath="/dashboard" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Guest Notification Banner */}
@@ -486,28 +440,28 @@ export default function DashboardPage() {
           <div className="mb-6 p-4 rounded-2xl bg-brand-50 border border-brand-200 text-brand-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
               <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-              <span>You are exploring in guest mode. Progress is saved locally on this browser.</span>
+              <span>You&apos;re browsing as a guest. Progress is saved in this browser only.</span>
             </div>
             <Link
               href="/signup"
-              className="px-3.5 py-1.5 rounded-full bg-brand-600 text-white font-semibold hover:bg-brand-700 transition"
+              className={buttonClasses({ size: "sm" })}
             >
-              Sign up to sync across devices &rarr;
+              Sign up to save progress
             </Link>
           </div>
         )}
 
         {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
         <section className="mb-8 sm:mb-10">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white border border-surface-border shadow-xs relative">
+          <Card className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 relative">
             <div className="flex items-start sm:items-center gap-4">
-              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 flex items-center justify-center flex-shrink-0 shadow-2xs">
+              <div className="hidden sm:flex w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 items-center justify-center flex-shrink-0 shadow-2xs">
                 <Image
                   src="/logo.svg"
-                  alt="Skillora Owl"
+                  alt=""
                   width={38}
                   height={38}
-                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
+                  className="w-9 h-9 object-contain"
                 />
               </div>
               <div className="space-y-2">
@@ -516,50 +470,48 @@ export default function DashboardPage() {
                     {displayName}&apos;s Studio
                   </h1>
                   {isPro && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-[11px] font-semibold inline-flex items-center gap-1.5">
+                    <Badge shape="pill">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
-                      Pro Member • Unlimited Skills
-                    </span>
+                      Pro · Unlimited skills
+                    </Badge>
                   )}
                 </div>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
-                  Focus on your chosen micro-skills. Practice daily to build automatic muscle memory.
+                  Your skills and today&apos;s practice, in one place.
                 </p>
 
                 {/* Status Badges & Quick Action Row */}
                 <div className="flex flex-wrap items-center gap-2 pt-1">
                   {!isPro && (
                     <div className="inline-flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium inline-flex items-center gap-1">
+                      <Badge shape="pill">
                         <SolarIcon name="clock-circle-linear" className="w-3 h-3 text-ink-muted" />
-                        Free Trial: {isClient ? myStudioSkills.length : 0}/3 Skills • {daysRemaining}d Left
-                      </span>
-                      <button
-                        type="button"
+                        Free · {isClient ? myStudioSkills.length : 0}/3 skills · {daysRemaining} AI days left
+                      </Badge>
+                      <Button
+                        size="sm"
                         onClick={() => {
                           setIsLimitReached(false);
                           setIsSubscriptionModalOpen(true);
                         }}
-                        className="px-3 py-1 rounded-full bg-ink hover:bg-neutral-800 text-white text-[11px] font-semibold transition shadow-2xs cursor-pointer"
                       >
-                        Upgrade ₱299/mo &rarr;
-                      </button>
+                        Upgrade to Pro
+                      </Button>
                     </div>
                   )}
 
                   {/* Japanese Hankō Mastery Passport Trigger */}
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => {
                       playWoodenThud();
                       setIsPassportOpen(true);
                     }}
-                    className="px-3 py-1 rounded-full bg-[#FAF8F5] hover:bg-stone-200 border border-stone-300 text-ink text-[11px] font-semibold transition cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
-                    title="Open your Archival Deliberate Practice Passport"
                   >
                     <HankoSeal size="sm" label="済" className="w-3.5 h-3.5 scale-75" />
-                    <span>Mastery Passport ({isClient ? masteredSkills.length : 0} Seals)</span>
-                  </button>
+                    <span>Mastery Passport · {isClient ? masteredSkills.length : 0} seals</span>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -573,7 +525,7 @@ export default function DashboardPage() {
                   <span>Streak</span>
                 </div>
                 <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
-                  {currentUser ? "4 Days" : "1 Day"}
+                  {isClient ? streak : 0} {streak === 1 ? "day" : "days"}
                 </div>
               </div>
 
@@ -599,13 +551,13 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </section>
 
         {/* Spaced Repetition Daily Practice Docket */}
         {myStudioSkills.length > 0 && (
           <section className="mb-8">
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-surface-border shadow-xs relative overflow-hidden corner-ticks">
+            <Card className="p-6 sm:p-7 relative overflow-hidden corner-ticks">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
@@ -614,38 +566,34 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="spec-tag text-ink-subtle">
-                        ATELIER DOCKET // SPACED REPETITION PRACTICE
+                        Spaced repetition
                       </span>
                       {docketItems.some((i) => i.urgency === "overdue") && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                          DECAY DETECTED
-                        </span>
+                        <Badge tone="danger">Decay detected</Badge>
                       )}
                     </div>
                     <h3 className="font-display font-bold text-lg text-ink">
-                      Today&apos;s Deliberate Practice Docket
+                      Today&apos;s practice
                     </h3>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-start sm:self-auto">
                   {docketItems.length > 0 && (
-                    <button
-                      type="button"
+                    <Button
                       onClick={() => {
                         playMechanicalClick();
                         setGuidedPracticeInitialIndex(0);
                         setIsGuidedPracticeOpen(true);
                       }}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-mono font-bold shadow-2xs transition cursor-pointer"
                     >
-                      <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-amber-300" />
+                      <SolarIcon name="play-linear" className="w-4 h-4 text-amber-300" />
                       <span>
                         {docketItems.every((i) => i.isCompletedToday)
-                          ? "Review Docket Session"
-                          : "Begin Guided Practice (15 mins)"}
+                          ? "Review today's practice"
+                          : "Start practice · 15 min"}
                       </span>
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -658,13 +606,23 @@ export default function DashboardPage() {
                       const isOverdue = item.urgency === "overdue";
                       const isDueToday = item.urgency === "due_today";
 
+                      const openDrill = () => {
+                        playMechanicalClick();
+                        setGuidedPracticeInitialIndex(idx);
+                        setIsGuidedPracticeOpen(true);
+                      };
+
                       return (
                         <div
                           key={item.step.id}
-                          onClick={() => {
-                            playMechanicalClick();
-                            setGuidedPracticeInitialIndex(idx);
-                            setIsGuidedPracticeOpen(true);
+                          role="button"
+                          tabIndex={0}
+                          onClick={openDrill}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              openDrill();
+                            }
                           }}
                           className={`p-4 rounded-2xl border transition-all cursor-pointer group flex flex-col justify-between ${
                             item.isCompletedToday
@@ -677,26 +635,21 @@ export default function DashboardPage() {
                           }`}
                         >
                           <div>
-                            <div className="flex items-center justify-between text-[10px] font-mono mb-1.5">
-                              <span className="text-stone-500 uppercase font-semibold truncate max-w-[140px]">
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                              <span className="text-3xs font-mono text-ink-muted uppercase font-semibold tracking-wider truncate">
                                 {item.skill.title}
                               </span>
                               {item.isCompletedToday ? (
-                                <span className="px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                                  <span>✓ STAMPED</span>
-                                </span>
+                                <Badge tone="success">
+                                  <SolarIcon name="check-circle-linear" className="w-3 h-3" />
+                                  Done
+                                </Badge>
                               ) : isOverdue ? (
-                                <span className="px-1.5 py-0.2 rounded font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                                  OVERDUE (+{item.daysOverdue}d)
-                                </span>
+                                <Badge tone="danger">Overdue +{item.daysOverdue}d</Badge>
                               ) : isDueToday ? (
-                                <span className="px-1.5 py-0.2 rounded font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                                  DUE TODAY
-                                </span>
+                                <Badge tone="warning">Due today</Badge>
                               ) : (
-                                <span className="px-1.5 py-0.2 rounded font-semibold bg-stone-100 text-stone-600">
-                                  NEW DRILL
-                                </span>
+                                <Badge>New</Badge>
                               )}
                             </div>
 
@@ -709,11 +662,11 @@ export default function DashboardPage() {
                           </div>
 
                           <div className="mt-3 pt-2.5 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
-                            <span className="text-[11px] text-stone-500">
-                              ~{item.step.estimated_minutes} mins
+                            <span className="text-2xs text-ink-muted">
+                              ~{item.step.estimated_minutes} min
                             </span>
-                            <span className="text-[11px] font-bold text-ink group-hover:text-brand-600 flex items-center gap-1">
-                              <span>{item.isCompletedToday ? "Review Again" : "Practice Now"}</span>
+                            <span className="text-2xs font-bold text-ink group-hover:text-brand-600 flex items-center gap-1">
+                              <span>{item.isCompletedToday ? "Review" : "Practice"}</span>
                               <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
                             </span>
                           </div>
@@ -728,85 +681,72 @@ export default function DashboardPage() {
                       <p className="text-ink-secondary italic font-serif">
                         &ldquo;Repetition without tension creates speed without effort.&rdquo;
                       </p>
-                      <span className="spec-tag text-stone-500 font-mono">
-                        {docketItems.filter((i) => i.isCompletedToday).length} OF {docketItems.length} DRILLS COMPLETED TODAY
+                      <span className="spec-tag text-ink-muted font-mono">
+                        {docketDoneCount} of {docketItems.length} done today
                       </span>
                     </div>
 
-                    {/* 7-Day Deliberate Streak Hankō Registry Strip */}
+                    {/* This week's practice, one seal per day practiced */}
                     <div className="pt-3 border-t border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold text-ink-muted uppercase tracking-wider">
-                          WEEKLY SEALS:
+                        <span className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-wider">
+                          This week
                         </span>
-                        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                          {["M", "T", "W", "T", "F", "S", "S"].map((day, dIdx) => {
-                            const isToday = dIdx === 3;
-                            const isDocketAllDone = docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday);
-                            const isStamped = dIdx < 3 || (isToday && (routineCompleted || isDocketAllDone));
-                            return (
-                              <div
-                                key={dIdx}
-                                className={`w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-mono transition-all relative ${
-                                  isStamped
-                                    ? "bg-rose-50 border-rose-300 text-rose-700 font-bold"
-                                    : isToday
-                                    ? "bg-white border-dashed border-ink/40 text-ink"
-                                    : "bg-canvas border-surface-border text-ink-subtle"
-                                }`}
-                                title={`Day ${dIdx + 1}: ${isStamped ? "Hankō Stamped Verified" : isToday ? "Today (Pending Seal)" : "Upcoming"}`}
-                              >
-                                {isStamped ? (
-                                  <span className="font-serif text-[11px] text-rose-700 font-bold">済</span>
-                                ) : (
-                                  <span>{day}</span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                        <ol className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5" aria-label="Practice this week">
+                          {weekActivity.map((day) => (
+                            <li
+                              key={day.date}
+                              aria-label={`${day.date}${day.isToday ? " (today)" : ""}: ${
+                                day.practiced ? "practiced" : day.isFuture ? "upcoming" : "no practice"
+                              }`}
+                              className={`w-7 h-7 rounded-full border flex items-center justify-center text-3xs font-mono transition-all ${
+                                day.practiced
+                                  ? "bg-rose-50 border-rose-300 text-rose-700 font-bold"
+                                  : day.isToday
+                                  ? "bg-white border-dashed border-ink/40 text-ink"
+                                  : day.isFuture
+                                  ? "bg-canvas border-surface-border text-ink-subtle"
+                                  : "bg-surface-muted border-surface-border text-ink-subtle"
+                              }`}
+                            >
+                              {day.practiced ? (
+                                <span className="font-serif text-2xs text-rose-700 font-bold" aria-hidden="true">済</span>
+                              ) : (
+                                <span aria-hidden="true">{day.label}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ol>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          playStampThud();
-                          setRoutineCompleted(!routineCompleted);
-                        }}
-                        className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap self-start sm:self-auto flex items-center gap-2 cursor-pointer shadow-xs ${
-                          routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday))
-                            ? "bg-rose-700 text-white"
-                            : "bg-ink hover:bg-neutral-800 text-white"
+                      <div
+                        className={`inline-flex items-center gap-2 text-xs font-semibold self-start sm:self-auto ${
+                          isDocketDone ? "text-rose-700" : "text-ink-secondary"
                         }`}
                       >
                         <HankoSeal
                           size="sm"
                           label="済"
-                          variant={routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday)) ? "vermilion" : "obsidian"}
+                          variant={isDocketDone ? "vermilion" : "obsidian"}
                           className="w-4 h-4 scale-75"
-                          animate={routineCompleted}
                         />
-                        <span>
-                          {routineCompleted || (docketItems.length > 0 && docketItems.every((i) => i.isCompletedToday))
-                            ? "Hankō Stamped for Today!"
-                            : "Stamp Today's Docket"}
-                        </span>
-                      </button>
+                        <span>{isDocketDone ? "Done for today" : `${docketItems.length - docketDoneCount} left today`}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="pt-2 border-t border-surface-border text-xs text-ink-muted">
-                  Enroll in disciplines from the library to populate your Spaced Repetition Docket.
+                  Add a skill from the Skill Library to get a daily practice plan.
                 </div>
               )}
-            </div>
+            </Card>
           </section>
         )}
 
         {/* Discipline & Duration Filter Bar in My Studio */}
         <section className="mb-8">
-          <div className="p-5 sm:p-6 bg-white rounded-3xl border border-surface-border shadow-xs">
+          <Card className="p-5 sm:p-6">
             <SkillFilterBar
               categories={CATEGORIES}
               selectedCategory={selectedCategory}
@@ -816,65 +756,64 @@ export default function DashboardPage() {
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
             />
-          </div>
+          </Card>
         </section>
 
         {/* My Studio Section: Filtered Repertoire */}
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
             <div>
               <h2 className="font-display font-bold text-xl text-ink">
-                My Studio Queue ({filteredStudioSkills.length})
+                Your skills ({filteredStudioSkills.length})
               </h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Disciplines you are currently mastering. Open any skill to practice with tactile micro-simulators, voice grading, and technique coaching.
+                Open a skill to practice with flashcards, interactive tools, voice grading, and technique coaching.
               </p>
             </div>
 
             <Link
               href="/library"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs"
+              className={buttonClasses({ variant: "secondary", size: "sm", className: "self-start sm:self-auto" })}
             >
               <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
-              <span>Explore Archimedes&apos; Library &rarr;</span>
+              <span>Add a skill</span>
             </Link>
           </div>
 
           {/* EMPTY STATE */}
           {filteredStudioSkills.length === 0 ? (
-            <div className="p-12 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto shadow-xs">
+            <div className="p-10 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto">
               <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
                 <SolarIcon name="book-bookmark-linear" className="w-7 h-7" />
               </div>
               <h3 className="font-display font-bold text-lg text-ink mb-1.5">
-                {myStudioSkills.length === 0 ? "Your Studio Queue is Empty" : "No Matching Skills in this Filter"}
+                {myStudioSkills.length === 0 ? "No skills yet" : "No skills match these filters"}
               </h3>
               <p className="text-sm text-ink-muted mb-6 max-w-md mx-auto">
                 {myStudioSkills.length === 0
-                  ? "Talk to Archimedes in the Library to deconstruct and add your first micro-skill."
-                  : "Try clearing your search term or selecting 'All Disciplines' above."}
+                  ? "Tell Archimedes what you want to learn and it will appear here."
+                  : "Try a different search, category, or length."}
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {myStudioSkills.length > 0 && (
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
                     onClick={() => {
                       setSelectedCategory("cat-all");
                       setSelectedDuration("all");
                       setSearchQuery("");
                     }}
-                    className="px-4 py-2 rounded-full bg-canvas text-xs font-semibold text-ink border border-surface-border hover:bg-surface-muted transition"
                   >
-                    Reset Filter
-                  </button>
+                    Clear filters
+                  </Button>
                 )}
 
                 <Link
                   href="/library"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-ink hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition"
+                  className={buttonClasses()}
                 >
-                  <span>Explore Archimedes&apos; Library</span>
+                  <span>Open Skill Library</span>
                   <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
                 </Link>
               </div>
@@ -911,9 +850,7 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
                           <div className="flex items-center gap-1.5 font-medium">
                             {isCustomAi && (
-                              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface-muted text-ink-secondary border border-surface-border/70">
-                                AI
-                              </span>
+                              <Badge>AI</Badge>
                             )}
                             <span className="capitalize">{skill.difficulty}</span>
                             <span className="text-ink-subtle">·</span>
@@ -925,8 +862,8 @@ export default function DashboardPage() {
                           <button
                             type="button"
                             onClick={() => handleRemoveFromStudio(skill.id)}
-                            className="text-[11px] text-ink-subtle hover:text-rose-600 transition cursor-pointer"
-                            title="Remove from My Studio"
+                            className="text-2xs text-ink-subtle hover:text-rose-600 transition cursor-pointer"
+                            aria-label={`Remove ${skill.title} from My Studio`}
                           >
                             Remove
                           </button>
@@ -948,12 +885,12 @@ export default function DashboardPage() {
                         {/* Precision Architectural Progress Line */}
                         <div className="mb-5 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className={`text-[11px] font-mono uppercase tracking-wider ${
+                            <span className={`text-2xs font-mono uppercase tracking-wider ${
                               isCertified ? "text-amber-800 font-bold" : isCompleted ? "text-accent-emerald font-semibold" : "text-ink-subtle"
                             }`}>
-                              {isCertified ? "Guild Certified (匠)" : isCompleted ? "Drills Mastered" : "Discipline Progress"}
+                              {isCertified ? "Guild certified" : isCompleted ? "Complete" : "Progress"}
                             </span>
-                            <span className="text-ink font-mono text-[11px] font-semibold tabular-nums">
+                            <span className="text-ink font-mono text-2xs font-semibold tabular-nums">
                               {doneCount}/{totalCount} ({percent}%)
                             </span>
                           </div>
@@ -989,35 +926,34 @@ export default function DashboardPage() {
                             }`}
                           >
                             <HankoSeal label="匠" subtext="" size="xs" variant={isCertified ? "gold" : "copper"} />
-                            <span>{isCertified ? "Guild Diploma & Golden Mark" : "Take Guild Exam · Claim Seal (匠)"}</span>
+                            <span>{isCertified ? "View Guild diploma" : "Take the Guild exam"}</span>
                           </button>
                         )}
 
                         {/* Primary CTA: Start Learning with Flashcard Modal */}
-                        <button
-                          type="button"
+                        <Button
+                          block
                           onClick={() => {
                             playWoodenThud();
                             setActiveLearningSkill(skill);
                           }}
-                          className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
                         >
                           <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
-                          <span>{isCompleted ? "Practice & Review Drills" : "Start Learning & Practice"}</span>
-                        </button>
+                          <span>{isCompleted ? "Review" : "Practice"}</span>
+                        </Button>
 
                         {/* Secondary: Preview Syllabus */}
-                        <button
-                          type="button"
+                        <Button
+                          variant="secondary"
+                          block
                           onClick={() => {
                             playMechanicalClick();
                             setActiveSyllabusSkill(skill);
                           }}
-                          className="w-full py-2 px-4 rounded-xl bg-canvas hover:bg-surface-muted border border-surface-border text-ink text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span>View Syllabus & Resources</span>
-                        </button>
+                          <span>Steps & resources</span>
+                        </Button>
                       </div>
                     </motion.div>
                   );
@@ -1029,55 +965,50 @@ export default function DashboardPage() {
 
         {/* Slot Limit Callout if Free Tier and at 3 skills */}
         {!isPro && isClient && myStudioSkills.length >= 3 && (
-          <section className="mb-6 p-6 rounded-3xl bg-white border border-surface-border shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <Card as="section" className="mb-6 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
                 <SolarIcon name="cup-first-linear" className="w-5 h-5 text-ink-muted" />
               </div>
               <div>
                 <h4 className="font-display font-bold text-sm text-ink">
-                  Free Explorer Plan: 3/3 Skill Slots Filled
+                  You&apos;re using all 3 free skills
                 </h4>
                 <p className="text-xs text-ink-muted">
-                  You have filled all 3 active discipline slots. Upgrade to Skillora Pro for ₱299/month to study unlimited concurrent crafts.
+                  Upgrade to Pro (₱299/month) to practice as many skills as you like.
                 </p>
               </div>
             </div>
-            <button
-              type="button"
+            <Button
               onClick={() => {
                 setIsLimitReached(true);
                 setIsSubscriptionModalOpen(true);
               }}
-              className="px-4 py-2 rounded-full bg-ink hover:bg-neutral-800 text-xs font-semibold text-white transition shadow-2xs whitespace-nowrap cursor-pointer"
             >
-              Unlock Unlimited &rarr;
-            </button>
-          </section>
+              Upgrade to Pro
+            </Button>
+          </Card>
         )}
 
         {/* Discovery Callout Footer */}
-        <section className="p-6 rounded-3xl bg-white border border-surface-border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <Card as="section" className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
               <SolarIcon name="compass-linear" className="w-5 h-5 text-ink-muted" />
             </div>
             <div>
               <h4 className="font-display font-bold text-sm text-ink">
-                Ready to deconstruct another craft?
+                Ready for another skill?
               </h4>
               <p className="text-xs text-ink-muted">
-                Speak or chat with Archimedes in the Study to sculpt new techniques into step-by-step drills.
+                Tell Archimedes what you want to learn next.
               </p>
             </div>
           </div>
-          <Link
-            href="/library"
-            className="px-4 py-2 rounded-full bg-canvas border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs whitespace-nowrap"
-          >
-            Consult Archimedes in Study &rarr;
+          <Link href="/library" className={buttonClasses({ variant: "secondary" })}>
+            Open Skill Library
           </Link>
-        </section>
+        </Card>
       </main>
 
       {/* 1. Flashcard & Voice Pronunciation Learning Modal */}
@@ -1136,7 +1067,7 @@ export default function DashboardPage() {
               setIsPassportOpen(false);
               setActiveExamSkill(skill);
             }}
-            userStreak={currentUser ? 4 : 1}
+            userStreak={streak}
           />
         )}
       </AnimatePresence>

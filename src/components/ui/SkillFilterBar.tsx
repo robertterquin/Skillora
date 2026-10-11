@@ -18,10 +18,10 @@ interface SkillFilterBarProps {
 }
 
 const DURATION_OPTIONS: { id: DurationFilter; label: string }[] = [
-  { id: "all", label: "All Tracks" },
-  { id: "quick", label: "< 2 Hours" },
-  { id: "sprint", label: "1–7 Days" },
-  { id: "deep", label: "Multi-Week" },
+  { id: "all", label: "Any length" },
+  { id: "quick", label: "Under 2h" },
+  { id: "sprint", label: "2–6h" },
+  { id: "deep", label: "6h+" },
 ];
 
 export function SkillFilterBar({
@@ -47,7 +47,8 @@ export function SkillFilterBar({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search disciplines or drills..."
+            aria-label="Search your skills"
+            placeholder="Search your skills"
             className="w-full pl-10 pr-9 py-2 rounded-xl border border-surface-border bg-white text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink transition shadow-2xs"
           />
           {searchQuery && (
@@ -66,8 +67,8 @@ export function SkillFilterBar({
         <div className="flex items-center gap-1 p-1 bg-surface-muted/80 border border-surface-border/70 rounded-2xl text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
           <div className="flex items-center gap-1.5 px-2 text-ink-muted shrink-0">
             <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-            <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-wider text-ink-subtle">
-              Time
+            <span className="hidden sm:inline text-3xs font-mono uppercase tracking-wider text-ink-subtle">
+              Length
             </span>
           </div>
 
@@ -78,6 +79,7 @@ export function SkillFilterBar({
                 key={dur.id}
                 type="button"
                 onClick={() => onSelectDuration(dur.id)}
+                aria-pressed={isActive}
                 className={`relative px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap cursor-pointer text-xs ${
                   isActive ? "text-ink font-semibold" : "text-ink-muted hover:text-ink"
                 }`}
@@ -105,6 +107,7 @@ export function SkillFilterBar({
               key={cat.id}
               type="button"
               onClick={() => onSelectCategory(cat.id)}
+              aria-pressed={isActive}
               className={`relative px-3.5 py-1.5 text-xs font-medium rounded-xl transition-colors whitespace-nowrap cursor-pointer ${
                 isActive ? "text-ink font-semibold" : "text-ink-muted hover:text-ink"
               }`}
