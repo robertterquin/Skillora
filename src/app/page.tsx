@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
+  Badge,
+  Card,
   Header,
   HeroFanDeck,
   SkillSyllabusModal,
   SolarIcon,
+  buttonClasses,
 } from "@/components";
 import { INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
@@ -29,7 +32,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-ink selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-canvas text-ink selection:bg-brand-500 selection:text-white">
       <Header activePath="/" />
 
       {/* Hero Section inspired by Image 1 (Pallet Ross Composition) */}
@@ -50,23 +53,23 @@ export default function LandingPage() {
 
           {/* Minimalist Subtitle */}
           <p className="text-base sm:text-lg text-ink-muted max-w-xl mx-auto font-normal leading-relaxed mb-8">
-            Curious minds can discover, practice, and master any discipline—with step-by-step instructions, vetted learning platforms, and realistic time horizons.
+            Learn any skill through short, ordered steps, hand-picked resources, and honest time estimates.
           </p>
 
           {/* Hero CTAs: Matching the pill buttons in Image 1 */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/signup"
-              className="w-full sm:w-auto px-7 py-3 rounded-full bg-ink text-white font-medium text-sm hover:bg-neutral-800 transition-all shadow-sm hover:scale-[1.02]"
+              className={buttonClasses({ size: "lg", className: "w-full sm:w-auto" })}
             >
               Start for free
             </Link>
 
             <a
               href="#skills"
-              className="w-full sm:w-auto px-6 py-3 rounded-full bg-transparent hover:bg-neutral-200/60 text-ink-secondary text-sm font-medium transition-all"
+              className={buttonClasses({ variant: "ghost", size: "lg", className: "w-full sm:w-auto" })}
             >
-              Explore library &rarr;
+              Browse skills &rarr;
             </a>
           </div>
         </div>
@@ -80,37 +83,37 @@ export default function LandingPage() {
               Built for how curious minds <span className="font-serif italic font-normal">actually learn</span>.
             </h2>
             <p className="mt-3 text-ink-muted text-sm sm:text-base">
-              Traditional courses have an 8% completion rate. Skillora replaces 40-hour lectures with actionable sequential micro-steps.
+              Long courses are easy to start and hard to finish. Skillora breaks a skill into steps you can finish in one sitting.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-2xl bg-white border border-surface-border shadow-xs text-left">
+            <Card className="p-8 text-left">
               <h3 className="font-display font-semibold text-lg text-ink mb-2">
-                Procedural Micro-Steps
+                Short, ordered steps
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Step-by-step hand placements, muscle memory cues, and concrete exercises designed to be completed in 15–30 minute daily sessions.
+                Concrete exercises, hand positions, and memory cues, each sized for a 15–30 minute practice session.
               </p>
-            </div>
+            </Card>
 
-            <div className="p-8 rounded-2xl bg-white border border-surface-border shadow-xs text-left">
+            <Card className="p-8 text-left">
               <h3 className="font-display font-semibold text-lg text-ink mb-2">
-                Vetted Platforms
+                Hand-picked resources
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                No sponsored filler. We point you directly to the highest-signal free drills, interactive trainers, and masterclass breakdowns on the internet.
+                No sponsored filler. Each step links to the best free tutorials, trainers, and breakdowns we could find.
               </p>
-            </div>
+            </Card>
 
-            <div className="p-8 rounded-2xl bg-white border border-surface-border shadow-xs text-left">
+            <Card className="p-8 text-left">
               <h3 className="font-display font-semibold text-lg text-ink mb-2">
-                Transparent Horizons
+                Honest time estimates
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Clear expectations upfront. You will know whether you are investing an afternoon or building a 4-week daily muscle habit.
+                Know up front whether a skill takes an afternoon or a few weeks of daily practice.
               </p>
-            </div>
+            </Card>
           </div>
         </div>
       </section>
@@ -120,53 +123,53 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto mb-12">
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              Simple, transparent access.
+              Simple pricing.
             </h2>
             <p className="mt-2 text-sm text-ink-muted">
-              Start free, or unlock unlimited tracked pathways and habit analytics.
+              Start free. Upgrade when you want more skills or more time with Archimedes.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left">
             {/* Free Tier */}
-            <div className="p-8 rounded-2xl border border-surface-border bg-canvas flex flex-col justify-between">
+            <div className="p-8 rounded-3xl border border-surface-border bg-canvas flex flex-col justify-between">
               <div>
-                <h3 className="font-display font-bold text-lg text-ink">Free Explorer</h3>
+                <h3 className="font-display font-bold text-lg text-ink">Free</h3>
                 <div className="mt-3 flex items-baseline gap-1">
                   <span className="font-display font-extrabold text-3xl text-ink">₱0</span>
-                  <span className="text-xs text-ink-muted">/ 7-day trial</span>
+                  <span className="text-xs text-ink-muted">forever</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  Start with up to 3 micro-skills and experience Archimedes Studio mentor for 7 days.
+                  Practice up to 3 skills. Archimedes and the AI coaching tools are free for your first 7 days.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Learn up to <strong>3 active skills</strong></span>
+                    <span>Up to <strong>3 skills</strong> in My Studio</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>7-day free trial</strong> of Archimedes & Voice coaching</span>
+                    <span><strong>7 days</strong> of Archimedes, voice grading, and technique coaching</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>3D flashcards & external curated resources</span>
+                    <span>Flashcards, practice tools, and curated resources</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/signup"
-                className="mt-8 block text-center py-2.5 px-4 rounded-full border border-surface-border bg-white text-xs font-semibold text-ink hover:bg-neutral-100 transition"
+                className={buttonClasses({ variant: "secondary", block: true, className: "mt-8" })}
               >
-                Start 7-Day Free Trial
+                Start free
               </Link>
             </div>
 
             {/* Pro Tier (₱299/month) */}
-            <div className="p-8 rounded-2xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-lg">
-              <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold uppercase tracking-wider">
-                Unlimited Access
-              </div>
+            <div className="p-8 rounded-3xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-lg">
+              <Badge tone="inverse" shape="pill" className="absolute -top-3 right-6">
+                Unlimited access
+              </Badge>
               <div>
                 <h3 className="font-display font-bold text-lg text-ink">Skillora Pro</h3>
                 <div className="mt-3 flex items-baseline gap-1">
@@ -174,32 +177,28 @@ export default function LandingPage() {
                   <span className="text-xs text-ink-muted">/ month</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  For deliberate learners building daily streaks and unlimited multi-discipline mastery.
+                  For learners practicing several skills at once.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Learn as many skills as you want</strong> (unlimited studio slots)</span>
+                    <span><strong>Unlimited skills</strong> in My Studio</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited Archimedes Studio</strong> voice & curriculum deconstruction</span>
+                    <span><strong>Unlimited Archimedes</strong> skill breakdowns</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited Technique Coach</strong> & voice pronunciation diagnostics</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span>Daily 15-minute cross-training workout generator</span>
+                    <span><strong>Unlimited</strong> technique coaching and voice grading</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/signup"
-                className="mt-8 block text-center py-2.5 px-4 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 transition"
+                className={buttonClasses({ block: true, className: "mt-8" })}
               >
-                Join Pro for ₱299/m
+                Get Pro
               </Link>
             </div>
           </div>
@@ -223,7 +222,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-6 text-xs text-ink-muted">
-            <a href="#skills" className="hover:text-ink transition">Library</a>
+            <Link href="/library" className="hover:text-ink transition">Skill Library</Link>
             <Link href="/signin" className="hover:text-ink transition">Sign in</Link>
             <Link href="/signup" className="hover:text-ink transition">Sign up</Link>
             <span>&copy; {new Date().getFullYear()} Skillora</span>
