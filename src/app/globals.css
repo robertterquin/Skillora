@@ -20,6 +20,23 @@ body {
   letter-spacing: -0.015em;
 }
 
+/* Visible keyboard focus for every interactive element */
+:focus-visible {
+  outline: 2px solid #18181B;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Sharp architectural display typography */
 .font-display {
   font-family: var(--font-display);
@@ -114,7 +131,7 @@ body {
 /* Technical spec badge */
 .spec-tag {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 500;

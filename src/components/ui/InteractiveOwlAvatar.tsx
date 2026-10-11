@@ -216,7 +216,7 @@ export function InteractiveOwlAvatar({
         </svg>
 
         {/* Status Pill Badge Mounted on Perch */}
-        <div className="absolute -bottom-2.5 px-3 py-1 rounded-full bg-ink text-white text-[10px] font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
+        <div className="absolute -bottom-2.5 px-3 py-1 rounded-full bg-ink text-white text-3xs font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
           {isListening ? (
             <>
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
