@@ -26,6 +26,15 @@ export interface SpacedRepetitionStore {
   todayCompletedStepIds: string[];
   lastActiveDate: string; // YYYY-MM-DD
   totalPracticeSecondsToday: number;
+  practiceDates: string[]; // YYYY-MM-DD, one entry per day with any practice
+}
+
+export interface WeekDayActivity {
+  date: string; // YYYY-MM-DD
+  label: string; // single-letter weekday
+  practiced: boolean;
+  isToday: boolean;
+  isFuture: boolean;
 }
 
 export interface DocketItem {
@@ -38,13 +47,36 @@ export interface DocketItem {
 }
 
 const STORAGE_KEY = "skillora_spaced_repetition_v1";
+const MAX_PRACTICE_DATES = 400;
+
+function toDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 function getTodayString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return toDateKey(new Date());
+}
+
+function emptyStore(): SpacedRepetitionStore {
+  return {
+    records: {},
+    todayCompletedStepIds: [],
+    lastActiveDate: getTodayString(),
+    totalPracticeSecondsToday: 0,
+    practiceDates: [],
+  };
+}
+
+// Stores saved before practiceDates existed: seed it from each drill's last practice date.
+function backfillPracticeDates(store: SpacedRepetitionStore): string[] {
+  const dates = new Set<string>();
+  for (const record of Object.values(store.records)) {
+    if (record.lastPracticedAt) dates.add(toDateKey(new Date(record.lastPracticedAt)));
+  }
+  return Array.from(dates).sort();
 }
 
 /**
@@ -53,27 +85,20 @@ function getTodayString(): string {
  */
 export function getSpacedRepetitionStore(): SpacedRepetitionStore {
   if (typeof window === "undefined") {
-    return {
-      records: {},
-      todayCompletedStepIds: [],
-      lastActiveDate: getTodayString(),
-      totalPracticeSecondsToday: 0,
-    };
+    return emptyStore();
   }
 
   const todayStr = getTodayString();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return {
-        records: {},
-        todayCompletedStepIds: [],
-        lastActiveDate: todayStr,
-        totalPracticeSecondsToday: 0,
-      };
+      return emptyStore();
     }
 
     const parsed: SpacedRepetitionStore = JSON.parse(raw);
+    if (!Array.isArray(parsed.practiceDates)) {
+      parsed.practiceDates = backfillPracticeDates(parsed);
+    }
 
     // If day changed, roll over today's completed step tracker
     if (parsed.lastActiveDate !== todayStr) {
@@ -86,13 +111,64 @@ export function getSpacedRepetitionStore(): SpacedRepetitionStore {
     return parsed;
   } catch (e) {
     console.error("Failed to parse spaced repetition store:", e);
-    return {
-      records: {},
-      todayCompletedStepIds: [],
-      lastActiveDate: todayStr,
-      totalPracticeSecondsToday: 0,
-    };
+    return emptyStore();
   }
+}
+
+function addPracticeDate(store: SpacedRepetitionStore, dateKey: string): void {
+  if (store.practiceDates.includes(dateKey)) return;
+  store.practiceDates = [...store.practiceDates, dateKey].sort().slice(-MAX_PRACTICE_DATES);
+}
+
+/**
+ * Records that the learner practiced today (completing a step or a guided drill).
+ */
+export function logPracticeDay(): void {
+  const store = getSpacedRepetitionStore();
+  addPracticeDate(store, getTodayString());
+  saveSpacedRepetitionStore(store);
+}
+
+/**
+ * Consecutive days of practice ending today, or ending yesterday if today
+ * hasn't been practiced yet (the streak is still alive until the day ends).
+ */
+export function getPracticeStreak(practiceDates: string[]): number {
+  const practiced = new Set(practiceDates);
+  const cursor = new Date();
+  if (!practiced.has(toDateKey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  let streak = 0;
+  while (practiced.has(toDateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+/**
+ * Practice activity for the current Monday–Sunday week.
+ */
+export function getWeekActivity(practiceDates: string[]): WeekDayActivity[] {
+  const practiced = new Set(practiceDates);
+  const today = new Date();
+  const todayKey = toDateKey(today);
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+
+  return ["M", "T", "W", "T", "F", "S", "S"].map((label, idx) => {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + idx);
+    const key = toDateKey(day);
+    return {
+      date: key,
+      label,
+      practiced: practiced.has(key),
+      isToday: key === todayKey,
+      isFuture: key > todayKey,
+    };
+  });
 }
 
 /**
@@ -211,6 +287,7 @@ export function recordDrillPractice(
     store.todayCompletedStepIds.push(normStepId);
   }
   store.totalPracticeSecondsToday += practiceSeconds;
+  addPracticeDate(store, getTodayString());
 
   saveSpacedRepetitionStore(store);
   return updatedRecord;
