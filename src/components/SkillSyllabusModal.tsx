@@ -13,6 +13,8 @@ interface SkillSyllabusModalProps {
   onToggleStep?: (stepId: string) => void;
   onClose: () => void;
   isViewOnly?: boolean;
+  isGuildCertified?: boolean;
+  onOpenGuildExam?: (skill: Skill) => void;
 }
 
 export function SkillSyllabusModal({
@@ -21,6 +23,8 @@ export function SkillSyllabusModal({
   onToggleStep,
   onClose,
   isViewOnly = false,
+  isGuildCertified = false,
+  onOpenGuildExam,
 }: SkillSyllabusModalProps) {
   const [activeVideo, setActiveVideo] = useState<{ url: string; title: string; stepTitle?: string } | null>(null);
 
@@ -113,6 +117,38 @@ export function SkillSyllabusModal({
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
+            </div>
+          )}
+
+          {/* Guild Accreditation Banner */}
+          {!isViewOnly && isAllComplete && (
+            <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 flex-shrink-0 shadow-2xs">
+                  <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>{isGuildCertified ? "CRAFTSMAN'S GUILD ACCREDITED" : "100% COMPLETE // GUILD EXAM UNLOCKED"}</span>
+                    <span className="px-1.5 py-0.2 rounded bg-amber-200/60 text-amber-900 text-[9px]">匠</span>
+                  </div>
+                  <div className="text-xs text-stone-700 mt-0.5">
+                    {isGuildCertified
+                      ? "You hold the Golden Hankō Seal and accredited diploma from Archimedes."
+                      : "Prove your sensory intuition in Archimedes' diagnostic exam to earn your Golden Hankō Seal."}
+                  </div>
+                </div>
+              </div>
+              {onOpenGuildExam && (
+                <button
+                  type="button"
+                  onClick={() => onOpenGuildExam(skill)}
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                >
+                  <span>{isGuildCertified ? "View Guild Diploma (匠)" : "Take Guild Exam (匠)"}</span>
+                  <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -275,6 +311,15 @@ export function SkillSyllabusModal({
               >
                 Track This Skill
               </Link>
+            )}
+            {!isViewOnly && isAllComplete && onOpenGuildExam && (
+              <button
+                type="button"
+                onClick={() => onOpenGuildExam(skill)}
+                className="px-4 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>{isGuildCertified ? "Guild Diploma (匠)" : "Guild Exam (匠)"}</span>
+              </button>
             )}
             <button
               type="button"

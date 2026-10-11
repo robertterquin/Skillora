@@ -12,6 +12,7 @@ import { SolarIcon } from "@/components/SolarIcon";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { HankoSeal } from "@/components/HankoSeal";
 import { MasteryPassportModal } from "@/components/MasteryPassportModal";
+import { GuildExamModal } from "@/components/GuildExamModal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { CATEGORIES, INITIAL_SKILLS, normalizeSkillId, normalizeCategoryId } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
@@ -62,7 +63,11 @@ export default function DashboardPage() {
   // Modal states
   const [activeLearningSkill, setActiveLearningSkill] = useState<Skill | null>(null);
   const [activeSyllabusSkill, setActiveSyllabusSkill] = useState<Skill | null>(null);
+  const [activeExamSkill, setActiveExamSkill] = useState<Skill | null>(null);
   const [isPassportOpen, setIsPassportOpen] = useState(false);
+
+  // Craftsman's Guild Certified Skills
+  const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
 
   // Feature 5: Daily 15-Minute Studio Workout States
   const [dailyRoutine, setDailyRoutine] = useState<DailyRoutine | null>(null);
@@ -224,6 +229,16 @@ export default function DashboardPage() {
       }
     }
 
+    // Load saved Guild certified skills
+    const savedCertified = localStorage.getItem("skillora_guild_certified_skills");
+    if (savedCertified) {
+      try {
+        setCertifiedSkillIds((JSON.parse(savedCertified) as string[]).map(normalizeSkillId));
+      } catch (e) {
+        console.error("Error parsing certified skills", e);
+      }
+    }
+
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const user = session?.user || null;
       setCurrentUser(user);
@@ -234,6 +249,16 @@ export default function DashboardPage() {
       authListener.subscription.unsubscribe();
     };
   }, [supabase, loadUserData]);
+
+  // Handle passing Craftsman's Guild Diagnostic Exam
+  const handlePassGuildExam = (skillId: string) => {
+    const targetNorm = normalizeSkillId(skillId);
+    const updated = Array.from(new Set([...certifiedSkillIds, targetNorm]));
+    setCertifiedSkillIds(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("skillora_guild_certified_skills", JSON.stringify(updated));
+    }
+  };
 
   // 2. Step Completion Toggle with Supabase Sync
   const handleToggleStep = async (stepId: string) => {
@@ -777,6 +802,7 @@ export default function DashboardPage() {
                   const totalCount = steps.length;
                   const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
                   const isCompleted = totalCount > 0 && doneCount === totalCount;
+                  const isCertified = certifiedSkillIds.includes(normalizeSkillId(skill.id));
                   const isCustomAi = skill.id.startsWith("ai-skill-");
 
                   return (
@@ -787,7 +813,11 @@ export default function DashboardPage() {
                       exit={{ opacity: 0, scale: 0.96 }}
                       transition={{ duration: 0.22, ease: "easeOut" }}
                       key={skill.id}
-                      className="flex flex-col justify-between p-6 bg-white rounded-3xl border border-surface-border hover:border-ink/30 hover:-translate-y-1 hover:shadow-md transition-all duration-200 ease-out group corner-ticks"
+                      className={`flex flex-col justify-between p-6 bg-white rounded-3xl border transition-all duration-200 ease-out group corner-ticks ${
+                        isCertified
+                          ? "border-amber-400/80 shadow-sm ring-1 ring-amber-400/20 hover:border-amber-500 hover:-translate-y-1 hover:shadow-md"
+                          : "border-surface-border hover:border-ink/30 hover:-translate-y-1 hover:shadow-md"
+                      }`}
                     >
                       <div>
                         {/* Unified Editorial Metadata Header */}
@@ -815,10 +845,15 @@ export default function DashboardPage() {
                           </button>
                         </div>
 
-                        {/* Title & Description */}
-                        <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition mb-2">
-                          {skill.title}
-                        </h3>
+                        {/* Title & Description with Golden Stamp badge */}
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition">
+                            {skill.title}
+                          </h3>
+                          {isCertified && (
+                            <HankoSeal label="匠" subtext="GUILD" size="sm" variant="gold" className="flex-shrink-0" />
+                          )}
+                        </div>
                         <p className="text-xs sm:text-sm text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
                           {skill.summary}
                         </p>
@@ -826,8 +861,10 @@ export default function DashboardPage() {
                         {/* Precision Architectural Progress Line */}
                         <div className="mb-5 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-[11px] font-mono uppercase tracking-wider text-ink-subtle">
-                              {isCompleted ? "Mastered" : "Discipline Progress"}
+                            <span className={`text-[11px] font-mono uppercase tracking-wider ${
+                              isCertified ? "text-amber-800 font-bold" : isCompleted ? "text-accent-emerald font-semibold" : "text-ink-subtle"
+                            }`}>
+                              {isCertified ? "Guild Certified (匠)" : isCompleted ? "Drills Mastered" : "Discipline Progress"}
                             </span>
                             <span className="text-ink font-mono text-[11px] font-semibold tabular-nums">
                               {doneCount}/{totalCount} ({percent}%)
@@ -836,7 +873,7 @@ export default function DashboardPage() {
                           <div className="w-full h-1 rounded-full bg-surface-muted overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${
-                                isCompleted ? "bg-accent-emerald" : "bg-ink"
+                                isCertified ? "bg-amber-500" : isCompleted ? "bg-accent-emerald" : "bg-ink"
                               }`}
                               style={{ width: `${percent}%` }}
                             />
@@ -846,6 +883,29 @@ export default function DashboardPage() {
 
                       {/* Action Buttons */}
                       <div className="space-y-2 pt-2 border-t border-surface-border">
+                        {/* Guild Exam / Certificate CTA when 100% complete */}
+                        {isCompleted && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isCertified) {
+                                playStampThud();
+                              } else {
+                                playMechanicalClick();
+                              }
+                              setActiveExamSkill(skill);
+                            }}
+                            className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs ${
+                              isCertified
+                                ? "bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/15 border border-amber-500/50 text-amber-900 hover:from-amber-500/30 hover:to-amber-500/25"
+                                : "bg-amber-600 hover:bg-amber-700 text-white"
+                            }`}
+                          >
+                            <HankoSeal label="匠" subtext="" size="xs" variant={isCertified ? "gold" : "copper"} />
+                            <span>{isCertified ? "Guild Diploma & Golden Mark" : "Take Guild Exam · Claim Seal (匠)"}</span>
+                          </button>
+                        )}
+
                         {/* Primary CTA: Start Learning with Flashcard Modal */}
                         <button
                           type="button"
@@ -856,7 +916,7 @@ export default function DashboardPage() {
                           className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
                         >
                           <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
-                          <span>Start Learning & Practice</span>
+                          <span>{isCompleted ? "Practice & Review Drills" : "Start Learning & Practice"}</span>
                         </button>
 
                         {/* Secondary: Preview Syllabus */}
@@ -941,6 +1001,8 @@ export default function DashboardPage() {
             completedStepIds={completedStepIds}
             onToggleStep={handleToggleStep}
             onClose={() => setActiveLearningSkill(null)}
+            isGuildCertified={certifiedSkillIds.includes(normalizeSkillId(activeLearningSkill.id))}
+            onOpenGuildExam={(skill) => setActiveExamSkill(skill)}
           />
         )}
       </AnimatePresence>
@@ -954,6 +1016,8 @@ export default function DashboardPage() {
             onToggleStep={handleToggleStep}
             onClose={() => setActiveSyllabusSkill(null)}
             isViewOnly={false}
+            isGuildCertified={certifiedSkillIds.includes(normalizeSkillId(activeSyllabusSkill.id))}
+            onOpenGuildExam={(skill) => setActiveExamSkill(skill)}
           />
         )}
       </AnimatePresence>
@@ -979,7 +1043,30 @@ export default function DashboardPage() {
             user={currentUser}
             enrolledSkills={myStudioSkills}
             completedStepIds={completedStepIds}
+            certifiedSkillIds={certifiedSkillIds}
+            onOpenExam={(skill) => {
+              setIsPassportOpen(false);
+              setActiveExamSkill(skill);
+            }}
             userStreak={currentUser ? 4 : 1}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 5. Archimedes Craftsman's Guild Diagnostic Exam Modal */}
+      <AnimatePresence>
+        {activeExamSkill && (
+          <GuildExamModal
+            isOpen={!!activeExamSkill}
+            onClose={() => setActiveExamSkill(null)}
+            skill={activeExamSkill}
+            onPass={handlePassGuildExam}
+            isAlreadyCertified={certifiedSkillIds.includes(normalizeSkillId(activeExamSkill.id))}
+            userName={
+              currentUser?.user_metadata?.full_name ||
+              currentUser?.email?.split("@")[0] ||
+              "Journeyman Craftsman"
+            }
           />
         )}
       </AnimatePresence>

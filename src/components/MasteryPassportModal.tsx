@@ -15,6 +15,8 @@ interface MasteryPassportModalProps {
   enrolledSkills: Skill[];
   completedStepIds: string[];
   userStreak?: number;
+  certifiedSkillIds?: string[];
+  onOpenExam?: (skill: Skill) => void;
 }
 
 export function MasteryPassportModal({
@@ -24,6 +26,8 @@ export function MasteryPassportModal({
   enrolledSkills,
   completedStepIds,
   userStreak = 4,
+  certifiedSkillIds = [],
+  onOpenExam,
 }: MasteryPassportModalProps) {
   const [activeTab, setActiveTab] = useState<"credential" | "visas">("credential");
 
@@ -50,16 +54,19 @@ export function MasteryPassportModal({
     return acc + stepHours;
   }, 0);
 
+  // Calculate certified skills
+  const certifiedCount = enrolledSkills.filter((s) => certifiedSkillIds.includes(s.id)).length;
+
   // Guild Rank Calculation
   const rank =
-    masteredSkills.length >= 3
+    certifiedCount >= 3 || masteredSkills.length >= 3
       ? "MASTER ATELIER ARTISAN"
-      : masteredSkills.length >= 1
+      : certifiedCount >= 1 || masteredSkills.length >= 1
       ? "JOURNEYMAN CRAFTSMAN"
       : "STUDIO APPRENTICE";
 
   const rankTier =
-    masteredSkills.length >= 3 ? "TIER III" : masteredSkills.length >= 1 ? "TIER II" : "TIER I";
+    certifiedCount >= 3 || masteredSkills.length >= 3 ? "TIER III" : certifiedCount >= 1 || masteredSkills.length >= 1 ? "TIER II" : "TIER I";
 
   const handlePrint = () => {
     playStampThud();
@@ -173,17 +180,17 @@ export function MasteryPassportModal({
                     </p>
                   </div>
 
-                  {/* Official Stamped Hankō Seal on Citizen Card */}
+                  {/* Official Stamped Hankō Seal on Citizen Card (Gold if Certified!) */}
                   <div className="flex flex-col items-center">
                     <HankoSeal
-                      label="済"
-                      subtext="VERIFIED"
+                      label={certifiedCount > 0 ? "匠" : "済"}
+                      subtext={certifiedCount > 0 ? "GUILD CERTIFIED" : "VERIFIED"}
                       size="lg"
-                      variant="vermilion"
+                      variant={certifiedCount > 0 ? "gold" : "vermilion"}
                       className="shadow-sm"
                     />
                     <span className="text-[8px] font-mono text-stone-400 mt-1 uppercase tracking-widest">
-                      Official Seal
+                      {certifiedCount > 0 ? "Golden Guild Mark" : "Official Seal"}
                     </span>
                   </div>
                 </div>
@@ -205,15 +212,15 @@ export function MasteryPassportModal({
                   </div>
 
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                    <span className="text-[9px] text-stone-500 block uppercase">DAILY STREAK</span>
+                    <span className="text-[9px] text-stone-500 block uppercase">GOLDEN SEALS</span>
                     <span className="font-bold text-lg text-amber-700 mt-0.5 block tabular-nums">
-                      {userStreak}d
+                      {certifiedCount}
                     </span>
-                    <span className="text-[9px] text-stone-600 block">Consecutive</span>
+                    <span className="text-[9px] text-amber-800 font-semibold block">匠 Certified</span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                    <span className="text-[9px] text-stone-500 block uppercase">MASTERED SEALS</span>
+                    <span className="text-[9px] text-stone-500 block uppercase">DRILLS MASTERED</span>
                     <span className="font-bold text-lg text-rose-700 mt-0.5 block tabular-nums">
                       {masteredSkills.length}
                     </span>
@@ -273,12 +280,15 @@ export function MasteryPassportModal({
                   const steps = skill.steps || [];
                   const doneCount = steps.filter((s) => completedStepIds.includes(s.id)).length;
                   const isDone = steps.length > 0 && doneCount === steps.length;
+                  const isCertified = certifiedSkillIds.includes(skill.id);
 
                   return (
                     <div
                       key={skill.id}
-                      className={`p-5 rounded-2xl border-2 transition-all relative overflow-hidden flex flex-col justify-between min-h-[170px] ${
-                        isDone
+                      className={`p-5 rounded-2xl border-2 transition-all relative overflow-hidden flex flex-col justify-between min-h-[185px] ${
+                        isCertified
+                          ? "bg-gradient-to-br from-amber-50/40 via-white to-amber-50/20 border-amber-400 shadow-md ring-1 ring-amber-400/30"
+                          : isDone
                           ? "bg-white border-stone-400 shadow-sm"
                           : "bg-[#F7F5EE]/60 border-dashed border-stone-300"
                       }`}
@@ -286,7 +296,9 @@ export function MasteryPassportModal({
                       {/* Top Spec Info */}
                       <div>
                         <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-stone-500 uppercase mb-2">
-                          <span>REGISTRY ENTRY #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                          <span className={isCertified ? "text-amber-800 font-bold" : ""}>
+                            {isCertified ? "GUILD DIPLOMA CONFERRED" : `REGISTRY ENTRY #${idx + 1 < 10 ? `0${idx + 1}` : idx + 1}`}
+                          </span>
                           <span>EST. {skill.estimated_hours}.0H</span>
                         </div>
                         <h4 className="font-display font-bold text-base text-ink mb-1">
@@ -298,17 +310,54 @@ export function MasteryPassportModal({
                       </div>
 
                       {/* Bottom Status / Stamp */}
-                      <div className="mt-4 pt-3 border-t border-stone-200 flex items-center justify-between">
-                        {isDone ? (
+                      <div className="mt-4 pt-3 border-t border-stone-200 flex items-center justify-between gap-3">
+                        {isCertified ? (
+                          <>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-mono font-bold text-amber-800 uppercase flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                <span>GUILD CERTIFIED CRAFTSMAN</span>
+                              </span>
+                              <span className="text-[9px] font-mono text-amber-700/80">
+                                GOLDEN SEAL CONFERRED (匠)
+                              </span>
+                              {onOpenExam && (
+                                <button
+                                  type="button"
+                                  onClick={() => onOpenExam(skill)}
+                                  className="mt-1 text-[10px] font-mono font-bold text-amber-800 hover:text-amber-950 underline text-left cursor-pointer"
+                                >
+                                  View Guild Diploma &rarr;
+                                </button>
+                              )}
+                            </div>
+                            <HankoSeal
+                              label="匠"
+                              subtext="GUILD CERTIFIED"
+                              size="md"
+                              variant="gold"
+                            />
+                          </>
+                        ) : isDone ? (
                           <>
                             <div className="flex flex-col">
                               <span className="text-[10px] font-mono font-bold text-rose-800 uppercase flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
-                                <span>VERIFIED ATELIER APEX</span>
+                                <span>DRILLS VERIFIED (100%)</span>
                               </span>
                               <span className="text-[9px] font-mono text-stone-400">
-                                COMPLETED // ARCHIVE CERTIFIED
+                                COMPLETED // VERMILION SEAL
                               </span>
+                              {onOpenExam && (
+                                <button
+                                  type="button"
+                                  onClick={() => onOpenExam(skill)}
+                                  className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] font-mono font-bold text-amber-800 hover:bg-amber-500/20 transition cursor-pointer"
+                                >
+                                  <span>Take Guild Exam (匠)</span>
+                                  <SolarIcon name="arrow-right-linear" className="w-2.5 h-2.5" />
+                                </button>
+                              )}
                             </div>
                             <HankoSeal
                               label="済"

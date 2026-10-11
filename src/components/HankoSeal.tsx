@@ -7,7 +7,7 @@ interface HankoSealProps {
   label?: string;
   subtext?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "vermilion" | "copper" | "obsidian";
+  variant?: "vermilion" | "copper" | "obsidian" | "gold";
   animate?: boolean;
   className?: string;
 }
@@ -34,18 +34,28 @@ export function HankoSeal({
       ring: "border-rose-700/60",
       sub: "text-rose-800",
       glow: "shadow-rose-600/10",
+      ripple: "border-rose-500/40",
     },
     copper: {
       border: "border-amber-700/80 text-amber-800 bg-amber-50/30",
       ring: "border-amber-700/60",
       sub: "text-amber-900",
       glow: "shadow-amber-600/10",
+      ripple: "border-amber-500/40",
     },
     obsidian: {
       border: "border-ink/80 text-ink bg-neutral-50/50",
       ring: "border-ink/60",
       sub: "text-ink-secondary",
       glow: "shadow-ink/10",
+      ripple: "border-neutral-500/40",
+    },
+    gold: {
+      border: "border-amber-500 text-amber-700 bg-gradient-to-br from-amber-50 via-yellow-100/60 to-amber-100/50",
+      ring: "border-amber-600/80",
+      sub: "text-amber-800",
+      glow: "shadow-amber-500/25 ring-2 ring-amber-400/30",
+      ripple: "border-amber-400/60",
     },
   };
 
@@ -86,7 +96,7 @@ export function HankoSeal({
 
       {/* Ink impact ripple when animated */}
       {animate && (
-        <div className="absolute inset-0 rounded-full border-2 border-rose-500/40 animate-ping pointer-events-none" />
+        <div className={`absolute inset-0 rounded-full border-2 ${curVariant.ripple} animate-ping pointer-events-none`} />
       )}
     </div>
   );

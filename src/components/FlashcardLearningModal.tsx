@@ -20,6 +20,8 @@ interface FlashcardLearningModalProps {
   completedStepIds: string[];
   onToggleStep: (stepId: string) => void;
   onClose: () => void;
+  isGuildCertified?: boolean;
+  onOpenGuildExam?: (skill: Skill) => void;
 }
 
 // Interactive Tactile Micro-Simulator Suite for each discipline
@@ -93,6 +95,8 @@ export function FlashcardLearningModal({
   completedStepIds,
   onToggleStep,
   onClose,
+  isGuildCertified = false,
+  onOpenGuildExam,
 }: FlashcardLearningModalProps) {
   const [activeTab, setActiveTab] = useState<"flashcards" | "checklist">("flashcards");
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -1016,19 +1020,35 @@ export function FlashcardLearningModal({
         </div>
 
         {/* Bottom Status Bar */}
-        <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between text-xs text-ink-muted">
+        <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted">
           <div className="flex items-center gap-2">
             <span>Overall Progress:</span>
             <strong className="text-ink font-semibold">{completedCount} of {steps.length} steps ({progressPercent}%)</strong>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-5 py-2 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 transition"
-          >
-            Done Practicing
-          </button>
+          <div className="flex items-center gap-2.5">
+            {onOpenGuildExam && completedCount === steps.length && steps.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenGuildExam(skill);
+                }}
+                className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-3.5 h-3.5" />
+                <span>{isGuildCertified ? "Guild Diploma (匠)" : "Proceed to Guild Exam (匠)"}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2 rounded-full bg-ink text-white text-xs font-semibold hover:bg-neutral-800 transition cursor-pointer"
+            >
+              Done Practicing
+            </button>
+          </div>
         </div>
       </motion.div>
 
