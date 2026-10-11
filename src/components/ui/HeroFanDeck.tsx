@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "./SolarIcon";
 
 interface HeroFanDeckProps {
   skills: Skill[];

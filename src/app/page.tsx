@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
-import { Header } from "@/components/Header";
-import { HeroFanDeck } from "@/components/HeroFanDeck";
-import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
-import { SolarIcon } from "@/components/SolarIcon";
+import {
+  Header,
+  HeroFanDeck,
+  SkillSyllabusModal,
+  SolarIcon,
+} from "@/components";
 import { INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";

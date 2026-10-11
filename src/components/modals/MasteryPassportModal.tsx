@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
-import { HankoSeal } from "@/components/HankoSeal";
+import { SolarIcon } from "../ui/SolarIcon";
+import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
 import { isStepCompleted, normalizeSkillId } from "@/lib/mock-data";

@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
-import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
+import { SolarIcon } from "../ui/SolarIcon";
+import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { isStepCompleted } from "@/lib/mock-data";
 
 interface SkillSyllabusModalProps {

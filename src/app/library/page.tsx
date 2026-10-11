@@ -4,10 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
-import { Header } from "@/components/Header";
-import { SolarIcon } from "@/components/SolarIcon";
-import { SubscriptionModal } from "@/components/SubscriptionModal";
-import { InteractiveOwlAvatar } from "@/components/InteractiveOwlAvatar";
+import {
+  Header,
+  SolarIcon,
+  SubscriptionModal,
+  InteractiveOwlAvatar,
+} from "@/components";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
 import { normalizeSkillId } from "@/lib/mock-data";

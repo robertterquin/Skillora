@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Category } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "./SolarIcon";
 
 export type DurationFilter = "all" | "quick" | "sprint" | "deep";
 

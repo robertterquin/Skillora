@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
-import { HankoSeal } from "@/components/HankoSeal";
+import { SolarIcon } from "../ui/SolarIcon";
+import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { GuildExamPayload, ExamQuestion } from "@/app/api/ai/guild-exam/route";
 

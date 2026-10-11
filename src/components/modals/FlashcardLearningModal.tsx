@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { Skill, SkillStep } from "@/types/database";
-import { SolarIcon } from "@/components/SolarIcon";
-import { HankoSeal } from "@/components/HankoSeal";
+import { SolarIcon } from "../ui/SolarIcon";
+import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { isStepCompleted } from "@/lib/mock-data";
 import {
@@ -14,8 +14,8 @@ import {
   PhoneticSoundboard,
   FocusRepetitionDrill,
   CodeMilestoneTerminalSimulator,
-} from "@/components/TactileMicroSimulators";
-import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
+} from "../simulators/TactileMicroSimulators";
+import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 
 interface FlashcardLearningModalProps {

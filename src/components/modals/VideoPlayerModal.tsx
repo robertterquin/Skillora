@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "../ui/SolarIcon";
 
 export function extractYouTubeId(url: string): string | null {
   if (!url) return null;

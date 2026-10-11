@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "./SolarIcon";
 
 interface InteractiveOwlAvatarProps {
   isListening?: boolean;

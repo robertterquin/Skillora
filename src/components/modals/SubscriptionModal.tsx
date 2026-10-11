@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "../ui/SolarIcon";
 
 interface SubscriptionModalProps {
   isOpen: boolean;

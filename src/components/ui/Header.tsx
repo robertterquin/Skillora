@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { SolarIcon } from "@/components/SolarIcon";
-import { UserAvatar } from "@/components/UserAvatar";
-import { SubscriptionModal } from "@/components/SubscriptionModal";
+import { SolarIcon } from "./SolarIcon";
+import { UserAvatar } from "./UserAvatar";
+import { SubscriptionModal } from "../modals/SubscriptionModal";
 import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
 

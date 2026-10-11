@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { SolarIcon } from "@/components/SolarIcon";
+import { SolarIcon } from "@/components";
 
 export default function SignInPage() {
   const router = useRouter();

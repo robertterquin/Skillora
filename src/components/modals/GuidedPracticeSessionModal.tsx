@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { SolarIcon } from "@/components/SolarIcon";
-import { HankoSeal } from "@/components/HankoSeal";
+import { SolarIcon } from "../ui/SolarIcon";
+import { HankoSeal } from "../ui/HankoSeal";
 import {
   playMechanicalClick,
   playChime,

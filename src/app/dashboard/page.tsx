@@ -4,16 +4,19 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { Header } from "@/components/Header";
-import { FlashcardLearningModal } from "@/components/FlashcardLearningModal";
-import { SkillSyllabusModal } from "@/components/SkillSyllabusModal";
-import { SkillFilterBar, DurationFilter } from "@/components/SkillFilterBar";
-import { SolarIcon } from "@/components/SolarIcon";
-import { SubscriptionModal } from "@/components/SubscriptionModal";
-import { HankoSeal } from "@/components/HankoSeal";
-import { MasteryPassportModal } from "@/components/MasteryPassportModal";
-import { GuildExamModal } from "@/components/GuildExamModal";
-import { GuidedPracticeSessionModal } from "@/components/GuidedPracticeSessionModal";
+import {
+  Header,
+  FlashcardLearningModal,
+  SkillSyllabusModal,
+  SkillFilterBar,
+  DurationFilter,
+  SolarIcon,
+  SubscriptionModal,
+  HankoSeal,
+  MasteryPassportModal,
+  GuildExamModal,
+  GuidedPracticeSessionModal,
+} from "@/components";
 import { getDailyDocket, DocketItem } from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import {
