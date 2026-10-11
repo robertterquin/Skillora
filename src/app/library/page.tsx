@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
+  Badge,
+  Button,
   Header,
   SolarIcon,
   SubscriptionModal,
   InteractiveOwlAvatar,
+  buttonClasses,
 } from "@/components";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
@@ -48,7 +51,7 @@ export default function SkillLibraryPage() {
     {
       id: "intro",
       sender: "owl",
-      text: "Welcome to the Archimedes Study. What craft, instrument, or discipline do you wish to deconstruct today? Speak or type your request below.",
+      text: "Hello, I'm Archimedes. What would you like to learn? Name any skill, from guitar to sourdough, and I'll break it into short steps.",
     },
   ]);
 
@@ -125,9 +128,11 @@ export default function SkillLibraryPage() {
     init();
   }, [supabase]);
 
-  // Scroll to bottom on new messages
+  // Scroll to the newest message once a conversation starts (not on the initial greeting)
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 1 || isThinking) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
   }, [messages, isThinking]);
 
   // Realistic AI Mentor Voice for Archimedes (OpenAI TTS with browser fallback)
@@ -204,7 +209,14 @@ export default function SkillLibraryPage() {
       (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please type your message into the chat.");
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `owl-novoice-${Date.now()}`,
+          sender: "owl",
+          text: "Voice input isn't supported in this browser. Type what you'd like to learn instead.",
+        },
+      ]);
       return;
     }
 
@@ -308,7 +320,7 @@ export default function SkillLibraryPage() {
       const expiredMsg: OwlConversation = {
         id: `owl-expired-${Date.now()}`,
         sender: "owl",
-        text: "Your 7-day free trial has concluded. Upgrade to Skillora Pro for ₱299/month to continue unlimited deliberate practice deconstructions.",
+        text: "Your 7 free days with Archimedes have ended. Upgrade to Pro (₱299/month) to keep adding skills with me.",
       };
       setMessages((prev) => [...prev, expiredMsg]);
       speakOwlVoice(expiredMsg.text);
@@ -322,7 +334,7 @@ export default function SkillLibraryPage() {
       const limitMsg: OwlConversation = {
         id: `owl-limit-${Date.now()}`,
         sender: "owl",
-        text: "You have reached the Free Explorer limit of 3 active studio skills. Upgrade to Skillora Pro for ₱299/month to study unlimited simultaneous disciplines.",
+        text: "You've reached the free plan's limit of 3 skills. Upgrade to Pro (₱299/month) for unlimited skills, or remove one from My Studio.",
       };
       setMessages((prev) => [...prev, limitMsg]);
       speakOwlVoice(limitMsg.text);
@@ -371,7 +383,7 @@ export default function SkillLibraryPage() {
       const errorMsg: OwlConversation = {
         id: `owl-err-${Date.now()}`,
         sender: "owl",
-        text: "My analysis was momentarily interrupted. Let us try once more — what discipline shall we deconstruct?",
+        text: "Something went wrong on my end. Could you try that again?",
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -397,19 +409,17 @@ export default function SkillLibraryPage() {
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-between">
         {/* Top Header & Plan Status Banner */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-surface-border mb-6 gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
               <span className="text-xs font-mono font-semibold text-ink uppercase tracking-wider">
-                Archimedes&apos; Study
+                Skill Library
               </span>
             </div>
 
             {/* Free vs Pro Badge with limits */}
             {isPro ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-[11px] font-semibold">
-                Pro Member • Unlimited Skills
-              </span>
+              <Badge shape="pill">Pro · Unlimited skills</Badge>
             ) : (
               <button
                 type="button"
@@ -417,20 +427,19 @@ export default function SkillLibraryPage() {
                   setIsLimitReached(false);
                   setIsSubscriptionModalOpen(true);
                 }}
-                className="px-2.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-[11px] font-medium hover:bg-neutral-100 transition flex items-center gap-1.5 cursor-pointer"
-                title="Free trial status"
+                className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-2xs font-medium hover:bg-surface-border/60 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Free Plan ({enrolledSkillIds.length}/3 Skills • {daysRemaining}d Trial)</span>
-                <span className="font-semibold text-ink underline">Upgrade ₱299/m &rarr;</span>
+                <span>Free · {enrolledSkillIds.length}/3 skills · {daysRemaining} AI days left</span>
+                <span className="font-semibold text-ink underline underline-offset-2">Upgrade</span>
               </button>
             )}
           </div>
 
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-surface-border hover:border-ink/40 text-xs font-semibold text-ink transition shadow-2xs whitespace-nowrap"
+            className={buttonClasses({ variant: "secondary", size: "sm" })}
           >
-            <span>My Studio Repertoire ({enrolledSkillIds.length}) &rarr;</span>
+            <span>My Studio ({enrolledSkillIds.length}) &rarr;</span>
           </Link>
         </div>
 
@@ -442,7 +451,7 @@ export default function SkillLibraryPage() {
             isSpeaking={isOwlSpeaking}
             onClick={() => {
               playChime();
-              speakOwlVoice("I am listening. What discipline shall we deconstruct today?");
+              speakOwlVoice("I'm listening. What would you like to learn?");
             }}
             size={180}
           />
@@ -451,7 +460,7 @@ export default function SkillLibraryPage() {
             Tell Archimedes what you want to learn.
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md leading-relaxed">
-            Speak into your mic or type below. Archimedes will deconstruct it into realistic micro-drills and dispatch it to <strong>My Studio</strong>.
+            Type or say a skill. Archimedes breaks it into short steps and adds it to <strong>My Studio</strong>.
           </p>
 
           {/* Voice Mute Toggle */}
@@ -471,17 +480,14 @@ export default function SkillLibraryPage() {
                   setIsOwlSpeaking(false);
                 }
               }}
-              className={`text-[11px] font-medium px-3 py-1 rounded-full border transition flex items-center gap-1.5 cursor-pointer ${
-                voiceAudioEnabled
-                  ? "bg-surface-muted text-ink border-surface-border"
-                  : "bg-canvas text-ink-muted border-surface-border"
-              }`}
+              aria-pressed={voiceAudioEnabled}
+              className={buttonClasses({ variant: "secondary", size: "sm", className: voiceAudioEnabled ? "" : "text-ink-muted" })}
             >
               <SolarIcon
                 name={voiceAudioEnabled ? "volume-loud-linear" : "volume-cross-linear"}
                 className="w-3.5 h-3.5"
               />
-              <span>{voiceAudioEnabled ? "Voice Audio: Active" : "Voice Audio: Muted"}</span>
+              <span>{voiceAudioEnabled ? "Voice on" : "Voice off"}</span>
             </button>
           </div>
         </section>
@@ -503,7 +509,7 @@ export default function SkillLibraryPage() {
                 }`}
               >
                 {msg.sender === "owl" && (
-                  <div className="flex items-center gap-2 mb-1.5 text-[10px] font-mono font-medium text-ink-muted uppercase tracking-wider">
+                  <div className="flex items-center gap-2 mb-1.5 text-3xs font-mono font-medium text-ink-muted uppercase tracking-wider">
                     <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5 text-ink-muted" />
                     <span>Archimedes</span>
                   </div>
@@ -527,16 +533,16 @@ export default function SkillLibraryPage() {
                             <span className="text-ink-subtle">·</span>
                             <span>{msg.skill.time_commitment_label}</span>
                             <span className="text-ink-subtle">·</span>
-                            <span>{msg.skill.steps?.length || 0} drills</span>
+                            <span>{msg.skill.steps?.length || 0} steps</span>
                           </div>
                           {isEnrolled ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent-emerald">
+                            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-accent-emerald">
                               <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                              <span>In Studio Queue</span>
+                              <span>In My Studio</span>
                             </span>
                           ) : (
-                            <span className="text-[11px] font-medium text-ink-subtle">
-                              New Drill
+                            <span className="text-2xs font-medium text-ink-subtle">
+                              Not added
                             </span>
                           )}
                         </div>
@@ -556,14 +562,14 @@ export default function SkillLibraryPage() {
                               className="p-3 rounded-2xl bg-canvas/80 border border-surface-border text-xs flex items-center justify-between hover:border-ink/20 transition"
                             >
                               <div className="flex items-center gap-2.5">
-                                <span className="w-5 h-5 rounded-md bg-white border border-surface-border/80 flex items-center justify-center font-mono text-[10px] font-semibold text-ink-muted">
+                                <span className="w-5 h-5 rounded-md bg-white border border-surface-border/80 flex items-center justify-center font-mono text-3xs font-semibold text-ink-muted">
                                   {st.step_number < 10 ? `0${st.step_number}` : st.step_number}
                                 </span>
                                 <span className="font-medium text-ink">
                                   {st.title}
                                 </span>
                               </div>
-                              <span className="text-[11px] text-ink-subtle font-mono tabular-nums">
+                              <span className="text-2xs text-ink-subtle font-mono tabular-nums">
                                 ~{st.estimated_minutes}m
                               </span>
                             </div>
@@ -576,23 +582,22 @@ export default function SkillLibraryPage() {
                             <Link
                               href="/dashboard"
                               onClick={() => playWoodenThud()}
-                              className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs group cursor-pointer"
+                              className={buttonClasses({ block: true, className: "group" })}
                             >
-                              <span>Practice in Studio Queue with Flashcards</span>
+                              <span>Practice in My Studio</span>
                               <SolarIcon name="arrow-right-linear" className="w-4 h-4 group-hover:translate-x-0.5 transition" />
                             </Link>
                           ) : (
-                            <button
-                              type="button"
+                            <Button
+                              block
                               onClick={async () => {
                                 playStampThud();
                                 await enrollSkill(msg.skill!);
                               }}
-                              className="w-full py-2.5 px-4 rounded-xl bg-ink hover:bg-neutral-800 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                             >
                               <SolarIcon name="check-circle-linear" className="w-4 h-4 text-accent-emerald" />
-                              <span>Learn This Skill (Add to Studio Queue)</span>
-                            </button>
+                              <span>Add to My Studio</span>
+                            </Button>
                           )}
                         </div>
                       </>
@@ -607,7 +612,7 @@ export default function SkillLibraryPage() {
             <div className="flex items-start">
               <div className="p-4 rounded-3xl bg-white border border-surface-border text-xs text-brand-600 font-semibold flex items-center gap-2 shadow-xs animate-pulse">
                 <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                <span>Archimedes is analyzing biomechanics and sculpting sequential drills...</span>
+                <span>Archimedes is breaking this skill into steps…</span>
               </div>
             </div>
           )}
@@ -616,11 +621,11 @@ export default function SkillLibraryPage() {
         </section>
 
         {/* Input Dock: Voice & Chat Bar */}
-        <section className="sticky bottom-4 z-30 pt-2">
+        <section className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-6 pb-4 bg-gradient-to-t from-canvas via-canvas to-canvas/0">
           {/* Quick inspiration suggestion pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-3 no-scrollbar">
-            <span className="text-[11px] text-ink-muted font-medium whitespace-nowrap pl-1">
-              Ask for:
+            <span className="text-2xs text-ink-muted font-medium whitespace-nowrap pl-1">
+              Try:
             </span>
             {samplePrompts.map((prompt) => (
               <button
@@ -630,7 +635,7 @@ export default function SkillLibraryPage() {
                   setInputText(prompt);
                   handleSendMessage(prompt);
                 }}
-                className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-[11px] font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs"
+                className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-2xs font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs"
               >
                 {prompt}
               </button>
@@ -648,7 +653,8 @@ export default function SkillLibraryPage() {
                   ? "bg-rose-600 text-white animate-pulse shadow-md"
                   : "bg-canvas hover:bg-brand-50 text-ink-muted hover:text-brand-600 border border-surface-border"
               }`}
-              title={isListening ? "Tap to stop listening" : "Speak to the Owl (Voice)"}
+              aria-label={isListening ? "Stop listening" : "Speak your request"}
+              aria-pressed={isListening}
             >
               <SolarIcon
                 name="microphone-3-linear"
@@ -662,10 +668,11 @@ export default function SkillLibraryPage() {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              aria-label="What do you want to learn?"
               placeholder={
                 isListening
-                  ? "Listening to your voice..."
-                  : "Tell the Owl what you want to learn (e.g. 'Fingerstyle guitar', 'Latte art')..."
+                  ? "Listening…"
+                  : "What do you want to learn? e.g. latte art"
               }
               className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
             />
@@ -675,7 +682,7 @@ export default function SkillLibraryPage() {
               type="button"
               disabled={isThinking || !inputText.trim()}
               onClick={() => handleSendMessage()}
-              className="w-11 h-11 rounded-2xl bg-ink hover:bg-neutral-800 disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0"
+              className="w-11 h-11 rounded-2xl bg-ink hover:bg-brand-500 disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0"
               aria-label="Send message to Owl"
             >
               <SolarIcon name="arrow-right-linear" className="w-5 h-5" />
