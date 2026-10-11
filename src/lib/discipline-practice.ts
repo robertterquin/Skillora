@@ -12,6 +12,11 @@ export type DisciplineCategory =
   | "juggling"
   | "general";
 
+export interface CoachSuggestion {
+  label: string;
+  question: string;
+}
+
 export interface DisciplinePracticeProfile {
   disciplineCategory: DisciplineCategory;
   tagLabel: string;
@@ -28,6 +33,14 @@ export interface DisciplinePracticeProfile {
     solid: { title: string; desc: string };
     effortless: { title: string; desc: string };
   };
+  // Technique Coach Tray fields
+  coachButtonLabel: string;
+  coachTitle: string;
+  coachInputPlaceholder: string;
+  coachDiagnosingLabel: string;
+  coachSecondCardLabel: string;
+  coachSuggestions: CoachSuggestion[];
+  mnemonicAnchorLabel: string;
 }
 
 /**
@@ -62,7 +75,7 @@ export function getDisciplinePracticeProfile(
     .join(" ")
     .toLowerCase();
 
-  // 1. Coding / Tech / Software Engineering
+  // 1. Coding / Tech / Software Engineering / Python / JS
   const isCoding =
     skill.category_id === "44444444-4444-4444-4444-444444444444" ||
     skill.category_id === "cat-tech" ||
@@ -95,6 +108,26 @@ export function getDisciplinePracticeProfile(
           desc: "Architecture and patterns flowed intuitively without consulting docs. Cemented in memory.",
         },
       },
+      coachButtonLabel: "Ask Code Coach",
+      coachTitle: "Technique Coach — Syntax & Logic Architecture",
+      coachInputPlaceholder: "Ask about syntax errors, logic patterns, edge cases, or debugging...",
+      coachDiagnosingLabel: "Analyzing code architecture & logic patterns...",
+      coachSecondCardLabel: "Core Mental Model & Pattern:",
+      coachSuggestions: [
+        {
+          label: "Syntax or Logic bug?",
+          question: "My code is throwing errors or unexpected outputs. How do I debug the root cause?",
+        },
+        {
+          label: "Step-by-step code pattern?",
+          question: "Can you break down a clean, idiomatic code pattern for this step?",
+        },
+        {
+          label: "3-minute debugging drill",
+          question: "Give me a 3-minute hands-on debugging or edge-case testing drill for this step.",
+        },
+      ],
+      mnemonicAnchorLabel: "Mental Model / Syntax Rule:",
     };
   }
 
@@ -131,6 +164,26 @@ export function getDisciplinePracticeProfile(
           desc: "Words flow straight from mind to screen without conscious keystroke thought. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Typing Coach",
+      coachTitle: "Technique Coach — Home Row Cadence & Speed Diagnostic",
+      coachInputPlaceholder: "Ask about home row bumps, ring/pinky reach, or typing rhythm...",
+      coachDiagnosingLabel: "Analyzing keystroke mechanics & cadence...",
+      coachSecondCardLabel: "Home Row Tactile Anchor:",
+      coachSuggestions: [
+        {
+          label: "Pinky / Ring hesitation?",
+          question: "My pinky and ring fingers hesitate or search for keys. How do I train them to actuate cleanly?",
+        },
+        {
+          label: "Touch typing without looking?",
+          question: "How do I maintain tactile touch on the F and J bumps without looking down?",
+        },
+        {
+          label: "3-minute speed burst drill",
+          question: "Give me a 3-minute metronome burst drill to lock in home-row muscle memory.",
+        },
+      ],
+      mnemonicAnchorLabel: "Tactile Key Anchor:",
     };
   }
 
@@ -167,6 +220,26 @@ export function getDisciplinePracticeProfile(
           desc: "Glyphs and sounds read as immediately as your native alphabet. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Linguistics Coach",
+      coachTitle: "Technique Coach — Phonetic & Script Diagnostic",
+      coachInputPlaceholder: "Ask about pronunciation, phonetic mouth shapes, or alphabet rules...",
+      coachDiagnosingLabel: "Diagnosing phonetics & articulation...",
+      coachSecondCardLabel: "Phonetic / Tongue Anchor:",
+      coachSuggestions: [
+        {
+          label: "Mouth & Tongue position?",
+          question: "How do I position my tongue, teeth, and lips to articulate this sound correctly?",
+        },
+        {
+          label: "Confusing false friends?",
+          question: "Why am I confusing these glyphs or words, and how do I distinguish them instantly?",
+        },
+        {
+          label: "3-minute phonetic drill",
+          question: "Give me a 3-minute rapid phonetic vocalization drill for this step.",
+        },
+      ],
+      mnemonicAnchorLabel: "Phonetic / Visual Anchor:",
     };
   }
 
@@ -200,6 +273,26 @@ export function getDisciplinePracticeProfile(
           desc: "Perfect visual puck preparation and textbook sweet, rounded body. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Barista Coach",
+      coachTitle: "Technique Coach — Extraction & Dial Diagnostic",
+      coachInputPlaceholder: "Ask about puck prep, grind distribution, flow rate, or extraction...",
+      coachDiagnosingLabel: "Analyzing extraction parameters...",
+      coachSecondCardLabel: "Sensory & Tactile Cue:",
+      coachSuggestions: [
+        {
+          label: "Channeling / Sour flow?",
+          question: "My shot is pulling unevenly, spraying, or tasting sour. What is causing the channeling?",
+        },
+        {
+          label: "Grind vs Dose balance?",
+          question: "Should I adjust grind size finer or tweak the dose weight to balance this extraction?",
+        },
+        {
+          label: "3-minute puck prep drill",
+          question: "Give me a 3-minute puck distribution and level tamp consistency drill.",
+        },
+      ],
+      mnemonicAnchorLabel: "Tactile Sensory Anchor:",
     };
   }
 
@@ -233,6 +326,26 @@ export function getDisciplinePracticeProfile(
           desc: "Effortless, steady pass geometry with paper-slicing sharpness. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Bladesmith Coach",
+      coachTitle: "Technique Coach — Blade Geometry & Angle Diagnostic",
+      coachInputPlaceholder: "Ask about 15° water stone strokes, burr detection, or whetstone technique...",
+      coachDiagnosingLabel: "Diagnosing edge angle & burr geometry...",
+      coachSecondCardLabel: "Blade Angle & Apex Anchor:",
+      coachSuggestions: [
+        {
+          label: "Angle wobbling?",
+          question: "My wrist is wobbling on the pass. How do I lock my bevel angle at consistent 15 degrees?",
+        },
+        {
+          label: "Burr apex detection?",
+          question: "How do I feel whether the micro-burr has fully apexed along the entire blade edge?",
+        },
+        {
+          label: "3-minute stroke drill",
+          question: "Give me a 3-minute alternating stroke consistency drill on the water stone.",
+        },
+      ],
+      mnemonicAnchorLabel: "Tactile Burr Anchor:",
     };
   }
 
@@ -266,6 +379,26 @@ export function getDisciplinePracticeProfile(
           desc: "Subconscious feel for hydration and fermentation timing. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Artisan Baker Coach",
+      coachTitle: "Technique Coach — Fermentation & Dough Diagnostic",
+      coachInputPlaceholder: "Ask about fermentation timing, gluten windowpane, or dough hydration...",
+      coachDiagnosingLabel: "Analyzing gluten elasticity & fermentation...",
+      coachSecondCardLabel: "Dough Feel & Surface Tension:",
+      coachSuggestions: [
+        {
+          label: "Dough tearing / sticky?",
+          question: "My dough is tearing and sticking to my hands. How do I build gluten structure?",
+        },
+        {
+          label: "Windowpane tension test?",
+          question: "How do I perform the windowpane test to know the dough is ready for proofing?",
+        },
+        {
+          label: "3-minute folding drill",
+          question: "Give me a 3-minute stretch-and-fold technique drill to build strong surface tension.",
+        },
+      ],
+      mnemonicAnchorLabel: "Texture & Tension Anchor:",
     };
   }
 
@@ -299,6 +432,26 @@ export function getDisciplinePracticeProfile(
           desc: "Fingers executed algorithm automatically upon visual pattern trigger. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Speedcube Coach",
+      coachTitle: "Technique Coach — Fingertrick & Algorithm Diagnostic",
+      coachInputPlaceholder: "Ask about fingertrick execution, algorithm notation, or cube regrips...",
+      coachDiagnosingLabel: "Analyzing fingertrick ergonomics...",
+      coachSecondCardLabel: "Fingertrick Trigger Anchor:",
+      coachSuggestions: [
+        {
+          label: "Turn pauses / Regrips?",
+          question: "I pause or regrip awkwardly mid-algorithm. How do I execute this sequence in one fluid motion?",
+        },
+        {
+          label: "Index vs Ring triggers?",
+          question: "Which exact finger pads should flick U, U', and F moves without moving the whole hand?",
+        },
+        {
+          label: "3-minute algorithm drill",
+          question: "Give me a 3-minute muscle memory repetition drill for this algorithm sequence.",
+        },
+      ],
+      mnemonicAnchorLabel: "Spatial Fingertrick Anchor:",
     };
   }
 
@@ -337,6 +490,26 @@ export function getDisciplinePracticeProfile(
           desc: "Independent thumb and fingers moving without conscious thought. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Musician Coach",
+      coachTitle: "Technique Coach — Fingerstyle & Rhythm Diagnostic",
+      coachInputPlaceholder: "Ask about chord transitions, picking angle, rhythm pulse, or fretting...",
+      coachDiagnosingLabel: "Analyzing finger independence & tempo...",
+      coachSecondCardLabel: "Soundboard & Hand Posture Anchor:",
+      coachSuggestions: [
+        {
+          label: "Thumb rushing the beat?",
+          question: "My alternating bass thumb is speeding up and breaking time with the melody. How do I steady it?",
+        },
+        {
+          label: "Fret buzz / Finger mute?",
+          question: "My chords are buzzing or muting neighboring strings. What is the exact fretting fingertip angle?",
+        },
+        {
+          label: "3-minute tempo loop drill",
+          question: "Give me a 3-minute slow-tempo metronome loop drill to lock in this pattern.",
+        },
+      ],
+      mnemonicAnchorLabel: "Rhythmic / Posture Anchor:",
     };
   }
 
@@ -372,6 +545,26 @@ export function getDisciplinePracticeProfile(
           desc: "Toss cadence felt automatic with effortless peripheral tracking. Cemented.",
         },
       },
+      coachButtonLabel: "Ask Juggling Coach",
+      coachTitle: "Technique Coach — Throw Cadence & Arc Diagnostic",
+      coachInputPlaceholder: "Ask about cascade arc, throw timing, hand scoops, or eye tracking...",
+      coachDiagnosingLabel: "Analyzing throw geometry & cadence...",
+      coachSecondCardLabel: "Throw Arc & Release Anchor:",
+      coachSuggestions: [
+        {
+          label: "Throws drifting forward?",
+          question: "My throws are drifting forward away from my chest and making me run forward. How do I fix my release?",
+        },
+        {
+          label: "Eye tracking & Vision?",
+          question: "Should I look at the balls or look at the top peak of the arc?",
+        },
+        {
+          label: "3-minute scoop drill",
+          question: "Give me a 3-minute 2-ball scoop-and-toss timing drill to reset my cadence.",
+        },
+      ],
+      mnemonicAnchorLabel: "Visual Arc Anchor:",
     };
   }
 
@@ -403,5 +596,25 @@ function getDefaultProfile(): DisciplinePracticeProfile {
         desc: "Automatic subconscious execution. Cemented in memory.",
       },
     },
+    coachButtonLabel: "Ask Technique Coach",
+    coachTitle: "Technique Coach — Deliberate Practice Diagnostic",
+    coachInputPlaceholder: "Ask anything about this step's technique or practice drill...",
+    coachDiagnosingLabel: "Diagnosing technique & mechanics...",
+    coachSecondCardLabel: "Muscle Memory Anchor:",
+    coachSuggestions: [
+      {
+        label: "Why does it feel stiff?",
+        question: "My movement feels stiff or forced. How do I execute this smoothly?",
+      },
+      {
+        label: "Core technique anchor?",
+        question: "What is the single most critical physical or mental anchor for this step?",
+      },
+      {
+        label: "3-minute corrective drill",
+        question: "Give me a 3-minute deliberate practice corrective drill to lock in this step.",
+      },
+    ],
+    mnemonicAnchorLabel: "Physical / Mental Anchor:",
   };
 }

@@ -16,7 +16,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const systemPrompt = `You are a memory grandmaster and cognitive coach for Skillora.
+    const textToScan = `${skillTitle || ""} ${stepTitle || ""} ${stepInstructions || ""}`.toLowerCase();
+    const isCoding = /\b(code|coding|software|developer|programming|python|javascript|typescript|react|html|css|frontend|backend|web|git|terminal|api|sql|database|functions?|debug|component|calculator|app|scripting)\b/.test(
+      textToScan
+    );
+
+    const systemPrompt = isCoding
+      ? `You are a computer science pedagogy grandmaster and memory architect for Skillora.
+Create a vivid, intuitive mental model and memorable rule of thumb for this programming concept (e.g. Python, data structures, functions, control flow).
+Help the programmer build an unshakeable intuition for the syntax, data flow, or algorithm.
+
+Return JSON:
+{
+  "visualMnemonic": "A vivid 1-2 sentence architectural mental model or intuitive data flow picture.",
+  "physicalAnchor": "A crisp conceptual or syntax anchor to instantly recall how this works in code (e.g. inputs on left, outputs on right, indentation blocks).",
+  "ruleOfThumb": "A catchy 1-liner rule of thumb (max 8 words)."
+}`
+      : `You are a memory grandmaster and cognitive coach for Skillora.
 Create a vivid, visceral mental model or physical mnemonic to help the learner lock this technique into long-term muscle memory.
 Make it striking, visual, and impossible to forget.
 

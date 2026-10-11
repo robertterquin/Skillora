@@ -16,6 +16,7 @@ import {
   CodeMilestoneTerminalSimulator,
 } from "@/components/TactileMicroSimulators";
 import { VideoPlayerModal, extractYouTubeId } from "@/components/VideoPlayerModal";
+import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -208,6 +209,7 @@ export function FlashcardLearningModal({
 
   const steps = skill?.steps || [];
   const currentStep: SkillStep | undefined = steps[currentCardIndex];
+  const profile = getDisciplinePracticeProfile(skill, currentStep);
   const isLanguageSkill =
     skill?.category_id === "cat-language" ||
     skill?.category_id === "22222222-2222-2222-2222-222222222222" ||
@@ -273,11 +275,19 @@ export function FlashcardLearningModal({
       setCoachAdvice(data);
     } catch (e: unknown) {
       console.error(e);
-      setCoachAdvice({
-        diagnosis: "Focus on relaxing physical tension in the wrist and shoulders.",
-        muscleMemoryCue: "Feel the feather-light anchor of your fingers before actuation.",
-        actionableDrill: "Repeat the motion at 50% speed for 2 minutes with eyes closed.",
-      });
+      if (profile.disciplineCategory === "coding") {
+        setCoachAdvice({
+          diagnosis: "Double-check your syntax indentation, variable scopes, and argument data types.",
+          muscleMemoryCue: "Write the function contract first: verify expected inputs vs output before implementing.",
+          actionableDrill: "Write 3 test print() statements with edge cases (empty input, zero, negative value).",
+        });
+      } else {
+        setCoachAdvice({
+          diagnosis: "Focus on relaxing physical tension in the wrist and shoulders.",
+          muscleMemoryCue: "Feel the feather-light anchor of your fingers before actuation.",
+          actionableDrill: "Repeat the motion at 50% speed for 2 minutes with eyes closed.",
+        });
+      }
     } finally {
       setCoachLoading(false);
     }
@@ -383,11 +393,19 @@ export function FlashcardLearningModal({
       setMnemonicData(data);
     } catch (e) {
       console.error(e);
-      setMnemonicData({
-        visualMnemonic: "Imagine the shape as a physical key sliding smoothly into a lock.",
-        physicalAnchor: "Feel the pressure anchor at the tip of your thumb.",
-        ruleOfThumb: "Slow is smooth, smooth is fast.",
-      });
+      if (profile.disciplineCategory === "coding") {
+        setMnemonicData({
+          visualMnemonic: "Think of this function as a postal conveyor belt: inputs get unpacked, stamped, and dispatched.",
+          physicalAnchor: "Inputs on the left, pure transformation in the middle, return value on the right.",
+          ruleOfThumb: "Pure inputs in, predictable output out.",
+        });
+      } else {
+        setMnemonicData({
+          visualMnemonic: "Imagine the shape as a physical key sliding smoothly into a lock.",
+          physicalAnchor: "Feel the pressure anchor at the tip of your thumb.",
+          ruleOfThumb: "Slow is smooth, smooth is fast.",
+        });
+      }
     } finally {
       setMnemonicLoading(false);
     }
@@ -749,10 +767,10 @@ export function FlashcardLearningModal({
                 <button
                   type="button"
                   onClick={() => setCoachOpen(!coachOpen)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs cursor-pointer"
                 >
                   <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600" />
-                  <span>Ask Technique Coach</span>
+                  <span>{profile.coachButtonLabel}</span>
                 </button>
 
                 <button
@@ -817,13 +835,13 @@ export function FlashcardLearningModal({
                         <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
                       </div>
                       <h4 className="font-display font-bold text-xs text-ink">
-                        Technique Coach — Biomechanical Diagnostic
+                        {profile.coachTitle}
                       </h4>
                     </div>
                     <button
                       type="button"
                       onClick={() => setCoachOpen(false)}
-                      className="text-ink-subtle hover:text-ink text-xs"
+                      className="text-ink-subtle hover:text-ink text-xs cursor-pointer"
                     >
                       &times;
                     </button>
@@ -831,44 +849,33 @@ export function FlashcardLearningModal({
 
                   {/* Preset prompt pills */}
                   <div className="flex flex-wrap gap-1.5 mb-3">
-                    <button
-                      type="button"
-                      onClick={() => handleAskCoach("My movement feels stiff, how do I stay fluid?")}
-                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-[11px] text-ink-muted hover:text-brand-700 transition"
-                    >
-                      Why does it feel stiff?
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleAskCoach("What is the exact physical angle or finger anchor?")}
-                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-[11px] text-ink-muted hover:text-brand-700 transition"
-                    >
-                      Exact physical angle?
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleAskCoach("Give me a 3-minute corrective drill.")}
-                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-[11px] text-ink-muted hover:text-brand-700 transition"
-                    >
-                      3-minute corrective drill
-                    </button>
+                    {profile.coachSuggestions.map((sug, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => handleAskCoach(sug.question)}
+                        className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-[11px] text-ink-muted hover:text-brand-700 transition cursor-pointer"
+                      >
+                        {sug.label}
+                      </button>
+                    ))}
                   </div>
 
                   {/* Custom question input */}
                   <div className="flex items-center gap-2 mb-3">
                     <input
                       type="text"
-                      placeholder="Ask anything about this step's physical technique..."
+                      placeholder={profile.coachInputPlaceholder}
                       value={coachQuestion}
                       onChange={(e) => setCoachQuestion(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAskCoach()}
-                      className="flex-1 px-3 py-2 rounded-xl bg-canvas border border-surface-border text-xs text-ink focus:outline-none focus:border-brand-500"
+                      className="flex-1 px-3 py-2 rounded-xl bg-canvas border border-surface-border text-xs text-ink focus:outline-none focus:border-brand-500 font-sans"
                     />
                     <button
                       type="button"
                       disabled={coachLoading || !coachQuestion.trim()}
                       onClick={() => handleAskCoach()}
-                      className="px-3.5 py-2 rounded-xl bg-ink text-white text-xs font-semibold hover:bg-neutral-800 disabled:opacity-40 transition"
+                      className="px-3.5 py-2 rounded-xl bg-ink text-white text-xs font-semibold hover:bg-neutral-800 disabled:opacity-40 transition cursor-pointer"
                     >
                       {coachLoading ? "Analyzing..." : "Ask"}
                     </button>
@@ -878,7 +885,7 @@ export function FlashcardLearningModal({
                   {coachLoading && (
                     <div className="p-3 text-center text-xs text-brand-600 font-semibold animate-pulse flex items-center justify-center gap-2">
                       <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                      <span>Diagnosing biomechanics...</span>
+                      <span>{profile.coachDiagnosingLabel}</span>
                     </div>
                   )}
 
@@ -892,13 +899,13 @@ export function FlashcardLearningModal({
                       </div>
                       <div>
                         <strong className="text-ink font-semibold block text-[11px] uppercase tracking-wider text-amber-700">
-                          Muscle Memory Anchor:
+                          {profile.coachSecondCardLabel}
                         </strong>
                         <p className="text-ink-secondary mt-0.5">{coachAdvice.muscleMemoryCue}</p>
                       </div>
                       <div>
                         <strong className="text-ink font-semibold block text-[11px] uppercase tracking-wider text-accent-emerald">
-                          Corrective Drill:
+                          Actionable Drill:
                         </strong>
                         <p className="text-ink-secondary mt-0.5">{coachAdvice.actionableDrill}</p>
                       </div>
@@ -922,7 +929,7 @@ export function FlashcardLearningModal({
                     <button
                       type="button"
                       onClick={() => setMnemonicOpen(false)}
-                      className="text-ink-subtle hover:text-ink text-xs"
+                      className="text-ink-subtle hover:text-ink text-xs cursor-pointer"
                     >
                       &times;
                     </button>
@@ -937,13 +944,13 @@ export function FlashcardLearningModal({
                     <div className="space-y-2 text-xs">
                       <div className="p-3 rounded-xl bg-indigo-50/50 border border-indigo-100">
                         <strong className="text-indigo-900 block text-[11px] uppercase tracking-wider mb-1">
-                          Visual Image:
+                          Visual Image / Mental Model:
                         </strong>
                         <p className="text-indigo-950">{mnemonicData.visualMnemonic}</p>
                       </div>
                       <div className="p-3 rounded-xl bg-canvas border border-surface-border">
                         <strong className="text-ink block text-[11px] uppercase tracking-wider mb-1">
-                          Physical Anchor:
+                          {profile.mnemonicAnchorLabel}
                         </strong>
                         <p className="text-ink-secondary">{mnemonicData.physicalAnchor}</p>
                       </div>
