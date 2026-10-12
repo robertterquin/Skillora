@@ -63,8 +63,24 @@ Return STRICT JSON matching this schema:
     ]
   }
 }
-Generate between 3 and 4 sequential steps. Keep tone wise, concise, and focused on physical sensations.
-CRITICAL FOR ESTIMATED TIME: "estimated_minutes" must strictly be a focused 15 to 25 minute deliberate practice sprint (e.g. 15, 20, or 25). Never output marathon blocks like 60 minutes.`;
+Generate between 3 and 4 sequential steps.
+
+CRITICAL PEDAGOGY & CRAFT ACCURACY RULES:
+1. DISCIPLINE-SPECIFIC DRILLS:
+   - For Coding & Tech (Python, React, SQL, Git, Terminal, etc.): Instructions MUST be strictly technical and actionable. Detail exact syntax patterns, REPL commands, function definitions, test assertions, and terminal executions. NEVER give generic bodily sensation advice for software disciplines!
+   - For Music & Audio: Detail exact finger/hand anchors (e.g. P-I-M-A), fretboard geometry, tone production, metronome BPM tempo, and rhythmic transition loops.
+   - For Languages & Scripts: Detail phonetic approximations, mnemonic glyph anchors, high-frequency cognates, and real reading/pronunciation drills.
+   - For Tactile Crafts & Sports: Detail body mechanics, exact tool angles, sensory detection cues (sound, feel, resistance, sight), and observable physical benchmarks.
+2. STRICT SEQUENTIAL PROGRESSION:
+   - Step 1 (Foundation): Core mental model, posture/setup, and the primary building block.
+   - Step 2 (Core Mechanism): Active execution of the central technique or writing the core algorithm/script.
+   - Step 3 (Integration & Flow): Combining elements under tempo, handling edge cases/errors, and fluid transition.
+   - Step 4 (Real-world Milestone): A complete mini-project, full performance/solve, or standalone verification benchmark.
+3. CONCRETE ACTIONABILITY: Every step's instructions (2-3 concise sentences) MUST state:
+   (a) The specific technique or mechanism.
+   (b) The exact drill to perform.
+   (c) The objective verification test (how the user knows they succeeded).
+4. DELIBERATE TIME SPRINT: "estimated_minutes" must strictly be a focused 15 to 25 minute sprint (e.g. 15, 20, or 25). Never output marathon blocks like 60 minutes.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
