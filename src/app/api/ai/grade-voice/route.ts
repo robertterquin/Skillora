@@ -3,13 +3,6 @@ import { openai } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OpenAI API key is not configured" },
-        { status: 500 }
-      );
-    }
-
     const formData = await req.formData();
     const audioFile = formData.get("audio") as File | null;
     const expectedText = (formData.get("expectedText") as string) || "";
@@ -17,6 +10,43 @@ export async function POST(req: NextRequest) {
 
     if (!audioFile && !expectedText) {
       return NextResponse.json({ error: "Audio file or target text is required" }, { status: 400 });
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
+    if (supabaseUrl && serviceKey) {
+      try {
+        const edgeForm = new FormData();
+        if (audioFile) edgeForm.append("audio", audioFile);
+        edgeForm.append("expectedText", expectedText);
+        edgeForm.append("language", language);
+        edgeForm.append("action", "grade-voice");
+
+        const edgeRes = await fetch(`${supabaseUrl}/functions/v1/ai?action=grade-voice`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${serviceKey}`,
+            apikey: serviceKey,
+          },
+          body: edgeForm,
+        });
+
+        if (edgeRes.ok) {
+          const edgeData = await edgeRes.json();
+          return NextResponse.json(edgeData);
+        }
+      } catch (e) {
+        // Fall back to local OpenAI
+      }
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "OpenAI API key is not configured" },
+        { status: 500 }
+      );
     }
 
     let transcribedText = "";

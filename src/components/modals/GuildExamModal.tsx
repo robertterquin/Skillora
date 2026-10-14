@@ -9,6 +9,7 @@ import { buttonClasses } from "../ui/Button";
 import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { GuildExamPayload, ExamQuestion } from "@/app/api/ai/guild-exam/route";
+import { aiService } from "@/services/aiService";
 
 interface GuildExamModalProps {
   isOpen: boolean;
@@ -67,22 +68,13 @@ export function GuildExamModal({
     setError(null);
 
     try {
-      const res = await fetch("/api/ai/guild-exam", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          skillTitle: skill.title,
-          skillSummary: skill.summary,
-          skillSlug: skill.slug,
-          steps: skill.steps || [],
-        }),
+      const data = await aiService.getGuildExam({
+        skillTitle: skill.title,
+        skillSummary: skill.summary,
+        skillSlug: skill.slug,
+        steps: skill.steps || [],
       });
 
-      if (!res.ok) {
-        throw new Error("Unable to retrieve examination docket from Proctor Archimedes.");
-      }
-
-      const data = await res.json();
       if (data.exam) {
         setExamData(data.exam);
         setStage("exam");

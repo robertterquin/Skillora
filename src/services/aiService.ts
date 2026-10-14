@@ -1,0 +1,278 @@
+import { createClient } from "@/lib/supabase";
+import { GuildExamPayload } from "@/app/api/ai/guild-exam/route";
+
+const supabase = createClient();
+
+export interface CoachAdvice {
+  diagnosis: string;
+  muscleMemoryCue: string;
+  actionableDrill: string;
+}
+
+export interface MnemonicResult {
+  visualMnemonic: string;
+  physicalAnchor: string;
+  ruleOfThumb: string;
+}
+
+export interface VoiceGradingResult {
+  transcribedText: string;
+  matchScore: number;
+  verdict: "Mastered" | "Near Native" | "Practicing";
+  feedback: string;
+  phoneticTip: string;
+}
+
+export interface DailyRoutineResult {
+  headline: string;
+  totalMinutes: number;
+  blocks: {
+    minutes: number;
+    skillTitle: string;
+    drillTitle: string;
+    action: string;
+  }[];
+  dailyMantra: string;
+}
+
+/**
+ * AI Service for Skillora
+ * Centralizes all AI interactions, calling the Supabase Edge Function 'ai' with automatic fallback.
+ */
+export const aiService = {
+  /**
+   * Archimedes Learning Owl - Conversational Skill Deconstruction
+   */
+  async chatWithOwl(message: string): Promise<{ owlMessage: string; skill: any }> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "owl-chat", message },
+      });
+
+      if (!error && data && data.owlMessage) {
+        return data;
+      }
+    } catch {
+      // Edge function unavailable; proceed to local API fallback
+    }
+
+    // Local route fallback
+    const res = await fetch("/api/ai/owl-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Owl communication failed");
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Technique Coach - Diagnoses hurdles and provides 3-minute drills
+   */
+  async getCoachAdvice(params: {
+    skillTitle: string;
+    stepTitle: string;
+    stepInstructions: string;
+    userQuestion: string;
+  }): Promise<CoachAdvice> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "coach", ...params },
+      });
+
+      if (!error && data && data.diagnosis) {
+        return data as CoachAdvice;
+      }
+    } catch {
+      // Fall through to local API
+    }
+
+    const res = await fetch("/api/ai/coach", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to get coaching advice");
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Memory Grandmaster - Vivid visual mnemonics & physical anchors
+   */
+  async getMnemonic(params: {
+    skillTitle: string;
+    stepTitle: string;
+    stepInstructions: string;
+  }): Promise<MnemonicResult> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "mnemonic", ...params },
+      });
+
+      if (!error && data && data.visualMnemonic) {
+        return data as MnemonicResult;
+      }
+    } catch {
+      // Fall through
+    }
+
+    const res = await fetch("/api/ai/mnemonic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to generate mnemonic");
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Craftsman's Guild Examination
+   */
+  async getGuildExam(params: {
+    skillTitle: string;
+    skillSummary?: string;
+    steps?: any[];
+    skillSlug?: string;
+  }): Promise<{ exam: GuildExamPayload }> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "guild-exam", ...params },
+      });
+
+      if (!error && data && data.exam) {
+        return data;
+      }
+    } catch {
+      // Fall through
+    }
+
+    const res = await fetch("/api/ai/guild-exam", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to load guild exam");
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Archimedes Speech Synthesis (TTS-1-HD Onyx)
+   */
+  async textToSpeech(text: string, voice = "onyx", speed = 0.92): Promise<Blob> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "tts", text, voice, speed },
+      });
+
+      if (!error && data instanceof Blob) {
+        return data;
+      }
+    } catch {
+      // Fall through
+    }
+
+    const res = await fetch("/api/ai/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, voice, speed }),
+    });
+
+    if (!res.ok) {
+      throw new Error("TTS API unavailable");
+    }
+
+    return await res.blob();
+  },
+
+  /**
+   * Whisper Pronunciation & Phonetics Speech Grader
+   */
+  async gradeVoice(
+    audioFile: File | Blob | null,
+    expectedText: string,
+    language = "ru"
+  ): Promise<VoiceGradingResult> {
+    const formData = new FormData();
+    if (audioFile) formData.append("audio", audioFile);
+    formData.append("expectedText", expectedText);
+    formData.append("language", language);
+    formData.append("action", "grade-voice");
+
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: formData,
+      });
+
+      if (!error && data && data.matchScore !== undefined) {
+        return data as VoiceGradingResult;
+      }
+    } catch {
+      // Fall through
+    }
+
+    const res = await fetch("/api/ai/grade-voice", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to grade voice pronunciation");
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * 15-Minute Athletic Cross-Training Daily Routine
+   */
+  async generateDailyRoutine(
+    enrolledSkills: any[],
+    completedStepIds: string[] = []
+  ): Promise<DailyRoutineResult> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "daily-routine", enrolledSkills, completedStepIds },
+      });
+
+      if (!error && data && data.blocks) {
+        return data as DailyRoutineResult;
+      }
+    } catch {
+      // Fall through
+    }
+
+    const res = await fetch("/api/ai/daily-routine", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enrolledSkills, completedStepIds }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to generate daily routine");
+    }
+
+    return await res.json();
+  },
+};

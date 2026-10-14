@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export interface ExamOption {
   id: "A" | "B" | "C" | "D";
@@ -354,6 +355,17 @@ export async function POST(req: NextRequest) {
       if (cleanSlug.includes(key) || key.includes(cleanSlug)) {
         return NextResponse.json({ exam });
       }
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const edgeRes = await invokeEdgeFunction("guild-exam", {
+      skillTitle,
+      skillSummary,
+      steps,
+      skillSlug,
+    });
+    if (edgeRes.fromEdgeFunction && edgeRes.data) {
+      return NextResponse.json(edgeRes.data);
     }
 
     // Dynamic generation with GPT-4o-mini for all custom user-prompted crafts

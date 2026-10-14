@@ -41,9 +41,10 @@ import {
   isStepCompleted,
 } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
-import { fetchLiveSkills } from "@/lib/skills-service";
+import { fetchLiveSkills } from "@/services/skillsService";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
   // useSearchParams needs a Suspense boundary in the App Router
@@ -59,8 +60,7 @@ function Dashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loadingAuth, setLoadingAuth] = useState(true);
+  const { user: currentUser, isLoading: loadingAuth } = useAuth();
 
   // Free Tier & 7-Day Trial Limits
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
@@ -176,38 +176,28 @@ function Dashboard() {
   useEffect(() => {
     setIsClient(true);
 
-    const init = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setCurrentUser(user);
+    const user = currentUser;
+    // Check if user is on Pro plan
+    const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
+    const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
+    setIsPro(userIsPro);
 
-        // Check if user is on Pro plan
-        const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
-        const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
-        setIsPro(userIsPro);
+    // 7-Day Trial calculation
+    const trialStartKey = "skillora_trial_start_timestamp";
+    let trialStart = localStorage.getItem(trialStartKey);
+    if (!trialStart) {
+      trialStart = Date.now().toString();
+      localStorage.setItem(trialStartKey, trialStart);
+    }
+    const daysElapsed = Math.floor(
+      (Date.now() - parseInt(trialStart, 10)) / (1000 * 60 * 60 * 24)
+    );
+    setDaysRemaining(Math.max(0, 7 - daysElapsed));
 
-        // 7-Day Trial calculation
-        const trialStartKey = "skillora_trial_start_timestamp";
-        let trialStart = localStorage.getItem(trialStartKey);
-        if (!trialStart) {
-          trialStart = Date.now().toString();
-          localStorage.setItem(trialStartKey, trialStart);
-        }
-        const daysElapsed = Math.floor(
-          (Date.now() - parseInt(trialStart, 10)) / (1000 * 60 * 60 * 24)
-        );
-        setDaysRemaining(Math.max(0, 7 - daysElapsed));
+    loadUserData(user);
+  }, [currentUser, loadUserData]);
 
-        await loadUserData(user);
-      } catch (e) {
-        console.error("Error reading auth state", e);
-      } finally {
-        setLoadingAuth(false);
-      }
-    };
-
-    init();
-
+  useEffect(() => {
     fetchLiveSkills(supabase).then((live) => {
       const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
       let customList: Skill[] = [];
@@ -249,17 +239,7 @@ function Dashboard() {
         console.error("Error parsing certified skills", e);
       }
     }
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const user = session?.user || null;
-      setCurrentUser(user);
-      await loadUserData(user);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [supabase, loadUserData]);
+  }, [supabase]);
 
   // Handle passing Craftsman's Guild Diagnostic Exam
   const handlePassGuildExam = (skillId: string) => {

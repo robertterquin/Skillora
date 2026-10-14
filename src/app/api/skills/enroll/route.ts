@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/supabase";
 import { normalizeSkillId, normalizeCategoryId, normalizeStepId, isValidUuid } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
 

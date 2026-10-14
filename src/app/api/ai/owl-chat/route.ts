@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { openai } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/supabase";
 import { enrichStepsWithYouTube } from "@/lib/youtube-service";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,12 @@ export async function POST(req: NextRequest) {
 
     if (!message || typeof message !== "string" || message.trim().length === 0) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const edgeRes = await invokeEdgeFunction("owl-chat", { message });
+    if (edgeRes.fromEdgeFunction && edgeRes.data) {
+      return NextResponse.json(edgeRes.data);
     }
 
     if (!process.env.OPENAI_API_KEY) {

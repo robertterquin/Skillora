@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,6 +8,16 @@ export async function POST(req: NextRequest) {
 
     if (!stepTitle || typeof stepTitle !== "string") {
       return NextResponse.json({ error: "Step title is required" }, { status: 400 });
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const edgeRes = await invokeEdgeFunction("mnemonic", {
+      skillTitle,
+      stepTitle,
+      stepInstructions,
+    });
+    if (edgeRes.fromEdgeFunction && edgeRes.data) {
+      return NextResponse.json(edgeRes.data);
     }
 
     if (!process.env.OPENAI_API_KEY) {

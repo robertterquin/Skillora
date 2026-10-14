@@ -4,14 +4,12 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 import { SolarIcon } from "./SolarIcon";
 import { buttonClasses } from "./Button";
 import { UserAvatar } from "./UserAvatar";
 import { SubscriptionModal } from "../modals/SubscriptionModal";
 import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
-import { User } from "@supabase/supabase-js";
 
 interface HeaderProps {
   activePath?: string;
@@ -28,11 +26,11 @@ const SIGNED_OUT_LINKS = [
   { href: "/#pricing", label: "Pricing" },
 ];
 
+import { useAuth } from "@/hooks/useAuth";
+
 export function Header({ activePath = "/" }: HeaderProps) {
   const router = useRouter();
-  const supabase = createClient();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const { user: currentUser, isLoading: loadingUser, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
@@ -41,29 +39,8 @@ export function Header({ activePath = "/" }: HeaderProps) {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkUser = async () => {
-      setSoundOn(isSoundEnabled());
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setCurrentUser(user);
-      } catch (e) {
-        console.error("Error reading auth state", e);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    checkUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user || null);
-      setLoadingUser(false);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [supabase]);
+    setSoundOn(isSoundEnabled());
+  }, []);
 
   // Close the account dropdown and mobile menu on outside click or Escape
   useEffect(() => {
@@ -92,8 +69,7 @@ export function Header({ activePath = "/" }: HeaderProps) {
 
   const handleSignOut = async () => {
     setIsDropdownOpen(false);
-    await supabase.auth.signOut();
-    setCurrentUser(null);
+    await signOut();
     router.push("/");
     router.refresh();
   };

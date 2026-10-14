@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { isStepCompleted } from "@/lib/mock-data";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,15 @@ export async function POST(req: NextRequest) {
         { error: "At least one enrolled skill is required to create a daily routine" },
         { status: 400 }
       );
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const edgeRes = await invokeEdgeFunction("daily-routine", {
+      enrolledSkills,
+      completedStepIds,
+    });
+    if (edgeRes.fromEdgeFunction && edgeRes.data) {
+      return NextResponse.json(edgeRes.data);
     }
 
     if (!process.env.OPENAI_API_KEY) {

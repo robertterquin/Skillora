@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,6 +8,23 @@ export async function POST(req: NextRequest) {
 
     if (!text || typeof text !== "string" || text.trim().length === 0) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
+    }
+
+    // Attempt execution via Supabase Edge Function first
+    const edgeRes = await invokeEdgeFunction<Buffer>("tts", {
+      text,
+      voice,
+      speed,
+    });
+    if (edgeRes.fromEdgeFunction && edgeRes.data) {
+      const buffer = edgeRes.data;
+      return new Response(new Uint8Array(buffer), {
+        headers: {
+          "Content-Type": "audio/mpeg",
+          "Content-Length": buffer.length.toString(),
+          "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+        },
+      });
     }
 
     if (!process.env.OPENAI_API_KEY) {

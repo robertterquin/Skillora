@@ -16,8 +16,10 @@ import {
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
 import { normalizeSkillId } from "@/lib/mock-data";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
+import { aiService } from "@/services/aiService";
+import { useAuth } from "@/hooks/useAuth";
 
 interface OwlConversation {
   id: string;
@@ -28,7 +30,7 @@ interface OwlConversation {
 
 export default function SkillLibraryPage() {
   const supabase = createClient();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { user: currentUser } = useAuth();
 
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
@@ -73,10 +75,9 @@ export default function SkillLibraryPage() {
   }, []);
 
   useEffect(() => {
-    // Check auth user & existing enrollments
+    // Check existing enrollments and plan
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
+      const user = currentUser;
 
       // Check if user is on Pro plan
       const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
@@ -126,7 +127,7 @@ export default function SkillLibraryPage() {
     };
 
     init();
-  }, [supabase]);
+  }, [supabase, currentUser]);
 
   // Scroll to the newest message once a conversation starts (not on the initial greeting)
   useEffect(() => {
@@ -157,17 +158,7 @@ export default function SkillLibraryPage() {
       let audioUrl = audioCacheRef.current.get(text);
 
       if (!audioUrl) {
-        const res = await fetch("/api/ai/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, voice: "onyx", speed: 0.92 }),
-        });
-
-        if (!res.ok) {
-          throw new Error("TTS API unavailable");
-        }
-
-        const blob = await res.blob();
+        const blob = await aiService.textToSpeech(text, "onyx", 0.92);
         audioUrl = URL.createObjectURL(blob);
         audioCacheRef.current.set(text, audioUrl);
       }
@@ -367,15 +358,7 @@ export default function SkillLibraryPage() {
     setIsThinking(true);
 
     try {
-      const res = await fetch("/api/ai/owl-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: textToSend.trim() }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Owl communication failed");
-
+      const data = await aiService.chatWithOwl(textToSend.trim());
       const owlReply = data.owlMessage;
       const newSkill: Skill = data.skill;
 

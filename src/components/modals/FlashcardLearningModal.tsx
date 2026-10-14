@@ -18,6 +18,7 @@ import {
 } from "../simulators/TactileMicroSimulators";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
+import { aiService } from "@/services/aiService";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -262,18 +263,12 @@ export function FlashcardLearningModal({
     setCoachLoading(true);
     setCoachOpen(true);
     try {
-      const res = await fetch("/api/ai/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          skillTitle: skill?.title,
-          stepTitle: currentStep.title,
-          stepInstructions: currentStep.instructions,
-          userQuestion: q,
-        }),
+      const data = await aiService.getCoachAdvice({
+        skillTitle: skill?.title || "General",
+        stepTitle: currentStep.title,
+        stepInstructions: currentStep.instructions,
+        userQuestion: q,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Coaching failed");
       setCoachAdvice(data);
     } catch (e: unknown) {
       console.error(e);
@@ -346,19 +341,11 @@ export function FlashcardLearningModal({
     setVoiceGrading(true);
 
     try {
-      const formData = new FormData();
-      if (audioBlob) {
-        formData.append("audio", audioBlob, "user-recording.webm");
-      }
-      formData.append("expectedText", voiceSample);
-      formData.append("language", isLanguageSkill ? "ru" : "en");
-
-      const res = await fetch("/api/ai/grade-voice", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = await aiService.gradeVoice(
+        audioBlob,
+        voiceSample,
+        isLanguageSkill ? "ru" : "en"
+      );
       setVoiceScoreResult(data);
     } catch (err) {
       console.error(err);
@@ -381,17 +368,11 @@ export function FlashcardLearningModal({
     setMnemonicOpen(true);
 
     try {
-      const res = await fetch("/api/ai/mnemonic", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          skillTitle: skill?.title,
-          stepTitle: currentStep.title,
-          stepInstructions: currentStep.instructions,
-        }),
+      const data = await aiService.getMnemonic({
+        skillTitle: skill?.title || "Discipline",
+        stepTitle: currentStep.title,
+        stepInstructions: currentStep.instructions,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
       setMnemonicData(data);
     } catch (e) {
       console.error(e);

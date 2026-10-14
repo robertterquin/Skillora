@@ -1,0 +1,5 @@
+# Supabase Project Configuration for Skillora
+project_id = "cvnzhafoxkdnadyrfpli"
+
+[functions.ai]
+verify_jwt = false

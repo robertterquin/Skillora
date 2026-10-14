@@ -15,8 +15,8 @@ import {
 } from "@/components";
 import { INITIAL_SKILLS } from "@/lib/mock-data";
 import { Skill } from "@/types/database";
-import { createClient } from "@/lib/supabase/client";
-import { fetchLiveSkills } from "@/lib/skills-service";
+import { createClient } from "@/lib/supabase";
+import { fetchLiveSkills } from "@/services/skillsService";
 
 export default function LandingPage() {
   const [activeModalSkill, setActiveModalSkill] = useState<Skill | null>(null);
