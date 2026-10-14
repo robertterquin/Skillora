@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { openai, createChatCompletion } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
   try {
@@ -83,8 +83,7 @@ Respond with JSON matching this schema:
   "phoneticTip": "1 practical mouth/tongue/vowel placement tip for improvement."
 }`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await createChatCompletion({
       messages: [
         {
           role: "system",

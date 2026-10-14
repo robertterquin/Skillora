@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { openai } from "@/lib/openai";
+import { openai, createChatCompletion } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
 import { createAdminClient } from "@/lib/supabase";
 import { enrichStepsWithYouTube } from "@/lib/youtube-service";
@@ -89,8 +89,7 @@ CRITICAL PEDAGOGY & CRAFT ACCURACY RULES:
    (c) The objective verification test (how the user knows they succeeded).
 4. DELIBERATE TIME SPRINT: "estimated_minutes" must strictly be a focused 15 to 25 minute sprint (e.g. 15, 20, or 25). Never output marathon blocks like 60 minutes.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const response = await createChatCompletion({
       messages: [
         { role: "system", content: systemPrompt },
         {

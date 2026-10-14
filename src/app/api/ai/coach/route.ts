@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
@@ -88,8 +88,7 @@ Step Context: ${stepInstructions}
 Learner's Problem / Question:
 "${userQuestion}"`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const response = await createChatCompletion({
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

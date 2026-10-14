@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { openai, createChatCompletion } from "@/lib/openai";
 import { isStepCompleted } from "@/lib/mock-data";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
@@ -74,8 +74,7 @@ ${skillsContext}
 
 Create today's high-efficiency 15-minute practice session.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const response = await createChatCompletion({
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

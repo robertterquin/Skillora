@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
 export interface ExamOption {
@@ -454,8 +454,7 @@ CRITICAL CRAFTSMANSHIP RULES:
   ]
 }`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await createChatCompletion({
       messages: [
         {
           role: "system",

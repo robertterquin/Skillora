@@ -339,6 +339,38 @@ function getOpenAI(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
+// Configured AI Model: defaults to gpt-6-luna with automatic fallback to gpt-4o-mini
+const PRIMARY_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-6-luna";
+const FALLBACK_MODEL = "gpt-4o-mini";
+
+async function createChatCompletionWithFallback(
+  openai: OpenAI,
+  params: any
+) {
+  const modelToUse = params.model || PRIMARY_MODEL;
+  try {
+    return await openai.chat.completions.create({
+      ...params,
+      model: modelToUse,
+    });
+  } catch (err: any) {
+    // If the selected model returns model_not_found or 404, smoothly fallback
+    const isModelUnavailable =
+      err?.status === 404 ||
+      err?.code === "model_not_found" ||
+      (typeof err?.message === "string" && err.message.toLowerCase().includes("model"));
+
+    if (isModelUnavailable && modelToUse !== FALLBACK_MODEL) {
+      console.warn(`[AI Edge] Model "${modelToUse}" unavailable. Falling back to "${FALLBACK_MODEL}".`);
+      return await openai.chat.completions.create({
+        ...params,
+        model: FALLBACK_MODEL,
+      });
+    }
+    throw err;
+  }
+}
+
 function getSupabaseAdmin() {
   const url = Deno.env.get("SUPABASE_URL") || "";
   const key =
@@ -430,8 +462,7 @@ Return STRICT JSON:
   }
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const response = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `User wants to learn: "${message}".` },
@@ -548,8 +579,7 @@ Format response as STRICT JSON:
   "actionableDrill": "A 3-minute physical or mental drill to fix it."
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const response = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Discipline: ${skillTitle}\nStep: ${stepTitle}\nContext: ${stepInstructions}\nLearner Question: ${userQuestion}` },
@@ -575,8 +605,7 @@ Format JSON:
   "ruleOfThumb": "A 1-liner rhyme or catchy rule of thumb (max 8 words)."
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const response = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Discipline: ${skillTitle}\nStep: ${stepTitle}\nInstructions: ${stepInstructions}` },
@@ -628,8 +657,7 @@ Output STRICT JSON:
   ]
 }`;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const completion = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: "You are the Grand Proctor of Skillora. Respond only with valid JSON." },
       { role: "user", content: prompt },
@@ -702,8 +730,7 @@ Evaluate pronunciation. Output JSON:
   "phoneticTip": "1 practical mouth/tongue/vowel placement tip."
 }`;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const completion = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: "You are an expert linguistic speech grader. Respond only with valid JSON." },
       { role: "user", content: gradingPrompt },
@@ -743,8 +770,7 @@ Return JSON:
   "dailyMantra": "1-sentence inspirational reminder."
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const response = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Enrolled Skills:\n${summary}\nCreate today's session.` },
