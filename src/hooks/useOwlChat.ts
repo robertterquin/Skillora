@@ -14,8 +14,10 @@ import {
 } from "@/types/owl";
 import { aiService } from "@/services/aiService";
 import { playMechanicalClick, playChime, playStampThud } from "@/lib/workbench-audio";
+import { getUniformMaleVoice } from "@/lib/voice";
 
 export type { OwlMessage, OwlConsultation, ConsultationOutcome };
+
 
 export interface UseOwlChatOptions {
   enrolledSkills?: (Skill | string)[];
@@ -179,13 +181,20 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     setIsOwlSpeaking(false);
   }, []);
 
-  // Pre-warm avatar greeting audio so clicking Archimedes responds with zero delay
+  // Pre-warm avatar greeting audio and populate Web Speech voices cache
   useEffect(() => {
     if (typeof window === "undefined") return;
     const greeting = "I'm listening. Tell me what interests you or ask for suggestions.";
     const url = `/api/ai/tts?text=${encodeURIComponent(greeting)}&voice=onyx&speed=1.0`;
     audioCacheRef.current.set(greeting, url);
     fetch(url).catch(() => {});
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
   }, []);
 
   const fallbackBrowserSpeech = useCallback((text: string) => {
@@ -195,26 +204,20 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     }
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const deepVoice =
-      voices.find(
-        (v) =>
-          v.lang.startsWith("en") &&
-          (v.name.includes("Daniel") ||
-            v.name.includes("UK English Male") ||
-            v.name.includes("Oliver") ||
-            v.name.includes("Arthur") ||
-            v.name.includes("Alex") ||
-            v.name.includes("Natural"))
-      ) || voices.find((v) => v.lang.startsWith("en"));
 
-    if (deepVoice) utterance.voice = deepVoice;
+    // Strictly select a uniform male voice
+    const maleVoice = getUniformMaleVoice("en");
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+    }
+
     utterance.rate = 0.95;
-    utterance.pitch = 0.85;
+    utterance.pitch = 0.72; // Deep, uniform masculine tone
     utterance.onend = () => setIsOwlSpeaking(false);
     utterance.onerror = () => setIsOwlSpeaking(false);
     window.speechSynthesis.speak(utterance);
   }, []);
+
 
   const speakOwlVoice = useCallback(
     (text: string) => {

@@ -19,6 +19,7 @@ import { StepActionBlueprint } from "../simulators/StepActionBlueprint";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 import { aiService } from "@/services/aiService";
+import { getUniformMaleVoice } from "@/lib/voice";
 
 interface FlashcardLearningModalProps {
   skill: Skill | null;
@@ -174,8 +175,13 @@ export function FlashcardLearningModal({
       utterance.lang = "en-US";
     }
 
-    utterance.rate = 0.85;
-    utterance.pitch = 1.0;
+    const maleVoice = getUniformMaleVoice(utterance.lang);
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+    }
+
+    utterance.rate = 0.88;
+    utterance.pitch = 0.75; // Uniform deep male register
 
     setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);

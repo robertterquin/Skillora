@@ -24,9 +24,9 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
   // Limit spoken text to 400 chars for punchy, real-time mentor responses
   const cleanText = text.trim().slice(0, 400);
 
-  // Validate voice
-  const validVoices = ["onyx", "echo", "fable", "alloy", "nova", "shimmer"];
-  const chosenVoice = validVoices.includes(voice) ? voice : "onyx";
+  // Validate voice - strictly enforce uniform male mentor voice throughout the system
+  const maleVoices = ["onyx", "echo", "fable"];
+  const chosenVoice = maleVoices.includes(voice) ? voice : "onyx";
 
   // Clamp speed between 0.9 and 1.15 for natural, crisp mentor cadence
   const cleanSpeed = typeof speed === "number" ? Math.max(0.9, Math.min(1.15, speed)) : 1.0;
