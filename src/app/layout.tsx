@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { RouteProgressBar } from "@/components/ui/RouteProgressBar";
+import { Header } from "@/components/ui/Header";
 
 export const metadata: Metadata = {
   title: "Skillora — Master Any Skill, Large or Small",
@@ -19,10 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-canvas text-ink antialiased">
-        <RouteProgressBar />
+        <Header />
         {children}
       </body>
     </html>
   );
 }
-

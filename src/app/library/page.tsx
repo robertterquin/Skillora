@@ -255,9 +255,7 @@ export default function SkillLibraryPage() {
   }, [startNewConsultation]);
 
   return (
-    <div className="h-screen flex flex-col bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
-      <Header activePath="/library" />
-
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
       {/* Main Workspace: Sidebar + Chat Canvas */}
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
         {/* Past Inquiries Collapsible Sidebar */}

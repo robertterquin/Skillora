@@ -411,8 +411,8 @@ function Dashboard() {
     "Explorer";
 
   return (
-    <div className="min-h-screen flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
-      <Header activePath="/dashboard" />
+    <div className="flex-1 flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
+
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Guest Notification Banner */}

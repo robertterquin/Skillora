@@ -32,8 +32,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-canvas text-ink selection:bg-brand-500 selection:text-white">
-      <Header activePath="/" />
+    <div className="flex-1 flex flex-col bg-canvas text-ink selection:bg-brand-500 selection:text-white">
+
 
       {/* Hero Section inspired by Image 1 (Pallet Ross Composition) */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 overflow-hidden text-center">

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion } from "motion/react";
 
 import { cn } from "@/lib/cn";
@@ -30,8 +30,16 @@ const SIGNED_OUT_LINKS = [
 
 import { useAuth } from "@/hooks/useAuth";
 
-export function Header({ activePath = "/" }: HeaderProps) {
+export function Header({ activePath }: HeaderProps = {}) {
   const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = activePath || pathname || "/";
+
+  // Hide header on dedicated auth screens
+  if (pathname === "/signin" || pathname === "/signup") {
+    return null;
+  }
+
   const { user: currentUser, isLoading: loadingUser, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -114,7 +122,7 @@ export function Header({ activePath = "/" }: HeaderProps) {
           {!loadingUser && (
             <nav aria-label="Main" className="hidden md:flex items-center gap-1 p-1 bg-surface-muted/60 border border-surface-border/60 rounded-full text-xs font-medium">
               {navLinks.map((link) => {
-                const isActive = activePath === link.href;
+                const isActive = currentPath === link.href;
                 return (
                   <Link
                     key={link.href}
@@ -290,7 +298,7 @@ export function Header({ activePath = "/" }: HeaderProps) {
                     >
                       <div className="px-4 py-3 flex flex-col">
                         {navLinks.map((link) => {
-                          const isActive = activePath === link.href;
+                          const isActive = currentPath === link.href;
                           return (
                             <Link
                               key={link.href}
