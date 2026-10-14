@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
@@ -13,6 +13,7 @@ import {
   QuickReplies,
   SuggestionCards,
   CurriculumCard,
+  ConsultationSidebar,
 } from "@/components";
 import { playChime } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
@@ -25,6 +26,9 @@ export default function SkillLibraryPage() {
   const supabase = createClient();
   const { user: currentUser } = useAuth();
 
+  // Consultation sidebar toggle (defaults to false or true; let's allow easy toggle)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
   const [enrolledSkills, setEnrolledSkills] = useState<Skill[]>([]);
@@ -36,6 +40,18 @@ export default function SkillLibraryPage() {
   const [isPro, setIsPro] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Keyboard shortcut (⌘B or Ctrl+B) to toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Check existing enrollments and plan
   useEffect(() => {
@@ -119,7 +135,6 @@ export default function SkillLibraryPage() {
     const normId = normalizeSkillId(skillToEnroll.id);
     const updatedSkill = { ...skillToEnroll, id: normId };
 
-    // 1. Update state & localStorage
     setEnrolledSkillIds((prev) => {
       const next = Array.from(new Set([...prev.map(normalizeSkillId), normId]));
       localStorage.setItem("skillora_enrolled_skills", JSON.stringify(next));
@@ -131,7 +146,6 @@ export default function SkillLibraryPage() {
       return [updatedSkill, ...filtered];
     });
 
-    // 2. Save custom skill locally
     const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
     const currentCustom: Skill[] = savedCustom ? JSON.parse(savedCustom) : [];
     const updatedCustom = [
@@ -140,7 +154,6 @@ export default function SkillLibraryPage() {
     ];
     localStorage.setItem("skillora_custom_ai_skills", JSON.stringify(updatedCustom));
 
-    // 3. Sync to Supabase project via secure server endpoint
     try {
       const res = await fetch("/api/skills/enroll", {
         method: "POST",
@@ -170,8 +183,14 @@ export default function SkillLibraryPage() {
     [enrolledSkills]
   );
 
-  // Hook-powered Archimedes dialogue
+  // Hook-powered Archimedes dialogue & multi-session state
   const {
+    consultations,
+    activeConsultationId,
+    currentConsultation,
+    startNewConsultation,
+    selectConsultation,
+    deleteConsultation,
     messages,
     inputText,
     setInputText,
@@ -215,239 +234,326 @@ export default function SkillLibraryPage() {
     { label: "Solve 3x3 Rubik's Cube (CFOP)", prompt: "Solve 3x3 Rubik's Cube (CFOP)" },
   ];
 
+  const hasUserEngaged = messages.some((m) => m.sender === "user");
+
+  const handleSelectSession = useCallback((id: string) => {
+    selectConsultation(id);
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [selectConsultation]);
+
+  const handleNewSession = useCallback(() => {
+    startNewConsultation();
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [startNewConsultation]);
+
   return (
-    <div className="min-h-screen flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
+    <div className="h-screen flex flex-col bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
       <Header activePath="/library" />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-between">
-        {/* Top Header & Plan Status Banner */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-surface-border mb-6 gap-3">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
-              <span className="text-xs font-mono font-semibold text-ink uppercase tracking-wider">
-                Skill Library
-              </span>
-            </div>
+      {/* Main Workspace: Sidebar + Chat Canvas */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {/* Past Inquiries Collapsible Sidebar */}
+        <ConsultationSidebar
+          consultations={consultations}
+          activeConsultationId={activeConsultationId}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          onSelect={handleSelectSession}
+          onNew={handleNewSession}
+          onDelete={deleteConsultation}
+        />
 
-            {/* Free vs Pro Badge with limits */}
-            {isPro ? (
-              <Badge shape="pill">Pro · Unlimited skills</Badge>
-            ) : (
+        {/* Main Chat Canvas with Dedicated Internal Scroll */}
+        <main className="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative">
+          {/* Top Bar: Always Pinned at Top of Workspace */}
+          <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/80 backdrop-blur-sm z-20 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              {/* Primary Sidebar Collapse/Expand Toggle */}
               <button
                 type="button"
-                onClick={() => {
-                  setIsLimitReached(false);
-                  setIsSubscriptionModalOpen(true);
-                }}
-                className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-2xs font-medium hover:bg-surface-border/60 transition flex items-center gap-1.5 cursor-pointer"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="px-2.5 py-1.5 rounded-xl border border-surface-border bg-white hover:bg-surface-subtle text-ink transition shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0"
+                aria-label={isSidebarOpen ? "Collapse sidebar" : "Open consultation history"}
+                title="Toggle sidebar (⌘B)"
               >
-                <span>
-                  Free · {enrolledSkillIds.length}/3 skills · {daysRemaining} AI days left
-                </span>
-                <span className="font-semibold text-ink underline underline-offset-2">
-                  Upgrade
+                <SolarIcon name="sidebar-minimalistic-linear" className="w-4 h-4 text-ink-secondary" />
+                <span className="text-2xs font-mono font-medium">
+                  {isSidebarOpen ? "Collapse" : "Past Inquiries"}
                 </span>
               </button>
-            )}
-          </div>
 
-          <Link
-            href="/dashboard"
-            className={buttonClasses({ variant: "secondary", size: "sm" })}
-          >
-            <span>My Studio ({enrolledSkillIds.length}) &rarr;</span>
-          </Link>
-        </div>
-
-        {/* Center Stage: The Big Learning Owl Character */}
-        <section className="flex flex-col items-center text-center my-4">
-          <InteractiveOwlAvatar
-            isListening={isListening}
-            isThinking={isThinking}
-            isSpeaking={isOwlSpeaking}
-            onClick={() => {
-              playChime();
-              speakOwlVoice("I'm listening. Tell me what interests you or ask for suggestions.");
-            }}
-            size={180}
-          />
-
-          <h1 className="font-serif italic font-normal text-3xl sm:text-4xl text-ink tracking-tight mt-6">
-            Tell Archimedes what you wish to master.
-          </h1>
-          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md leading-relaxed">
-            Chat to find the right craft, explore tailored suggestions, or build a 4-step practice track.
-          </p>
-
-          {/* Voice Mute Toggle */}
-          <div className="mt-3 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setVoiceEnabled(!voiceEnabled)}
-              aria-pressed={voiceEnabled}
-              className={buttonClasses({
-                variant: "secondary",
-                size: "sm",
-                className: voiceEnabled ? "" : "text-ink-muted",
-              })}
-            >
-              <SolarIcon
-                name={voiceEnabled ? "volume-loud-linear" : "volume-cross-linear"}
-                className="w-3.5 h-3.5"
-              />
-              <span>{voiceEnabled ? "Voice on" : "Voice off"}</span>
-            </button>
-          </div>
-        </section>
-
-        {/* Conversation Stream */}
-        <section className="my-6 space-y-4">
-          {messages.map((msg, index) => {
-            const isLatest = index === messages.length - 1;
-            const normSkillId = msg.skill ? normalizeSkillId(msg.skill.id) : "";
-            const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
-
-            return (
-              <div
-                key={msg.id}
-                className={`flex flex-col ${
-                  msg.sender === "user" ? "items-end" : "items-start"
-                }`}
+              {/* Quick + New Consultation Button */}
+              <button
+                type="button"
+                onClick={handleNewSession}
+                className="p-1.5 px-2.5 rounded-xl border border-surface-border bg-white hover:bg-surface-subtle text-ink-secondary hover:text-ink transition shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
+                title="Start a new consultation"
               >
-                {/* Speech Bubble */}
-                <div
-                  className={`max-w-xl p-4 sm:p-5 rounded-3xl text-xs sm:text-sm leading-relaxed shadow-xs transition-all ${
-                    msg.sender === "user"
-                      ? "bg-ink text-white rounded-br-xs"
-                      : "bg-white border border-surface-border text-ink rounded-bl-xs"
-                  }`}
+                <SolarIcon name="pen-new-square-linear" className="w-3.5 h-3.5" />
+                <span className="text-2xs font-mono font-medium hidden sm:inline">New</span>
+              </button>
+
+              {/* Active Thread Title Pill */}
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-2xs text-ink-secondary truncate max-w-[140px] sm:max-w-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald shrink-0" />
+                <span className="truncate font-mono font-medium">
+                  {currentConsultation?.title || "New Inquiry"}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Plan Status & Studio Link */}
+            <div className="flex items-center gap-2 shrink-0">
+              {isPro ? (
+                <Badge shape="pill">Pro</Badge>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLimitReached(false);
+                    setIsSubscriptionModalOpen(true);
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-2xs font-medium hover:bg-surface-border/60 transition flex items-center gap-1.5 cursor-pointer"
                 >
-                  {msg.sender === "owl" && (
-                    <div className="flex items-center gap-2 mb-1.5 text-3xs font-mono font-medium text-ink-muted uppercase tracking-wider">
+                  <span>
+                    {enrolledSkillIds.length}/3 skills · {daysRemaining}d trial
+                  </span>
+                  <span className="font-semibold text-ink underline underline-offset-2">
+                    Upgrade
+                  </span>
+                </button>
+              )}
+
+              <Link
+                href="/dashboard"
+                className={buttonClasses({ variant: "secondary", size: "sm" })}
+              >
+                <span>Studio ({enrolledSkillIds.length}) &rarr;</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Scrollable Dialogue Stream */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 min-h-0">
+            <div className="max-w-3xl w-full mx-auto flex flex-col min-h-full justify-between">
+              {!hasUserEngaged ? (
+                /* Empty State: Center Hero Archimedes */
+                <section className="flex flex-col items-center text-center my-auto py-8">
+                  <InteractiveOwlAvatar
+                    isListening={isListening}
+                    isThinking={isThinking}
+                    isSpeaking={isOwlSpeaking}
+                    onClick={() => {
+                      playChime();
+                      speakOwlVoice(
+                        "I'm listening. Tell me what interests you or ask for suggestions."
+                      );
+                    }}
+                    size={170}
+                  />
+
+                  <h1 className="font-serif italic font-normal text-3xl sm:text-4xl text-ink tracking-tight mt-6">
+                    Tell Archimedes what you wish to master.
+                  </h1>
+                  <p className="text-xs sm:text-sm text-ink-muted mt-2 max-w-md leading-relaxed">
+                    Chat to explore crafts, evaluate tailored pathways, or build a structured 4-step practice track.
+                  </p>
+
+                  {/* Voice Audio Toggle */}
+                  <div className="mt-4 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setVoiceEnabled(!voiceEnabled)}
+                      aria-pressed={voiceEnabled}
+                      className={buttonClasses({
+                        variant: "secondary",
+                        size: "sm",
+                        className: voiceEnabled ? "" : "text-ink-muted",
+                      })}
+                    >
                       <SolarIcon
-                        name="stars-minimalistic-linear"
-                        className="w-3.5 h-3.5 text-ink-muted"
+                        name={voiceEnabled ? "volume-loud-linear" : "volume-cross-linear"}
+                        className="w-3.5 h-3.5"
                       />
-                      <span>Archimedes</span>
+                      <span>{voiceEnabled ? "Voice enabled" : "Voice muted"}</span>
+                    </button>
+                  </div>
+                </section>
+              ) : (
+                /* Active Conversation Stream */
+                <section className="my-2 space-y-6 flex-1">
+                  {messages.map((msg, index) => {
+                    const isLatest = index === messages.length - 1;
+                    const normSkillId = msg.skill ? normalizeSkillId(msg.skill.id) : "";
+                    const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
+
+                    if (msg.sender === "user") {
+                      return (
+                        <div key={msg.id} className="flex justify-end my-3">
+                          <div className="max-w-lg px-4 py-2.5 rounded-2xl bg-ink text-white text-xs sm:text-sm leading-relaxed shadow-xs">
+                            <p>{msg.text}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Unboxed Archimedes Response
+                    return (
+                      <div key={msg.id} className="space-y-3.5 my-6">
+                        {/* Author Header */}
+                        <div className="flex items-center justify-between text-2xs font-mono text-ink-muted uppercase tracking-wider pb-1.5 border-b border-surface-border/50">
+                          <div className="flex items-center gap-2">
+                            <SolarIcon
+                              name="stars-minimalistic-linear"
+                              className="w-3.5 h-3.5 text-brand-600"
+                            />
+                            <span className="font-semibold text-ink">Archimedes</span>
+                          </div>
+                          {voiceEnabled && (
+                            <button
+                              type="button"
+                              onClick={() => speakOwlVoice(msg.text)}
+                              className="text-3xs font-mono text-ink-muted hover:text-ink transition flex items-center gap-1 cursor-pointer"
+                              title="Replay spoken response"
+                            >
+                              <SolarIcon name="volume-loud-linear" className="w-3 h-3" />
+                              <span>Replay</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Editorial Body Text */}
+                        <div className="text-ink text-xs sm:text-sm md:text-base leading-relaxed font-sans whitespace-pre-wrap pl-0.5">
+                          {msg.text}
+                        </div>
+
+                        {/* Suggestions Mode: Tailored Pathway Cards */}
+                        {msg.suggestions && msg.suggestions.length > 0 && (
+                          <div className="pt-2">
+                            <SuggestionCards
+                              suggestions={msg.suggestions}
+                              catalogSkillTitles={catalogSkillTitles}
+                              enrolledSkillTitles={enrolledSkillTitles}
+                              disabled={isThinking}
+                              onSelectSkill={(sugg) => buildCurriculum(sugg)}
+                            />
+                          </div>
+                        )}
+
+                        {/* Curriculum Mode: Single 4-Step Practice Track */}
+                        {msg.skill && (
+                          <div className="pt-2">
+                            <CurriculumCard
+                              skill={msg.skill}
+                              isEnrolled={isEnrolled}
+                              onEnroll={async (s) => {
+                                await triggerEnroll(s);
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Quick Reply Chips (shown under latest response) */}
+                        {isLatest && msg.quickReplies && (
+                          <div className="pt-2">
+                            <QuickReplies
+                              replies={msg.quickReplies}
+                              disabled={isThinking}
+                              onSelect={(reply) => sendMessage(reply)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {isThinking && (
+                    <div className="flex items-center gap-2.5 py-4 text-xs font-mono text-ink-muted animate-pulse">
+                      <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin text-brand-600" />
+                      <span>Archimedes is deliberating…</span>
                     </div>
                   )}
-                  <p>{msg.text}</p>
-                </div>
 
-                {/* Suggestions Mode: 3-5 Tailored Pathway Cards */}
-                {msg.suggestions && msg.suggestions.length > 0 && (
-                  <SuggestionCards
-                    suggestions={msg.suggestions}
-                    catalogSkillTitles={catalogSkillTitles}
-                    enrolledSkillTitles={enrolledSkillTitles}
-                    disabled={isThinking}
-                    onSelectSkill={(sugg) => buildCurriculum(sugg)}
-                  />
-                )}
+                  <div ref={chatEndRef} />
+                </section>
+              )}
+            </div>
+          </div>
 
-                {/* Curriculum Mode: Single 4-Step Practice Track */}
-                {msg.skill && (
-                  <CurriculumCard
-                    skill={msg.skill}
-                    isEnrolled={isEnrolled}
-                    onEnroll={async (s) => {
-                      await triggerEnroll(s);
-                    }}
-                  />
-                )}
-
-                {/* Quick Reply Chips (shown under the latest Owl response) */}
-                {msg.sender === "owl" && isLatest && msg.quickReplies && (
-                  <QuickReplies
-                    replies={msg.quickReplies}
-                    disabled={isThinking}
-                    onSelect={(reply) => sendMessage(reply)}
-                  />
-                )}
+          {/* Sticky Bottom Input Dock */}
+          <div className="shrink-0 px-4 sm:px-6 py-3 border-t border-surface-border bg-canvas/95 backdrop-blur-sm z-20">
+            <div className="max-w-3xl w-full mx-auto">
+              {/* Quick Prompt Suggestions */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 no-scrollbar">
+                <span className="text-2xs text-ink-muted font-mono whitespace-nowrap pl-0.5">
+                  Inspiration:
+                </span>
+                {samplePrompts.map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => sendMessage(item.prompt)}
+                    className="px-2.5 py-1 rounded-full bg-white hover:bg-surface-subtle border border-surface-border text-2xs font-medium text-ink-secondary hover:text-ink transition whitespace-nowrap shadow-2xs cursor-pointer"
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
-            );
-          })}
 
-          {isThinking && (
-            <div className="flex items-start">
-              <div className="p-4 rounded-3xl bg-white border border-surface-border text-xs text-brand-600 font-semibold flex items-center gap-2 shadow-xs animate-pulse">
-                <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                <span>Archimedes is deliberating…</span>
+              {/* Unified Voice & Text Input Bar */}
+              <div className="p-1.5 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all">
+                {/* Microphone Voice Button */}
+                <button
+                  type="button"
+                  onClick={toggleVoiceListening}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                    isListening
+                      ? "bg-accent-vermilion text-white animate-pulse shadow-md"
+                      : "bg-surface-subtle hover:bg-surface-muted text-ink-muted hover:text-ink border border-surface-border"
+                  }`}
+                  aria-label={isListening ? "Stop listening" : "Speak your request"}
+                  aria-pressed={isListening}
+                >
+                  <SolarIcon
+                    name="microphone-3-linear"
+                    className={`w-4 h-4 ${isListening ? "text-white" : ""}`}
+                  />
+                </button>
+
+                {/* Text Input */}
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  aria-label="What do you want to learn?"
+                  placeholder={
+                    isListening
+                      ? "Listening to your voice…"
+                      : "Ask Archimedes anything or request suggestions…"
+                  }
+                  className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
+                />
+
+                {/* Send Button */}
+                <button
+                  type="button"
+                  disabled={isThinking || !inputText.trim()}
+                  onClick={() => sendMessage()}
+                  className="w-10 h-10 rounded-xl bg-ink hover:bg-accent-vermilion disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
+                  aria-label="Send message to Owl"
+                >
+                  <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          )}
-
-          <div ref={chatEndRef} />
-        </section>
-
-        {/* Input Dock: Voice & Chat Bar */}
-        <section className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-6 pb-4 bg-gradient-to-t from-canvas via-canvas to-canvas/0">
-          {/* Quick inspiration suggestion pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-3 no-scrollbar">
-            <span className="text-2xs text-ink-muted font-medium whitespace-nowrap pl-1">
-              Try:
-            </span>
-            {samplePrompts.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => sendMessage(item.prompt)}
-                className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-2xs font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs cursor-pointer"
-              >
-                {item.label}
-              </button>
-            ))}
           </div>
-
-          {/* Unified Voice & Text Input Pill */}
-          <div className="p-2 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all">
-            {/* Microphone Voice Button */}
-            <button
-              type="button"
-              onClick={toggleVoiceListening}
-              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
-                isListening
-                  ? "bg-accent-vermilion text-white animate-pulse shadow-md"
-                  : "bg-canvas hover:bg-surface-subtle text-ink-muted hover:text-ink border border-surface-border"
-              }`}
-              aria-label={isListening ? "Stop listening" : "Speak your request"}
-              aria-pressed={isListening}
-            >
-              <SolarIcon
-                name="microphone-3-linear"
-                className={`w-5 h-5 ${isListening ? "text-white" : ""}`}
-              />
-            </button>
-
-            {/* Text Input */}
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              aria-label="What do you want to learn?"
-              placeholder={
-                isListening
-                  ? "Listening…"
-                  : "Tell Archimedes what you'd like to learn or explore…"
-              }
-              className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
-            />
-
-            {/* Send Button */}
-            <button
-              type="button"
-              disabled={isThinking || !inputText.trim()}
-              onClick={() => sendMessage()}
-              className="w-11 h-11 rounded-xl bg-ink hover:bg-accent-vermilion disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
-              aria-label="Send message to Owl"
-            >
-              <SolarIcon name="arrow-right-linear" className="w-5 h-5" />
-            </button>
-          </div>
-        </section>
-      </main>
+        </main>
+      </div>
 
       {/* Subscription & Pricing Modal */}
       <AnimatePresence>

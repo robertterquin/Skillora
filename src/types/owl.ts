@@ -39,3 +39,25 @@ export interface OwlReply<TSkill = Skill> {
   profile?: OwlProfile;
   skill: TSkill | null;
 }
+
+export interface OwlMessage {
+  id: string;
+  sender: "user" | "owl";
+  text: string;
+  mode?: OwlMode;
+  suggestions?: OwlSuggestion[];
+  quickReplies?: string[];
+  skill?: Skill | null;
+}
+
+export type ConsultationOutcome = "curriculum" | "suggestions" | "enrolled" | "inquiry";
+
+export interface OwlConsultation {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: OwlMessage[];
+  outcomeTag: ConsultationOutcome;
+}
+

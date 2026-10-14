@@ -2,19 +2,20 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Skill } from "@/types/database";
-import { OwlSuggestion, OwlMode, OwlHistoryTurn, OwlContext, OwlProfile } from "@/types/owl";
+import {
+  OwlSuggestion,
+  OwlMode,
+  OwlHistoryTurn,
+  OwlContext,
+  OwlProfile,
+  OwlMessage,
+  OwlConsultation,
+  ConsultationOutcome,
+} from "@/types/owl";
 import { aiService } from "@/services/aiService";
 import { playMechanicalClick, playChime, playStampThud } from "@/lib/workbench-audio";
 
-export interface OwlMessage {
-  id: string;
-  sender: "user" | "owl";
-  text: string;
-  mode?: OwlMode;
-  suggestions?: OwlSuggestion[];
-  quickReplies?: string[];
-  skill?: Skill | null;
-}
+export type { OwlMessage, OwlConsultation, ConsultationOutcome };
 
 export interface UseOwlChatOptions {
   enrolledSkills?: (Skill | string)[];
@@ -25,7 +26,7 @@ export interface UseOwlChatOptions {
   onLimitReached?: () => void;
 }
 
-const INITIAL_MESSAGES: OwlMessage[] = [
+export const INITIAL_MESSAGES: OwlMessage[] = [
   {
     id: "intro",
     sender: "owl",
@@ -35,8 +36,33 @@ const INITIAL_MESSAGES: OwlMessage[] = [
   },
 ];
 
+const STORAGE_CONSULTATIONS_KEY = "skillora_owl_consultations";
+const STORAGE_ACTIVE_ID_KEY = "skillora_active_consultation_id";
+
+function deriveConsultationTitle(prompt: string): string {
+  const cleaned = prompt
+    .replace(/^(help me|suggest|build|i want to learn|how to|teach me|tell me about|what is|give me)\s+/i, "")
+    .replace(/["'“”]/g, "")
+    .trim();
+  if (!cleaned) return "New Inquiry";
+  const capped = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  return capped.length > 36 ? capped.slice(0, 36).trim() + "…" : capped;
+}
+
+function getOutcomeFromMessages(
+  msgs: OwlMessage[],
+  existingTag?: ConsultationOutcome
+): ConsultationOutcome {
+  if (existingTag === "enrolled") return "enrolled";
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    const m = msgs[i];
+    if (m.skill) return "curriculum";
+    if (m.suggestions && m.suggestions.length > 0) return "suggestions";
+  }
+  return "inquiry";
+}
+
 function getSpokenSnippet(text: string): string {
-  // Strip markdown formatting (*, _, `, #, bullet points, brackets, links)
   const clean = text
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/[*_`#]/g, "")
@@ -44,10 +70,8 @@ function getSpokenSnippet(text: string): string {
     .replace(/\s+/g, " ")
     .trim();
 
-  // If concise, speak in full
   if (clean.length <= 180) return clean;
 
-  // Extract the first 1-2 complete sentences for immediate, natural vocal response
   const sentences = clean.match(/[^.!?]+[.!?]+/g);
   if (sentences && sentences.length > 0) {
     let acc = "";
@@ -61,11 +85,12 @@ function getSpokenSnippet(text: string): string {
     if (acc.trim().length > 15) return acc.trim();
   }
 
-  // Fallback slice at word boundary
   return clean.slice(0, 180).replace(/\s+\S*$/, "") + ".";
 }
 
 export function useOwlChat(options: UseOwlChatOptions = {}) {
+  const [consultations, setConsultations] = useState<OwlConsultation[]>([]);
+  const [activeConsultationId, setActiveConsultationId] = useState<string>("");
   const [messages, setMessages] = useState<OwlMessage[]>(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -74,18 +99,60 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [userProfile, setUserProfile] = useState<OwlProfile>({});
 
+  const activeConsultationIdRef = useRef<string>("");
+  const consultationsRef = useRef<OwlConsultation[]>([]);
   const audioCacheRef = useRef<Map<string, string>>(new Map());
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Load saved profile on mount
+  // Keep refs in sync with state for access in callbacks
+  useEffect(() => {
+    activeConsultationIdRef.current = activeConsultationId;
+  }, [activeConsultationId]);
+
+  useEffect(() => {
+    consultationsRef.current = consultations;
+  }, [consultations]);
+
+  // Load saved consultations & profile on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const saved = localStorage.getItem("skillora_owl_profile");
-      if (saved) setUserProfile(JSON.parse(saved));
-    } catch {
-      // ignore
+      const savedProfile = localStorage.getItem("skillora_owl_profile");
+      if (savedProfile) setUserProfile(JSON.parse(savedProfile));
+
+      const raw = localStorage.getItem(STORAGE_CONSULTATIONS_KEY);
+      const savedId = localStorage.getItem(STORAGE_ACTIVE_ID_KEY);
+      let list: OwlConsultation[] = [];
+
+      if (raw) {
+        try {
+          list = JSON.parse(raw);
+        } catch {
+          list = [];
+        }
+      }
+
+      if (!Array.isArray(list) || list.length === 0) {
+        const defaultSession: OwlConsultation = {
+          id: `consultation-${Date.now()}`,
+          title: "New Inquiry",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          messages: INITIAL_MESSAGES,
+          outcomeTag: "inquiry",
+        };
+        list = [defaultSession];
+        localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(list));
+        localStorage.setItem(STORAGE_ACTIVE_ID_KEY, defaultSession.id);
+      }
+
+      setConsultations(list);
+      const target = list.find((c) => c.id === savedId) || list[0];
+      setActiveConsultationId(target.id);
+      setMessages(target.messages && target.messages.length > 0 ? target.messages : INITIAL_MESSAGES);
+    } catch (err) {
+      console.warn("Failed to initialize consultations:", err);
     }
   }, []);
 
@@ -183,6 +250,163 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [voiceEnabled, stopVoice, fallbackBrowserSpeech]
   );
 
+  // Persistence helper
+  const persistConsultationUpdate = useCallback(
+    (targetId: string, updatedMsgs: OwlMessage[], explicitOutcome?: ConsultationOutcome) => {
+      setConsultations((prev) => {
+        const next = prev.map((c) => {
+          if (c.id !== targetId) return c;
+
+          let title = c.title;
+          if (!title || title === "New Inquiry") {
+            const firstUser = updatedMsgs.find((m) => m.sender === "user");
+            if (firstUser) {
+              title = deriveConsultationTitle(firstUser.text);
+            }
+          }
+
+          const outcomeTag = explicitOutcome || getOutcomeFromMessages(updatedMsgs, c.outcomeTag);
+          return {
+            ...c,
+            title,
+            messages: updatedMsgs,
+            outcomeTag,
+            updatedAt: new Date().toISOString(),
+          };
+        });
+
+        try {
+          localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
+        } catch (err) {
+          console.warn("Storage sync failed:", err);
+        }
+        return next;
+      });
+    },
+    []
+  );
+
+  // Multi-session action: Start New Consultation
+  const startNewConsultation = useCallback(() => {
+    stopVoice();
+    const newId = `consultation-${Date.now()}`;
+    const newSession: OwlConsultation = {
+      id: newId,
+      title: "New Inquiry",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      messages: INITIAL_MESSAGES,
+      outcomeTag: "inquiry",
+    };
+
+    setConsultations((prev) => {
+      const next = [newSession, ...prev];
+      try {
+        localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
+        localStorage.setItem(STORAGE_ACTIVE_ID_KEY, newId);
+      } catch {}
+      return next;
+    });
+
+    setActiveConsultationId(newId);
+    setMessages(INITIAL_MESSAGES);
+    setInputText("");
+  }, [stopVoice]);
+
+  // Multi-session action: Switch Consultation
+  const selectConsultation = useCallback(
+    (id: string) => {
+      if (id === activeConsultationIdRef.current) return;
+      stopVoice();
+
+      const target = consultationsRef.current.find((c) => c.id === id);
+      if (target) {
+        setActiveConsultationId(target.id);
+        setMessages(
+          target.messages && target.messages.length > 0 ? target.messages : INITIAL_MESSAGES
+        );
+        setInputText("");
+        try {
+          localStorage.setItem(STORAGE_ACTIVE_ID_KEY, target.id);
+        } catch {}
+      }
+    },
+    [stopVoice]
+  );
+
+  // Multi-session action: Delete Consultation
+  const deleteConsultation = useCallback(
+    (id: string) => {
+      stopVoice();
+
+      setConsultations((prev) => {
+        const next = prev.filter((c) => c.id !== id);
+
+        if (next.length === 0) {
+          const freshId = `consultation-${Date.now()}`;
+          const freshSession: OwlConsultation = {
+            id: freshId,
+            title: "New Inquiry",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            messages: INITIAL_MESSAGES,
+            outcomeTag: "inquiry",
+          };
+          const fallback = [freshSession];
+          try {
+            localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(fallback));
+            localStorage.setItem(STORAGE_ACTIVE_ID_KEY, freshId);
+          } catch {}
+          setActiveConsultationId(freshId);
+          setMessages(INITIAL_MESSAGES);
+          return fallback;
+        }
+
+        try {
+          localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
+        } catch {}
+
+        if (activeConsultationIdRef.current === id) {
+          const nextActive = next[0];
+          setActiveConsultationId(nextActive.id);
+          setMessages(
+            nextActive.messages && nextActive.messages.length > 0
+              ? nextActive.messages
+              : INITIAL_MESSAGES
+          );
+          try {
+            localStorage.setItem(STORAGE_ACTIVE_ID_KEY, nextActive.id);
+          } catch {}
+        }
+        return next;
+      });
+    },
+    [stopVoice]
+  );
+
+  // Multi-session action: Clear All Consultations
+  const clearAllConsultations = useCallback(() => {
+    stopVoice();
+    const freshId = `consultation-${Date.now()}`;
+    const freshSession: OwlConsultation = {
+      id: freshId,
+      title: "New Inquiry",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      messages: INITIAL_MESSAGES,
+      outcomeTag: "inquiry",
+    };
+    const list = [freshSession];
+    try {
+      localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(list));
+      localStorage.setItem(STORAGE_ACTIVE_ID_KEY, freshId);
+    } catch {}
+    setConsultations(list);
+    setActiveConsultationId(freshId);
+    setMessages(INITIAL_MESSAGES);
+    setInputText("");
+  }, [stopVoice]);
+
   const toggleVoiceListening = useCallback(() => {
     if (typeof window === "undefined") return;
 
@@ -241,14 +465,16 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
   const sendMessage = useCallback(
     async (customPrompt?: string, forceMode?: "curriculum") => {
       const rawText = customPrompt || inputText;
-      const textToSend = typeof (rawText as any)?.toWellFormed === "function"
-        ? (rawText as any).toWellFormed().trim()
-        : String(rawText || "")
-            .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "")
-            .trim();
+      const textToSend =
+        typeof (rawText as any)?.toWellFormed === "function"
+          ? (rawText as any).toWellFormed().trim()
+          : String(rawText || "")
+              .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "")
+              .trim();
 
       if (!textToSend || isThinking) return;
 
+      const currentSessionId = activeConsultationIdRef.current;
       stopVoice();
       playMechanicalClick();
 
@@ -258,9 +484,13 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         text: textToSend,
       };
 
-      setMessages((prev) => [...prev, userMsg]);
+      const updatedWithUser = [...messages, userMsg];
+      setMessages(updatedWithUser);
       setInputText("");
       setIsThinking(true);
+
+      // Persist user message to the session
+      persistConsultationUpdate(currentSessionId, updatedWithUser);
 
       // Build conversation history
       const history: OwlHistoryTurn[] = messages
@@ -291,7 +521,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
           forceMode
         );
 
-        // Update profile if learner attributes were extracted
         if (reply.profile) {
           setUserProfile((prev) => {
             const next = { ...prev, ...reply.profile };
@@ -314,26 +543,47 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
           skill: reply.skill,
         };
 
-        setMessages((prev) => [...prev, owlMsg]);
-        playChime();
-        speakOwlVoice(reply.owlMessage);
+        const updatedWithOwl = [...updatedWithUser, owlMsg];
+
+        // Persist to session
+        persistConsultationUpdate(currentSessionId, updatedWithOwl);
+
+        // If the user hasn't switched away to another thread, update active messages & play audio
+        if (activeConsultationIdRef.current === currentSessionId) {
+          setMessages(updatedWithOwl);
+          playChime();
+          speakOwlVoice(reply.owlMessage);
+        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Owl communication failed";
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `owl-err-${Date.now()}`,
-            sender: "owl",
-            text: `My apologies—${msg}. Let us refine your inquiry.`,
-            mode: "chat",
-            quickReplies: ["Suggest in-demand skills", "Help me find a skill"],
-          },
-        ]);
+        const errMsg: OwlMessage = {
+          id: `owl-err-${Date.now()}`,
+          sender: "owl",
+          text: `My apologies—${msg}. Let us refine your inquiry.`,
+          mode: "chat",
+          quickReplies: ["Suggest in-demand skills", "Help me find a skill"],
+        };
+
+        const updatedWithError = [...updatedWithUser, errMsg];
+        persistConsultationUpdate(currentSessionId, updatedWithError);
+
+        if (activeConsultationIdRef.current === currentSessionId) {
+          setMessages(updatedWithError);
+        }
       } finally {
         setIsThinking(false);
       }
     },
-    [inputText, isThinking, messages, options, userProfile, stopVoice, speakOwlVoice]
+    [
+      inputText,
+      isThinking,
+      messages,
+      options,
+      userProfile,
+      stopVoice,
+      speakOwlVoice,
+      persistConsultationUpdate,
+    ]
   );
 
   const buildCurriculum = useCallback(
@@ -346,13 +596,11 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
   const enrollSkill = useCallback(
     async (skillToEnroll: Skill): Promise<boolean> => {
-      // 1. Free-tier 7-day trial check
       if (!options.isPro && typeof options.daysRemaining === "number" && options.daysRemaining <= 0) {
         options.onLimitReached?.();
         return false;
       }
 
-      // 2. Free-tier 3-skill maximum limit check
       if (!options.isPro && (options.enrolledSkills?.length || 0) >= 3) {
         options.onLimitReached?.();
         return false;
@@ -362,12 +610,37 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       if (options.onSkillEnrolled) {
         await options.onSkillEnrolled(skillToEnroll);
       }
+
+      // Mark consultation outcome as enrolled
+      const currentId = activeConsultationIdRef.current;
+      setConsultations((prev) => {
+        const next = prev.map((c) =>
+          c.id === currentId
+            ? { ...c, outcomeTag: "enrolled" as const, updatedAt: new Date().toISOString() }
+            : c
+        );
+        try {
+          localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+
       return true;
     },
     [options]
   );
 
+  const currentConsultation =
+    consultations.find((c) => c.id === activeConsultationId) || null;
+
   return {
+    consultations,
+    activeConsultationId,
+    currentConsultation,
+    startNewConsultation,
+    selectConsultation,
+    deleteConsultation,
+    clearAllConsultations,
     messages,
     inputText,
     setInputText,
