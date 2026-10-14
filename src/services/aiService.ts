@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase";
 import { GuildExamPayload } from "@/app/api/ai/guild-exam/route";
+import { Skill } from "@/types/database";
+import { OwlReply, OwlHistoryTurn, OwlContext } from "@/types/owl";
 
 const supabase = createClient();
 
@@ -41,16 +43,30 @@ export interface DailyRoutineResult {
  */
 export const aiService = {
   /**
-   * Archimedes Learning Owl - Conversational Skill Deconstruction
+   * Archimedes Learning Owl - Conversational Skill Deconstruction & Guidance
    */
-  async chatWithOwl(message: string): Promise<{ owlMessage: string; skill: any }> {
+  async chatWithOwl(
+    message: string,
+    history: OwlHistoryTurn[] = [],
+    context: OwlContext = {},
+    forceMode?: "curriculum"
+  ): Promise<OwlReply<Skill>> {
+    const payload = { action: "owl-chat", message, history, context, forceMode };
+
     try {
       const { data, error } = await supabase.functions.invoke("ai", {
-        body: { action: "owl-chat", message },
+        body: payload,
       });
 
       if (!error && data && data.owlMessage) {
-        return data;
+        return {
+          mode: data.mode || (data.skill ? "curriculum" : "chat"),
+          owlMessage: data.owlMessage,
+          quickReplies: data.quickReplies || [],
+          suggestions: data.suggestions || [],
+          profile: data.profile,
+          skill: data.skill || null,
+        };
       }
     } catch {
       // Edge function unavailable; proceed to local API fallback
@@ -60,7 +76,7 @@ export const aiService = {
     const res = await fetch("/api/ai/owl-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -68,7 +84,15 @@ export const aiService = {
       throw new Error(err.error || "Owl communication failed");
     }
 
-    return await res.json();
+    const data = await res.json();
+    return {
+      mode: data.mode || (data.skill ? "curriculum" : "chat"),
+      owlMessage: data.owlMessage,
+      quickReplies: data.quickReplies || [],
+      suggestions: data.suggestions || [],
+      profile: data.profile,
+      skill: data.skill || null,
+    };
   },
 
   /**

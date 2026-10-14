@@ -22,3 +22,6 @@ export * from "./ui/Modal";
 export * from "./ui/SkillFilterBar";
 export * from "./ui/SolarIcon";
 export * from "./ui/UserAvatar";
+
+// Chat (Archimedes interactive guidance & suggestion widgets)
+export * from "./chat";

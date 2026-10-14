@@ -1,32 +1,25 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
   Badge,
-  Button,
   Header,
   SolarIcon,
   SubscriptionModal,
   InteractiveOwlAvatar,
   buttonClasses,
+  QuickReplies,
+  SuggestionCards,
+  CurriculumCard,
 } from "@/components";
-import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
+import { playChime } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
-import { normalizeSkillId } from "@/lib/mock-data";
+import { INITIAL_SKILLS, normalizeSkillId } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
-import { aiService } from "@/services/aiService";
 import { useAuth } from "@/hooks/useAuth";
-
-interface OwlConversation {
-  id: string;
-  sender: "user" | "owl";
-  text: string;
-  skill?: Skill;
-}
+import { useOwlChat } from "@/hooks/useOwlChat";
 
 export default function SkillLibraryPage() {
   const supabase = createClient();
@@ -34,6 +27,7 @@ export default function SkillLibraryPage() {
 
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
+  const [enrolledSkills, setEnrolledSkills] = useState<Skill[]>([]);
 
   // Free Tier & 7-Day Trial Limits
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
@@ -41,46 +35,17 @@ export default function SkillLibraryPage() {
   const [daysRemaining, setDaysRemaining] = useState(7);
   const [isPro, setIsPro] = useState(false);
 
-  // Owl interaction states
-  const [inputText, setInputText] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const [isThinking, setIsThinking] = useState(false);
-  const [isOwlSpeaking, setIsOwlSpeaking] = useState(false);
-  const [voiceAudioEnabled, setVoiceAudioEnabled] = useState(true);
-
-  // Conversation history
-  const [messages, setMessages] = useState<OwlConversation[]>([
-    {
-      id: "intro",
-      sender: "owl",
-      text: "Hello, I'm Archimedes. What would you like to learn? Name any skill, from guitar to sourdough, and I'll break it into short steps.",
-    },
-  ]);
-
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<unknown>(null);
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  const audioCacheRef = useRef<Map<string, string>>(new Map());
 
-  // Cleanup audio on component unmount
+  // Check existing enrollments and plan
   useEffect(() => {
-    return () => {
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-      }
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    // Check existing enrollments and plan
     const init = async () => {
       const user = currentUser;
 
       // Check if user is on Pro plan
-      const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
+      const localIsPro =
+        typeof window !== "undefined" &&
+        localStorage.getItem("skillora_pro_membership") === "true";
       const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
       setIsPro(userIsPro);
 
@@ -106,6 +71,18 @@ export default function SkillLibraryPage() {
         }
       }
 
+      // Load custom AI skills
+      const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
+      let customSkills: Skill[] = [];
+      if (savedCustom) {
+        try {
+          customSkills = JSON.parse(savedCustom);
+        } catch {
+          // ignore
+        }
+      }
+      const allKnown = [...INITIAL_SKILLS, ...customSkills];
+
       if (user) {
         try {
           const { data: enrollments } = await supabase
@@ -113,9 +90,14 @@ export default function SkillLibraryPage() {
             .select("skill_id")
             .eq("user_id", user.id);
 
-          const remoteIds = (enrollments || []).map((e: { skill_id: string }) => normalizeSkillId(e.skill_id));
+          const remoteIds = (enrollments || []).map((e: { skill_id: string }) =>
+            normalizeSkillId(e.skill_id)
+          );
           const merged = Array.from(new Set([...remoteIds, ...localIds]));
           setEnrolledSkillIds(merged);
+          setEnrolledSkills(
+            allKnown.filter((s) => merged.includes(normalizeSkillId(s.id)))
+          );
           localStorage.setItem("skillora_enrolled_skills", JSON.stringify(merged));
           return;
         } catch (err) {
@@ -124,160 +106,16 @@ export default function SkillLibraryPage() {
       }
 
       setEnrolledSkillIds(localIds);
+      setEnrolledSkills(
+        allKnown.filter((s) => localIds.includes(normalizeSkillId(s.id)))
+      );
     };
 
     init();
   }, [supabase, currentUser]);
 
-  // Scroll to the newest message once a conversation starts (not on the initial greeting)
-  useEffect(() => {
-    if (messages.length > 1 || isThinking) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [messages, isThinking]);
-
-  // Realistic AI Mentor Voice for Archimedes (OpenAI TTS with browser fallback)
-  const speakOwlVoice = async (text: string) => {
-    if (!voiceAudioEnabled || typeof window === "undefined") {
-      return;
-    }
-
-    // Stop any existing speech playback immediately
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.currentTime = 0;
-    }
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    setIsOwlSpeaking(true);
-
-    try {
-      // 1. Check in-memory audio blob cache to avoid redundant API calls
-      let audioUrl = audioCacheRef.current.get(text);
-
-      if (!audioUrl) {
-        const blob = await aiService.textToSpeech(text, "onyx", 0.92);
-        audioUrl = URL.createObjectURL(blob);
-        audioCacheRef.current.set(text, audioUrl);
-      }
-
-      // 2. Play high-fidelity realistic audio stream
-      const audio = new Audio(audioUrl);
-      currentAudioRef.current = audio;
-
-      audio.onended = () => {
-        setIsOwlSpeaking(false);
-      };
-      audio.onerror = () => {
-        setIsOwlSpeaking(false);
-      };
-
-      await audio.play();
-    } catch (err) {
-      console.warn("Falling back to native browser speech synthesis:", err);
-      // Graceful fallback to browser speech synthesis with deep sage register
-      if ("speechSynthesis" in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voices = window.speechSynthesis.getVoices();
-        // Look for deep, resonant British or US male voices to emulate a sage owl
-        const deepVoice =
-          voices.find(
-            (v) =>
-              v.lang.startsWith("en") &&
-              (v.name.includes("Daniel") ||
-                v.name.includes("UK English Male") ||
-                v.name.includes("Oliver") ||
-                v.name.includes("Arthur") ||
-                v.name.includes("Alex") ||
-                v.name.includes("Natural"))
-          ) || voices.find((v) => v.lang.startsWith("en"));
-
-        if (deepVoice) utterance.voice = deepVoice;
-        utterance.rate = 0.90; // Measured, thoughtful cadence
-        utterance.pitch = 0.82; // Lower, warmer baritone pitch
-        utterance.onend = () => setIsOwlSpeaking(false);
-        utterance.onerror = () => setIsOwlSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-      } else {
-        setIsOwlSpeaking(false);
-      }
-    }
-  };
-
-  // Browser Speech Recognition for voice interaction
-  const toggleVoiceListening = () => {
-    if (typeof window === "undefined") return;
-
-    const SpeechRecognition =
-      (window as unknown as { SpeechRecognition?: new () => unknown }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `owl-novoice-${Date.now()}`,
-          sender: "owl",
-          text: "Voice input isn't supported in this browser. Type what you'd like to learn instead.",
-        },
-      ]);
-      return;
-    }
-
-    if (isListening) {
-      if (recognitionRef.current) {
-        (recognitionRef.current as { stop: () => void }).stop();
-      }
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition() as {
-        continuous: boolean;
-        interimResults: boolean;
-        lang: string;
-        start: () => void;
-        stop: () => void;
-        onresult: (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
-        onerror: (e: unknown) => void;
-        onend: () => void;
-      };
-
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setInputText(transcript);
-          handleSendMessage(transcript);
-        }
-      };
-
-      recognition.onerror = (e) => {
-        console.warn("Speech recognition error:", e);
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-      recognitionRef.current = recognition;
-      setIsListening(true);
-    } catch (err) {
-      console.warn("Could not start speech recognition:", err);
-      setIsListening(false);
-    }
-  };
-
-  // Robust skill enrollment in both LocalStorage and Supabase project
-  const enrollSkill = async (skillToEnroll: Skill) => {
+  // Handle skill enrollment to LocalStorage and Supabase backend
+  const handleEnrollSkill = async (skillToEnroll: Skill): Promise<void> => {
     const normId = normalizeSkillId(skillToEnroll.id);
     const updatedSkill = { ...skillToEnroll, id: normId };
 
@@ -288,13 +126,21 @@ export default function SkillLibraryPage() {
       return next;
     });
 
+    setEnrolledSkills((prev) => {
+      const filtered = prev.filter((s) => normalizeSkillId(s.id) !== normId);
+      return [updatedSkill, ...filtered];
+    });
+
     // 2. Save custom skill locally
     const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
     const currentCustom: Skill[] = savedCustom ? JSON.parse(savedCustom) : [];
-    const updatedCustom = [updatedSkill, ...currentCustom.filter((s) => normalizeSkillId(s.id) !== normId)];
+    const updatedCustom = [
+      updatedSkill,
+      ...currentCustom.filter((s) => normalizeSkillId(s.id) !== normId),
+    ];
     localStorage.setItem("skillora_custom_ai_skills", JSON.stringify(updatedCustom));
 
-    // 3. Sync to Supabase project via secure server endpoint (service role bypasses RLS)
+    // 3. Sync to Supabase project via secure server endpoint
     try {
       const res = await fetch("/api/skills/enroll", {
         method: "POST",
@@ -314,90 +160,59 @@ export default function SkillLibraryPage() {
     }
   };
 
-  // Handle message sending & dispatching skill to My Studio
-  const handleSendMessage = async (customPrompt?: string) => {
-    const textToSend = customPrompt || inputText;
-    if (!textToSend.trim() || isThinking) return;
+  const catalogSkillTitles = useMemo(
+    () => INITIAL_SKILLS.map((s) => s.title),
+    []
+  );
 
-    // --- CHECK 1: Free tier 7-day trial expired check ---
-    if (!isPro && daysRemaining <= 0) {
+  const enrolledSkillTitles = useMemo(
+    () => enrolledSkills.map((s) => s.title),
+    [enrolledSkills]
+  );
+
+  // Hook-powered Archimedes dialogue
+  const {
+    messages,
+    inputText,
+    setInputText,
+    isThinking,
+    isOwlSpeaking,
+    isListening,
+    voiceEnabled,
+    setVoiceEnabled,
+    sendMessage,
+    buildCurriculum,
+    enrollSkill: triggerEnroll,
+    toggleVoiceListening,
+    speakOwlVoice,
+  } = useOwlChat({
+    enrolledSkills,
+    catalogSkills: catalogSkillTitles,
+    isPro,
+    daysRemaining,
+    onSkillEnrolled: handleEnrollSkill,
+    onLimitReached: () => {
       setIsLimitReached(true);
       setIsSubscriptionModalOpen(true);
-      const expiredMsg: OwlConversation = {
-        id: `owl-expired-${Date.now()}`,
-        sender: "owl",
-        text: "Your 7 free days with Archimedes have ended. Upgrade to Pro (₱299/month) to keep adding skills with me.",
-      };
-      setMessages((prev) => [...prev, expiredMsg]);
-      speakOwlVoice(expiredMsg.text);
-      return;
+    },
+  });
+
+  // Scroll to newest message
+  useEffect(() => {
+    if (messages.length > 1 || isThinking) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-
-    // --- CHECK 2: Free tier maximum 3 skills limit ---
-    if (!isPro && enrolledSkillIds.length >= 3) {
-      setIsLimitReached(true);
-      setIsSubscriptionModalOpen(true);
-      const limitMsg: OwlConversation = {
-        id: `owl-limit-${Date.now()}`,
-        sender: "owl",
-        text: "You've reached the free plan's limit of 3 skills. Upgrade to Pro (₱299/month) for unlimited skills, or remove one from My Studio.",
-      };
-      setMessages((prev) => [...prev, limitMsg]);
-      speakOwlVoice(limitMsg.text);
-      return;
-    }
-
-    const userMsg: OwlConversation = {
-      id: `user-${Date.now()}`,
-      sender: "user",
-      text: textToSend.trim(),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInputText("");
-    setIsThinking(true);
-
-    try {
-      const data = await aiService.chatWithOwl(textToSend.trim());
-      const owlReply = data.owlMessage;
-      const newSkill: Skill = data.skill;
-
-      // Automatically enroll skill in My Studio queue
-      await enrollSkill(newSkill);
-
-      const owlMsg: OwlConversation = {
-        id: `owl-${Date.now()}`,
-        sender: "owl",
-        text: owlReply,
-        skill: newSkill,
-      };
-
-      setMessages((prev) => [...prev, owlMsg]);
-
-      // Speak aloud if enabled
-      speakOwlVoice(owlReply);
-    } catch (err) {
-      console.error("Owl chat error:", err);
-      const errorMsg: OwlConversation = {
-        id: `owl-err-${Date.now()}`,
-        sender: "owl",
-        text: "Something went wrong on my end. Could you try that again?",
-      };
-      setMessages((prev) => [...prev, errorMsg]);
-    } finally {
-      setIsThinking(false);
-    }
-  };
+  }, [messages, isThinking]);
 
   const samplePrompts = [
+    "✨ Help me find a skill",
+    "🔥 In-demand skills right now",
     "Fingerstyle Acoustic Guitar Basics",
     "Read Cyrillic Script in One Afternoon",
     "15° Whetstone Knife Sharpening",
     "Specialty Espresso Extraction 1:2",
     "Touch Typing at 80+ WPM",
     "Solve 3x3 Rubik's Cube (CFOP)",
-    "Sourdough Bread Tartine Style",
-    "Juggling 3 Balls Cascade",
   ];
 
   return (
@@ -427,8 +242,12 @@ export default function SkillLibraryPage() {
                 }}
                 className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-2xs font-medium hover:bg-surface-border/60 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Free · {enrolledSkillIds.length}/3 skills · {daysRemaining} AI days left</span>
-                <span className="font-semibold text-ink underline underline-offset-2">Upgrade</span>
+                <span>
+                  Free · {enrolledSkillIds.length}/3 skills · {daysRemaining} AI days left
+                </span>
+                <span className="font-semibold text-ink underline underline-offset-2">
+                  Upgrade
+                </span>
               </button>
             )}
           </div>
@@ -449,7 +268,7 @@ export default function SkillLibraryPage() {
             isSpeaking={isOwlSpeaking}
             onClick={() => {
               playChime();
-              speakOwlVoice("I'm listening. What would you like to learn?");
+              speakOwlVoice("I'm listening. Tell me what interests you or ask for suggestions.");
             }}
             size={180}
           />
@@ -458,159 +277,103 @@ export default function SkillLibraryPage() {
             Tell Archimedes what you want to learn.
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md leading-relaxed">
-            Type or say a skill. Archimedes breaks it into short steps and adds it to <strong>My Studio</strong>.
+            Chat to find the right craft, explore tailored suggestions, or build a 4-step practice track.
           </p>
 
           {/* Voice Mute Toggle */}
           <div className="mt-3 flex items-center gap-2">
             <button
               type="button"
-              onClick={() => {
-                const next = !voiceAudioEnabled;
-                setVoiceAudioEnabled(next);
-                if (!next) {
-                  if (currentAudioRef.current) {
-                    currentAudioRef.current.pause();
-                  }
-                  if (typeof window !== "undefined" && "speechSynthesis" in window) {
-                    window.speechSynthesis.cancel();
-                  }
-                  setIsOwlSpeaking(false);
-                }
-              }}
-              aria-pressed={voiceAudioEnabled}
-              className={buttonClasses({ variant: "secondary", size: "sm", className: voiceAudioEnabled ? "" : "text-ink-muted" })}
+              onClick={() => setVoiceEnabled(!voiceEnabled)}
+              aria-pressed={voiceEnabled}
+              className={buttonClasses({
+                variant: "secondary",
+                size: "sm",
+                className: voiceEnabled ? "" : "text-ink-muted",
+              })}
             >
               <SolarIcon
-                name={voiceAudioEnabled ? "volume-loud-linear" : "volume-cross-linear"}
+                name={voiceEnabled ? "volume-loud-linear" : "volume-cross-linear"}
                 className="w-3.5 h-3.5"
               />
-              <span>{voiceAudioEnabled ? "Voice on" : "Voice off"}</span>
+              <span>{voiceEnabled ? "Voice on" : "Voice off"}</span>
             </button>
           </div>
         </section>
 
         {/* Conversation Stream */}
         <section className="my-6 space-y-4">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex flex-col ${
-                msg.sender === "user" ? "items-end" : "items-start"
-              }`}
-            >
+          {messages.map((msg, index) => {
+            const isLatest = index === messages.length - 1;
+            const normSkillId = msg.skill ? normalizeSkillId(msg.skill.id) : "";
+            const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
+
+            return (
               <div
-                className={`max-w-xl p-4 sm:p-5 rounded-3xl text-xs sm:text-sm leading-relaxed shadow-xs transition-all ${
-                  msg.sender === "user"
-                    ? "bg-ink text-white rounded-br-xs"
-                    : "bg-white border border-surface-border text-ink rounded-bl-xs"
+                key={msg.id}
+                className={`flex flex-col ${
+                  msg.sender === "user" ? "items-end" : "items-start"
                 }`}
               >
-                {msg.sender === "owl" && (
-                  <div className="flex items-center gap-2 mb-1.5 text-3xs font-mono font-medium text-ink-muted uppercase tracking-wider">
-                    <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5 text-ink-muted" />
-                    <span>Archimedes</span>
-                  </div>
-                )}
-                <p>{msg.text}</p>
-              </div>
-
-              {/* Archimedes Field Notes Index Card */}
-              {msg.skill && (
-                <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border border-surface-border shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
-                  {/* Unified Field Notes Header */}
-                  {(() => {
-                    const normSkillId = normalizeSkillId(msg.skill.id);
-                    const isEnrolled = enrolledSkillIds.map(normalizeSkillId).includes(normSkillId);
-
-                    return (
-                      <>
-                        <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
-                          <div className="flex items-center gap-1.5 font-medium">
-                            <span className="capitalize">{msg.skill.difficulty}</span>
-                            <span className="text-ink-subtle">·</span>
-                            <span>{msg.skill.time_commitment_label}</span>
-                            <span className="text-ink-subtle">·</span>
-                            <span>{msg.skill.steps?.length || 0} steps</span>
-                          </div>
-                          {isEnrolled ? (
-                            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-accent-emerald">
-                              <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                              <span>In My Studio</span>
-                            </span>
-                          ) : (
-                            <span className="text-2xs font-medium text-ink-subtle">
-                              Not added
-                            </span>
-                          )}
-                        </div>
-
-                        <h3 className="font-display font-extrabold text-lg text-ink mb-1">
-                          {msg.skill.title}
-                        </h3>
-                        <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
-                          {msg.skill.summary}
-                        </p>
-
-                        {/* Sequential Micro-Drills */}
-                        <div className="space-y-2 mb-5">
-                          {msg.skill.steps?.map((st) => (
-                            <div
-                              key={st.id}
-                              className="p-3 rounded-2xl bg-canvas/80 border border-surface-border text-xs flex items-center justify-between hover:border-ink/20 transition"
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <span className="w-5 h-5 rounded-md bg-white border border-surface-border/80 flex items-center justify-center font-mono text-3xs font-semibold text-ink-muted">
-                                  {st.step_number < 10 ? `0${st.step_number}` : st.step_number}
-                                </span>
-                                <span className="font-medium text-ink">
-                                  {st.title}
-                                </span>
-                              </div>
-                              <span className="text-2xs text-ink-subtle font-mono tabular-nums">
-                                ~{st.estimated_minutes}m
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Action CTA: Either Learn This Skill (Add to Queue) or Open Studio */}
-                        <div className="pt-2 border-t border-surface-border flex items-center gap-2">
-                          {isEnrolled ? (
-                            <Link
-                              href="/dashboard"
-                              onClick={() => playWoodenThud()}
-                              className={buttonClasses({ block: true, className: "group" })}
-                            >
-                              <span>Practice in My Studio</span>
-                              <SolarIcon name="arrow-right-linear" className="w-4 h-4 group-hover:translate-x-0.5 transition" />
-                            </Link>
-                          ) : (
-                            <Button
-                              block
-                              onClick={async () => {
-                                playStampThud();
-                                await enrollSkill(msg.skill!);
-                              }}
-                            >
-                              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-accent-emerald" />
-                              <span>Add to My Studio</span>
-                            </Button>
-                          )}
-                        </div>
-                      </>
-                    );
-                  })()}
+                {/* Speech Bubble */}
+                <div
+                  className={`max-w-xl p-4 sm:p-5 rounded-3xl text-xs sm:text-sm leading-relaxed shadow-xs transition-all ${
+                    msg.sender === "user"
+                      ? "bg-ink text-white rounded-br-xs"
+                      : "bg-white border border-surface-border text-ink rounded-bl-xs"
+                  }`}
+                >
+                  {msg.sender === "owl" && (
+                    <div className="flex items-center gap-2 mb-1.5 text-3xs font-mono font-medium text-ink-muted uppercase tracking-wider">
+                      <SolarIcon
+                        name="stars-minimalistic-linear"
+                        className="w-3.5 h-3.5 text-ink-muted"
+                      />
+                      <span>Archimedes</span>
+                    </div>
+                  )}
+                  <p>{msg.text}</p>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Suggestions Mode: 3-5 Tailored Pathway Cards */}
+                {msg.suggestions && msg.suggestions.length > 0 && (
+                  <SuggestionCards
+                    suggestions={msg.suggestions}
+                    catalogSkillTitles={catalogSkillTitles}
+                    enrolledSkillTitles={enrolledSkillTitles}
+                    disabled={isThinking}
+                    onSelectSkill={(sugg) => buildCurriculum(sugg)}
+                  />
+                )}
+
+                {/* Curriculum Mode: Single 4-Step Practice Track */}
+                {msg.skill && (
+                  <CurriculumCard
+                    skill={msg.skill}
+                    isEnrolled={isEnrolled}
+                    onEnroll={async (s) => {
+                      await triggerEnroll(s);
+                    }}
+                  />
+                )}
+
+                {/* Quick Reply Chips (shown under the latest Owl response) */}
+                {msg.sender === "owl" && isLatest && msg.quickReplies && (
+                  <QuickReplies
+                    replies={msg.quickReplies}
+                    disabled={isThinking}
+                    onSelect={(reply) => sendMessage(reply)}
+                  />
+                )}
+              </div>
+            );
+          })}
 
           {isThinking && (
             <div className="flex items-start">
               <div className="p-4 rounded-3xl bg-white border border-surface-border text-xs text-brand-600 font-semibold flex items-center gap-2 shadow-xs animate-pulse">
                 <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                <span>Archimedes is breaking this skill into steps…</span>
+                <span>Archimedes is deliberating…</span>
               </div>
             </div>
           )}
@@ -630,10 +393,10 @@ export default function SkillLibraryPage() {
                 key={prompt}
                 type="button"
                 onClick={() => {
-                  setInputText(prompt);
-                  handleSendMessage(prompt);
+                  const cleanedPrompt = prompt.replace(/^[✨🔥]\s*/, "");
+                  sendMessage(cleanedPrompt);
                 }}
-                className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-2xs font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs"
+                className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-2xs font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs cursor-pointer"
               >
                 {prompt}
               </button>
@@ -646,7 +409,7 @@ export default function SkillLibraryPage() {
             <button
               type="button"
               onClick={toggleVoiceListening}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
                 isListening
                   ? "bg-rose-600 text-white animate-pulse shadow-md"
                   : "bg-canvas hover:bg-brand-50 text-ink-muted hover:text-brand-600 border border-surface-border"
@@ -665,12 +428,12 @@ export default function SkillLibraryPage() {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               aria-label="What do you want to learn?"
               placeholder={
                 isListening
                   ? "Listening…"
-                  : "What do you want to learn? e.g. latte art"
+                  : "Tell Archimedes what you'd like to learn or explore…"
               }
               className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
             />
@@ -679,8 +442,8 @@ export default function SkillLibraryPage() {
             <button
               type="button"
               disabled={isThinking || !inputText.trim()}
-              onClick={() => handleSendMessage()}
-              className="w-11 h-11 rounded-2xl bg-ink hover:bg-brand-500 disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0"
+              onClick={() => sendMessage()}
+              className="w-11 h-11 rounded-2xl bg-ink hover:bg-brand-500 disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
               aria-label="Send message to Owl"
             >
               <SolarIcon name="arrow-right-linear" className="w-5 h-5" />
@@ -689,7 +452,7 @@ export default function SkillLibraryPage() {
         </section>
       </main>
 
-      {/* Subscription & Pricing Modal (Triggered on limit or click) */}
+      {/* Subscription & Pricing Modal */}
       <AnimatePresence>
         {isSubscriptionModalOpen && (
           <SubscriptionModal

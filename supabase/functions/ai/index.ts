@@ -1,5 +1,6 @@
 import OpenAI from "npm:openai@^4.68.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.45.6";
+import { sanitizeOwlRequest, buildOwlMessages, parseOwlReply, toOwlReply } from "../_shared/owl.ts";
 
 // -------------------------------------------------------------
 // CORS Headers (matching Hapag architecture)
@@ -428,45 +429,14 @@ function errorResponse(message: string, status = 500): Response {
 // -------------------------------------------------------------
 
 async function handleOwlChat(body: Record<string, any>): Promise<Response> {
-  const { message } = body;
-  if (!message || typeof message !== "string") {
+  const request = sanitizeOwlRequest(body);
+  if (!request) {
     return errorResponse("Message is required", 400);
   }
 
   const openai = getOpenAI();
-  const systemPrompt = `You are Archimedes, the Skillora Learning Owl — a wise, encouraging mentor inspired by Swiss design.
-Reply warmly and concisely as Archimedes the Sage Owl (1-2 sentences).
-Deconstruct the craft into a realistic 3-4 step curriculum.
-
-Return STRICT JSON:
-{
-  "owlMessage": "1-2 sentences warm mentor message.",
-  "skill": {
-    "title": "Concise skill title (max 6 words)",
-    "summary": "1-2 sentence summary of physical mechanics, techniques, or mental models.",
-    "difficulty": "beginner" | "intermediate" | "advanced",
-    "estimated_hours": 2.5,
-    "time_commitment_label": "e.g. 20 mins/day for 1 week",
-    "category_id": "cat-music" | "cat-language" | "cat-life" | "cat-tech",
-    "steps": [
-      {
-        "step_number": 1,
-        "title": "Clear step technique name",
-        "instructions": "Specific, actionable muscle memory instructions or cognitive drill (2-3 sentences).",
-        "estimated_minutes": 20,
-        "resources": [
-          { "platform_name": "YouTube", "url": "https://www.youtube.com", "resource_type": "video", "is_free": true }
-        ]
-      }
-    ]
-  }
-}`;
-
   const response = await createChatCompletionWithFallback(openai, {
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: `User wants to learn: "${message}".` },
-    ],
+    messages: buildOwlMessages(request),
     response_format: { type: "json_object" },
     temperature: 0.7,
   });
@@ -474,8 +444,14 @@ Return STRICT JSON:
   const content = response.choices[0]?.message?.content;
   if (!content) return errorResponse("No response from AI", 500);
 
-  const parsed = JSON.parse(content);
-  const skillData = parsed.skill || {};
+  const reply = parseOwlReply(content, request.forceMode);
+
+  // Conversation and suggestion turns: no curriculum to enrich or persist.
+  if (reply.mode !== "curriculum" || !reply.skillData) {
+    return jsonResponse(toOwlReply(reply, null));
+  }
+
+  const skillData = reply.skillData;
   const skillId = crypto.randomUUID();
   const slug = (skillData.title || "craft").toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
@@ -559,10 +535,7 @@ Return STRICT JSON:
     console.warn("Auto-persist warning:", err);
   }
 
-  return jsonResponse({
-    owlMessage: parsed.owlMessage || `I have structured your curriculum for ${formattedSkill.title}!`,
-    skill: formattedSkill,
-  });
+  return jsonResponse(toOwlReply(reply, formattedSkill));
 }
 
 async function handleCoach(body: Record<string, any>): Promise<Response> {
