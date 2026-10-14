@@ -407,37 +407,39 @@ export function FlashcardLearningModal({
                 Card {currentCardIndex + 1} of {steps.length}
               </span>
 
-              <div className="flex items-center gap-2">
-                {/* Pronunciation Voice Button */}
-                <button
-                  type="button"
-                  onClick={() => speakText(voiceSample)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
-                    isSpeaking
-                      ? "bg-brand-600 text-white border-brand-600 animate-pulse"
-                      : "bg-white text-brand-600 border-brand-200 hover:bg-brand-50"
-                  }`}
-                  title="Listen to native voice pronunciation"
-                >
-                  <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
-                  <span>{isSpeaking ? "Speaking..." : "Pronounce (Voice)"}</span>
-                </button>
+              {isLanguageSkill && (
+                <div className="flex items-center gap-2">
+                  {/* Pronunciation Voice Button */}
+                  <button
+                    type="button"
+                    onClick={() => speakText(voiceSample)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
+                      isSpeaking
+                        ? "bg-brand-600 text-white border-brand-600 animate-pulse"
+                        : "bg-white text-brand-600 border-brand-200 hover:bg-brand-50"
+                    }`}
+                    title="Listen to native voice pronunciation"
+                  >
+                    <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
+                    <span>{isSpeaking ? "Speaking..." : "Pronounce (Voice)"}</span>
+                  </button>
 
-                {/* Feature 3: Whisper Voice Pronunciation Grader */}
-                <button
-                  type="button"
-                  onClick={handleStartRecording}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
-                    isRecording
-                      ? "bg-rose-600 text-white border-rose-600 animate-ping"
-                      : "bg-white text-ink border-surface-border hover:border-brand-500 hover:text-brand-600"
-                  }`}
-                  title="Speak into microphone and get an AI pronunciation grade"
-                >
-                  <SolarIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
-                  <span>{isRecording ? "Listening... (Tap to grade)" : "Test My Voice (AI)"}</span>
-                </button>
-              </div>
+                  {/* Feature 3: Whisper Voice Pronunciation Grader */}
+                  <button
+                    type="button"
+                    onClick={handleStartRecording}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
+                      isRecording
+                        ? "bg-rose-600 text-white border-rose-600 animate-ping"
+                        : "bg-white text-ink border-surface-border hover:border-brand-500 hover:text-brand-600"
+                    }`}
+                    title="Speak into microphone and get an AI pronunciation grade"
+                  >
+                    <SolarIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
+                    <span>{isRecording ? "Listening... (Tap to grade)" : "Test My Voice (AI)"}</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* 3D Tactile Flip Card Stage */}

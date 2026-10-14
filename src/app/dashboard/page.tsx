@@ -910,30 +910,32 @@ function Dashboard() {
                           </button>
                         )}
 
-                        {/* Primary CTA: Start Learning with Flashcard Modal */}
-                        <Button
-                          block
-                          onClick={() => {
-                            playWoodenThud();
-                            setActiveLearningSkill(skill);
-                          }}
-                        >
-                          <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
-                          <span>{isCompleted ? "Review" : "Practice"}</span>
-                        </Button>
+                        {/* Studio Action Row: Primary Practice + Syllabus Preview */}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            className="flex-1"
+                            onClick={() => {
+                              playWoodenThud();
+                              setActiveLearningSkill(skill);
+                            }}
+                          >
+                            <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
+                            <span>{isCompleted ? "Review" : "Practice"}</span>
+                          </Button>
 
-                        {/* Secondary: Preview Syllabus */}
-                        <Button
-                          variant="secondary"
-                          block
-                          onClick={() => {
-                            playMechanicalClick();
-                            setActiveSyllabusSkill(skill);
-                          }}
-                        >
-                          <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span>Steps & resources</span>
-                        </Button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playMechanicalClick();
+                              setActiveSyllabusSkill(skill);
+                            }}
+                            className="p-2.5 rounded-xl border border-surface-border hover:border-brand-400 bg-white hover:bg-surface-subtle text-ink-muted hover:text-ink transition flex items-center justify-center cursor-pointer shadow-2xs"
+                            title="View steps & resources"
+                            aria-label={`View syllabus steps for ${skill.title}`}
+                          >
+                            <SolarIcon name="layers-minimalistic-linear" className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   );

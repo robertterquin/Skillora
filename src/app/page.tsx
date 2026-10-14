@@ -65,12 +65,12 @@ export default function LandingPage() {
               Start for free
             </Link>
 
-            <a
-              href="#skills"
+            <Link
+              href="/library"
               className={buttonClasses({ variant: "ghost", size: "lg", className: "w-full sm:w-auto" })}
             >
-              Browse skills &rarr;
-            </a>
+              Browse skill library &rarr;
+            </Link>
           </div>
         </div>
       </section>

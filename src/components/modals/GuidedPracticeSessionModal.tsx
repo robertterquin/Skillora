@@ -156,17 +156,6 @@ export function GuidedPracticeSessionModal({
     setIsRunning((prev) => !prev);
   }, []);
 
-  const addOneMinute = useCallback(() => {
-    playMechanicalClick();
-    setSecondsRemaining((prev) => prev + 60);
-    setTargetSeconds((prev) => prev + 60);
-  }, []);
-
-  const subtractOneMinute = useCallback(() => {
-    playMechanicalClick();
-    setSecondsRemaining((prev) => Math.max(30, prev - 60));
-    setTargetSeconds((prev) => Math.max(30, prev - 60));
-  }, []);
 
   const setSprintDuration = useCallback((minutes: number) => {
     playMechanicalClick();
@@ -203,10 +192,6 @@ export function GuidedPracticeSessionModal({
     setRepCount((prev) => prev + 1);
   }, []);
 
-  const decrementRep = useCallback(() => {
-    playMechanicalClick();
-    setRepCount((prev) => Math.max(0, prev - 1));
-  }, []);
 
   // Handle SM-2 recall rating
   const handleRateRecall = (quality: RecallQuality) => {
@@ -440,32 +425,15 @@ export function GuidedPracticeSessionModal({
                     <span>{isRunning ? "Pause Clock" : "Start Clock"}</span>
                   </button>
 
-                  {/* Time Increment / Decrement */}
-                  <button
-                    type="button"
-                    onClick={subtractOneMinute}
-                    className="px-3 py-2 rounded-full bg-white border border-stone-300 text-stone-700 font-mono text-xs font-semibold hover:bg-stone-100 transition shadow-2xs cursor-pointer"
-                    title="Subtract 1 minute"
-                  >
-                    -1m
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={addOneMinute}
-                    className="px-3 py-2 rounded-full bg-white border border-stone-300 text-stone-700 font-mono text-xs font-semibold hover:bg-stone-100 transition shadow-2xs cursor-pointer"
-                    title="Add 1 minute"
-                  >
-                    +1m
-                  </button>
-
+                  {/* Reset Clock */}
                   <button
                     type="button"
                     onClick={resetTimer}
-                    className="px-3 py-2 rounded-full bg-white border border-stone-300 text-stone-600 font-mono text-xs font-semibold hover:bg-stone-100 transition shadow-2xs cursor-pointer"
+                    className="px-3.5 py-2.5 rounded-full bg-white border border-stone-300 text-stone-600 font-mono text-xs font-semibold hover:bg-stone-100 transition shadow-2xs cursor-pointer flex items-center gap-1.5"
                     title="Reset clock to drill duration"
                   >
                     <SolarIcon name="restart-linear" className="w-3.5 h-3.5" />
+                    <span>Reset</span>
                   </button>
 
                   {/* Cadence / Metronome (Music, Typing, Juggling) OR Deep Focus Badge (Coding, Languages, Culinary) */}
@@ -529,16 +497,6 @@ export function GuidedPracticeSessionModal({
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    {repCount > 0 && (
-                      <button
-                        type="button"
-                        onClick={decrementRep}
-                        className="px-2.5 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-stone-600 font-mono text-xs font-bold transition shadow-2xs cursor-pointer"
-                        title="Subtract 1"
-                      >
-                        -1
-                      </button>
-                    )}
                     <button
                       type="button"
                       onClick={incrementRep}

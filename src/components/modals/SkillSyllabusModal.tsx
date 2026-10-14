@@ -300,15 +300,6 @@ export function SkillSyllabusModal({
               Start this skill
             </Link>
           )}
-          {!isViewOnly && isAllComplete && onOpenGuildExam && (
-            <button
-              type="button"
-              onClick={() => onOpenGuildExam(skill)}
-              className="px-4 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>{isGuildCertified ? "View Guild diploma" : "Take the Guild exam"}</span>
-            </button>
-          )}
           <button
             type="button"
             onClick={onClose}
