@@ -87,12 +87,13 @@ export async function POST(req: NextRequest) {
       estimated_hours: Number(skillData.estimated_hours) || 2.0,
       time_commitment_label: skillData.time_commitment_label || "20 mins/day for 1 week",
       is_featured: false,
-      steps_count: skillData.steps?.length || 3,
+      steps_count: skillData.steps?.length || 4,
       steps: [] as unknown[],
     };
 
     const initialSteps = (skillData.steps as RawStep[]).map((st, idx) => {
       const stepId = crypto.randomUUID();
+      const searchQuery = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${formattedSkill.title} ${st.title || `Step ${idx + 1}`} tutorial`)}`;
       return {
         id: stepId,
         skill_id: skillId,
@@ -104,7 +105,7 @@ export async function POST(req: NextRequest) {
           id: crypto.randomUUID(),
           step_id: stepId,
           platform_name: r.platform_name || "YouTube Tutorial",
-          url: r.url || "https://www.youtube.com",
+          url: r.url && r.url !== "https://www.youtube.com" ? r.url : searchQuery,
           resource_type: r.resource_type || "video",
           is_free: r.is_free !== false,
         })),

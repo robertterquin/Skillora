@@ -465,25 +465,28 @@ async function handleOwlChat(body: Record<string, any>): Promise<Response> {
     estimated_hours: Number(skillData.estimated_hours) || 2.0,
     time_commitment_label: skillData.time_commitment_label || "20 mins/day for 1 week",
     is_featured: false,
-    steps_count: skillData.steps?.length || 3,
+    steps_count: skillData.steps?.length || 4,
     steps: [] as any[],
   };
 
-  const initialSteps = (skillData.steps || []).map((st: any, idx: number) => ({
-    id: crypto.randomUUID(),
-    skill_id: skillId,
-    step_number: st.step_number || idx + 1,
-    title: st.title || `Step ${idx + 1}`,
-    instructions: st.instructions || "Focus on form and slow deliberate repetitions.",
-    estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
-    resources: (st.resources || []).map((r: any) => ({
+  const initialSteps = (skillData.steps || []).map((st: any, idx: number) => {
+    const searchQuery = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${formattedSkill.title} ${st.title || `Step ${idx + 1}`} tutorial`)}`;
+    return {
       id: crypto.randomUUID(),
-      platform_name: r.platform_name || "YouTube Tutorial",
-      url: r.url || "https://www.youtube.com",
-      resource_type: r.resource_type || "video",
-      is_free: r.is_free !== false,
-    })),
-  }));
+      skill_id: skillId,
+      step_number: st.step_number || idx + 1,
+      title: st.title || `Step ${idx + 1}`,
+      instructions: st.instructions || "Focus on form and slow deliberate repetitions.",
+      estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
+      resources: (st.resources || []).map((r: any) => ({
+        id: crypto.randomUUID(),
+        platform_name: r.platform_name || "YouTube Tutorial",
+        url: r.url && r.url !== "https://www.youtube.com" ? r.url : searchQuery,
+        resource_type: r.resource_type || "video",
+        is_free: r.is_free !== false,
+      })),
+    };
+  });
 
   // Enrich with verified YouTube search
   const enrichedSteps = await Promise.all(

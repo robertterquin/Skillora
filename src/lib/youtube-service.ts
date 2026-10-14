@@ -207,6 +207,18 @@ export async function enrichStepsWithYouTube(
               is_free: true,
             },
           ];
+        } else {
+          resources = [
+            ...resources,
+            {
+              id: undefined,
+              step_id: st.id,
+              platform_name: "YouTube",
+              url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+              resource_type: "video",
+              is_free: true,
+            },
+          ];
         }
       }
 

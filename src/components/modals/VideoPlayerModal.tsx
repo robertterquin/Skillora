@@ -7,8 +7,10 @@ import { Modal } from "../ui/Modal";
 
 export function extractYouTubeId(url: string): string | null {
   if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
+  const trimmed = url.trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/i;
+  const match = trimmed.match(regExp);
   return match && match[2].length === 11 ? match[2] : null;
 }
 

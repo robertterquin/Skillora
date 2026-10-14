@@ -129,13 +129,17 @@ Return STRICT JSON:
   ]
 }
 
-CURRICULUM RULES (mode "curriculum" only). Generate 3-4 sequential steps:
+CURRICULUM RULES (mode "curriculum" only). ALWAYS generate exactly 4 sequential steps following this deliberate practice progression:
 1. DISCIPLINE-SPECIFIC DRILLS:
    - Coding & tech: strictly technical and actionable (syntax patterns, REPL/terminal commands, test assertions). Never give bodily-sensation advice for software.
    - Music & audio: finger/hand anchors, fretboard geometry, tone production, metronome BPM, transition loops.
    - Languages & scripts: phonetic approximations, glyph mnemonics, high-frequency cognates, real reading/pronunciation drills.
    - Tactile crafts & sports: body mechanics, tool angles, sensory cues (sound, feel, resistance, sight), observable benchmarks.
-2. PROGRESSION: Step 1 foundation (mental model, setup, primary building block); Step 2 core mechanism; Step 3 integration and flow; Step 4 real-world milestone (mini-project or verification benchmark).
+2. PROGRESSION:
+   - Step 1: Foundation (mental model, setup, primary building block)
+   - Step 2: Core Mechanism (primary mechanical drill or technique)
+   - Step 3: Integration & Flow (combining patterns, transition loops, smooth tempo)
+   - Step 4: Real-World Milestone (standalone mini-project, performance endurance, or objective verification benchmark)
 3. ACTIONABILITY: every step states the technique, the exact drill, and an objective test of success.
 4. TIME: "estimated_minutes" is a focused 15-25 minute sprint.`;
 
