@@ -190,8 +190,14 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
   const sendMessage = useCallback(
     async (customPrompt?: string, forceMode?: "curriculum") => {
-      const textToSend = customPrompt || inputText;
-      if (!textToSend.trim() || isThinking) return;
+      const rawText = customPrompt || inputText;
+      const textToSend = typeof (rawText as any)?.toWellFormed === "function"
+        ? (rawText as any).toWellFormed().trim()
+        : String(rawText || "")
+            .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "")
+            .trim();
+
+      if (!textToSend || isThinking) return;
 
       stopVoice();
       playMechanicalClick();
@@ -199,7 +205,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       const userMsg: OwlMessage = {
         id: `user-${Date.now()}`,
         sender: "user",
-        text: textToSend.trim(),
+        text: textToSend,
       };
 
       setMessages((prev) => [...prev, userMsg]);

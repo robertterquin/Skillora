@@ -205,14 +205,14 @@ export default function SkillLibraryPage() {
   }, [messages, isThinking]);
 
   const samplePrompts = [
-    "✨ Help me find a skill",
-    "🔥 In-demand skills right now",
-    "Fingerstyle Acoustic Guitar Basics",
-    "Read Cyrillic Script in One Afternoon",
-    "15° Whetstone Knife Sharpening",
-    "Specialty Espresso Extraction 1:2",
-    "Touch Typing at 80+ WPM",
-    "Solve 3x3 Rubik's Cube (CFOP)",
+    { label: "✨ Help me find a skill", prompt: "Help me find a skill that fits me" },
+    { label: "🔥 In-demand skills right now", prompt: "Suggest in-demand skills to learn right now" },
+    { label: "Fingerstyle Acoustic Guitar Basics", prompt: "Fingerstyle Acoustic Guitar Basics" },
+    { label: "Read Cyrillic Script in One Afternoon", prompt: "Read Cyrillic Script in One Afternoon" },
+    { label: "15° Whetstone Knife Sharpening", prompt: "15° Whetstone Knife Sharpening" },
+    { label: "Specialty Espresso Extraction 1:2", prompt: "Specialty Espresso Extraction 1:2" },
+    { label: "Touch Typing at 80+ WPM", prompt: "Touch Typing at 80+ WPM" },
+    { label: "Solve 3x3 Rubik's Cube (CFOP)", prompt: "Solve 3x3 Rubik's Cube (CFOP)" },
   ];
 
   return (
@@ -388,17 +388,14 @@ export default function SkillLibraryPage() {
             <span className="text-2xs text-ink-muted font-medium whitespace-nowrap pl-1">
               Try:
             </span>
-            {samplePrompts.map((prompt) => (
+            {samplePrompts.map((item) => (
               <button
-                key={prompt}
+                key={item.label}
                 type="button"
-                onClick={() => {
-                  const cleanedPrompt = prompt.replace(/^[✨🔥]\s*/, "");
-                  sendMessage(cleanedPrompt);
-                }}
+                onClick={() => sendMessage(item.prompt)}
                 className="px-3 py-1 rounded-full bg-white hover:bg-brand-50 border border-surface-border text-2xs font-medium text-ink-secondary hover:text-brand-700 transition whitespace-nowrap shadow-2xs cursor-pointer"
               >
-                {prompt}
+                {item.label}
               </button>
             ))}
           </div>
