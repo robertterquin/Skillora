@@ -13,9 +13,9 @@ import {
   KnifeAngleGauge,
   EspressoExtractionSimulator,
   PhoneticSoundboard,
-  FocusRepetitionDrill,
   CodeMilestoneTerminalSimulator,
 } from "../simulators/TactileMicroSimulators";
+import { StepActionBlueprint } from "../simulators/StepActionBlueprint";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 import { aiService } from "@/services/aiService";
@@ -29,21 +29,19 @@ interface FlashcardLearningModalProps {
   onOpenGuildExam?: (skill: Skill) => void;
 }
 
-// Interactive Tactile Micro-Simulator Suite for each discipline
+// Interactive Tactile Micro-Simulator Suite & Action Blueprint for each discipline
 function StepMicroSimulatorAid({
-  skillSlug,
-  skillTitle,
-  stepNumber,
-  stepTitle,
+  step,
+  skill,
   onSpeak,
+  onOpenVideo,
 }: {
-  skillSlug: string;
-  skillTitle: string;
-  stepNumber: number;
-  stepTitle: string;
+  step: SkillStep;
+  skill: Skill;
   onSpeak: (text: string, lang?: string) => void;
+  onOpenVideo?: (video: { url: string; title: string; stepTitle: string }) => void;
 }) {
-  const slug = (skillSlug + " " + skillTitle).toLowerCase();
+  const slug = `${skill.slug || ""} ${skill.title || ""} ${step.title || ""}`.toLowerCase();
 
   // 1. Language / Cyrillic Phonetic Soundboard
   if (slug.includes("cyrillic") || slug.includes("language") || slug.includes("alphabet") || slug.includes("script")) {
@@ -60,7 +58,7 @@ function StepMicroSimulatorAid({
     return <EspressoExtractionSimulator />;
   }
 
-  // 4. Guitar & Rhythm / Typing -> Auditory Metronome
+  // 4. Guitar & Rhythm / Typing -> Auditory Metronome + Action Blueprint
   if (
     slug.includes("guitar") ||
     slug.includes("fingerstyle") ||
@@ -71,93 +69,24 @@ function StepMicroSimulatorAid({
   ) {
     const defaultBpm = slug.includes("typing") ? 60 : 75;
     return (
-      <div className="space-y-2">
+      <div className="space-y-3">
         <PracticeMetronome initialBpm={defaultBpm} />
-        {slug.includes("typing") && (
-          <div className="w-full p-2.5 bg-canvas/60 border border-surface-border rounded-xl text-center">
-            <div className="text-3xs font-mono font-bold text-ink-muted uppercase mb-1">
-              Tactile Home Row Bumps (Keep Steady Rhythm)
-            </div>
-            <div className="flex items-center justify-center gap-2 font-mono text-xs">
-              <span className="px-2 py-1 bg-white rounded border border-surface-border text-ink-muted">A S D</span>
-              <span className="px-2 py-1 bg-brand-50 rounded border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ F • ]</span>
-              <span className="text-ink-subtle">|</span>
-              <span className="px-2 py-1 bg-brand-50 rounded border-2 border-brand-500 font-extrabold text-brand-700 shadow-xs">[ J • ]</span>
-              <span className="px-2 py-1 bg-white rounded border border-surface-border text-ink-muted">K L ;</span>
-            </div>
-          </div>
-        )}
+        <StepActionBlueprint
+          step={step}
+          skill={skill}
+          onOpenVideo={onOpenVideo}
+        />
       </div>
     );
   }
 
-  // 5. Software / Web / Programming -> Code Milestone & Test Runner Terminal
-  if (
-    slug.includes("code") ||
-    slug.includes("coding") ||
-    slug.includes("program") ||
-    slug.includes("software") ||
-    slug.includes("python") ||
-    slug.includes("javascript") ||
-    slug.includes("typescript") ||
-    slug.includes("react") ||
-    slug.includes("web") ||
-    slug.includes("frontend") ||
-    slug.includes("backend") ||
-    slug.includes("database") ||
-    slug.includes("function")
-  ) {
-    return <CodeMilestoneTerminalSimulator stepTitle={stepTitle} targetMilestones={5} />;
-  }
-
-  // 6. Universal Focus Repetition with Discipline Accuracy
-  if (slug.includes("rubik") || slug.includes("cube") || slug.includes("puzzle")) {
-    return (
-      <FocusRepetitionDrill
-        stepTitle={stepTitle}
-        targetReps={5}
-        metricHeading="ALGORITHM DRILLS & SOLVES"
-        metricNoun="algorithm solves"
-        actionLabel="Log Solve / Sequence (+1)"
-        guidanceTip="Execute fingertrick algorithm without pausing to eye-track."
-      />
-    );
-  }
-
-  if (slug.includes("juggle") || slug.includes("juggling")) {
-    return (
-      <FocusRepetitionDrill
-        stepTitle={stepTitle}
-        targetReps={10}
-        metricHeading="CLEAN CATCH CYCLES"
-        metricNoun="catch sequences"
-        actionLabel="Log Catch Sequence (+1)"
-        guidanceTip="Count clean 3-ball cascades caught cleanly without lunging forward."
-      />
-    );
-  }
-
-  if (slug.includes("dough") || slug.includes("bread") || slug.includes("sourdough") || slug.includes("baking")) {
-    return (
-      <FocusRepetitionDrill
-        stepTitle={stepTitle}
-        targetReps={4}
-        metricHeading="FOLD CYCLES & SHAPES"
-        metricNoun="technique cycles"
-        actionLabel="Log Technique Cycle (+1)"
-        guidanceTip="Log each stretch-and-fold pass or shaping round completed."
-      />
-    );
-  }
-
-  // 7. Fallback Deliberate Practice Drill
+  // 5. Universal Deliberate Practice Action Blueprint & Verifiable Checkpoints
+  // (Replaces generic 0/10 rep counters and 60s drill timers across all disciplines)
   return (
-    <FocusRepetitionDrill
-      stepTitle={stepTitle}
-      targetReps={10}
-      metricHeading="DELIBERATE PRACTICE DRILLS"
-      metricNoun="focused repetitions"
-      actionLabel="Log Practice Cycle (+1)"
+    <StepActionBlueprint
+      step={step}
+      skill={skill}
+      onOpenVideo={onOpenVideo}
     />
   );
 }
@@ -557,13 +486,12 @@ export function FlashcardLearningModal({
                         {currentStep.title}
                       </h3>
 
-                      {/* Interactive Tactile Micro-Simulator */}
+                      {/* Interactive Tactile Micro-Simulator / Action Blueprint */}
                       <StepMicroSimulatorAid
-                        skillSlug={skill.slug}
-                        skillTitle={skill.title}
-                        stepNumber={currentStep.step_number}
-                        stepTitle={currentStep.title}
+                        step={currentStep}
+                        skill={skill}
                         onSpeak={speakText}
+                        onOpenVideo={(video) => setActiveVideo(video)}
                       />
 
                       <p className="mt-2 text-xs text-ink-muted">

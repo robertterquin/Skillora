@@ -9,6 +9,7 @@ export * from "./modals/VideoPlayerModal";
 
 // Simulators (Discipline-specific interactive practice tools)
 export * from "./simulators/TactileMicroSimulators";
+export * from "./simulators/StepActionBlueprint";
 
 // UI (Design system primitives, icons, navigation, and widgets)
 export * from "./ui/Badge";
