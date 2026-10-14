@@ -10,6 +10,10 @@ export type DisciplineCategory =
   | "culinary_general"
   | "puzzle"
   | "juggling"
+  | "design"
+  | "writing"
+  | "communication"
+  | "business"
   | "general";
 
 export interface CoachSuggestion {
@@ -44,24 +48,254 @@ export interface DisciplinePracticeProfile {
 }
 
 /**
+ * Generates 3 contextual, high-value coach suggestion prompts
+ * tailored to the exact course domain, skill title, and current step.
+ */
+export function generateCourseCoachSuggestions(
+  category: DisciplineCategory,
+  skill?: Skill | null,
+  step?: SkillStep | null
+): CoachSuggestion[] {
+  const stepTitle = step?.title || "this step";
+  const skillTitle = skill?.title || "this discipline";
+
+  switch (category) {
+    case "coding":
+      return [
+        {
+          label: "Syntax or logic bug?",
+          question: `My code is throwing errors or unexpected outputs during "${stepTitle}". How do I debug the root cause?`,
+        },
+        {
+          label: "Clean code pattern?",
+          question: `Can you break down a clean, idiomatic pattern and structure for "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute debugging drill",
+          question: `Give me a 3-minute hands-on debugging or edge-case testing drill for "${stepTitle}".`,
+        },
+      ];
+
+    case "language":
+      return [
+        {
+          label: "Mouth shape & phonetics?",
+          question: `How do I position my tongue, lips, and airflow to pronounce or read "${stepTitle}" accurately?`,
+        },
+        {
+          label: "Memory & visual anchor?",
+          question: `What is the most memorable mental anchor or visual mnemonic to recognize "${stepTitle}" instantly?`,
+        },
+        {
+          label: "3-minute vocal drill",
+          question: `Give me a 3-minute rapid vocalization and flashcard recall drill for "${stepTitle}".`,
+        },
+      ];
+
+    case "music":
+      return [
+        {
+          label: "String buzz or mute?",
+          question: `My notes are buzzing or accidentally muting adjacent strings during "${stepTitle}". How do I correct my hand placement?`,
+        },
+        {
+          label: "Tempo & rhythm pulse?",
+          question: `My timing is speeding up or hesitating during "${stepTitle}". How do I lock in steady metronome time?`,
+        },
+        {
+          label: "3-minute tempo drill",
+          question: `Give me a 3-minute slow-tempo loop drill to cement muscle memory for "${stepTitle}".`,
+        },
+      ];
+
+    case "culinary_knife":
+      return [
+        {
+          label: "Angle wobbling (15°)?",
+          question: `My wrist is wobbling on the stone pass. How do I lock my 15° bevel angle consistently for "${stepTitle}"?`,
+        },
+        {
+          label: "Burr apex detection?",
+          question: `How do I feel whether the micro-burr has fully apexed along the entire cutting edge in "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute stroke drill",
+          question: `Give me a 3-minute alternating stroke consistency drill on the water stone for "${stepTitle}".`,
+        },
+      ];
+
+    case "culinary_coffee":
+      return [
+        {
+          label: "Channeling or sour flow?",
+          question: `My shot is pulling unevenly or tasting sour/astringent during "${stepTitle}". What is causing the extraction issue?`,
+        },
+        {
+          label: "Grind vs dose balance?",
+          question: `Should I adjust grind size finer or tweak dose weight to balance extraction for "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute puck prep drill",
+          question: `Give me a 3-minute puck distribution and level tamp consistency drill for "${stepTitle}".`,
+        },
+      ];
+
+    case "culinary_general":
+      return [
+        {
+          label: "Dough tearing or sticky?",
+          question: `My dough is tearing and sticking to my hands during "${stepTitle}". How do I build gluten structure?`,
+        },
+        {
+          label: "Windowpane & tension test?",
+          question: `How do I test if gluten tension and fermentation are optimal for "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute folding drill",
+          question: `Give me a 3-minute technique drill to build strong surface tension for "${stepTitle}".`,
+        },
+      ];
+
+    case "puzzle":
+      return [
+        {
+          label: "Turn pauses or regrips?",
+          question: `I pause or regrip awkwardly mid-sequence during "${stepTitle}". How do I execute this fluidly?`,
+        },
+        {
+          label: "Fingertrick pad trigger?",
+          question: `Which exact finger pads should flick the layer turns for "${stepTitle}" without moving the whole hand?`,
+        },
+        {
+          label: "3-minute algorithm drill",
+          question: `Give me a 3-minute muscle memory repetition drill for "${stepTitle}".`,
+        },
+      ];
+
+    case "typing":
+      return [
+        {
+          label: "Pinky / ring hesitation?",
+          question: `My pinky and ring fingers hesitate or search for keys during "${stepTitle}". How do I train them to actuate cleanly?`,
+        },
+        {
+          label: "Home row touch bumps?",
+          question: `How do I maintain tactile orientation on the F and J bumps without looking down during "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute speed burst",
+          question: `Give me a 3-minute rhythm burst drill to lock in home-row muscle memory for "${stepTitle}".`,
+        },
+      ];
+
+    case "juggling":
+      return [
+        {
+          label: "Throws drifting forward?",
+          question: `My throws are drifting forward away from my chest during "${stepTitle}". How do I fix my release angle?`,
+        },
+        {
+          label: "Eye tracking & peak arc?",
+          question: `Should I track individual balls or focus softly on the peak arc height for "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute scoop drill",
+          question: `Give me a 3-minute scoop-and-toss timing drill to reset my cadence for "${stepTitle}".`,
+        },
+      ];
+
+    case "design":
+      return [
+        {
+          label: "Visual balance & hierarchy?",
+          question: `How do I verify the visual hierarchy and alignment for "${stepTitle}" in ${skillTitle}?`,
+        },
+        {
+          label: "Contrast & color harmony?",
+          question: `How do I check if my contrast and color relationships work effectively for "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute design critique",
+          question: `Give me a 3-minute visual critique exercise to spot flaws and polish "${stepTitle}".`,
+        },
+      ];
+
+    case "writing":
+      return [
+        {
+          label: "Opening hook & clarity?",
+          question: `How do I make the opening hook punchier and eliminate fluff in "${stepTitle}"?`,
+        },
+        {
+          label: "Narrative pacing & flow?",
+          question: `How do I maintain momentum and smooth transitions between ideas in "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute editing drill",
+          question: `Give me a 3-minute editing exercise to tighten and strengthen the writing in "${stepTitle}".`,
+        },
+      ];
+
+    case "communication":
+      return [
+        {
+          label: "Vocal delivery & fillers?",
+          question: `How do I eliminate filler words and project calm confidence during "${stepTitle}"?`,
+        },
+        {
+          label: "Body language & eye contact?",
+          question: `What should my posture, eye contact, and hand gestures be focused on during "${stepTitle}"?`,
+        },
+        {
+          label: "3-minute speaking drill",
+          question: `Give me a 3-minute timed delivery drill to practice presenting "${stepTitle}".`,
+        },
+      ];
+
+    case "business":
+      return [
+        {
+          label: "Core numbers & assumptions?",
+          question: `How do I validate the key assumptions and metrics behind "${stepTitle}" in ${skillTitle}?`,
+        },
+        {
+          label: "Common beginner pitfall?",
+          question: `What is the most expensive mistake people make when executing "${stepTitle}", and how do I prevent it?`,
+        },
+        {
+          label: "3-minute scenario test",
+          question: `Give me a 3-minute practical scenario to stress-test my understanding of "${stepTitle}".`,
+        },
+      ];
+
+    default:
+      return [
+        {
+          label: "Common mistake in step?",
+          question: `What is the most common pitfall beginners run into during "${stepTitle}" in ${skillTitle}, and how do I avoid it?`,
+        },
+        {
+          label: "Core rule of thumb?",
+          question: `What is the single most critical principle or rule of thumb to master "${stepTitle}" in ${skillTitle}?`,
+        },
+        {
+          label: "3-minute practice drill",
+          question: `Give me a focused 3-minute deliberate practice exercise to test my mastery of "${stepTitle}".`,
+        },
+      ];
+  }
+}
+
+/**
  * Intelligently analyzes any discipline, skill metadata, and current step
  * to return an accurate, contextual deliberate practice profile.
- *
- * Replaces generic "reps" with discipline-specific metrics:
- * - Coding: Code Milestones / Runs / Debug Cycles
- * - Languages: Flashcard Recall / Glyph Pronunciations
- * - Espresso: Shots Pulled & Weighed
- * - Knife Sharpening: 15° Water Stone Stroke Sets
- * - Touch Typing: Keystroke Speed Bursts
- * - Guitar / Music: Rhythmic Pattern Loops
- * - Rubik's Cube: Algorithm Triggers & Solves
  */
 export function getDisciplinePracticeProfile(
   skill?: Skill | null,
   step?: SkillStep | null
 ): DisciplinePracticeProfile {
   if (!skill) {
-    return getDefaultProfile();
+    return getDefaultProfile(null, step);
   }
 
   const textToScan = [
@@ -79,7 +313,7 @@ export function getDisciplinePracticeProfile(
   const isCoding =
     skill.category_id === "44444444-4444-4444-4444-444444444444" ||
     skill.category_id === "cat-tech" ||
-    /\b(code|coding|software|developer|programming|python|javascript|typescript|react|html|css|frontend|backend|web|git|terminal|api|sql|database|functions?|debug|component|calculator|app|scripting)\b/.test(
+    /\b(code|coding|software|developer|programming|python|javascript|typescript|react|html|css|frontend|backend|web|git|terminal|api|sql|database|functions?|debug|component|calculator|app|scripting|algorithm|data structure|devops|cloud)\b/.test(
       textToScan
     );
 
@@ -109,24 +343,11 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Code Coach",
-      coachTitle: "Technique Coach — Syntax & Logic Architecture",
+      coachTitle: `Code Coach — ${skill.title ? skill.title.slice(0, 24) : "Logic"} Diagnostic`,
       coachInputPlaceholder: "Ask about syntax errors, logic patterns, edge cases, or debugging...",
       coachDiagnosingLabel: "Analyzing code architecture & logic patterns...",
       coachSecondCardLabel: "Core Mental Model & Pattern:",
-      coachSuggestions: [
-        {
-          label: "Syntax or Logic bug?",
-          question: "My code is throwing errors or unexpected outputs. How do I debug the root cause?",
-        },
-        {
-          label: "Step-by-step code pattern?",
-          question: "Can you break down a clean, idiomatic code pattern for this step?",
-        },
-        {
-          label: "3-minute debugging drill",
-          question: "Give me a 3-minute hands-on debugging or edge-case testing drill for this step.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("coding", skill, step),
       mnemonicAnchorLabel: "Mental Model / Syntax Rule:",
     };
   }
@@ -169,20 +390,7 @@ export function getDisciplinePracticeProfile(
       coachInputPlaceholder: "Ask about home row bumps, ring/pinky reach, or typing rhythm...",
       coachDiagnosingLabel: "Analyzing keystroke mechanics & cadence...",
       coachSecondCardLabel: "Home Row Tactile Anchor:",
-      coachSuggestions: [
-        {
-          label: "Pinky / Ring hesitation?",
-          question: "My pinky and ring fingers hesitate or search for keys. How do I train them to actuate cleanly?",
-        },
-        {
-          label: "Touch typing without looking?",
-          question: "How do I maintain tactile touch on the F and J bumps without looking down?",
-        },
-        {
-          label: "3-minute speed burst drill",
-          question: "Give me a 3-minute metronome burst drill to lock in home-row muscle memory.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("typing", skill, step),
       mnemonicAnchorLabel: "Tactile Key Anchor:",
     };
   }
@@ -191,7 +399,7 @@ export function getDisciplinePracticeProfile(
   const isLanguage =
     skill.category_id === "22222222-2222-2222-2222-222222222222" ||
     skill.category_id === "cat-language" ||
-    /\b(cyrillic|language|alphabet|script|russian|japanese|spanish|french|german|chinese|mandarin|hangul|korean|arabic|kana|vocab|grammar|phonetic|pronunciation|glyph)\b/.test(
+    /\b(cyrillic|language|alphabet|script|russian|japanese|spanish|french|german|chinese|mandarin|hangul|korean|arabic|kana|vocab|grammar|phonetic|pronunciation|glyph|linguistics|fluency)\b/.test(
       textToScan
     );
 
@@ -221,30 +429,17 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Linguistics Coach",
-      coachTitle: "Technique Coach — Phonetic & Script Diagnostic",
+      coachTitle: `Linguistics Coach — ${skill.title ? skill.title.slice(0, 24) : "Phonetic"} Diagnostic`,
       coachInputPlaceholder: "Ask about pronunciation, phonetic mouth shapes, or alphabet rules...",
       coachDiagnosingLabel: "Diagnosing phonetics & articulation...",
       coachSecondCardLabel: "Phonetic / Tongue Anchor:",
-      coachSuggestions: [
-        {
-          label: "Mouth & Tongue position?",
-          question: "How do I position my tongue, teeth, and lips to articulate this sound correctly?",
-        },
-        {
-          label: "Confusing false friends?",
-          question: "Why am I confusing these glyphs or words, and how do I distinguish them instantly?",
-        },
-        {
-          label: "3-minute phonetic drill",
-          question: "Give me a 3-minute rapid phonetic vocalization drill for this step.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("language", skill, step),
       mnemonicAnchorLabel: "Phonetic / Visual Anchor:",
     };
   }
 
   // 4. Espresso & Coffee
-  const isCoffee = /\b(espresso|coffee|dialing|extraction|barista|latte|pour-over|grinder)\b/.test(
+  const isCoffee = /\b(espresso|coffee|dialing|extraction|barista|latte|pour-over|grinder|crema)\b/.test(
     textToScan
   );
 
@@ -274,30 +469,17 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Barista Coach",
-      coachTitle: "Technique Coach — Extraction & Dial Diagnostic",
+      coachTitle: "Barista Coach — Extraction & Dial Diagnostic",
       coachInputPlaceholder: "Ask about puck prep, grind distribution, flow rate, or extraction...",
       coachDiagnosingLabel: "Analyzing extraction parameters...",
       coachSecondCardLabel: "Sensory & Tactile Cue:",
-      coachSuggestions: [
-        {
-          label: "Channeling / Sour flow?",
-          question: "My shot is pulling unevenly, spraying, or tasting sour. What is causing the channeling?",
-        },
-        {
-          label: "Grind vs Dose balance?",
-          question: "Should I adjust grind size finer or tweak the dose weight to balance this extraction?",
-        },
-        {
-          label: "3-minute puck prep drill",
-          question: "Give me a 3-minute puck distribution and level tamp consistency drill.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("culinary_coffee", skill, step),
       mnemonicAnchorLabel: "Tactile Sensory Anchor:",
     };
   }
 
   // 5. Knife Sharpening
-  const isKnife = /\b(knife|sharpen|whetstone|blade|burr|apex|grit|water stone)\b/.test(
+  const isKnife = /\b(knife|sharpen|whetstone|blade|burr|apex|grit|water stone|bevel)\b/.test(
     textToScan
   );
 
@@ -327,37 +509,24 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Bladesmith Coach",
-      coachTitle: "Technique Coach — Blade Geometry & Angle Diagnostic",
+      coachTitle: "Bladesmith Coach — Blade Geometry & Angle Diagnostic",
       coachInputPlaceholder: "Ask about 15° water stone strokes, burr detection, or whetstone technique...",
       coachDiagnosingLabel: "Diagnosing edge angle & burr geometry...",
       coachSecondCardLabel: "Blade Angle & Apex Anchor:",
-      coachSuggestions: [
-        {
-          label: "Angle wobbling?",
-          question: "My wrist is wobbling on the pass. How do I lock my bevel angle at consistent 15 degrees?",
-        },
-        {
-          label: "Burr apex detection?",
-          question: "How do I feel whether the micro-burr has fully apexed along the entire blade edge?",
-        },
-        {
-          label: "3-minute stroke drill",
-          question: "Give me a 3-minute alternating stroke consistency drill on the water stone.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("culinary_knife", skill, step),
       mnemonicAnchorLabel: "Tactile Burr Anchor:",
     };
   }
 
-  // 6. Sourdough & Baking
-  const isBaking = /\b(sourdough|bread|ferment|dough|baking|proofing|starter)\b/.test(
+  // 6. Sourdough & Baking / Culinary
+  const isBaking = /\b(sourdough|bread|ferment|dough|baking|proofing|starter|cooking|culinary|chef|recipe|roasting|pan-sear)\b/.test(
     textToScan
   );
 
   if (isBaking) {
     return {
       disciplineCategory: "culinary_general",
-      tagLabel: "CULINARY CRAFT // FERMENTATION LOOPS",
+      tagLabel: "CULINARY CRAFT // FERMENTATION & TECHNIQUE",
       isRhythmCadenceSupported: false,
       metricHeading: "FOLD CYCLES & SHAPES",
       metricUnitNoun: "technique cycles completed",
@@ -379,31 +548,18 @@ export function getDisciplinePracticeProfile(
           desc: "Subconscious feel for hydration and fermentation timing. Cemented.",
         },
       },
-      coachButtonLabel: "Ask Artisan Baker Coach",
-      coachTitle: "Technique Coach — Fermentation & Dough Diagnostic",
+      coachButtonLabel: "Ask Culinary Coach",
+      coachTitle: `Culinary Coach — ${skill.title ? skill.title.slice(0, 24) : "Kitchen"} Diagnostic`,
       coachInputPlaceholder: "Ask about fermentation timing, gluten windowpane, or dough hydration...",
-      coachDiagnosingLabel: "Analyzing gluten elasticity & fermentation...",
+      coachDiagnosingLabel: "Analyzing gluten elasticity & culinary technique...",
       coachSecondCardLabel: "Dough Feel & Surface Tension:",
-      coachSuggestions: [
-        {
-          label: "Dough tearing / sticky?",
-          question: "My dough is tearing and sticking to my hands. How do I build gluten structure?",
-        },
-        {
-          label: "Windowpane tension test?",
-          question: "How do I perform the windowpane test to know the dough is ready for proofing?",
-        },
-        {
-          label: "3-minute folding drill",
-          question: "Give me a 3-minute stretch-and-fold technique drill to build strong surface tension.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("culinary_general", skill, step),
       mnemonicAnchorLabel: "Texture & Tension Anchor:",
     };
   }
 
   // 7. Rubik's Cube & Spatial Puzzles
-  const isPuzzle = /\b(rubik|cube|puzzle|cfop|f2l|oll|pll|fingertrick)\b/.test(
+  const isPuzzle = /\b(rubik|cube|puzzle|cfop|f2l|oll|pll|fingertrick|chess|sudoku)\b/.test(
     textToScan
   );
 
@@ -433,24 +589,11 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Speedcube Coach",
-      coachTitle: "Technique Coach — Fingertrick & Algorithm Diagnostic",
+      coachTitle: "Speedcube Coach — Fingertrick & Algorithm Diagnostic",
       coachInputPlaceholder: "Ask about fingertrick execution, algorithm notation, or cube regrips...",
       coachDiagnosingLabel: "Analyzing fingertrick ergonomics...",
       coachSecondCardLabel: "Fingertrick Trigger Anchor:",
-      coachSuggestions: [
-        {
-          label: "Turn pauses / Regrips?",
-          question: "I pause or regrip awkwardly mid-algorithm. How do I execute this sequence in one fluid motion?",
-        },
-        {
-          label: "Index vs Ring triggers?",
-          question: "Which exact finger pads should flick U, U', and F moves without moving the whole hand?",
-        },
-        {
-          label: "3-minute algorithm drill",
-          question: "Give me a 3-minute muscle memory repetition drill for this algorithm sequence.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("puzzle", skill, step),
       mnemonicAnchorLabel: "Spatial Fingertrick Anchor:",
     };
   }
@@ -459,7 +602,7 @@ export function getDisciplinePracticeProfile(
   const isMusic =
     skill.category_id === "11111111-1111-1111-1111-111111111111" ||
     skill.category_id === "cat-music" ||
-    /\b(guitar|fingerstyle|acoustic|piano|chords|music|travis|arpeggio|strum|violin|drums|plucking)\b/.test(
+    /\b(guitar|fingerstyle|acoustic|piano|chords|music|travis|arpeggio|strum|violin|drums|plucking|tempo|rhythm|vocal|singing|bass|ukulele)\b/.test(
       textToScan
     );
 
@@ -491,24 +634,11 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Musician Coach",
-      coachTitle: "Technique Coach — Fingerstyle & Rhythm Diagnostic",
+      coachTitle: `Musician Coach — ${skill.title ? skill.title.slice(0, 24) : "Acoustic"} Diagnostic`,
       coachInputPlaceholder: "Ask about chord transitions, picking angle, rhythm pulse, or fretting...",
       coachDiagnosingLabel: "Analyzing finger independence & tempo...",
       coachSecondCardLabel: "Soundboard & Hand Posture Anchor:",
-      coachSuggestions: [
-        {
-          label: "Thumb rushing the beat?",
-          question: "My alternating bass thumb is speeding up and breaking time with the melody. How do I steady it?",
-        },
-        {
-          label: "Fret buzz / Finger mute?",
-          question: "My chords are buzzing or muting neighboring strings. What is the exact fretting fingertip angle?",
-        },
-        {
-          label: "3-minute tempo loop drill",
-          question: "Give me a 3-minute slow-tempo metronome loop drill to lock in this pattern.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("music", skill, step),
       mnemonicAnchorLabel: "Rhythmic / Posture Anchor:",
     };
   }
@@ -546,32 +676,187 @@ export function getDisciplinePracticeProfile(
         },
       },
       coachButtonLabel: "Ask Juggling Coach",
-      coachTitle: "Technique Coach — Throw Cadence & Arc Diagnostic",
+      coachTitle: "Juggling Coach — Throw Cadence & Arc Diagnostic",
       coachInputPlaceholder: "Ask about cascade arc, throw timing, hand scoops, or eye tracking...",
       coachDiagnosingLabel: "Analyzing throw geometry & cadence...",
       coachSecondCardLabel: "Throw Arc & Release Anchor:",
-      coachSuggestions: [
-        {
-          label: "Throws drifting forward?",
-          question: "My throws are drifting forward away from my chest and making me run forward. How do I fix my release?",
-        },
-        {
-          label: "Eye tracking & Vision?",
-          question: "Should I look at the balls or look at the top peak of the arc?",
-        },
-        {
-          label: "3-minute scoop drill",
-          question: "Give me a 3-minute 2-ball scoop-and-toss timing drill to reset my cadence.",
-        },
-      ],
+      coachSuggestions: generateCourseCoachSuggestions("juggling", skill, step),
       mnemonicAnchorLabel: "Visual Arc Anchor:",
     };
   }
 
-  return getDefaultProfile();
+  // 10. Design, UI/UX, & Photography
+  const isDesign = /\b(design|ui|ux|figma|graphic|visual|layout|typography|photo|photography|camera|lens|lighting|sketch|drawing|illustration|render|color theory)\b/.test(
+    textToScan
+  );
+
+  if (isDesign) {
+    return {
+      disciplineCategory: "design",
+      tagLabel: "VISUAL CRAFT // COMPOSITION & HIERARCHY",
+      isRhythmCadenceSupported: false,
+      metricHeading: "DESIGN ITERATIONS & CRITIQUES",
+      metricUnitNoun: "design iterations",
+      actionButtonLabel: "Log Design Iteration (+1)",
+      guidanceTip:
+        "Log each layout pass, color balance adjustment, or visual critique milestone completed.",
+      suggestedSprintMinutes: 20,
+      recallPrompts: {
+        hard: {
+          title: "[ 1 ] Cluttered / Unbalanced",
+          desc: "Visual hierarchy felt muddy or focal point was unclear. Review contrast tomorrow.",
+        },
+        solid: {
+          title: "[ 2 ] Clean Composition",
+          desc: "Harmonious spacing, crisp hierarchy, and deliberate optical alignment. Review in 3-4 days.",
+        },
+        effortless: {
+          title: "[ 3 ] Designer's Eye",
+          desc: "Subconscious instinct for proportion, white space, and visual rhythm. Cemented.",
+        },
+      },
+      coachButtonLabel: "Ask Design Coach",
+      coachTitle: `Design Coach — ${skill.title ? skill.title.slice(0, 24) : "Visual"} Diagnostic`,
+      coachInputPlaceholder: "Ask about layout hierarchy, spacing, color contrast, or visual balance...",
+      coachDiagnosingLabel: "Analyzing visual composition & design hierarchy...",
+      coachSecondCardLabel: "Visual Hierarchy & Alignment Anchor:",
+      coachSuggestions: generateCourseCoachSuggestions("design", skill, step),
+      mnemonicAnchorLabel: "Visual Composition Rule:",
+    };
+  }
+
+  // 11. Writing, Copywriting, & Storytelling
+  const isWriting = /\b(writing|writer|copywriting|story|storytelling|author|novel|blog|screenplay|essay|prose|editing|content creation|scriptwriting)\b/.test(
+    textToScan
+  );
+
+  if (isWriting) {
+    return {
+      disciplineCategory: "writing",
+      tagLabel: "NARRATIVE CRAFT // RHETORIC & PACING",
+      isRhythmCadenceSupported: false,
+      metricHeading: "WRITING SPRINTS & REVISIONS",
+      metricUnitNoun: "writing sprints / drafts",
+      actionButtonLabel: "Log Writing Sprint (+1)",
+      guidanceTip:
+        "Log each 15-minute focused writing sprint, hook revision, or editing pass.",
+      suggestedSprintMinutes: 20,
+      recallPrompts: {
+        hard: {
+          title: "[ 1 ] Fluff / Hesitant Hook",
+          desc: "Pacing lagged or opening lacked tension. Trim filler words tomorrow.",
+        },
+        solid: {
+          title: "[ 2 ] Compelling Narrative",
+          desc: "Clear voice, sharp rhythm, and punchy transitions. Review in 3-4 days.",
+        },
+        effortless: {
+          title: "[ 3 ] Seamless Voice",
+          desc: "Ideas translated into crisp, persuasive prose with effortless cadence. Cemented.",
+        },
+      },
+      coachButtonLabel: "Ask Writing Coach",
+      coachTitle: `Writing Coach — ${skill.title ? skill.title.slice(0, 24) : "Narrative"} Diagnostic`,
+      coachInputPlaceholder: "Ask about opening hooks, narrative arc, cutting fluff, or cadence...",
+      coachDiagnosingLabel: "Analyzing narrative pacing & prose structure...",
+      coachSecondCardLabel: "Storytelling Anchor & Theme:",
+      coachSuggestions: generateCourseCoachSuggestions("writing", skill, step),
+      mnemonicAnchorLabel: "Narrative Arc Rule:",
+    };
+  }
+
+  // 12. Public Speaking, Speech & Communication
+  const isCommunication = /\b(speaking|speech|presentation|pitch|debate|public speaking|communication|negotiation|interview|conversation|charisma)\b/.test(
+    textToScan
+  );
+
+  if (isCommunication) {
+    return {
+      disciplineCategory: "communication",
+      tagLabel: "RHETORIC & DELIVERY // VOCAL CADENCE",
+      isRhythmCadenceSupported: true,
+      cadenceLabel: "Speaking Cadence",
+      defaultBpm: 60,
+      metricHeading: "SPEECH RUNS & REHEARSALS",
+      metricUnitNoun: "rehearsal runs completed",
+      actionButtonLabel: "Log Rehearsal Run (+1)",
+      guidanceTip:
+        "Log each timed speech pass, opening hook drill, or vocal projection rehearsal.",
+      suggestedSprintMinutes: 15,
+      recallPrompts: {
+        hard: {
+          title: "[ 1 ] Rushed / Filler Words",
+          desc: "Relied on verbal crutches or sped through key pauses. Review tomorrow.",
+        },
+        solid: {
+          title: "[ 2 ] Poised Delivery",
+          desc: "Deliberate pauses, grounded posture, and natural eye contact. Review in 3-4 days.",
+        },
+        effortless: {
+          title: "[ 3 ] Magnetic Presence",
+          desc: "Commands the room with authentic conviction and effortless poise. Cemented.",
+        },
+      },
+      coachButtonLabel: "Ask Speaking Coach",
+      coachTitle: `Speech Coach — ${skill.title ? skill.title.slice(0, 24) : "Delivery"} Diagnostic`,
+      coachInputPlaceholder: "Ask about vocal delivery, eliminating filler words, pacing, or body language...",
+      coachDiagnosingLabel: "Diagnosing vocal projection & delivery mechanics...",
+      coachSecondCardLabel: "Stage Presence & Vocal Anchor:",
+      coachSuggestions: generateCourseCoachSuggestions("communication", skill, step),
+      mnemonicAnchorLabel: "Rhetorical Delivery Rule:",
+    };
+  }
+
+  // 13. Business, Finance & Strategy
+  const isBusiness = /\b(finance|investing|stocks|accounting|budget|business|product|marketing|seo|sales|startup|management|strategy|economics)\b/.test(
+    textToScan
+  );
+
+  if (isBusiness) {
+    return {
+      disciplineCategory: "business",
+      tagLabel: "DECISION ARCHITECTURE // STRATEGY & METRICS",
+      isRhythmCadenceSupported: false,
+      metricHeading: "CASE ANALYSES & SCENARIOS",
+      metricUnitNoun: "model scenarios completed",
+      actionButtonLabel: "Log Analysis Pass (+1)",
+      guidanceTip:
+        "Log each financial model run, hypothesis test, or strategic scenario analyzed.",
+      suggestedSprintMinutes: 20,
+      recallPrompts: {
+        hard: {
+          title: "[ 1 ] Faulty Assumptions",
+          desc: "Overlooked key risk variables or miscalculated baseline metrics. Review tomorrow.",
+        },
+        solid: {
+          title: "[ 2 ] Grounded Logic",
+          desc: "Sound financial assumptions with clear downside protection. Review in 3-4 days.",
+        },
+        effortless: {
+          title: "[ 3 ] Strategic Intuition",
+          desc: "Instant clarity on leverage points, unit economics, and risk asymmetry. Cemented.",
+        },
+      },
+      coachButtonLabel: "Ask Strategy Coach",
+      coachTitle: `Strategy Coach — ${skill.title ? skill.title.slice(0, 24) : "Business"} Diagnostic`,
+      coachInputPlaceholder: "Ask about unit economics, risk hedging, strategy frameworks, or metrics...",
+      coachDiagnosingLabel: "Analyzing business model & strategic logic...",
+      coachSecondCardLabel: "Core Financial / Strategic Model:",
+      coachSuggestions: generateCourseCoachSuggestions("business", skill, step),
+      mnemonicAnchorLabel: "Strategic Rule of Thumb:",
+    };
+  }
+
+  return getDefaultProfile(skill, step);
 }
 
-function getDefaultProfile(): DisciplinePracticeProfile {
+function getDefaultProfile(
+  skill?: Skill | null,
+  step?: SkillStep | null
+): DisciplinePracticeProfile {
+  const shortTitle = skill?.title ? skill.title.split(" ").slice(0, 3).join(" ") : "Technique";
+  const stepName = step?.title || "this step";
+
   return {
     disciplineCategory: "general",
     tagLabel: "DELIBERATE PRACTICE // FOCUS SPRINT",
@@ -584,37 +869,24 @@ function getDefaultProfile(): DisciplinePracticeProfile {
     suggestedSprintMinutes: 15,
     recallPrompts: {
       hard: {
-        title: "[ 1 ] Stiff / Unsure",
-        desc: "Felt rusty or required active cerebral effort. Review tomorrow.",
+        title: "[ 1 ] Hesitant / Review Needed",
+        desc: "Encountered friction or required active reference checking. Review tomorrow.",
       },
       solid: {
-        title: "[ 2 ] Fluid Execution",
-        desc: "Good accuracy and steady motor rhythm. Review in 3-4 days.",
+        title: "[ 2 ] Confident Execution",
+        desc: "Good accuracy and steady deliberate control. Review in 3-4 days.",
       },
       effortless: {
         title: "[ 3 ] Second Nature",
-        desc: "Automatic subconscious execution. Cemented in memory.",
+        desc: "Automatic subconscious execution with zero hesitation. Cemented in memory.",
       },
     },
-    coachButtonLabel: "Ask Technique Coach",
-    coachTitle: "Technique Coach — Deliberate Practice Diagnostic",
-    coachInputPlaceholder: "Ask anything about this step's technique or practice drill...",
-    coachDiagnosingLabel: "Diagnosing technique & mechanics...",
-    coachSecondCardLabel: "Muscle Memory Anchor:",
-    coachSuggestions: [
-      {
-        label: "Why does it feel stiff?",
-        question: "My movement feels stiff or forced. How do I execute this smoothly?",
-      },
-      {
-        label: "Core technique anchor?",
-        question: "What is the single most critical physical or mental anchor for this step?",
-      },
-      {
-        label: "3-minute corrective drill",
-        question: "Give me a 3-minute deliberate practice corrective drill to lock in this step.",
-      },
-    ],
-    mnemonicAnchorLabel: "Physical / Mental Anchor:",
+    coachButtonLabel: `Ask ${shortTitle} Coach`,
+    coachTitle: `${shortTitle} Coach — Technique Diagnostic`,
+    coachInputPlaceholder: `Ask about common mistakes, mental models, or drills for ${stepName}...`,
+    coachDiagnosingLabel: `Analyzing technique & practice mechanics for ${shortTitle}...`,
+    coachSecondCardLabel: "Core Principle & Practice Anchor:",
+    coachSuggestions: generateCourseCoachSuggestions("general", skill, step),
+    mnemonicAnchorLabel: "Core Rule of Thumb:",
   };
 }
