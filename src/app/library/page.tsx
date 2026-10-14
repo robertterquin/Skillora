@@ -41,17 +41,6 @@ export default function SkillLibraryPage() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Keyboard shortcut (⌘B or Ctrl+B) to toggle sidebar
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
-        e.preventDefault();
-        setIsSidebarOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   // Check existing enrollments and plan
   useEffect(() => {
@@ -216,6 +205,21 @@ export default function SkillLibraryPage() {
     },
   });
 
+  // Keyboard shortcuts (⌘B to toggle sidebar, ⌘N to start new consultation)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        startNewConsultation();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [startNewConsultation]);
+
   // Scroll to newest message
   useEffect(() => {
     if (messages.length > 1 || isThinking) {
@@ -272,33 +276,19 @@ export default function SkillLibraryPage() {
           {/* Top Bar: Always Pinned at Top of Workspace */}
           <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/80 backdrop-blur-sm z-20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              {/* Primary Sidebar Collapse/Expand Toggle */}
+              {/* Minimalist Icon-Only Sidebar Toggle (Claude / Linear style) */}
               <button
                 type="button"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="px-2.5 py-1.5 rounded-xl border border-surface-border bg-white hover:bg-surface-subtle text-ink transition shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0"
-                aria-label={isSidebarOpen ? "Collapse sidebar" : "Open consultation history"}
-                title="Toggle sidebar (⌘B)"
+                className="w-8 h-8 rounded-lg border border-surface-border bg-white hover:bg-surface-subtle text-ink-secondary hover:text-ink transition shadow-2xs cursor-pointer flex items-center justify-center shrink-0"
+                aria-label={isSidebarOpen ? "Collapse sidebar (⌘B)" : "Open past inquiries (⌘B)"}
+                title={isSidebarOpen ? "Collapse sidebar (⌘B)" : "Past Inquiries (⌘B)"}
               >
-                <SolarIcon name="sidebar-minimalistic-linear" className="w-4 h-4 text-ink-secondary" />
-                <span className="text-2xs font-mono font-medium">
-                  {isSidebarOpen ? "Collapse" : "Past Inquiries"}
-                </span>
-              </button>
-
-              {/* Quick + New Consultation Button */}
-              <button
-                type="button"
-                onClick={handleNewSession}
-                className="p-1.5 px-2.5 rounded-xl border border-surface-border bg-white hover:bg-surface-subtle text-ink-secondary hover:text-ink transition shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
-                title="Start a new consultation"
-              >
-                <SolarIcon name="pen-new-square-linear" className="w-3.5 h-3.5" />
-                <span className="text-2xs font-mono font-medium hidden sm:inline">New</span>
+                <SolarIcon name="sidebar-minimalistic-linear" className="w-4 h-4" />
               </button>
 
               {/* Active Thread Title Pill */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-2xs text-ink-secondary truncate max-w-[140px] sm:max-w-xs">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-2xs text-ink-secondary truncate max-w-[160px] sm:max-w-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald shrink-0" />
                 <span className="truncate font-mono font-medium">
                   {currentConsultation?.title || "New Inquiry"}

@@ -34,23 +34,23 @@ function getOutcomeLabel(outcome: ConsultationOutcome): { label: string; style: 
     case "curriculum":
       return {
         label: "Curriculum",
-        style: "bg-brand-50 text-brand-700 border-brand-200/60",
+        style: "bg-brand-50 text-brand-700 border-brand-200/50",
       };
     case "suggestions":
       return {
         label: "Pathways",
-        style: "bg-surface-muted text-ink-secondary border-surface-border",
+        style: "bg-surface-muted text-ink-secondary border-surface-border/60",
       };
     case "enrolled":
       return {
         label: "In Studio",
-        style: "bg-emerald-50 text-accent-emerald border-emerald-200/60",
+        style: "bg-emerald-50 text-accent-emerald border-emerald-200/50",
       };
     case "inquiry":
     default:
       return {
         label: "Inquiry",
-        style: "bg-surface-muted/60 text-ink-muted border-surface-border/50",
+        style: "bg-surface-muted/60 text-ink-muted border-surface-border/40",
       };
   }
 }
@@ -64,7 +64,7 @@ export function ConsultationSidebar({
   onNew,
   onDelete,
 }: ConsultationSidebarProps) {
-  // Chronological grouping
+  // Chronological grouping (Claude / Linear ledger style)
   const groups: GroupedConsultations[] = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -122,13 +122,13 @@ export function ConsultationSidebar({
         `}
         aria-label="Consultation History"
       >
-        {/* Fixed Width Inner Container to prevent text reflow during collapse animation */}
+        {/* Fixed Width Inner Container (Linear style) */}
         <div className="w-72 md:w-64 h-full flex flex-col shrink-0">
-          {/* Top Header & Collapse Button */}
-          <div className="p-3.5 border-b border-surface-border flex items-center justify-between gap-2 shrink-0">
+          {/* Header & Close Icon */}
+          <div className="h-12 px-3.5 border-b border-surface-border flex items-center justify-between gap-2 shrink-0 bg-surface-subtle">
             <div className="flex items-center gap-2 min-w-0">
-              <SolarIcon name="history-linear" className="w-4 h-4 text-ink-muted shrink-0" />
-              <span className="text-2xs font-mono font-semibold uppercase tracking-wider text-ink-muted truncate">
+              <SolarIcon name="history-linear" className="w-3.5 h-3.5 text-ink-muted shrink-0" />
+              <span className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted truncate">
                 Past Inquiries
               </span>
             </div>
@@ -136,28 +136,36 @@ export function ConsultationSidebar({
             <button
               type="button"
               onClick={onToggle}
-              className="p-1 rounded-lg hover:bg-surface-border text-ink-muted hover:text-ink transition cursor-pointer shrink-0"
-              aria-label="Collapse sidebar"
-              title="Collapse sidebar"
+              className="w-7 h-7 rounded-lg hover:bg-surface-border/70 text-ink-muted hover:text-ink transition cursor-pointer shrink-0 flex items-center justify-center"
+              aria-label="Collapse sidebar (⌘B)"
+              title="Collapse sidebar (⌘B)"
             >
-              <SolarIcon name="sidebar-minimalistic-linear" className="w-4 h-4" />
+              <SolarIcon name="sidebar-minimalistic-linear" className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* New Consultation Action */}
+          {/* New Consultation Action (Linear styled card with ⌘N badge) */}
           <div className="p-3 shrink-0">
             <button
               type="button"
               onClick={onNew}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-ink text-white hover:bg-accent-vermilion text-xs font-medium shadow-2xs transition-all cursor-pointer"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white hover:bg-surface-elevated border border-surface-border hover:border-ink/20 text-xs font-medium text-ink shadow-2xs transition-all cursor-pointer group"
             >
-              <SolarIcon name="pen-new-square-linear" className="w-4 h-4" />
-              <span>New Consultation</span>
+              <div className="flex items-center gap-2">
+                <SolarIcon
+                  name="pen-new-square-linear"
+                  className="w-3.5 h-3.5 text-ink-muted group-hover:text-ink transition"
+                />
+                <span>New Consultation</span>
+              </div>
+              <kbd className="text-3xs font-mono px-1.5 py-0.5 rounded bg-surface-subtle border border-surface-border text-ink-muted">
+                ⌘N
+              </kbd>
             </button>
           </div>
 
-          {/* Chronological Consultation List */}
-          <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4 no-scrollbar">
+          {/* Chronological List */}
+          <div className="flex-1 overflow-y-auto px-3 py-1 space-y-4 no-scrollbar">
             {groups.length === 0 ? (
               <div className="text-center py-8 text-xs text-ink-muted font-serif italic">
                 No previous consultations yet.
@@ -165,7 +173,7 @@ export function ConsultationSidebar({
             ) : (
               groups.map((group) => (
                 <div key={group.label} className="space-y-1">
-                  <div className="px-2 text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted mb-1">
+                  <div className="px-2 text-3xs font-mono font-semibold uppercase tracking-widest text-ink-muted/80 mb-1">
                     {group.label}
                   </div>
 
@@ -187,8 +195,8 @@ export function ConsultationSidebar({
                           }}
                           className={`group relative flex flex-col p-2.5 rounded-xl text-left transition-all cursor-pointer border ${
                             isActive
-                              ? "bg-white border-surface-border shadow-xs"
-                              : "border-transparent hover:bg-white/70 hover:border-surface-border/50 text-ink-secondary"
+                              ? "bg-white border-surface-border shadow-xs text-ink"
+                              : "border-transparent hover:bg-white/80 hover:border-surface-border/60 text-ink-secondary hover:text-ink"
                           }`}
                         >
                           {/* Title & Delete Action */}
@@ -207,8 +215,9 @@ export function ConsultationSidebar({
                                 e.stopPropagation();
                                 onDelete(c.id);
                               }}
-                              className="opacity-0 group-hover:opacity-100 hover:text-accent-vermilion p-0.5 rounded text-ink-muted transition cursor-pointer"
+                              className="opacity-0 group-hover:opacity-100 hover:text-accent-vermilion p-0.5 rounded text-ink-muted hover:bg-surface-muted transition cursor-pointer shrink-0"
                               aria-label={`Delete consultation "${c.title}"`}
+                              title="Delete consultation"
                             >
                               <SolarIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
                             </button>
@@ -217,7 +226,7 @@ export function ConsultationSidebar({
                           {/* Meta row: Outcome pill & Timestamp */}
                           <div className="flex items-center justify-between gap-1 mt-1.5">
                             <span
-                              className={`text-3xs font-mono font-medium px-1.5 py-0.5 rounded-full border ${outcome.style}`}
+                              className={`text-3xs font-mono font-medium px-1.5 py-0.5 rounded-md border ${outcome.style}`}
                             >
                               {outcome.label}
                             </span>
@@ -235,11 +244,9 @@ export function ConsultationSidebar({
           </div>
 
           {/* Sidebar Footer */}
-          <div className="p-3 border-t border-surface-border bg-surface-subtle shrink-0">
-            <div className="flex items-center justify-between text-3xs font-mono text-ink-muted px-1">
-              <span>Archimedes Atelier</span>
-              <span>Local-first · Offline</span>
-            </div>
+          <div className="h-10 px-3.5 border-t border-surface-border bg-surface-subtle shrink-0 flex items-center justify-between text-3xs font-mono text-ink-muted">
+            <span className="truncate">Archimedes Atelier</span>
+            <span className="text-ink-muted/70">Local-first</span>
           </div>
         </div>
       </aside>
