@@ -1,3 +1,4 @@
 {
-  "git.path": "/Library/Developer/CommandLineTools/usr/bin/git"
+  "git.path": "/Library/Developer/CommandLineTools/usr/bin/git",
+  "deno.enablePaths": ["supabase/functions"]
 }
