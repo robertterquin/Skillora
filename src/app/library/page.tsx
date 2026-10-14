@@ -205,8 +205,8 @@ export default function SkillLibraryPage() {
   }, [messages, isThinking]);
 
   const samplePrompts = [
-    { label: "✨ Help me find a skill", prompt: "Help me find a skill that fits me" },
-    { label: "🔥 In-demand skills right now", prompt: "Suggest in-demand skills to learn right now" },
+    { label: "Help me find a skill", prompt: "Help me find a skill that fits me" },
+    { label: "In-demand skills right now", prompt: "Suggest in-demand skills to learn right now" },
     { label: "Fingerstyle Acoustic Guitar Basics", prompt: "Fingerstyle Acoustic Guitar Basics" },
     { label: "Read Cyrillic Script in One Afternoon", prompt: "Read Cyrillic Script in One Afternoon" },
     { label: "15° Whetstone Knife Sharpening", prompt: "15° Whetstone Knife Sharpening" },

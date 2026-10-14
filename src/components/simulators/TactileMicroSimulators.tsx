@@ -224,7 +224,7 @@ export function KnifeAngleGauge() {
           <span>MICRO-SIMULATOR // 15° APEX CALIPER</span>
         </span>
         <span className={isOptimal ? "text-accent-emerald font-bold" : "text-amber-600 font-bold"}>
-          {isOptimal ? "★ OPTIMAL 15° BEVEL" : "ADJUST SPINE"}
+          {isOptimal ? "OPTIMAL 15° BEVEL" : "ADJUST SPINE"}
         </span>
       </div>
 
@@ -353,10 +353,10 @@ export function KnifeAngleGauge() {
         {/* Verdict Explainer */}
         <p className="text-2xs text-ink-muted leading-tight pt-1">
           {angle < 13
-            ? "⚠️ Too flat: The blade face scratches against the stone without creating a sharp cutting bevel."
+            ? "Too flat: The blade face scratches against the stone without creating a sharp cutting bevel."
             : angle > 17
-            ? "⚠️ Too steep: Creates a thick, blunt wedge that splits vegetables rather than slicing smoothly."
-            : "✅ Optimal 15°: Two quarters stacked under the spine creates the exact Japanese razor edge."}
+            ? "Too steep: Creates a thick, blunt wedge that splits vegetables rather than slicing smoothly."
+            : "Optimal 15°: Two quarters stacked under the spine creates the exact Japanese razor edge."}
         </p>
       </div>
     </div>
@@ -461,7 +461,7 @@ export function EspressoExtractionSimulator() {
               : seconds <= 25
               ? "Golden Crema flow"
               : seconds <= 30
-              ? "★ SWEET SPOT CUTOFF"
+              ? "SWEET SPOT CUTOFF"
               : "Over-extracted / Bitter"}
           </span>
         </div>
@@ -530,7 +530,7 @@ export function EspressoExtractionSimulator() {
                 : "bg-amber-50 text-amber-800 border border-amber-200"
             }`}
           >
-            {isTargetWindow ? "★ PERFECT EXTRACTION!" : "ADJUST GRIND FINER/COARSER"}
+            {isTargetWindow ? "PERFECT EXTRACTION" : "ADJUST GRIND FINER/COARSER"}
           </div>
         )}
       </div>
@@ -970,7 +970,7 @@ export function FocusRepetitionDrill({
             </button>
           </div>
           <span className="text-3xs text-ink-subtle font-mono">
-            {reps >= targetReps ? "★ TARGET REACHED!" : actionLabel}
+            {reps >= targetReps ? "TARGET REACHED" : actionLabel}
           </span>
         </div>
 

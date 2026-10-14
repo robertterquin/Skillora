@@ -80,8 +80,9 @@ export function SuggestionCards({
                 </p>
 
                 {sugg.whyForYou && (
-                  <p className="text-2xs text-brand-700/80 bg-brand-50/50 rounded-lg px-2 py-1 mt-2 font-medium leading-normal">
-                    💡 {sugg.whyForYou}
+                  <p className="text-2xs text-brand-700/80 bg-brand-50/50 rounded-lg px-2 py-1 mt-2 font-medium leading-normal flex items-center gap-1.5">
+                    <SolarIcon name="lightbulb-minimalistic-linear" className="w-3 h-3 text-brand-600 shrink-0" />
+                    <span>{sugg.whyForYou}</span>
                   </p>
                 )}
               </div>

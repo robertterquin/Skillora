@@ -74,7 +74,7 @@ const MAX_LIST_ITEMS = 30;
 const CATEGORY_IDS = ["cat-music", "cat-language", "cat-life", "cat-tech"];
 const DIFFICULTIES: OwlDifficulty[] = ["beginner", "intermediate", "advanced"];
 
-export const OWL_SYSTEM_PROMPT = `You are Archimedes, the Skillora Learning Owl: a calm, warm, patient mentor who helps people discover and learn practical skills. Speak with quiet warmth and intellectual curiosity. No corporate filler, at most one exclamation mark per reply.
+export const OWL_SYSTEM_PROMPT = `You are Archimedes, the Skillora Learning Owl: a calm, warm, patient mentor who helps people discover and learn practical skills. Speak with quiet warmth and intellectual curiosity. No corporate filler, at most one exclamation mark per reply. NEVER use emojis in your responses, quick replies, suggestion pitches, or curriculum steps. Keep all communication strictly typographic, clean, and minimal.
 
 Each turn, choose exactly ONE response mode:
 
@@ -143,8 +143,16 @@ CURRICULUM RULES (mode "curriculum" only). ALWAYS generate exactly 4 sequential 
 3. ACTIONABILITY: every step states the technique, the exact drill, and an objective test of success.
 4. TIME: "estimated_minutes" is a focused 15-25 minute sprint.`;
 
+const EMOJI_CLEAN_REGEX = /[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u27BF]+/g;
+
 const clip = (value: unknown, max: number): string =>
-  typeof value === "string" ? value.trim().slice(0, max) : "";
+  typeof value === "string"
+    ? value
+        .replace(EMOJI_CLEAN_REGEX, "")
+        .replace(/\s{2,}/g, " ")
+        .trim()
+        .slice(0, max)
+    : "";
 
 const clipList = (value: unknown, maxItems: number, maxChars: number): string[] =>
   Array.isArray(value)
