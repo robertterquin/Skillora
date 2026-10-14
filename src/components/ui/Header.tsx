@@ -4,6 +4,8 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
+
 import { cn } from "@/lib/cn";
 import { SolarIcon } from "./SolarIcon";
 import { buttonClasses } from "./Button";
@@ -108,9 +110,9 @@ export function Header({ activePath = "/" }: HeaderProps) {
             </div>
           </Link>
 
-          {/* Desktop navigation */}
+          {/* Desktop navigation with Gliding Active Pill */}
           {!loadingUser && (
-            <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-muted">
+            <nav aria-label="Main" className="hidden md:flex items-center gap-1 p-1 bg-surface-muted/60 border border-surface-border/60 rounded-full text-xs font-medium">
               {navLinks.map((link) => {
                 const isActive = activePath === link.href;
                 return (
@@ -118,9 +120,19 @@ export function Header({ activePath = "/" }: HeaderProps) {
                     key={link.href}
                     href={link.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={cn("transition-colors hover:text-ink", isActive && "text-ink font-semibold")}
+                    className={cn(
+                      "relative px-4 py-1.5 rounded-full transition-colors whitespace-nowrap",
+                      isActive ? "text-ink font-semibold" : "text-ink-muted hover:text-ink"
+                    )}
                   >
-                    {link.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="header-active-nav"
+                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                        className="absolute inset-0 bg-white rounded-full shadow-2xs border border-surface-border/80"
+                      />
+                    )}
+                    <span className="relative z-10">{link.label}</span>
                   </Link>
                 );
               })}

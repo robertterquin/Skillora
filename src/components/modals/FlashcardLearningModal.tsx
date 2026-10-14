@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useId } from "react";
+import { motion } from "motion/react";
 import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
@@ -363,29 +364,43 @@ export function FlashcardLearningModal({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Mode Switcher */}
+          {/* Mode Switcher with Gliding Tab Indicator */}
           <div className="flex items-center p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-medium">
             <button
               type="button"
               onClick={() => setActiveTab("flashcards")}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`relative px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "flashcards"
-                  ? "bg-white text-ink shadow-xs font-semibold"
+                  ? "text-ink font-semibold"
                   : "text-ink-muted hover:text-ink"
               }`}
             >
-              Flashcards
+              {activeTab === "flashcards" && (
+                <motion.span
+                  layoutId="flashcardActiveTab"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 bg-white rounded-lg shadow-xs"
+                />
+              )}
+              <span className="relative z-10">Flashcards</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("checklist")}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`relative px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "checklist"
-                  ? "bg-white text-ink shadow-xs font-semibold"
+                  ? "text-ink font-semibold"
                   : "text-ink-muted hover:text-ink"
               }`}
             >
-              Steps ({steps.length})
+              {activeTab === "checklist" && (
+                <motion.span
+                  layoutId="flashcardActiveTab"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 bg-white rounded-lg shadow-xs"
+                />
+              )}
+              <span className="relative z-10">Steps ({steps.length})</span>
             </button>
           </div>
 

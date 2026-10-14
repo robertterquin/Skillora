@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useId } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Skill } from "@/types/database";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
@@ -100,7 +101,7 @@ export function MasteryPassportModal({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* View Switcher */}
+          {/* View Switcher with Gliding Tab Indicator */}
           <div className="flex items-center p-1 bg-stone-200 border border-stone-300 rounded-xl text-xs font-mono font-medium">
             <button
               type="button"
@@ -108,13 +109,20 @@ export function MasteryPassportModal({
                 playMechanicalClick();
                 setActiveTab("credential");
               }}
-              className={`px-3 py-1 rounded-lg transition-all ${
+              className={`relative px-3 py-1 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "credential"
-                  ? "bg-white text-ink shadow-xs font-bold"
+                  ? "text-ink font-bold"
                   : "text-stone-600 hover:text-ink"
               }`}
             >
-              Credential
+              {activeTab === "credential" && (
+                <motion.span
+                  layoutId="passportActiveTab"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 bg-white rounded-lg shadow-xs"
+                />
+              )}
+              <span className="relative z-10">Credential</span>
             </button>
             <button
               type="button"
@@ -122,13 +130,20 @@ export function MasteryPassportModal({
                 playMechanicalClick();
                 setActiveTab("visas");
               }}
-              className={`px-3 py-1 rounded-lg transition-all ${
+              className={`relative px-3 py-1 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "visas"
-                  ? "bg-white text-ink shadow-xs font-bold"
+                  ? "text-ink font-bold"
                   : "text-stone-600 hover:text-ink"
               }`}
             >
-              Hankō Stamps ({masteredSkills.length})
+              {activeTab === "visas" && (
+                <motion.span
+                  layoutId="passportActiveTab"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 bg-white rounded-lg shadow-xs"
+                />
+              )}
+              <span className="relative z-10">Hankō Stamps ({masteredSkills.length})</span>
             </button>
           </div>
 
