@@ -35,6 +35,36 @@ const INITIAL_MESSAGES: OwlMessage[] = [
   },
 ];
 
+function getSpokenSnippet(text: string): string {
+  // Strip markdown formatting (*, _, `, #, bullet points, brackets, links)
+  const clean = text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`#]/g, "")
+    .replace(/^\s*[-•\d.]+\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // If concise, speak in full
+  if (clean.length <= 180) return clean;
+
+  // Extract the first 1-2 complete sentences for immediate, natural vocal response
+  const sentences = clean.match(/[^.!?]+[.!?]+/g);
+  if (sentences && sentences.length > 0) {
+    let acc = "";
+    for (const s of sentences) {
+      if ((acc + s).length <= 220) {
+        acc += s;
+      } else {
+        break;
+      }
+    }
+    if (acc.trim().length > 15) return acc.trim();
+  }
+
+  // Fallback slice at word boundary
+  return clean.slice(0, 180).replace(/\s+\S*$/, "") + ".";
+}
+
 export function useOwlChat(options: UseOwlChatOptions = {}) {
   const [messages, setMessages] = useState<OwlMessage[]>(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState("");
@@ -82,55 +112,75 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     setIsOwlSpeaking(false);
   }, []);
 
+  // Pre-warm avatar greeting audio so clicking Archimedes responds with zero delay
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const greeting = "I'm listening. Tell me what interests you or ask for suggestions.";
+    const url = `/api/ai/tts?text=${encodeURIComponent(greeting)}&voice=onyx&speed=1.0`;
+    audioCacheRef.current.set(greeting, url);
+    fetch(url).catch(() => {});
+  }, []);
+
+  const fallbackBrowserSpeech = useCallback((text: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setIsOwlSpeaking(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const deepVoice =
+      voices.find(
+        (v) =>
+          v.lang.startsWith("en") &&
+          (v.name.includes("Daniel") ||
+            v.name.includes("UK English Male") ||
+            v.name.includes("Oliver") ||
+            v.name.includes("Arthur") ||
+            v.name.includes("Alex") ||
+            v.name.includes("Natural"))
+      ) || voices.find((v) => v.lang.startsWith("en"));
+
+    if (deepVoice) utterance.voice = deepVoice;
+    utterance.rate = 0.95;
+    utterance.pitch = 0.85;
+    utterance.onend = () => setIsOwlSpeaking(false);
+    utterance.onerror = () => setIsOwlSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   const speakOwlVoice = useCallback(
-    async (text: string) => {
+    (text: string) => {
       if (!voiceEnabled || typeof window === "undefined") return;
 
       stopVoice();
       setIsOwlSpeaking(true);
 
+      const spokenText = getSpokenSnippet(text);
+
       try {
-        let audioUrl = audioCacheRef.current.get(text);
+        let audioUrl = audioCacheRef.current.get(spokenText);
         if (!audioUrl) {
-          const blob = await aiService.textToSpeech(text, "onyx", 0.92);
-          audioUrl = URL.createObjectURL(blob);
-          audioCacheRef.current.set(text, audioUrl);
+          audioUrl = `/api/ai/tts?text=${encodeURIComponent(spokenText)}&voice=onyx&speed=1.0`;
+          audioCacheRef.current.set(spokenText, audioUrl);
         }
 
         const audio = new Audio(audioUrl);
         currentAudioRef.current = audio;
+        audio.onplay = () => setIsOwlSpeaking(true);
         audio.onended = () => setIsOwlSpeaking(false);
-        audio.onerror = () => setIsOwlSpeaking(false);
-        await audio.play();
+        audio.onpause = () => setIsOwlSpeaking(false);
+        audio.onerror = () => {
+          fallbackBrowserSpeech(spokenText);
+        };
+        audio.play().catch(() => {
+          fallbackBrowserSpeech(spokenText);
+        });
       } catch {
-        // Fallback to browser speech synthesis
-        if ("speechSynthesis" in window) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          const voices = window.speechSynthesis.getVoices();
-          const deepVoice =
-            voices.find(
-              (v) =>
-                v.lang.startsWith("en") &&
-                (v.name.includes("Daniel") ||
-                  v.name.includes("UK English Male") ||
-                  v.name.includes("Oliver") ||
-                  v.name.includes("Arthur") ||
-                  v.name.includes("Alex") ||
-                  v.name.includes("Natural"))
-            ) || voices.find((v) => v.lang.startsWith("en"));
-
-          if (deepVoice) utterance.voice = deepVoice;
-          utterance.rate = 0.9;
-          utterance.pitch = 0.82;
-          utterance.onend = () => setIsOwlSpeaking(false);
-          utterance.onerror = () => setIsOwlSpeaking(false);
-          window.speechSynthesis.speak(utterance);
-        } else {
-          setIsOwlSpeaking(false);
-        }
+        fallbackBrowserSpeech(spokenText);
       }
     },
-    [voiceEnabled, stopVoice]
+    [voiceEnabled, stopVoice, fallbackBrowserSpeech]
   );
 
   const toggleVoiceListening = useCallback(() => {
@@ -266,7 +316,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
         setMessages((prev) => [...prev, owlMsg]);
         playChime();
-        await speakOwlVoice(reply.owlMessage);
+        speakOwlVoice(reply.owlMessage);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Owl communication failed";
         setMessages((prev) => [

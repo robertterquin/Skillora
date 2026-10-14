@@ -200,21 +200,9 @@ export const aiService = {
   },
 
   /**
-   * Archimedes Speech Synthesis (TTS-1-HD Onyx)
+   * Archimedes Speech Synthesis (Fast Real-Time TTS-1 Onyx)
    */
-  async textToSpeech(text: string, voice = "onyx", speed = 0.92): Promise<Blob> {
-    try {
-      const { data, error } = await supabase.functions.invoke("ai", {
-        body: { action: "tts", text, voice, speed },
-      });
-
-      if (!error && data instanceof Blob) {
-        return data;
-      }
-    } catch {
-      // Fall through
-    }
-
+  async textToSpeech(text: string, voice = "onyx", speed = 1.0): Promise<Blob> {
     const res = await fetch("/api/ai/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
