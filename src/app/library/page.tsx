@@ -273,8 +273,8 @@ export default function SkillLibraryPage() {
             size={180}
           />
 
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight mt-6">
-            Tell Archimedes what you want to learn.
+          <h1 className="font-serif italic font-normal text-3xl sm:text-4xl text-ink tracking-tight mt-6">
+            Tell Archimedes what you wish to master.
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-md leading-relaxed">
             Chat to find the right craft, explore tailored suggestions, or build a 4-step practice track.
@@ -401,15 +401,15 @@ export default function SkillLibraryPage() {
           </div>
 
           {/* Unified Voice & Text Input Pill */}
-          <div className="p-2 bg-white rounded-3xl border-2 border-surface-border focus-within:border-brand-500 shadow-lg flex items-center gap-2 transition-all">
+          <div className="p-2 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all">
             {/* Microphone Voice Button */}
             <button
               type="button"
               onClick={toggleVoiceListening}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
+              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                 isListening
-                  ? "bg-rose-600 text-white animate-pulse shadow-md"
-                  : "bg-canvas hover:bg-brand-50 text-ink-muted hover:text-brand-600 border border-surface-border"
+                  ? "bg-accent-vermilion text-white animate-pulse shadow-md"
+                  : "bg-canvas hover:bg-surface-subtle text-ink-muted hover:text-ink border border-surface-border"
               }`}
               aria-label={isListening ? "Stop listening" : "Speak your request"}
               aria-pressed={isListening}
@@ -440,7 +440,7 @@ export default function SkillLibraryPage() {
               type="button"
               disabled={isThinking || !inputText.trim()}
               onClick={() => sendMessage()}
-              className="w-11 h-11 rounded-2xl bg-ink hover:bg-brand-500 disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
+              className="w-11 h-11 rounded-xl bg-ink hover:bg-accent-vermilion disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
               aria-label="Send message to Owl"
             >
               <SolarIcon name="arrow-right-linear" className="w-5 h-5" />

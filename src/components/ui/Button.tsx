@@ -15,10 +15,10 @@ interface ButtonStyleOptions {
 }
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-ink text-white hover:bg-brand-500 shadow-xs",
-  secondary: "bg-white text-ink border border-surface-border hover:border-ink/30 hover:bg-canvas shadow-2xs",
-  ghost: "text-ink-secondary hover:text-ink hover:bg-surface-muted",
-  danger: "text-rose-600 hover:bg-rose-50",
+  primary: "bg-ink text-white hover:bg-accent-vermilion shadow-xs transition-colors",
+  secondary: "bg-surface text-ink border border-surface-border hover:border-brand-300 hover:bg-surface-subtle shadow-2xs transition-colors",
+  ghost: "text-ink-secondary hover:text-ink hover:bg-surface-subtle transition-colors",
+  danger: "text-rose-600 hover:bg-rose-50 transition-colors",
 };
 
 const SIZES: Record<ButtonSize, string> = {

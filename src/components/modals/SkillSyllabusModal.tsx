@@ -45,12 +45,12 @@ export function SkillSyllabusModal({
       <div className="p-6 sm:p-8 bg-canvas border-b border-surface-border">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-brand-600 uppercase tracking-wider">
-              <span>{isViewOnly ? "Preview" : "Your skill"}</span>
-              <span>•</span>
+            <div className="flex items-center gap-2 mb-2 font-mono text-3xs uppercase tracking-wider text-ink-subtle">
+              <span>{isViewOnly ? "SPEC // PREVIEW" : "SPEC // ACTIVE TRACK"}</span>
+              <span>·</span>
               <span className="text-ink-muted">{skill.difficulty}</span>
             </div>
-            <h2 id={titleId} className="font-display font-bold text-2xl sm:text-3xl text-ink">
+            <h2 id={titleId} className="font-serif italic font-normal text-3xl sm:text-4xl text-ink leading-tight">
               {skill.title}
             </h2>
           </div>
@@ -185,7 +185,7 @@ export function SkillSyllabusModal({
                       <div className="text-2xs font-mono text-ink-subtle mb-0.5">
                         Step {step.step_number} · ~{step.estimated_minutes} mins
                       </div>
-                      <h4 className={`font-display font-semibold text-base ${isStepDone ? "line-through text-ink-muted" : "text-ink"}`}>
+                      <h4 className={`font-serif italic font-normal text-lg sm:text-xl leading-snug ${isStepDone ? "line-through text-ink-muted" : "text-ink"}`}>
                         {step.title}
                       </h4>
                     </div>

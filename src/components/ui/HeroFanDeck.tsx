@@ -81,25 +81,25 @@ export function HeroFanDeck({ skills, onSelectSkill }: HeroFanDeckProps) {
                 } transition-shadow`}
               >
                 <span className="flex items-start justify-between gap-1">
-                  <span className="text-3xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/15 text-white/90 truncate">
+                  <span className="text-3xs font-mono font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/15 text-white/90 truncate">
                     {style.label}
                   </span>
                   <SolarIcon name="play-linear" className="hidden sm:block w-4 h-4 text-white/70 flex-shrink-0" />
                 </span>
 
                 <span className="block">
-                  <span className="block font-display font-bold text-xs sm:text-sm lg:text-base leading-tight line-clamp-3">
+                  <span className="block font-serif italic font-normal text-sm sm:text-base lg:text-lg leading-tight line-clamp-3">
                     {skill.title}
                   </span>
-                  <span className="mt-2 flex items-center gap-1.5 text-2xs sm:text-xs text-white/80">
+                  <span className="mt-2 flex items-center gap-1.5 text-2xs sm:text-xs text-white/80 font-mono">
                     <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="tabular-nums line-clamp-1">{skill.time_commitment_label}</span>
                   </span>
                 </span>
 
-                <span className="pt-2 border-t border-white/20 flex items-center justify-between text-2xs text-white/75 font-medium">
-                  <span>{skill.steps?.length ?? 0} steps</span>
-                  <span className="hidden sm:inline">Preview &rarr;</span>
+                <span className="pt-2 border-t border-white/20 flex items-center justify-between text-2xs text-white/75 font-mono">
+                  <span>{skill.steps?.length ?? 0} STEPS</span>
+                  <span className="hidden sm:inline font-sans font-medium">Preview &rarr;</span>
                 </span>
               </span>
             </button>

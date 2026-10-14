@@ -654,27 +654,27 @@ export function StepActionBlueprint({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
+      className="w-full my-3 p-4 sm:p-5 bg-surface border border-surface-border rounded-2xl corner-ticks text-ink shadow-xs select-none transition-all"
     >
-      {/* Top Spec Bar */}
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2.5 pb-2 border-b border-surface-border/60">
+      {/* 1. TOP SPEC RIBBON */}
+      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-muted uppercase mb-3 pb-2.5 border-b border-surface-border">
         <span className="flex items-center gap-1.5 font-bold">
-          <SolarIcon name="clipboard-check-linear" className="w-3.5 h-3.5 text-brand-600" />
+          <SolarIcon name="clipboard-check-linear" className="w-3.5 h-3.5 text-accent-vermilion" />
           <span>{blueprint.domainTag}</span>
         </span>
         <span
-          className={`font-bold transition ${
-            isAllComplete ? "text-accent-emerald" : "text-brand-600"
+          className={`font-bold transition font-mono ${
+            isAllComplete ? "text-accent-emerald" : "text-accent-vermilion"
           }`}
         >
-          {isAllComplete ? "VERIFIED (3/3)" : `${checkedCount}/${blueprint.checkpoints.length} CHECKPOINTS`}
+          {isAllComplete ? "3/3 VERIFIED" : `${checkedCount}/${blueprint.checkpoints.length} CHECKPOINTS`}
         </span>
       </div>
 
-      {/* Focus Objective Callout */}
-      <div className="p-3 bg-white border border-surface-border rounded-xl text-left mb-2.5 shadow-2xs">
+      {/* 2. CORE OBJECTIVE (Recessed warm-stone plate) */}
+      <div className="p-3 bg-surface-subtle border border-surface-border/80 rounded-xl text-left mb-3">
         <div className="flex items-center gap-1.5 text-3xs font-mono font-bold text-ink-muted uppercase mb-1">
-          <SolarIcon name="target-linear" className="w-3 h-3 text-brand-600 shrink-0" />
+          <SolarIcon name="target-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
           <span>Core Drill Objective</span>
         </div>
         <p className="text-xs text-ink leading-relaxed font-medium">
@@ -682,25 +682,25 @@ export function StepActionBlueprint({
         </p>
       </div>
 
-      {/* 3 Quality Checkpoints List */}
-      <div className="space-y-1.5 mb-2.5">
+      {/* 3. INTERACTIVE CHECKPOINTS MATRIX */}
+      <div className="space-y-2 mb-3">
         {blueprint.checkpoints.map((chk, idx) => {
           const isChecked = Boolean(checkedMap[chk.id]);
           return (
             <div
               key={chk.id}
               onClick={() => handleToggle(chk.id)}
-              className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex items-start gap-2.5 ${
+              className={`p-3 rounded-xl border text-left transition cursor-pointer flex items-start gap-3 ${
                 isChecked
-                  ? "bg-emerald-50/60 border-emerald-300 text-ink"
-                  : "bg-white hover:bg-surface-muted/50 border-surface-border text-ink"
+                  ? "bg-accent-emerald-light/40 border-accent-emerald/40 text-ink"
+                  : "bg-surface hover:bg-surface-subtle/60 border-surface-border text-ink shadow-2xs"
               }`}
             >
               <div
                 className={`w-4 h-4 rounded-md mt-0.5 shrink-0 flex items-center justify-center border transition ${
                   isChecked
                     ? "bg-accent-emerald border-accent-emerald text-white"
-                    : "border-ink-subtle/50 bg-white hover:border-brand-500"
+                    : "border-surface-border bg-surface hover:border-accent-vermilion"
                 }`}
               >
                 {isChecked && <SolarIcon name="check-linear" className="w-3 h-3 stroke-[3]" />}
@@ -709,7 +709,7 @@ export function StepActionBlueprint({
                 <div className="flex items-center gap-2">
                   <span
                     className={`text-2xs font-bold font-mono tracking-wide ${
-                      isChecked ? "text-emerald-900" : "text-ink"
+                      isChecked ? "text-accent-emerald" : "text-ink"
                     }`}
                   >
                     0{idx + 1}. {chk.label}
@@ -717,7 +717,7 @@ export function StepActionBlueprint({
                 </div>
                 <p
                   className={`text-2xs leading-snug mt-0.5 ${
-                    isChecked ? "text-emerald-800 line-through opacity-80" : "text-ink-muted"
+                    isChecked ? "text-accent-emerald/90 line-through opacity-80" : "text-ink-secondary"
                   }`}
                 >
                   {chk.detail}
@@ -728,19 +728,19 @@ export function StepActionBlueprint({
         })}
       </div>
 
-      {/* Mastery "Done When" & Pro Tip Footer */}
-      <div className="space-y-1.5">
+      {/* 4. UTILITY TIER: MASTERY BENCHMARK & VIDEO LAUNCHER */}
+      <div className="space-y-2 pt-1 border-t border-surface-border/60">
         <div
-          className={`p-2 rounded-xl border text-left flex items-start gap-2 text-2xs transition ${
+          className={`p-2.5 rounded-xl border text-left flex items-start gap-2 text-2xs transition ${
             isAllComplete
-              ? "bg-accent-emerald/10 border-accent-emerald/40 text-emerald-950 font-medium"
-              : "bg-surface-muted/60 border-surface-border text-ink-muted"
+              ? "bg-accent-emerald-light/60 border-accent-emerald/50 text-accent-emerald font-semibold"
+              : "bg-surface-subtle border-surface-border text-ink-secondary"
           }`}
         >
           <SolarIcon
             name={isAllComplete ? "check-circle-bold" : "flag-2-linear"}
             className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
-              isAllComplete ? "text-accent-emerald" : "text-brand-600"
+              isAllComplete ? "text-accent-emerald" : "text-accent-vermilion"
             }`}
           />
           <div className="leading-tight">
@@ -760,14 +760,14 @@ export function StepActionBlueprint({
                   stepTitle: step.title,
                 })
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-900 text-2xs font-semibold transition cursor-pointer shadow-2xs group"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-subtle border border-surface-border text-ink text-2xs font-medium transition cursor-pointer shadow-2xs group"
             >
-              <SolarIcon name="play-linear" className="w-3 h-3 text-rose-600 group-hover:scale-110 transition" />
+              <SolarIcon name="play-linear" className="w-3 h-3 text-accent-vermilion group-hover:scale-110 transition" />
               <span>Watch Video Drill: {videoResource.platform_name}</span>
-              <SolarIcon name="square-arrow-right-up-linear" className="w-2.5 h-2.5 text-rose-500" />
+              <SolarIcon name="square-arrow-right-up-linear" className="w-2.5 h-2.5 text-ink-muted" />
             </button>
 
-            <span className="text-3xs font-mono text-ink-subtle">
+            <span className="text-3xs font-mono text-ink-muted">
               ~{step.estimated_minutes} min sprint
             </span>
           </div>

@@ -28,28 +28,28 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
   };
 
   return (
-    <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-3xl bg-white border border-surface-border shadow-md animate-fade-in text-left corner-ticks relative overflow-hidden">
-      <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
-        <div className="flex items-center gap-1.5 font-medium">
+    <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-2xl bg-surface border border-surface-border shadow-card animate-fade-in text-left corner-ticks relative overflow-hidden">
+      <div className="flex items-center justify-between text-3xs font-mono text-ink-muted uppercase tracking-widest mb-3 pb-2.5 border-b border-surface-border">
+        <div className="flex items-center gap-2 font-medium">
           <span className="capitalize">{skill.difficulty}</span>
-          <span className="text-ink-subtle">·</span>
+          <span className="text-surface-border">|</span>
           <span>{skill.time_commitment_label}</span>
-          <span className="text-ink-subtle">·</span>
+          <span className="text-surface-border">|</span>
           <span>{skill.steps?.length || 0} steps</span>
         </div>
         {isEnrolled ? (
-          <span className="inline-flex items-center gap-1 text-2xs font-semibold text-accent-emerald">
-            <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-            <span>In My Studio</span>
+          <span className="inline-flex items-center gap-1 text-3xs font-mono font-semibold text-accent-emerald bg-accent-emerald-light/60 px-2 py-0.5 rounded-full border border-accent-emerald/30">
+            <SolarIcon name="check-circle-linear" className="w-3 h-3" />
+            <span>IN STUDIO</span>
           </span>
         ) : (
-          <span className="text-2xs font-medium text-ink-subtle">
-            Ready to practice
+          <span className="text-3xs font-mono text-ink-muted">
+            READY TO PRACTICE
           </span>
         )}
       </div>
 
-      <h3 className="font-display font-extrabold text-lg text-ink mb-1">
+      <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-1.5 leading-snug">
         {skill.title}
       </h3>
       <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
@@ -61,15 +61,15 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
         {skill.steps?.map((st) => (
           <div
             key={st.id}
-            className="p-3 rounded-2xl bg-canvas/80 border border-surface-border text-xs flex items-center justify-between hover:border-ink/20 transition"
+            className="p-3 rounded-xl bg-surface-subtle border border-surface-border text-xs flex items-center justify-between hover:border-brand-300 transition"
           >
             <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded-md bg-white border border-surface-border/80 flex items-center justify-center font-mono text-3xs font-semibold text-ink-muted">
+              <span className="w-5 h-5 rounded bg-surface border border-surface-border flex items-center justify-center font-mono text-3xs font-semibold text-ink-muted">
                 {st.step_number < 10 ? `0${st.step_number}` : st.step_number}
               </span>
               <span className="font-medium text-ink">{st.title}</span>
             </div>
-            <span className="text-2xs text-ink-subtle font-mono tabular-nums">
+            <span className="text-3xs text-ink-muted font-mono tabular-nums">
               ~{st.estimated_minutes}m
             </span>
           </div>

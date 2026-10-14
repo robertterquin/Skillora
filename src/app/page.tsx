@@ -87,31 +87,49 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="p-8 text-left">
-              <h3 className="font-display font-semibold text-lg text-ink mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
+                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
+                  PILLAR // 01
+                </span>
+                <span className="text-3xs font-mono text-ink-muted">15–30M BLOCKS</span>
+              </div>
+              <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Short, ordered steps
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Concrete exercises, hand positions, and memory cues, each sized for a 15–30 minute practice session.
+                Concrete exercises, tactile memory cues, and focused drills sized for a single sitting without cognitive overload.
               </p>
             </Card>
 
-            <Card className="p-8 text-left">
-              <h3 className="font-display font-semibold text-lg text-ink mb-2">
+            <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
+                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
+                  PILLAR // 02
+                </span>
+                <span className="text-3xs font-mono text-ink-muted">UNBIASED</span>
+              </div>
+              <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Hand-picked resources
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                No sponsored filler. Each step links to the best free tutorials, trainers, and breakdowns we could find.
+                Zero sponsored filler. Every step links directly to masterclass breakdowns, authentic audio trainers, and verified diagrams.
               </p>
             </Card>
 
-            <Card className="p-8 text-left">
-              <h3 className="font-display font-semibold text-lg text-ink mb-2">
+            <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
+                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
+                  PILLAR // 03
+                </span>
+                <span className="text-3xs font-mono text-ink-muted">CALIBRATED</span>
+              </div>
+              <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Honest time estimates
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Know up front whether a skill takes an afternoon or a few weeks of daily practice.
+                Know up front whether an atelier craft takes an afternoon or deliberate weeks of daily physical practice.
               </p>
             </Card>
           </div>
@@ -119,41 +137,47 @@ export default function LandingPage() {
       </section>
 
       {/* Minimalist Pricing Section */}
-      <section id="pricing" className="py-16 sm:py-24 border-t border-surface-border bg-white text-center">
+      <section id="pricing" className="py-16 sm:py-24 border-t border-surface-border bg-canvas text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto mb-12">
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              Simple pricing.
+              Simple, transparent <span className="font-serif italic font-normal">tuition</span>.
             </h2>
             <p className="mt-2 text-sm text-ink-muted">
-              Start free. Upgrade when you want more skills or more time with Archimedes.
+              Start free. Upgrade when you want multiple active studio tracks or unlimited coaching with Archimedes.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left">
             {/* Free Tier */}
-            <div className="p-8 rounded-3xl border border-surface-border bg-canvas flex flex-col justify-between">
+            <div className="p-8 rounded-3xl border border-surface-border bg-white flex flex-col justify-between shadow-card hover:border-brand-300 transition-colors">
               <div>
-                <h3 className="font-display font-bold text-lg text-ink">Free</h3>
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-3xl text-ink">₱0</span>
-                  <span className="text-xs text-ink-muted">forever</span>
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
+                  <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
+                    SPEC // 01
+                  </span>
+                  <span className="font-mono text-3xs text-ink-muted">ENTRY</span>
+                </div>
+                <h3 className="font-serif italic font-normal text-2xl text-ink">Foundation</h3>
+                <div className="mt-3 flex items-baseline gap-1.5 font-mono">
+                  <span className="font-bold text-3xl text-ink">₱0</span>
+                  <span className="text-xs text-ink-muted font-sans">forever</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  Practice up to 3 skills. Archimedes and the AI coaching tools are free for your first 7 days.
+                  Practice up to 3 simultaneous skills. Archimedes and AI coaching tools are included for your first 7 days.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Up to <strong>3 skills</strong> in My Studio</span>
+                    <span>Up to <strong>3 active skills</strong> in My Studio</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>7 days</strong> of Archimedes, voice grading, and technique coaching</span>
+                    <span><strong>7 days</strong> of Archimedes, voice grading, and drills</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Flashcards, practice tools, and curated resources</span>
+                    <span>Spaced repetition, flashcards, and curated links</span>
                   </li>
                 </ul>
               </div>
@@ -166,31 +190,37 @@ export default function LandingPage() {
             </div>
 
             {/* Pro Tier (₱299/month) */}
-            <div className="p-8 rounded-3xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-lg">
-              <Badge tone="inverse" shape="pill" className="absolute -top-3 right-6">
-                Unlimited access
-              </Badge>
+            <div className="p-8 rounded-3xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-elevated">
+              <span className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-accent-vermilion text-white font-mono text-3xs font-semibold uppercase tracking-wider shadow-xs">
+                ATELIER PASS
+              </span>
               <div>
-                <h3 className="font-display font-bold text-lg text-ink">Skillora Pro</h3>
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-3xl text-ink">₱299</span>
-                  <span className="text-xs text-ink-muted">/ month</span>
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
+                  <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
+                    SPEC // 02
+                  </span>
+                  <span className="font-mono text-3xs text-accent-vermilion font-semibold">UNLIMITED</span>
+                </div>
+                <h3 className="font-serif italic font-normal text-2xl text-ink">Skillora Pro</h3>
+                <div className="mt-3 flex items-baseline gap-1.5 font-mono">
+                  <span className="font-bold text-3xl text-ink">₱299</span>
+                  <span className="text-xs text-ink-muted font-sans">/ month</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  For learners practicing several skills at once.
+                  For dedicated artisans practicing multiple disciplines across music, craft, and technology.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
+                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
                     <span><strong>Unlimited skills</strong> in My Studio</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited Archimedes</strong> skill breakdowns</span>
+                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                    <span><strong>Unlimited Archimedes</strong> custom syllabi</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                    <span><strong>Unlimited</strong> technique coaching and voice grading</span>
+                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                    <span><strong>Continuous</strong> coaching, voice diagnostics &amp; exams</span>
                   </li>
                 </ul>
               </div>
@@ -198,7 +228,7 @@ export default function LandingPage() {
                 href="/signup"
                 className={buttonClasses({ block: true, className: "mt-8" })}
               >
-                Get Pro
+                Enroll in Pro
               </Link>
             </div>
           </div>

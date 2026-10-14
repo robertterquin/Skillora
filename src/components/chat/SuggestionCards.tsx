@@ -45,33 +45,33 @@ export function SuggestionCards({
           return (
             <div
               key={`${sugg.title}-${idx}`}
-              className="p-4 sm:p-4.5 rounded-2xl bg-white border border-surface-border hover:border-brand-300 hover:shadow-xs transition-all text-left flex flex-col justify-between gap-3 group"
+              className="p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border hover:border-brand-300 hover:shadow-card transition-all text-left flex flex-col justify-between gap-3 group"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="px-2 py-0.5 rounded-full bg-surface-muted text-3xs font-medium text-ink-muted capitalize">
+                    <span className="px-2 py-0.5 rounded-full bg-surface-subtle text-3xs font-mono font-medium text-ink-muted capitalize">
                       {sugg.difficulty}
                     </span>
-                    <span className="text-3xs text-ink-subtle">·</span>
-                    <span className="text-3xs text-ink-subtle font-mono">
+                    <span className="text-3xs text-ink-muted">·</span>
+                    <span className="text-3xs text-ink-muted font-mono">
                       {sugg.timeToBasics}
                     </span>
                     {isCatalog && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-brand-50 text-brand-700 text-3xs font-mono font-medium">
+                      <span className="px-1.5 py-0.5 rounded-md bg-surface-subtle text-ink text-3xs font-mono font-medium border border-surface-border">
                         Catalog Craft
                       </span>
                     )}
                   </div>
                   {isEnrolled && (
-                    <span className="inline-flex items-center gap-1 text-3xs font-semibold text-accent-emerald">
+                    <span className="inline-flex items-center gap-1 text-3xs font-mono font-semibold text-accent-emerald bg-accent-emerald-light/60 px-2 py-0.5 rounded-full border border-accent-emerald/30">
                       <SolarIcon name="check-circle-linear" className="w-3 h-3" />
-                      <span>In My Studio</span>
+                      <span>In Studio</span>
                     </span>
                   )}
                 </div>
 
-                <h4 className="font-display font-bold text-sm sm:text-base text-ink group-hover:text-brand-600 transition">
+                <h4 className="font-serif italic font-normal text-base sm:text-lg text-ink group-hover:text-accent-vermilion transition">
                   {sugg.title}
                 </h4>
 
@@ -80,23 +80,23 @@ export function SuggestionCards({
                 </p>
 
                 {sugg.whyForYou && (
-                  <p className="text-2xs text-brand-700/80 bg-brand-50/50 rounded-lg px-2 py-1 mt-2 font-medium leading-normal flex items-center gap-1.5">
-                    <SolarIcon name="lightbulb-minimalistic-linear" className="w-3 h-3 text-brand-600 shrink-0" />
+                  <p className="text-2xs text-ink-secondary bg-surface-subtle rounded-lg px-2.5 py-1.5 mt-2 font-medium leading-normal flex items-center gap-1.5 border border-surface-border/60">
+                    <SolarIcon name="lightbulb-minimalistic-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
                     <span>{sugg.whyForYou}</span>
                   </p>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-surface-border/50 flex items-center justify-between">
-                <span className="text-3xs text-ink-subtle">
-                  Generates verified 4-step practice track
+              <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between">
+                <span className="text-3xs font-mono text-ink-muted">
+                  4-step deliberate practice track
                 </span>
                 <Button
                   size="sm"
                   variant="secondary"
                   disabled={disabled}
                   onClick={() => onSelectSkill(sugg)}
-                  className="gap-1.5 font-medium group-hover:bg-brand-50 group-hover:text-brand-700 group-hover:border-brand-200 transition"
+                  className="gap-1.5 font-mono text-2xs hover:border-accent-vermilion/50 hover:text-accent-vermilion transition"
                 >
                   <span>Build this path</span>
                   <SolarIcon

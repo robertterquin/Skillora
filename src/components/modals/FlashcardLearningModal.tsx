@@ -446,43 +446,43 @@ export function FlashcardLearningModal({
                 playWoodenThud();
                 setIsFlipped(!isFlipped);
               }}
-              className="w-full max-w-xl min-h-[360px] sm:min-h-[400px] cursor-pointer select-none relative transition-transform duration-500 rounded-3xl corner-ticks"
+              className="w-full max-w-xl min-h-[380px] sm:min-h-[420px] cursor-pointer select-none relative transition-transform duration-500 rounded-2xl corner-ticks"
             >
               <div
-                className={`w-full h-full min-h-[360px] sm:min-h-[400px] p-6 sm:p-7 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 shadow-md ${
+                className={`w-full h-full min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border flex flex-col justify-between transition-all duration-300 shadow-card ${
                   isFlipped
-                    ? "bg-white border-brand-600/60 shadow-lg"
-                    : "bg-gradient-to-b from-canvas to-white border-surface-border hover:border-brand-500/40"
+                    ? "bg-surface border-brand-700 shadow-elevated"
+                    : "bg-surface border-surface-border hover:border-brand-300"
                 }`}
               >
-                {/* Top Architectural Spec of Card */}
-                <div className="flex items-start justify-between border-b border-surface-border/60 pb-2.5 mb-2">
-                  <div className="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
+                {/* 1. Top Architectural Spec Ribbon */}
+                <div className="flex items-center justify-between border-b border-surface-border pb-3 mb-2">
+                  <div className="flex items-center gap-2 text-3xs font-mono text-ink-muted uppercase tracking-widest font-semibold">
                     <span>Drill {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
-                    <span className="text-ink-subtle">·</span>
+                    <span className="text-surface-border">|</span>
                     <span>~{currentStep.estimated_minutes} mins</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {isCurrentStepDone && (
-                      <span className="inline-flex items-center gap-1 text-3xs font-mono text-accent-vermilion font-bold bg-accent-vermilion/10 px-2 py-0.5 rounded-full border border-accent-vermilion/20">
+                      <span className="inline-flex items-center gap-1 text-3xs font-mono text-accent-vermilion font-bold bg-accent-vermilion/10 px-2.5 py-0.5 rounded-full border border-accent-vermilion/20">
                         <HankoSeal size="xs" variant="vermilion" label="済" />
                         <span>VERIFIED</span>
                       </span>
                     )}
-                    <span className="text-xs text-ink-subtle flex items-center gap-1 font-medium">
-                      <span>{isFlipped ? "Instructions" : "Tap to flip"}</span>
-                      <SolarIcon name="refresh-linear" className="w-3.5 h-3.5" />
+                    <span className="text-3xs text-ink-muted flex items-center gap-1 font-mono tracking-wider uppercase">
+                      <span>{isFlipped ? "Flip to Front" : "Flip Details"}</span>
+                      <SolarIcon name="refresh-linear" className="w-3 h-3 text-ink-muted" />
                     </span>
                   </div>
                 </div>
 
-                {/* Center of Card */}
-                <div className="my-auto py-3 text-center">
+                {/* 2. Center of Card */}
+                <div className="my-auto py-2 text-center">
                   {!isFlipped ? (
-                    /* FRONT: Technique title + Tactile Micro-Simulator Suite */
+                    /* FRONT: Technique title + Tactile Micro-Simulator / Action Blueprint */
                     <div>
-                      <h3 className="font-display font-extrabold text-xl sm:text-2xl text-ink max-w-md mx-auto leading-snug">
+                      <h3 className="font-serif italic text-2xl sm:text-3xl text-ink max-w-lg mx-auto leading-tight mb-1">
                         {currentStep.title}
                       </h3>
 
@@ -494,14 +494,14 @@ export function FlashcardLearningModal({
                         onOpenVideo={(video) => setActiveVideo(video)}
                       />
 
-                      <p className="mt-2 text-xs text-ink-muted">
-                        Tap card edges or press flip to inspect detailed instructions &rarr;
+                      <p className="mt-1 text-3xs font-mono text-ink-muted tracking-wider uppercase">
+                        Tap outer card edges to inspect full step notes &rarr;
                       </p>
                     </div>
                   ) : (
                     /* BACK: Full detailed instructions */
                     <div className="text-left animate-fade-in">
-                      <h4 className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
+                      <h4 className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-widest mb-2">
                         Instructions & Muscle Memory Cue:
                       </h4>
                       <p className="text-sm text-ink leading-relaxed">
@@ -565,10 +565,10 @@ export function FlashcardLearningModal({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-muted hover:bg-brand-50 border border-surface-border text-xs font-medium text-ink hover:text-brand-700 transition"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface hover:bg-surface-subtle border border-surface-border text-xs font-medium text-ink hover:text-accent-vermilion transition"
                                 >
                                   <span>{res.platform_name}</span>
-                                  <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
+                                  <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-muted" />
                                 </a>
                               );
                             })}
@@ -579,10 +579,10 @@ export function FlashcardLearningModal({
                   )}
                 </div>
 
-                {/* Bottom of Card */}
-                <div className="pt-3 border-t border-surface-border/60 flex items-center justify-between text-xs">
-                  <span className="text-ink-muted text-2xs font-mono">
-                    {isCurrentStepDone ? "AFFIXED // 済 VERIFIED" : "PENDING DRILL"}
+                {/* 3. Bottom Utility Bar */}
+                <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs">
+                  <span className="text-ink-muted text-3xs font-mono tracking-wider uppercase">
+                    {isCurrentStepDone ? "AFFIXED // 済 VERIFIED" : "DRILL IN PROGRESS"}
                   </span>
                   <button
                     type="button"
@@ -596,10 +596,10 @@ export function FlashcardLearningModal({
                       }
                       onToggleStep(currentStep.id);
                     }}
-                    className={`px-3.5 py-1.5 rounded-lg font-mono text-2xs font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
+                    className={`px-4 py-2 rounded-xl font-mono text-2xs font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
                       isCurrentStepDone
                         ? "bg-accent-vermilion/10 text-accent-vermilion border border-accent-vermilion/30 shadow-xs hover:bg-accent-vermilion/15"
-                        : "bg-ink text-white hover:bg-brand-500"
+                        : "bg-ink text-white hover:bg-accent-vermilion shadow-xs"
                     }`}
                   >
                     {isCurrentStepDone ? (

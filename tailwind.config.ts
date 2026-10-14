@@ -9,44 +9,50 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#FAF9F6",
+        canvas: "#F9F8F5", // Warm Alabaster
         ink: {
-          DEFAULT: "#18181B",
-          secondary: "#52525B",
-          muted: "#71717A",
-          subtle: "#A1A1AA",
+          DEFAULT: "#1A1917", // Deep Warm Obsidian
+          secondary: "#524F4A",
+          muted: "#78746D",
+          subtle: "#99948D",
         },
         brand: {
-          50: "#F4F4F5",
-          100: "#E4E4E7",
-          200: "#D4D4D8",
-          300: "#A1A1AA",
-          400: "#71717A",
-          500: "#27272A",
-          600: "#18181B",
-          700: "#09090B",
+          50: "#F9F8F5",
+          100: "#F2EFE9",
+          200: "#E5E0D8",
+          300: "#C7C2B8",
+          400: "#99948D",
+          500: "#524F4A",
+          600: "#2E2C29",
+          700: "#1A1917",
+          800: "#121110",
+          900: "#0A0A09",
         },
         surface: {
           DEFAULT: "#FFFFFF",
-          muted: "#F4F4F5",
-          border: "#E4E4E7",
+          subtle: "#F4F0E8", // recessed warm stone container
+          muted: "#EFECE5",
+          border: "#E5E0D8", // warm hairline limestone
         },
-        // Archival paper tones for the Passport, Guild Exam, and Guided Practice sheets
+        // Archival paper tones for Passport, Guild Exam, and Guided Practice sheets
         paper: {
           DEFAULT: "#FAF8F5",
-          warm: "#F4F1EB",
-          deep: "#F2EFE9",
+          warm: "#F4F0E8",
+          deep: "#EFECE5",
         },
         // Muted category tones for the landing page skill deck
         deck: {
-          music: "#A0522D",
+          music: "#8C4A28",
           languages: "#1E3A8A",
-          life: "#27272A",
+          life: "#2E2C29",
           tech: "#1F4E4A",
         },
         accent: {
-          emerald: "#10B981",
-          amber: "#D97706",
+          vermilion: "#C84B15", // Dieter Rams Signal Vermilion
+          "vermilion-hover": "#B33F0F",
+          emerald: "#2D5A43",   // Deep Alpine Pine
+          "emerald-light": "#EBF2EE",
+          amber: "#C57E12",
           lapis: "#1E3A8A",
         },
       },
@@ -62,8 +68,10 @@ const config: Config = {
         "3xs": "10px",
       },
       boxShadow: {
-        "2xs": "0 1px 0 0 rgb(24 24 27 / 0.04)",
-        xs: "0 1px 2px 0 rgb(24 24 27 / 0.05)",
+        "2xs": "0 1px 0 0 rgb(26 25 23 / 0.04)",
+        xs: "0 1px 2px 0 rgb(26 25 23 / 0.04)",
+        card: "0 1px 3px 0 rgb(26 25 23 / 0.04), 0 1px 2px -1px rgb(26 25 23 / 0.04)",
+        elevated: "0 4px 12px 0 rgb(26 25 23 / 0.06), 0 2px 4px -2px rgb(26 25 23 / 0.04)",
       },
       borderRadius: {
         xs: "2px",

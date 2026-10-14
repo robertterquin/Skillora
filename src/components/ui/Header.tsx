@@ -84,11 +84,11 @@ export function Header({ activePath = "/" }: HeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-white/95 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-canvas/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
           {/* Brand Logo & Title with Learning Owl */}
           <Link href={currentUser ? "/dashboard" : "/"} className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
-            <div className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-canvas border border-surface-border transition-all group-hover:scale-105 group-hover:border-ink/20">
+            <div className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-surface border border-surface-border transition-all group-hover:scale-105 group-hover:border-brand-400">
               <Image
                 src="/logo.svg"
                 alt=""

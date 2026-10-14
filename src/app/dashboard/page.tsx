@@ -819,30 +819,30 @@ function Dashboard() {
                       exit={{ opacity: 0, scale: 0.96 }}
                       transition={{ duration: 0.22, ease: "easeOut" }}
                       key={skill.id}
-                      className={`flex flex-col justify-between p-6 bg-white rounded-3xl border transition-all duration-200 ease-out group corner-ticks ${
+                      className={`flex flex-col justify-between p-6 bg-surface rounded-2xl border transition-all duration-200 ease-out group corner-ticks ${
                         isCertified
-                          ? "border-amber-400/80 shadow-sm ring-1 ring-amber-400/20 hover:border-amber-500 hover:-translate-y-1 hover:shadow-md"
-                          : "border-surface-border hover:border-ink/30 hover:-translate-y-1 hover:shadow-md"
+                          ? "border-amber-400/80 shadow-card ring-1 ring-amber-400/20 hover:border-amber-500 hover:-translate-y-0.5 hover:shadow-elevated"
+                          : "border-surface-border shadow-card hover:border-brand-400 hover:-translate-y-0.5 hover:shadow-elevated"
                       }`}
                     >
                       <div>
                         {/* Unified Editorial Metadata Header */}
-                        <div className="flex items-center justify-between text-xs text-ink-muted mb-3 pb-2.5 border-b border-surface-border/60">
+                        <div className="flex items-center justify-between text-3xs font-mono text-ink-muted uppercase tracking-widest mb-3 pb-2.5 border-b border-surface-border">
                           <div className="flex items-center gap-1.5 font-medium">
                             {isCustomAi && (
                               <Badge>AI</Badge>
                             )}
                             <span className="capitalize">{skill.difficulty}</span>
-                            <span className="text-ink-subtle">·</span>
+                            <span className="text-surface-border">|</span>
                             <span>{skill.estimated_hours}h</span>
-                            <span className="text-ink-subtle">·</span>
+                            <span className="text-surface-border">|</span>
                             <span>{totalCount} steps</span>
                           </div>
 
                           <button
                             type="button"
                             onClick={() => handleRemoveFromStudio(skill.id)}
-                            className="text-2xs text-ink-subtle hover:text-rose-600 transition cursor-pointer"
+                            className="text-3xs font-mono text-ink-muted hover:text-accent-vermilion transition cursor-pointer"
                             aria-label={`Remove ${skill.title} from My Studio`}
                           >
                             Remove
@@ -851,14 +851,14 @@ function Dashboard() {
 
                         {/* Title & Description with Golden Stamp badge */}
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="font-display font-bold text-lg text-ink group-hover:text-ink transition">
+                          <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink group-hover:text-accent-vermilion transition leading-tight">
                             {skill.title}
                           </h3>
                           {isCertified && (
                             <HankoSeal label="匠" subtext="GUILD" size="sm" variant="gold" className="flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-xs sm:text-sm text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
+                        <p className="text-xs text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
                           {skill.summary}
                         </p>
 
