@@ -227,18 +227,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
                         <SolarIcon name="book-bookmark-linear" className="w-4 h-4 text-ink-muted" />
-                        <span>Skill Library</span>
                       </Link>
-
-                      <div className="flex items-center justify-between px-3 py-2 text-ink">
-                        <div className="flex items-center gap-2.5">
-                          <SolarIcon name="cup-first-linear" className="w-4 h-4 text-accent-emerald" />
-                          <span className="text-xs">Membership</span>
-                        </div>
-                        <span className="text-3xs font-bold text-accent-emerald bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                          Free Access
-                        </span>
-                      </div>
                     </div>
 
                     {/* Divider & Sign Out */}

@@ -296,13 +296,8 @@ export default function SkillLibraryPage() {
               </div>
             </div>
 
-            {/* Right: Plan Status & Studio Link */}
+            {/* Right: Studio Link */}
             <div className="flex items-center gap-2 shrink-0">
-              <Badge shape="pill">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
-                Free Access
-              </Badge>
-
               <Link
                 href="/dashboard"
                 className={buttonClasses({ variant: "secondary", size: "sm" })}

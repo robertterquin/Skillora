@@ -484,10 +484,6 @@ function Dashboard() {
                   <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
                     {displayName}&apos;s Studio
                   </h1>
-                  <Badge shape="pill">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
-                    Free Access · Unlimited Skills
-                  </Badge>
                 </div>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
                   Your skills and today&apos;s practice, in one place.

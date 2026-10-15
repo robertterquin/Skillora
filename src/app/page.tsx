@@ -38,12 +38,6 @@ export default function LandingPage() {
       {/* Hero Section inspired by Image 1 (Pallet Ross Composition) */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 overflow-hidden text-center">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Free Access Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-6 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>100% Free · All Skills &amp; AI Tools Unlocked</span>
-          </div>
-
           {/* Main Hero Headline */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
             A place to master your next <span className="font-serif italic font-normal text-ink/90">craft</span>.
@@ -68,7 +62,7 @@ export default function LandingPage() {
               href="/signup"
               className={buttonClasses({ size: "lg", className: "w-full sm:w-auto" })}
             >
-              Start for free
+              Get started
             </Link>
 
             <Link
@@ -138,71 +132,6 @@ export default function LandingPage() {
                 Know up front whether a skill takes an afternoon or several weeks of daily practice.
               </p>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 100% Free Access Section */}
-      <section id="pricing" className="py-16 sm:py-24 border-t border-surface-border bg-canvas text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Free to use</span>
-            </div>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              100% free <span className="font-serif italic font-normal">for everyone</span>.
-            </h2>
-            <p className="mt-3 text-sm text-ink-muted leading-relaxed">
-              Skillora is completely free to use. Practice as many skills as you want, generate custom roadmaps with Archimedes, and earn verified certifications at zero cost.
-            </p>
-          </div>
-
-          <div className="max-w-xl mx-auto text-left p-8 sm:p-10 rounded-3xl border-2 border-surface-border bg-white shadow-elevated relative overflow-hidden">
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-surface-border/60">
-              <div>
-                <span className="font-mono text-3xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  ALL ACCESS INCLUDED
-                </span>
-                <h3 className="font-serif italic font-normal text-2xl text-ink mt-2">
-                  Full Community Access
-                </h3>
-              </div>
-              <div className="text-right font-mono">
-                <span className="font-bold text-3xl text-ink">₱0</span>
-                <span className="text-xs text-ink-muted font-sans block">free forever</span>
-              </div>
-            </div>
-
-            <ul className="space-y-3.5 text-xs text-ink-secondary">
-              <li className="flex items-center gap-3">
-                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                <span><strong>Unlimited skills</strong> in your personal studio</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                <span><strong>Unlimited AI roadmaps &amp; coaching</strong> with Archimedes</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                <span><strong>Daily practice drills &amp; spaced repetition</strong> intervals</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                <span><strong>Voice tutor &amp; pronunciation diagnostics</strong></span>
-              </li>
-              <li className="flex items-center gap-3">
-                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                <span><strong>Skill assessments &amp; official certificates</strong> of completion</span>
-              </li>
-            </ul>
-
-            <Link
-              href="/signup"
-              className={buttonClasses({ size: "lg", block: true, className: "mt-8" })}
-            >
-              Get started for free &rarr;
-            </Link>
           </div>
         </div>
       </section>
