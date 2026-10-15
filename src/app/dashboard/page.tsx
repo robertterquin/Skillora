@@ -230,16 +230,44 @@ function Dashboard() {
       setAllSkills(Array.from(allSkillsMap.values()));
     });
 
-    // Load saved Guild certified skills
+    // Load saved Guild certified skills from localStorage
+    let localCertified: string[] = [];
     const savedCertified = localStorage.getItem("skillora_guild_certified_skills");
     if (savedCertified) {
       try {
-        setCertifiedSkillIds((JSON.parse(savedCertified) as string[]).map(normalizeSkillId));
+        localCertified = (JSON.parse(savedCertified) as string[]).map(normalizeSkillId);
+        setCertifiedSkillIds(localCertified);
       } catch (e) {
         console.error("Error parsing certified skills", e);
       }
     }
-  }, [supabase]);
+
+    // Sync with Supabase user_certifications if user is authenticated
+    if (currentUser) {
+      supabase
+        .from("user_certifications")
+        .select("skill_id")
+        .eq("user_id", currentUser.id)
+        .then(({ data, error }) => {
+          if (!error && data) {
+            const remoteIds = data.map((d: { skill_id: string }) => normalizeSkillId(d.skill_id));
+            const merged = Array.from(new Set([...remoteIds, ...localCertified]));
+            setCertifiedSkillIds(merged);
+            localStorage.setItem("skillora_guild_certified_skills", JSON.stringify(merged));
+
+            // Upload any local-only certifications
+            const unuploaded = localCertified.filter((id) => !remoteIds.includes(id) && isValidUuid(id));
+            if (unuploaded.length > 0) {
+              const rows = unuploaded.map((id) => ({
+                user_id: currentUser.id,
+                skill_id: id,
+              }));
+              supabase.from("user_certifications").upsert(rows, { onConflict: "user_id,skill_id" }).then();
+            }
+          }
+        });
+    }
+  }, [supabase, currentUser]);
 
   // Handle passing Craftsman's Guild Diagnostic Exam
   const handlePassGuildExam = (skillId: string) => {
@@ -248,6 +276,17 @@ function Dashboard() {
     setCertifiedSkillIds(updated);
     if (typeof window !== "undefined") {
       localStorage.setItem("skillora_guild_certified_skills", JSON.stringify(updated));
+    }
+    if (currentUser && isValidUuid(targetNorm)) {
+      supabase
+        .from("user_certifications")
+        .upsert(
+          { user_id: currentUser.id, skill_id: targetNorm },
+          { onConflict: "user_id,skill_id" }
+        )
+        .then(({ error }) => {
+          if (error) console.warn("Note: user_certifications sync:", error.message);
+        });
     }
   };
 
