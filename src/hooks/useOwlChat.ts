@@ -689,16 +689,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
   const enrollSkill = useCallback(
     async (skillToEnroll: Skill): Promise<boolean> => {
-      if (!options.isPro && typeof options.daysRemaining === "number" && options.daysRemaining <= 0) {
-        options.onLimitReached?.();
-        return false;
-      }
-
-      if (!options.isPro && (options.enrolledSkills?.length || 0) >= 3) {
-        options.onLimitReached?.();
-        return false;
-      }
-
       playStampThud();
       if (options.onSkillEnrolled) {
         await options.onSkillEnrolled(skillToEnroll);

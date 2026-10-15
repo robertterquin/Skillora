@@ -52,87 +52,48 @@ export function SubscriptionModal({
 
       {/* Content Plans */}
       <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto">
-        {/* Limit Reached Warning if triggered */}
-        {isLimitReached && (
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2.5">
-            <SolarIcon name="danger-circle-linear" className="w-5 h-5 text-amber-600 flex-shrink-0" />
-            <span>
-              <strong>You&apos;ve reached the free plan limit.</strong> Upgrade to Pro for unlimited skills and AI features.
+        <div className="p-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50/40 relative shadow-xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 mx-auto">
+            <SolarIcon name="cup-first-linear" className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="font-mono text-3xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-300">
+              COMMUNITY ACCESS
             </span>
-          </div>
-        )}
-
-        {/* Pro Tier (₱299/mo) */}
-        <div className="p-6 rounded-2xl border-2 border-brand-600 bg-white relative shadow-xs">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="font-display font-bold text-xl text-ink">Pro</h3>
-              <p className="text-xs text-ink-muted mt-0.5">
-                Unlimited skills and AI features
-              </p>
-            </div>
-            <div className="text-right">
-              <span className="font-display font-extrabold text-2xl text-ink">₱299</span>
-              <span className="text-xs text-ink-muted"> / month</span>
-            </div>
+            <h3 className="font-display font-bold text-xl text-ink mt-2">
+              All Features Are 100% Free
+            </h3>
+            <p className="text-xs text-ink-muted mt-1 max-w-sm mx-auto leading-relaxed">
+              Skillora is currently free for all learners. You have unlimited access to all skills, roadmaps, and Archimedes AI coaching.
+            </p>
           </div>
 
-          <ul className="space-y-2.5 text-xs text-ink-secondary py-3 border-y border-surface-border">
+          <ul className="space-y-2.5 text-xs text-ink-secondary py-4 border-y border-emerald-200/60 text-left max-w-sm mx-auto">
             <li className="flex items-center gap-2">
-              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-              <span><strong>Unlimited skills</strong> in My Studio</span>
+              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span><strong>Unlimited skills</strong> in your studio</span>
             </li>
             <li className="flex items-center gap-2">
-              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-              <span><strong>Unlimited Archimedes</strong> skill breakdowns</span>
+              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span><strong>Unlimited custom roadmaps</strong> with Archimedes</span>
             </li>
             <li className="flex items-center gap-2">
-              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-              <span><strong>Unlimited</strong> technique coaching</span>
+              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span><strong>Spaced repetition drills</strong> &amp; timers</span>
             </li>
             <li className="flex items-center gap-2">
-              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
-              <span><strong>Unlimited</strong> voice pronunciation grading</span>
+              <SolarIcon name="check-circle-linear" className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span><strong>Skill certifications</strong> &amp; official diplomas</span>
             </li>
           </ul>
 
-          {isUpgraded ? (
-            <div className="mt-5 p-3.5 rounded-xl bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald text-center text-xs font-semibold flex items-center justify-center gap-2 animate-fade-in">
-              <SolarIcon name="check-circle-linear" className="w-4 h-4" />
-              <span>You&apos;re on Pro. Enjoy unlimited skills.</span>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  localStorage.setItem("skillora_pro_membership", "true");
-                }
-                setIsUpgraded(true);
-                if (onUpgradeSuccess) onUpgradeSuccess();
-                setTimeout(() => {
-                  onClose();
-                  setIsUpgraded(false);
-                }, 1600);
-              }}
-              className={buttonClasses({ className: "mt-5 w-full" })}
-            >
-              Upgrade to Pro · ₱299/month
-            </button>
-          )}
-        </div>
-
-        {/* Free Tier Comparison Card */}
-        <div className="p-5 rounded-2xl bg-canvas border border-surface-border text-xs">
-          <div className="flex items-center justify-between mb-2">
-            <span className="font-bold text-ink">Free</span>
-            <span className="font-bold text-ink">₱0</span>
-          </div>
-          <ul className="space-y-1.5 text-ink-muted">
-            <li>• Up to <strong>3 skills</strong> in My Studio</li>
-            <li>• <strong>7 days</strong> of Archimedes, voice grading, and technique coaching</li>
-            <li>• Flashcards, practice tools, and curated resources</li>
-          </ul>
+          <button
+            type="button"
+            onClick={onClose}
+            className={buttonClasses({ className: "w-full" })}
+          >
+            Continue Learning
+          </button>
         </div>
       </div>
     </Modal>

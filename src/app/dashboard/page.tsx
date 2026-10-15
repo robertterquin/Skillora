@@ -16,7 +16,6 @@ import {
   SkillFilterBar,
   DurationFilter,
   SolarIcon,
-  SubscriptionModal,
   MasteryPassportModal,
   GuildExamModal,
   GuidedPracticeSessionModal,
@@ -62,12 +61,6 @@ function Dashboard() {
   const searchParams = useSearchParams();
 
   const { user: currentUser, isLoading: loadingAuth } = useAuth();
-
-  // Free Tier & 7-Day Trial Limits
-  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
-  const [isLimitReached, setIsLimitReached] = useState(false);
-  const [daysRemaining, setDaysRemaining] = useState(7);
-  const [isPro, setIsPro] = useState(false);
 
   // All available skills
   const [allSkills, setAllSkills] = useState<Skill[]>(INITIAL_SKILLS);
@@ -189,23 +182,6 @@ function Dashboard() {
     setIsClient(true);
 
     const user = currentUser;
-    // Check if user is on Pro plan
-    const localIsPro = typeof window !== "undefined" && localStorage.getItem("skillora_pro_membership") === "true";
-    const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
-    setIsPro(userIsPro);
-
-    // 7-Day Trial calculation
-    const trialStartKey = "skillora_trial_start_timestamp";
-    let trialStart = localStorage.getItem(trialStartKey);
-    if (!trialStart) {
-      trialStart = Date.now().toString();
-      localStorage.setItem(trialStartKey, trialStart);
-    }
-    const daysElapsed = Math.floor(
-      (Date.now() - parseInt(trialStart, 10)) / (1000 * 60 * 60 * 24)
-    );
-    setDaysRemaining(Math.max(0, 7 - daysElapsed));
-
     loadUserData(user);
   }, [currentUser, loadUserData]);
 
@@ -508,12 +484,10 @@ function Dashboard() {
                   <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
                     {displayName}&apos;s Studio
                   </h1>
-                  {isPro && (
-                    <Badge shape="pill">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
-                      Pro · Unlimited skills
-                    </Badge>
-                  )}
+                  <Badge shape="pill">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
+                    Free Access · Unlimited Skills
+                  </Badge>
                 </div>
                 <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
                   Your skills and today&apos;s practice, in one place.
@@ -521,23 +495,6 @@ function Dashboard() {
 
                 {/* Status Badges & Quick Action Row */}
                 <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {!isPro && (
-                    <div className="inline-flex items-center gap-1.5 flex-wrap">
-                      <Badge shape="pill">
-                        <SolarIcon name="clock-circle-linear" className="w-3 h-3 text-ink-muted" />
-                        Free · {isClient ? myStudioSkills.length : 0}/3 skills · {daysRemaining} AI days left
-                      </Badge>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setIsLimitReached(false);
-                          setIsSubscriptionModalOpen(true);
-                        }}
-                      >
-                        Upgrade to Pro
-                      </Button>
-                    </div>
-                  )}
 
                   {/* Certifications Modal Trigger */}
                   <Button
@@ -1005,33 +962,6 @@ function Dashboard() {
           )}
         </section>
 
-        {/* Slot Limit Callout if Free Tier and at 3 skills */}
-        {!isPro && isClient && myStudioSkills.length >= 3 && (
-          <Card as="section" className="mb-6 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
-                <SolarIcon name="cup-first-linear" className="w-5 h-5 text-ink-muted" />
-              </div>
-              <div>
-                <h4 className="font-display font-bold text-sm text-ink">
-                  You&apos;re using all 3 free skills
-                </h4>
-                <p className="text-xs text-ink-muted">
-                  Upgrade to Pro (₱299/month) to practice as many skills as you like.
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => {
-                setIsLimitReached(true);
-                setIsSubscriptionModalOpen(true);
-              }}
-            >
-              Upgrade to Pro
-            </Button>
-          </Card>
-        )}
-
         {/* Discovery Callout Footer */}
         <Card as="section" className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -1078,19 +1008,6 @@ function Dashboard() {
             isViewOnly={false}
             isGuildCertified={certifiedSkillIds.includes(normalizeSkillId(activeSyllabusSkill.id))}
             onOpenGuildExam={(skill) => setActiveExamSkill(skill)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* 3. Subscription & Upgrade Modal */}
-      <AnimatePresence>
-        {isSubscriptionModalOpen && (
-          <SubscriptionModal
-            isOpen={isSubscriptionModalOpen}
-            onClose={() => setIsSubscriptionModalOpen(false)}
-            userEmail={currentUser?.email}
-            isLimitReached={isLimitReached}
-            onUpgradeSuccess={() => setIsPro(true)}
           />
         )}
       </AnimatePresence>

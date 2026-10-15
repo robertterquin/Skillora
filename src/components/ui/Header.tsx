@@ -10,7 +10,6 @@ import { cn } from "@/lib/cn";
 import { SolarIcon } from "./SolarIcon";
 import { buttonClasses } from "./Button";
 import { UserAvatar } from "./UserAvatar";
-import { SubscriptionModal } from "../modals/SubscriptionModal";
 import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
 
 interface HeaderProps {
@@ -25,7 +24,6 @@ const SIGNED_IN_LINKS = [
 const SIGNED_OUT_LINKS = [
   { href: "/", label: "Overview" },
   { href: "/library", label: "Skill Library" },
-  { href: "/#pricing", label: "Pricing" },
 ];
 
 import { useAuth } from "@/hooks/useAuth";
@@ -43,7 +41,6 @@ export function Header({ activePath }: HeaderProps = {}) {
   const { user: currentUser, isLoading: loadingUser, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -233,23 +230,15 @@ export function Header({ activePath }: HeaderProps = {}) {
                         <span>Skill Library</span>
                       </Link>
 
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setIsDropdownOpen(false);
-                          setIsSubscriptionOpen(true);
-                        }}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-canvas text-ink transition text-left"
-                      >
+                      <div className="flex items-center justify-between px-3 py-2 text-ink">
                         <div className="flex items-center gap-2.5">
-                          <SolarIcon name="cup-first-linear" className="w-4 h-4 text-amber-500" />
-                          <span>Plan &amp; billing</span>
+                          <SolarIcon name="cup-first-linear" className="w-4 h-4 text-accent-emerald" />
+                          <span className="text-xs">Membership</span>
                         </div>
-                        <span className="text-2xs font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
-                          Pro
+                        <span className="text-3xs font-bold text-accent-emerald bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                          Free Access
                         </span>
-                      </button>
+                      </div>
                     </div>
 
                     {/* Divider & Sign Out */}
@@ -330,13 +319,6 @@ export function Header({ activePath }: HeaderProps = {}) {
           </div>
         </div>
       </header>
-
-      {/* Subscription Modal */}
-      <SubscriptionModal
-        isOpen={isSubscriptionOpen}
-        onClose={() => setIsSubscriptionOpen(false)}
-        userEmail={currentUser?.email}
-      />
     </>
   );
 }

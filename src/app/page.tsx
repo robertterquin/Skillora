@@ -38,6 +38,12 @@ export default function LandingPage() {
       {/* Hero Section inspired by Image 1 (Pallet Ross Composition) */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 overflow-hidden text-center">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Free Access Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-6 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>100% Free · All Skills &amp; AI Tools Unlocked</span>
+          </div>
+
           {/* Main Hero Headline */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
             A place to master your next <span className="font-serif italic font-normal text-ink/90">craft</span>.
@@ -136,101 +142,67 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Minimalist Pricing Section */}
+      {/* 100% Free Access Section */}
       <section id="pricing" className="py-16 sm:py-24 border-t border-surface-border bg-canvas text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl mx-auto mb-12">
+          <div className="max-w-xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>Free to use</span>
+            </div>
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              Simple, transparent <span className="font-serif italic font-normal">pricing</span>.
+              100% free <span className="font-serif italic font-normal">for everyone</span>.
             </h2>
-            <p className="mt-2 text-sm text-ink-muted">
-              Start free. Upgrade when you want multiple active studio tracks or unlimited coaching with Archimedes.
+            <p className="mt-3 text-sm text-ink-muted leading-relaxed">
+              Skillora is completely free to use. Practice as many skills as you want, generate custom roadmaps with Archimedes, and earn verified certifications at zero cost.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left">
-            {/* Free Tier */}
-            <div className="p-8 rounded-3xl border border-surface-border bg-white flex flex-col justify-between shadow-card hover:border-brand-300 transition-colors">
+          <div className="max-w-xl mx-auto text-left p-8 sm:p-10 rounded-3xl border-2 border-surface-border bg-white shadow-elevated relative overflow-hidden">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-surface-border/60">
               <div>
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
-                  <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                    Free plan
-                  </span>
-                  <span className="font-mono text-3xs text-ink-muted">ENTRY</span>
-                </div>
-                <h3 className="font-serif italic font-normal text-2xl text-ink">Foundation</h3>
-                <div className="mt-3 flex items-baseline gap-1.5 font-mono">
-                  <span className="font-bold text-3xl text-ink">₱0</span>
-                  <span className="text-xs text-ink-muted font-sans">forever</span>
-                </div>
-                <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  Practice up to 3 simultaneous skills. Archimedes and AI coaching tools are included for your first 7 days.
-                </p>
-                <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Up to <strong>3 active skills</strong> in My Studio</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>7 days</strong> of Archimedes, voice grading, and drills</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span>Spaced repetition, flashcards, and curated links</span>
-                  </li>
-                </ul>
+                <span className="font-mono text-3xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  ALL ACCESS INCLUDED
+                </span>
+                <h3 className="font-serif italic font-normal text-2xl text-ink mt-2">
+                  Full Community Access
+                </h3>
               </div>
-              <Link
-                href="/signup"
-                className={buttonClasses({ variant: "secondary", block: true, className: "mt-8" })}
-              >
-                Start free
-              </Link>
+              <div className="text-right font-mono">
+                <span className="font-bold text-3xl text-ink">₱0</span>
+                <span className="text-xs text-ink-muted font-sans block">free forever</span>
+              </div>
             </div>
 
-            {/* Pro Tier (₱299/month) */}
-            <div className="p-8 rounded-3xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-elevated">
-              <span className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-accent-vermilion text-white font-mono text-3xs font-semibold uppercase tracking-wider shadow-xs">
-                PRO
-              </span>
-              <div>
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
-                  <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                    Pro plan
-                  </span>
-                  <span className="font-mono text-3xs text-accent-vermilion font-semibold">ALL ACCESS</span>
-                </div>
-                <h3 className="font-serif italic font-normal text-2xl text-ink">Skillora Pro</h3>
-                <div className="mt-3 flex items-baseline gap-1.5 font-mono">
-                  <span className="font-bold text-3xl text-ink">₱299</span>
-                  <span className="text-xs text-ink-muted font-sans">/ month</span>
-                </div>
-                <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  For dedicated learners practicing multiple disciplines across music, craft, and technology.
-                </p>
-                <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>Unlimited skills</strong> in My Studio</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>Unlimited Archimedes</strong> custom syllabi</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>Continuous</strong> coaching, voice diagnostics &amp; certifications</span>
-                  </li>
-                </ul>
-              </div>
-              <Link
-                href="/signup"
-                className={buttonClasses({ block: true, className: "mt-8" })}
-              >
-                Enroll in Pro
-              </Link>
-            </div>
+            <ul className="space-y-3.5 text-xs text-ink-secondary">
+              <li className="flex items-center gap-3">
+                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                <span><strong>Unlimited skills</strong> in your personal studio</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                <span><strong>Unlimited AI roadmaps &amp; coaching</strong> with Archimedes</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                <span><strong>Daily practice drills &amp; spaced repetition</strong> intervals</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                <span><strong>Voice tutor &amp; pronunciation diagnostics</strong></span>
+              </li>
+              <li className="flex items-center gap-3">
+                <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
+                <span><strong>Skill assessments &amp; official certificates</strong> of completion</span>
+              </li>
+            </ul>
+
+            <Link
+              href="/signup"
+              className={buttonClasses({ size: "lg", block: true, className: "mt-8" })}
+            >
+              Get started for free &rarr;
+            </Link>
           </div>
         </div>
       </section>

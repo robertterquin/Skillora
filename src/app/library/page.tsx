@@ -7,7 +7,6 @@ import {
   Badge,
   Header,
   SolarIcon,
-  SubscriptionModal,
   InteractiveOwlAvatar,
   buttonClasses,
   QuickReplies,
@@ -57,38 +56,12 @@ export default function SkillLibraryPage() {
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
   const [enrolledSkills, setEnrolledSkills] = useState<Skill[]>([]);
 
-  // Free Tier & 7-Day Trial Limits
-  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
-  const [isLimitReached, setIsLimitReached] = useState(false);
-  const [daysRemaining, setDaysRemaining] = useState(7);
-  const [isPro, setIsPro] = useState(false);
-
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-
-  // Check existing enrollments and plan
+  // Check existing enrollments
   useEffect(() => {
     const init = async () => {
       const user = currentUser;
-
-      // Check if user is on Pro plan
-      const localIsPro =
-        typeof window !== "undefined" &&
-        localStorage.getItem("skillora_pro_membership") === "true";
-      const userIsPro = user?.user_metadata?.plan === "pro" || localIsPro;
-      setIsPro(userIsPro);
-
-      // 7-Day Trial calculation
-      const trialStartKey = "skillora_trial_start_timestamp";
-      let trialStart = localStorage.getItem(trialStartKey);
-      if (!trialStart) {
-        trialStart = Date.now().toString();
-        localStorage.setItem(trialStartKey, trialStart);
-      }
-      const daysElapsed = Math.floor(
-        (Date.now() - parseInt(trialStart, 10)) / (1000 * 60 * 60 * 24)
-      );
-      setDaysRemaining(Math.max(0, 7 - daysElapsed));
 
       const savedEnrolled = localStorage.getItem("skillora_enrolled_skills");
       let localIds: string[] = [];
@@ -223,13 +196,7 @@ export default function SkillLibraryPage() {
     currentUser,
     enrolledSkills,
     catalogSkills: catalogSkillTitles,
-    isPro,
-    daysRemaining,
     onSkillEnrolled: handleEnrollSkill,
-    onLimitReached: () => {
-      setIsLimitReached(true);
-      setIsSubscriptionModalOpen(true);
-    },
   });
 
   // Keyboard shortcuts (⌘B to toggle sidebar, ⌘N to start new consultation)
@@ -331,25 +298,10 @@ export default function SkillLibraryPage() {
 
             {/* Right: Plan Status & Studio Link */}
             <div className="flex items-center gap-2 shrink-0">
-              {isPro ? (
-                <Badge shape="pill">Pro</Badge>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLimitReached(false);
-                    setIsSubscriptionModalOpen(true);
-                  }}
-                  className="px-2.5 py-1 rounded-full bg-surface-muted border border-surface-border text-ink-secondary text-2xs font-medium hover:bg-surface-border/60 transition flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>
-                    {enrolledSkillIds.length}/3 skills · {daysRemaining}d trial
-                  </span>
-                  <span className="font-semibold text-ink underline underline-offset-2">
-                    Upgrade
-                  </span>
-                </button>
-              )}
+              <Badge shape="pill">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
+                Free Access
+              </Badge>
 
               <Link
                 href="/dashboard"
@@ -577,19 +529,6 @@ export default function SkillLibraryPage() {
           </div>
         </main>
       </div>
-
-      {/* Subscription & Pricing Modal */}
-      <AnimatePresence>
-        {isSubscriptionModalOpen && (
-          <SubscriptionModal
-            isOpen={isSubscriptionModalOpen}
-            onClose={() => setIsSubscriptionModalOpen(false)}
-            userEmail={currentUser?.email}
-            isLimitReached={isLimitReached}
-            onUpgradeSuccess={() => setIsPro(true)}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
