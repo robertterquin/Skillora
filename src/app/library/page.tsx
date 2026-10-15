@@ -380,10 +380,10 @@ export default function SkillLibraryPage() {
                   />
 
                   <h1 className="font-serif italic font-normal text-3xl sm:text-4xl text-ink tracking-tight mt-6">
-                    Tell Archimedes what you wish to master.
+                    What would you like to master?
                   </h1>
                   <p className="text-xs sm:text-sm text-ink-muted mt-2 max-w-md leading-relaxed">
-                    Chat to explore crafts, evaluate tailored pathways, or build a structured 4-step practice track.
+                    Chat to explore skills, evaluate learning roadmaps, or build a structured practice plan.
                   </p>
 
                   {/* Voice Audio Toggle */}
@@ -497,7 +497,7 @@ export default function SkillLibraryPage() {
                   {isThinking && (
                     <div className="flex items-center gap-2.5 py-4 text-xs font-mono text-ink-muted animate-pulse">
                       <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin text-brand-600" />
-                      <span>Archimedes is deliberating…</span>
+                      <span>Archimedes is thinking…</span>
                     </div>
                   )}
 

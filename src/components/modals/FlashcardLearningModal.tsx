@@ -6,7 +6,6 @@ import { Skill, SkillStep } from "@/types/database";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
-import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { isStepCompleted } from "@/lib/mock-data";
 import {
@@ -488,9 +487,9 @@ export function FlashcardLearningModal({
 
                   <div className="flex items-center gap-2">
                     {isCurrentStepDone && (
-                      <span className="inline-flex items-center gap-1 text-3xs font-mono text-accent-vermilion font-bold bg-accent-vermilion/10 px-2.5 py-0.5 rounded-full border border-accent-vermilion/20">
-                        <HankoSeal size="xs" variant="vermilion" label="済" />
-                        <span>VERIFIED</span>
+                      <span className="inline-flex items-center gap-1.5 text-3xs font-mono text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                        <SolarIcon name="check-circle-bold" className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>COMPLETED</span>
                       </span>
                     )}
                     <span className="text-3xs text-ink-muted flex items-center gap-1 font-mono tracking-wider uppercase">
@@ -627,13 +626,13 @@ export function FlashcardLearningModal({
                   >
                     {isCurrentStepDone ? (
                       <>
-                        <HankoSeal size="xs" variant="vermilion" label="済" />
-                        <span>HANKŌ AFFIXED</span>
+                        <SolarIcon name="check-circle-bold" className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>COMPLETED</span>
                       </>
                     ) : (
                       <>
                         <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                        <span>AFFIX HANKŌ SEAL</span>
+                        <span>MARK AS COMPLETED</span>
                       </>
                     )}
                   </button>
@@ -1032,7 +1031,7 @@ export function FlashcardLearningModal({
               className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
               <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-3.5 h-3.5" />
-              <span>{isGuildCertified ? "Guild Diploma (匠)" : "Proceed to Guild Exam (匠)"}</span>
+              <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
             </button>
           )}
 

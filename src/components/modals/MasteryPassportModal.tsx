@@ -6,7 +6,6 @@ import { Skill } from "@/types/database";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
-import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
 import { isStepCompleted, normalizeSkillId } from "@/lib/mock-data";
@@ -63,13 +62,13 @@ export function MasteryPassportModal({
     certifiedSkillIds.includes(normalizeSkillId(s.id))
   ).length;
 
-  // Guild Rank Calculation
+  // Proficiency Rank Calculation
   const rank =
     certifiedCount >= 3 || masteredSkills.length >= 3
-      ? "MASTER ATELIER ARTISAN"
+      ? "ADVANCED PRACTITIONER"
       : certifiedCount >= 1 || masteredSkills.length >= 1
-      ? "JOURNEYMAN CRAFTSMAN"
-      : "STUDIO APPRENTICE";
+      ? "INTERMEDIATE PRACTITIONER"
+      : "ACTIVE LEARNER";
 
   const rankTier =
     certifiedCount >= 3 || masteredSkills.length >= 3 ? "TIER III" : certifiedCount >= 1 || masteredSkills.length >= 1 ? "TIER II" : "TIER I";
@@ -81,21 +80,21 @@ export function MasteryPassportModal({
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-paper border-2 border-stone-300 flex flex-col max-h-[92vh] text-ink select-none corner-ticks">
-      {/* Passport Spine Header & Folio Tab Bar */}
+      {/* Certifications Modal Header */}
       <div className="p-4 sm:p-5 bg-paper-deep border-b border-stone-300 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-stone-200 border border-stone-300 flex items-center justify-center text-ink">
-            <SolarIcon name="book-bookmark-linear" className="w-5 h-5 text-stone-700" />
+            <SolarIcon name="diploma-verified-linear" className="w-5 h-5 text-stone-700" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">PASSPORT // ARCHIVAL FOLIO</span>
+              <span className="spec-tag text-stone-600">VERIFIED CREDENTIALS</span>
               <span className="text-3xs font-mono font-bold text-stone-500">
                 NO. SK-{user?.id ? user.id.slice(0, 6).toUpperCase() : "882190"}
               </span>
             </div>
             <h2 id={titleId} className="font-display font-bold text-base sm:text-lg text-ink leading-tight">
-              Mastery Passport
+              Skill Certifications
             </h2>
           </div>
         </div>
@@ -122,7 +121,7 @@ export function MasteryPassportModal({
                   className="absolute inset-0 bg-white rounded-lg shadow-xs"
                 />
               )}
-              <span className="relative z-10">Credential</span>
+              <span className="relative z-10">Overview</span>
             </button>
             <button
               type="button"
@@ -143,7 +142,7 @@ export function MasteryPassportModal({
                   className="absolute inset-0 bg-white rounded-lg shadow-xs"
                 />
               )}
-              <span className="relative z-10">Hankō Stamps ({masteredSkills.length})</span>
+              <span className="relative z-10">Certificates ({certifiedCount})</span>
             </button>
           </div>
 
@@ -165,37 +164,40 @@ export function MasteryPassportModal({
           /* 1. ARCHIVAL CREDENTIAL PAGE                                  */
           /* ============================================================ */
           <div className="max-w-2xl mx-auto space-y-6">
-            {/* Guild Citizen Card */}
+            {/* Learner Credential Card */}
             <div className="p-6 sm:p-7 rounded-2xl bg-white border border-stone-300 shadow-xs relative overflow-hidden">
-              {/* Background Watermark Crest */}
-              <div className="absolute right-4 -bottom-6 opacity-5 pointer-events-none select-none">
-                <span className="font-serif text-[180px] font-bold">済</span>
-              </div>
-
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-stone-200">
                 <div>
                   <span className="spec-tag text-stone-500 block mb-1">
-                    DELIBERATE PRACTICE GUILD MEMBER
+                    VERIFIED LEARNER CREDENTIAL
                   </span>
                   <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
                     {displayName}
                   </h3>
                   <p className="text-xs text-stone-500 mt-1 font-mono">
-                    Member ID: {user?.email || "Studio Guest Explorer"}
+                    Member ID: {user?.email || "Guest"}
                   </p>
                 </div>
 
-                {/* Official Stamped Hankō Seal on Citizen Card (Gold if Certified!) */}
+                {/* Status Badge */}
                 <div className="flex flex-col items-center">
-                  <HankoSeal
-                    label={certifiedCount > 0 ? "匠" : "済"}
-                    subtext={certifiedCount > 0 ? "GUILD CERTIFIED" : "VERIFIED"}
-                    size="lg"
-                    variant={certifiedCount > 0 ? "gold" : "vermilion"}
-                    className="shadow-sm"
-                  />
+                  <div
+                    className={`w-14 h-14 rounded-2xl border-2 ${
+                      certifiedCount > 0
+                        ? "border-amber-400 bg-amber-50 text-amber-700"
+                        : "border-stone-300 bg-stone-50 text-stone-600"
+                    } flex flex-col items-center justify-center shadow-xs`}
+                  >
+                    <SolarIcon
+                      name={certifiedCount > 0 ? "diploma-verified-linear" : "check-circle-linear"}
+                      className="w-6 h-6 mb-0.5"
+                    />
+                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase">
+                      {certifiedCount > 0 ? "CERTIFIED" : "ACTIVE"}
+                    </span>
+                  </div>
                   <span className="text-3xs font-mono text-stone-400 mt-1 uppercase tracking-widest">
-                    {certifiedCount > 0 ? "Golden Guild Mark" : "Official Seal"}
+                    {certifiedCount > 0 ? "Verified Scholar" : "Official Member"}
                   </span>
                 </div>
               </div>
@@ -203,7 +205,7 @@ export function MasteryPassportModal({
               {/* Metrics Breakdown Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-center font-mono">
                 <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">GUILD RANK</span>
+                  <span className="text-3xs text-stone-500 block uppercase">RANK</span>
                   <span className="font-bold text-xs text-ink mt-0.5 block">{rankTier}</span>
                   <span className="text-3xs text-stone-600 block">{rank}</span>
                 </div>
@@ -217,29 +219,29 @@ export function MasteryPassportModal({
                 </div>
 
                 <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">GOLDEN SEALS</span>
+                  <span className="text-3xs text-stone-500 block uppercase">CERTIFICATIONS EARNED</span>
                   <span className="font-bold text-lg text-amber-700 mt-0.5 block tabular-nums">
                     {certifiedCount}
                   </span>
-                  <span className="text-3xs text-amber-800 font-semibold block">匠 Certified</span>
+                  <span className="text-3xs text-amber-800 font-semibold block">Verified</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">DRILLS MASTERED</span>
+                  <span className="text-3xs text-stone-500 block uppercase">SKILLS COMPLETED</span>
                   <span className="font-bold text-lg text-rose-700 mt-0.5 block tabular-nums">
                     {masteredSkills.length}
                   </span>
-                  <span className="text-3xs text-stone-600 block">Stamped</span>
+                  <span className="text-3xs text-stone-600 block">Completed</span>
                 </div>
               </div>
             </div>
 
-            {/* Guild Oath / Craft Philosophy */}
+            {/* Practical Mindset Quote */}
             <div className="p-5 rounded-2xl bg-paper-warm border border-stone-300 text-xs text-stone-700 leading-relaxed font-serif italic text-center">
-              &ldquo;Mastery is not an accident of genius, but the disciplined accumulation of micro-mechanics. Each Hankō seal represents twenty deliberate hours etched into the hands and mind.&rdquo;
+              &ldquo;Consistency beats intensity. Small daily practice sessions compound into true mastery.&rdquo;
             </div>
 
-            {/* Actions: Print & Jump to Stamp Registry */}
+            {/* Actions: Print & Jump to Certificates Registry */}
             <div className="flex items-center justify-between pt-2">
               <button
                 type="button"
@@ -247,7 +249,7 @@ export function MasteryPassportModal({
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-stone-300 hover:border-ink text-xs font-semibold text-ink transition shadow-2xs cursor-pointer"
               >
                 <SolarIcon name="printer-2-linear" className="w-4 h-4 text-stone-600" />
-                <span>Export & Print Passport</span>
+                <span>Print Certificates</span>
               </button>
 
               <button
@@ -258,20 +260,20 @@ export function MasteryPassportModal({
                 }}
                 className={buttonClasses()}
               >
-                <span>Inspect Hankō Visa Stamps ({masteredSkills.length}) &rarr;</span>
+                <span>View Certificates ({masteredSkills.length}) &rarr;</span>
               </button>
             </div>
           </div>
         ) : (
           /* ============================================================ */
-          /* 2. VISA STAMP REGISTRY PAGE                                  */
+          /* 2. CERTIFICATES REGISTRY PAGE                                */
           /* ============================================================ */
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-stone-300 text-xs">
               <div>
-                <span className="spec-tag text-stone-500 block">ARCHIVAL STAMP REGISTRY</span>
+                <span className="spec-tag text-stone-500 block">CERTIFICATES &amp; ACHIEVEMENTS</span>
                 <p className="text-stone-600 text-2xs mt-0.5">
-                  Disciplines receive an indelible scarlet Hankō seal upon completion of all step drills.
+                  Skills become eligible for official certification upon completing all curriculum steps.
                 </p>
               </div>
               <span className="font-mono text-xs font-bold text-stone-700">
@@ -302,7 +304,7 @@ export function MasteryPassportModal({
                     <div>
                       <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-stone-500 uppercase mb-2">
                         <span className={isCertified ? "text-amber-800 font-bold" : ""}>
-                          {isCertified ? "GUILD DIPLOMA CONFERRED" : `REGISTRY ENTRY #${idx + 1 < 10 ? `0${idx + 1}` : idx + 1}`}
+                          {isCertified ? "OFFICIAL CERTIFICATE ISSUED" : `TRACK #${idx + 1 < 10 ? `0${idx + 1}` : idx + 1}`}
                         </span>
                         <span>EST. {skill.estimated_hours}.0H</span>
                       </div>
@@ -321,10 +323,10 @@ export function MasteryPassportModal({
                           <div className="flex flex-col">
                             <span className="text-3xs font-mono font-bold text-amber-800 uppercase flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              <span>GUILD CERTIFIED CRAFTSMAN</span>
+                              <span>OFFICIALLY CERTIFIED</span>
                             </span>
                             <span className="text-3xs font-mono text-amber-700/80">
-                              GOLDEN SEAL CONFERRED (匠)
+                              PASSED ASSESSMENT
                             </span>
                             {onOpenExam && (
                               <button
@@ -332,26 +334,23 @@ export function MasteryPassportModal({
                                 onClick={() => onOpenExam(skill)}
                                 className="mt-1 text-3xs font-mono font-bold text-amber-800 hover:text-amber-950 underline text-left cursor-pointer"
                               >
-                                View Guild Diploma &rarr;
+                                View Certificate &rarr;
                               </button>
                             )}
                           </div>
-                          <HankoSeal
-                            label="匠"
-                            subtext="GUILD CERTIFIED"
-                            size="md"
-                            variant="gold"
-                          />
+                          <div className="w-10 h-10 rounded-full border-2 border-amber-400 bg-amber-50 flex items-center justify-center text-amber-700 shadow-xs">
+                            <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
+                          </div>
                         </>
                       ) : isDone ? (
                         <>
                           <div className="flex flex-col">
                             <span className="text-3xs font-mono font-bold text-rose-800 uppercase flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
-                              <span>DRILLS VERIFIED (100%)</span>
+                              <span>ALL STEPS COMPLETED</span>
                             </span>
                             <span className="text-3xs font-mono text-stone-400">
-                              COMPLETED // VERMILION SEAL
+                              READY FOR CERTIFICATION
                             </span>
                             {onOpenExam && (
                               <button
@@ -359,26 +358,23 @@ export function MasteryPassportModal({
                                 onClick={() => onOpenExam(skill)}
                                 className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-3xs font-mono font-bold text-amber-800 hover:bg-amber-500/20 transition cursor-pointer"
                               >
-                                <span>Take Guild Exam (匠)</span>
+                                <span>Take Assessment</span>
                                 <SolarIcon name="arrow-right-linear" className="w-2.5 h-2.5" />
                               </button>
                             )}
                           </div>
-                          <HankoSeal
-                            label="済"
-                            subtext="VERIFIED"
-                            size="md"
-                            variant="vermilion"
-                          />
+                          <div className="w-10 h-10 rounded-full border-2 border-stone-300 bg-stone-100 flex items-center justify-center text-stone-600 shadow-xs">
+                            <SolarIcon name="check-circle-bold" className="w-5 h-5 text-emerald-600" />
+                          </div>
                         </>
                       ) : (
                         <>
                           <div className="flex flex-col">
                             <span className="text-3xs font-mono font-semibold text-stone-500 uppercase">
-                              IN TRAINING // {doneCount}/{steps.length} DRILLS
+                              IN PROGRESS // {doneCount}/{steps.length} STEPS
                             </span>
                             <span className="text-3xs font-mono text-stone-400">
-                              Pending final mastery seal
+                              Assessment unlocked at 100%
                             </span>
                           </div>
                           <div className="w-10 h-10 rounded-full border border-dashed border-stone-400 flex items-center justify-center text-3xs font-mono text-stone-400 rotate-[-6deg]">
@@ -394,7 +390,7 @@ export function MasteryPassportModal({
 
             {enrolledSkills.length === 0 && (
               <div className="p-12 text-center text-stone-500 text-xs">
-                No skills yet. Add one from the Skill Library to start your passport.
+                No skills yet. Add a skill from the Library to start tracking your certifications.
               </div>
             )}
           </div>

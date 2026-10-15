@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
-import { HankoSeal } from "../ui/HankoSeal";
 import {
   playMechanicalClick,
   playChime,
@@ -275,13 +274,13 @@ export function GuidedPracticeSessionModal({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">DELIBERATE PRACTICE DOCKET</span>
+              <span className="spec-tag text-stone-600">DAILY PRACTICE SESSION</span>
               <span className="text-3xs font-mono font-bold text-amber-800">
                 DRILL {currentIndex + 1} OF {sessionItems.length}
               </span>
             </div>
             <h2 id={titleId} className="font-display font-bold text-base text-ink leading-tight">
-              {isSessionComplete ? "Docket Fulfilled" : skill.title}
+              {isSessionComplete ? "Practice Completed" : skill.title}
             </h2>
           </div>
         </div>
@@ -516,22 +515,24 @@ export function GuidedPracticeSessionModal({
               </div>
             </div>
 
-            {/* SM-2 Recall Self-Rating Section */}
+            {/* Spaced Review Self-Rating Section */}
             <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-stone-200">
                 <div className="flex items-center gap-2">
-                  <HankoSeal label="評" subtext="EVAL" size="xs" variant="copper" />
+                  <div className="w-6 h-6 rounded-md bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800">
+                    <SolarIcon name="tuning-2-linear" className="w-3.5 h-3.5" />
+                  </div>
                   <span className="font-display font-bold text-sm text-ink">
-                    Rate Muscle Memory Fluidity
+                    Rate Recall & Understanding
                   </span>
                 </div>
                 <span className="text-3xs font-mono text-stone-500 uppercase">
-                  SM-2 ALGORITHM REVIEW
+                  SPACED REPETITION REVIEW
                 </span>
               </div>
 
               <p className="text-xs text-stone-600 mb-4 font-sans">
-                How did the biomechanics and recall feel during this drill? Select a rating to calibrate your next spaced review interval:
+                How comfortable did you feel during this drill? Select a rating to set your next review date:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -588,39 +589,35 @@ export function GuidedPracticeSessionModal({
           /* ============================================================ */
           <div className="text-center py-8 space-y-6 max-w-md mx-auto">
             <div className="flex justify-center">
-              <HankoSeal
-                label="済"
-                subtext="DOCKET STAMPED"
-                size="xl"
-                variant="vermilion"
-                animate={true}
-              />
+              <div className="w-16 h-16 rounded-2xl bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center text-emerald-700 shadow-sm">
+                <SolarIcon name="check-circle-bold" className="w-9 h-9" />
+              </div>
             </div>
 
             <div>
-              <span className="spec-tag text-emerald-800 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-full text-3xs">
-                DAILY DOCKET FULFILLED
+              <span className="spec-tag text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 rounded-full text-3xs font-bold">
+                PRACTICE SESSION COMPLETED
               </span>
               <h3 className="font-display font-bold text-2xl text-ink mt-3">
-                Deliberate Practice Etched
+                Great Work Today!
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed font-sans">
-                You have completed all {sessionItems.length} spaced repetition drills for today. Your neuromuscular pathways have been reinforced.
+                You have completed all {sessionItems.length} practice drills scheduled for today. Keep building your consistency!
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-stone-300 text-left font-mono text-xs space-y-2 shadow-2xs">
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">DRILLS STAMPED:</span>
-                <span className="font-bold text-ink">{sessionItems.length} Micro-Mechanics</span>
+                <span className="text-stone-500">DRILLS COMPLETED:</span>
+                <span className="font-bold text-ink">{sessionItems.length} exercises</span>
               </div>
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">NEXT DUE INTERVAL:</span>
-                <span className="font-bold text-ink">Tomorrow at 09:00</span>
+                <span className="text-stone-500">NEXT REVIEW:</span>
+                <span className="font-bold text-ink">Tomorrow</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-stone-500">DAILY STREAK:</span>
-                <span className="font-bold text-rose-700">MOMENTUM ADVANCED (+1)</span>
+                <span className="font-bold text-rose-700">+1 Day Extended</span>
               </div>
             </div>
 

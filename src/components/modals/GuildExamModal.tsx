@@ -6,7 +6,6 @@ import { Skill } from "@/types/database";
 import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
-import { HankoSeal } from "../ui/HankoSeal";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { GuildExamPayload, ExamQuestion } from "@/app/api/ai/guild-exam/route";
 import { aiService } from "@/services/aiService";
@@ -164,13 +163,13 @@ export function GuildExamModal({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">GUILD ATELIER // PROCTOR: ARCHIMEDES</span>
+              <span className="spec-tag text-stone-600">CERTIFICATION // EVALUATOR: ARCHIMEDES</span>
               <span className="text-3xs font-mono font-bold text-amber-700">
-                DIAGNOSTIC EXAM
+                FINAL ASSESSMENT
               </span>
             </div>
             <h2 id={titleId} className="font-display font-bold text-base sm:text-lg text-ink leading-tight">
-              Craftsman&apos;s Guild Examination
+              Skill Certification Assessment
             </h2>
           </div>
         </div>
@@ -185,7 +184,7 @@ export function GuildExamModal({
             type="button"
             onClick={onClose}
             className="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200 transition"
-            aria-label="Close examination docket"
+            aria-label="Close assessment"
           >
             <SolarIcon name="close-circle-linear" className="w-5 h-5" />
           </button>
@@ -195,30 +194,25 @@ export function GuildExamModal({
       {/* Modal Body */}
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
         {/* ============================================================ */}
-        {/* 1. INTRO DOCKET STAGE                                        */}
+        {/* 1. INTRO STAGE                                               */}
         {/* ============================================================ */}
         {stage === "intro" && (
           <div className="space-y-6 text-center max-w-lg mx-auto py-4">
             <div className="flex justify-center">
-              <HankoSeal
-                label="匠"
-                subtext="GUILD PROCTOR"
-                size="lg"
-                variant="copper"
-              />
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-amber-800 shadow-sm">
+                <SolarIcon name="diploma-verified-linear" className="w-8 h-8" />
+              </div>
             </div>
 
             <div>
               <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2 py-0.5 rounded-full text-3xs">
-                PRACTICAL MASTERY PROTOCOL
+                FINAL ASSESSMENT
               </span>
               <h3 className="font-display font-bold text-2xl text-ink mt-3">
                 {skill.title}
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-                You have completed all step drills in the workbench. To receive the indelible{" "}
-                <strong className="text-amber-800 font-semibold">Golden Hankō Seal (匠)</strong>{" "}
-                in your Guild Passport, you must prove your physical intuition across 3 practical troubleshooting scenarios.
+                You have completed all practice steps in this skill. To earn your verified Certificate of Mastery, answer at least 2 of the 3 practical scenario questions correctly.
               </p>
             </div>
 
@@ -226,25 +220,25 @@ export function GuildExamModal({
             <div className="p-4 rounded-2xl bg-white border border-stone-300 text-left space-y-2.5 text-xs font-mono shadow-2xs">
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
                 <span className="text-stone-500">FORMAT:</span>
-                <span className="font-bold text-ink">3 Practical Sensory Diagnostics</span>
+                <span className="font-bold text-ink">3 Practical Scenarios</span>
               </div>
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">CRITERIA:</span>
-                <span className="font-bold text-ink">2 of 3 Correct Required to Pass</span>
+                <span className="text-stone-500">PASSING CRITERIA:</span>
+                <span className="font-bold text-ink">2 of 3 Correct</span>
               </div>
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">PROCTOR:</span>
-                <span className="font-bold text-ink">Archimedes of Syracuse (AI Proctor)</span>
+                <span className="text-stone-500">EVALUATOR:</span>
+                <span className="font-bold text-ink">Archimedes (Skillora AI)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-500">ACCREDITATION:</span>
-                <span className="font-bold text-amber-700">Official Craftsman&apos;s Guild Diploma</span>
+                <span className="text-stone-500">REWARD:</span>
+                <span className="font-bold text-amber-700">Certificate of Mastery</span>
               </div>
             </div>
 
             {error && (
               <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs text-left">
-                <strong>Proctor Notice:</strong> {error}
+                <strong>Notice:</strong> {error}
               </div>
             )}
 
@@ -258,11 +252,11 @@ export function GuildExamModal({
                 {loading ? (
                   <>
                     <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                    <span>Convening Guild Proctors...</span>
+                    <span>Preparing Assessment...</span>
                   </>
                 ) : (
                   <>
-                    <span>Commence Examination</span>
+                    <span>Start Assessment</span>
                     <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
                   </>
                 )}
@@ -370,8 +364,8 @@ export function GuildExamModal({
                 >
                   <span>
                     {currentQuestionIdx < questions.length - 1
-                      ? "Next Scenario"
-                      : "View Guild Evaluation"}
+                      ? "Next Question"
+                      : "View Results"}
                   </span>
                   <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
                 </button>
@@ -388,24 +382,20 @@ export function GuildExamModal({
             {isPassed ? (
               <>
                 <div className="flex justify-center">
-                  <HankoSeal
-                    label="匠"
-                    subtext="GUILD CERTIFIED"
-                    size="xl"
-                    variant="gold"
-                    animate={true}
-                  />
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-200/60 to-yellow-100 border-2 border-amber-400 flex items-center justify-center text-amber-700 shadow-sm">
+                    <SolarIcon name="diploma-verified-linear" className="w-10 h-10 text-amber-700" />
+                  </div>
                 </div>
 
                 <div>
-                  <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2 py-0.5 rounded-full text-3xs">
-                    EXAMINATION PASSED // GOLDEN SEAL CONFERRED
+                  <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-0.5 rounded-full text-3xs font-bold">
+                    ASSESSMENT PASSED // CERTIFICATE UNLOCKED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
                     Mastery Certified: {honorific}
                   </h3>
                   <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-                    You scored <strong className="text-ink font-bold">{score} of {questions.length}</strong> on the physical diagnostic evaluation. Archimedes and the Guild Council recognize your authentic tactile intuition.
+                    You scored <strong className="text-ink font-bold">{score} of {questions.length}</strong> on your skill assessment. You have demonstrated practical competence and understanding in this discipline.
                   </p>
                 </div>
 
@@ -413,10 +403,10 @@ export function GuildExamModal({
                   <SolarIcon name="cup-first-linear" className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
                   <div>
                     <strong className="block uppercase tracking-wider text-2xs font-bold text-amber-900">
-                      Indelible Golden Stamp Unlocked
+                      Certificate of Mastery Earned
                     </strong>
                     <p className="mt-0.5 text-amber-900/90 font-sans text-xs">
-                      Your Mastery Passport now carries the Golden Hankō Seal. You can view or print your Guild diploma.
+                      You have demonstrated practical mastery in this skill. You can now view, download, or print your verified certificate.
                     </p>
                   </div>
                 </div>
@@ -431,7 +421,7 @@ export function GuildExamModal({
                     className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
-                    <span>Inspect Guild Diploma</span>
+                    <span>View Certificate</span>
                   </button>
 
                   <button
@@ -446,29 +436,26 @@ export function GuildExamModal({
             ) : (
               <>
                 <div className="flex justify-center">
-                  <HankoSeal
-                    label="修"
-                    subtext="FURTHER STUDY"
-                    size="lg"
-                    variant="copper"
-                  />
+                  <div className="w-16 h-16 rounded-2xl bg-stone-100 border-2 border-stone-300 flex items-center justify-center text-stone-600">
+                    <SolarIcon name="restart-linear" className="w-8 h-8" />
+                  </div>
                 </div>
 
                 <div>
                   <span className="spec-tag text-stone-600 bg-stone-100 border border-stone-300 px-2 py-0.5 rounded-full text-3xs">
-                    DIAGNOSTIC BENCHMARK NOT MET
+                    ASSESSMENT NOT PASSED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
-                    Review Physical Mechanics
+                    Review Steps &amp; Try Again
                   </h3>
                   <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-                    You answered <strong className="text-ink font-bold">{score} of {questions.length}</strong> correctly. Passing the Guild requires at least 2 of 3 diagnostic resolutions.
+                    You answered <strong className="text-ink font-bold">{score} of {questions.length}</strong> correctly. Passing requires answering at least 2 of 3 scenarios correctly.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white border border-stone-300 text-xs text-stone-600 text-left font-mono">
                   <p>
-                    CRAFTSMAN ADVICE: Review the rationales above and return to the step drills. Tactile muscle memory strengthens through deliberate repetition.
+                    TIP: Review the explanations above and practice the steps before taking the assessment again.
                   </p>
                 </div>
 
@@ -510,38 +497,38 @@ export function GuildExamModal({
                 <span className="font-serif text-[240px] font-black">匠</span>
               </div>
 
-              {/* Top Guild Crest & Monospace Folio */}
+              {/* Top Crest & Monospace ID */}
               <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-amber-900/70 uppercase pb-4 border-b border-amber-900/20">
-                <span>SKILLORA CRAFTSMAN&apos;S GUILD</span>
-                <span>ARCHIVAL DOCKET // CERT-SK-{skill.id.slice(0, 6).toUpperCase()}</span>
+                <span>SKILLORA CERTIFICATION</span>
+                <span>CREDENTIAL ID // SK-{skill.id.slice(0, 6).toUpperCase()}</span>
               </div>
 
               {/* Diploma Main Title */}
               <div className="mt-8">
                 <span className="text-2xs font-mono tracking-[0.25em] text-amber-900 uppercase font-bold block mb-2">
-                  CERTIFICATE OF ATELIER MASTERY
+                  OFFICIAL CREDENTIAL
                 </span>
                 <h1 className="font-serif font-black text-2xl sm:text-3xl text-ink tracking-tight">
-                  Craftsman&apos;s Guild Diploma
+                  Certificate of Mastery
                 </h1>
               </div>
 
               {/* Conferral Text */}
               <div className="my-8 space-y-4 max-w-lg mx-auto">
                 <p className="text-xs font-mono uppercase tracking-widest text-stone-500">
-                  BE IT KNOWN TO ALL ARTISANS AND SCHOLARS THAT
+                  THIS IS TO CERTIFY THAT
                 </p>
                 <div className="font-serif font-bold text-2xl sm:text-3xl text-ink border-b-2 border-stone-400 pb-2 inline-block px-8">
                   {userName}
                 </div>
                 <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-serif italic pt-1">
-                  having completed deliberate practice drills and satisfied the empirical diagnostic requirements of the Grand Proctor in the discipline of
+                  has successfully completed the structured curriculum steps and demonstrated practical proficiency in
                 </p>
                 <h2 className="font-display font-bold text-xl sm:text-2xl text-amber-950 uppercase tracking-wide">
                   {skill.title}
                 </h2>
                 <p className="text-xs font-mono uppercase tracking-widest text-stone-500 pt-2">
-                  IS HEREBY INVESTED WITH THE GUILD TITLE OF
+                  AND HAS EARNED THE DESIGNATION OF
                 </p>
                 <div className="text-base sm:text-lg font-mono font-extrabold text-amber-900 tracking-wider uppercase bg-amber-100/60 border border-amber-300 py-1.5 px-4 rounded-xl inline-block">
                   {honorific}
@@ -556,21 +543,20 @@ export function GuildExamModal({
                     Archimedes of Syracuse
                   </div>
                   <div className="text-3xs uppercase tracking-wider text-stone-500 border-t border-stone-300 pt-1">
-                    Grand Proctor // Archimedes Atelier
+                    Master Instructor // Archimedes, Skillora
                   </div>
                 </div>
 
-                {/* Center: Golden Hanko Stamp */}
+                {/* Center: Golden Verified Stamp */}
                 <div className="flex flex-col items-center">
-                  <HankoSeal
-                    label="匠"
-                    subtext="GUILD CERTIFIED"
-                    size="lg"
-                    variant="gold"
-                    className="drop-shadow-sm"
-                  />
+                  <div className="w-16 h-16 rounded-full border-2 border-amber-500 bg-amber-50/60 flex flex-col items-center justify-center shadow-xs">
+                    <SolarIcon name="diploma-verified-linear" className="w-7 h-7 text-amber-600 mb-0.5" />
+                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase text-amber-800">
+                      VERIFIED
+                    </span>
+                  </div>
                   <span className="text-3xs font-mono tracking-widest uppercase text-amber-900 mt-1 font-bold">
-                    GOLDEN SEAL
+                    OFFICIAL SEAL
                   </span>
                 </div>
 
@@ -580,7 +566,7 @@ export function GuildExamModal({
                     {certifiedDate || "OCTOBER 11, 2026"}
                   </div>
                   <div className="text-3xs uppercase tracking-wider text-stone-500 border-t border-stone-300 pt-1">
-                    Date of Guild Conformance
+                    Date Issued
                   </div>
                 </div>
               </div>

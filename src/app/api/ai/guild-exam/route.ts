@@ -28,9 +28,9 @@ export interface GuildExamPayload {
 // Canonical curated fallback exams for instant zero-latency loading & offline resilience
 const CURATED_EXAMS: Record<string, GuildExamPayload> = {
   "fingerstyle-acoustic-guitar": {
-    examTitle: "Craftsman's Guild Acoustic Guild Examination",
+    examTitle: "Acoustic Guitar Skill Assessment",
     craftTitle: "Fingerstyle Acoustic Guitar Basics",
-    craftHonorific: "Journeyman Fingerstyle Guitarist",
+    craftHonorific: "Fingerstyle Guitarist",
     passingScore: 2,
     questions: [
       {
@@ -132,9 +132,9 @@ const CURATED_EXAMS: Record<string, GuildExamPayload> = {
     ],
   },
   "dialing-in-espresso": {
-    examTitle: "Craftsman's Guild Extraction Guild Examination",
+    examTitle: "Specialty Espresso Extraction Skill Assessment",
     craftTitle: "Dialing In Specialty Espresso Extraction",
-    craftHonorific: "Certified Atelier Barista",
+    craftHonorific: "Certified Barista",
     passingScore: 2,
     questions: [
       {
@@ -236,9 +236,9 @@ const CURATED_EXAMS: Record<string, GuildExamPayload> = {
     ],
   },
   "artisan-sourdough-bread": {
-    examTitle: "Craftsman's Guild Fermentation Guild Examination",
+    examTitle: "Sourdough Bread Practical Assessment",
     craftTitle: "Artisan Sourdough Bread from Scratch",
-    craftHonorific: "Master Artisan Baker",
+    craftHonorific: "Artisan Baker",
     passingScore: 2,
     questions: [
       {
@@ -373,9 +373,9 @@ export async function POST(req: NextRequest) {
       // Fallback generic physical diagnostic
       return NextResponse.json({
         exam: {
-          examTitle: "Craftsman's Guild Practical Examination",
+          examTitle: "Skill Practical Assessment",
           craftTitle: skillTitle,
-          craftHonorific: `Certified Master of ${skillTitle}`,
+          craftHonorific: `Certified Practitioner of ${skillTitle}`,
           passingScore: 2,
           questions: [
             {
@@ -419,31 +419,31 @@ export async function POST(req: NextRequest) {
       ? steps.map((s: { title?: string; instructions?: string }, idx: number) => `Step ${idx + 1} (${s.title || "Drill"}): ${s.instructions || ""}`).join("\n")
       : "";
 
-    const prompt = `You are Archimedes, Master Polymath and Grand Proctor of the Skillora Craftsman's Guild.
-A journeyman learner has completed all physical drills for the discipline: "${skillTitle}".
-Summary of Craft: "${skillSummary || ""}"
+    const prompt = `You are Archimedes, the expert instructor at Skillora.
+A learner has completed all practice drills for the skill: "${skillTitle}".
+Summary of Skill: "${skillSummary || ""}"
 Curriculum Steps:
 ${stepsList}
 
-Construct an official 3-question Diagnostic Guild Certification Exam for this discipline.
+Construct an official 3-question Diagnostic Skill Certification Assessment for this discipline.
 
-CRITICAL CRAFTSMANSHIP RULES:
-1. NEVER ask superficial book trivia, history, or multiple-choice definitions.
-2. Ask REAL-WORLD PHYSICAL SCENARIOS, SENSORY DIAGNOSTICS, AND MUSCLE-MEMORY TROUBLESHOOTING.
-   The questions must test practical tactile mastery, troubleshooting subtle errors, and sensory cues (visual, tactile, auditory, or timing).
+CRITICAL ASSESSMENT RULES:
+1. NEVER ask superficial trivia, history, or generic multiple-choice definitions.
+2. Ask REAL-WORLD PRACTICAL SCENARIOS, SENSORY DIAGNOSTICS, AND REAL PROBLEM-SOLVING.
+   The questions must test practical mastery, troubleshooting subtle errors, and sensory cues (visual, tactile, auditory, or timing).
 3. Generate EXACTLY 3 questions. Each question must have 4 options (A, B, C, D) with exactly ONE correct answer and detailed rationales for each option.
 4. Output STRICT JSON matching this schema:
 {
-  "examTitle": "Official Craftsman's Guild Certification Exam",
+  "examTitle": "Official Skill Certification Assessment",
   "craftTitle": "${skillTitle}",
-  "craftHonorific": "e.g. Master Barista, Artisan Baker, Classical Guitarist, Polyglot, Sourdough Artisan",
+  "craftHonorific": "e.g. Master Barista, Artisan Baker, Classical Guitarist, Polyglot, Sourdough Baker",
   "passingScore": 2,
   "questions": [
     {
       "id": "q1",
       "questionNumber": 1,
-      "scenario": "A 2-3 sentence physical problem, error symptom, or practical troubleshooting situation.",
-      "practicalCue": "SENSORY DIAGNOSIS // PHYSICAL PHENOMENON",
+      "scenario": "A 2-3 sentence practical problem, error symptom, or troubleshooting situation.",
+      "practicalCue": "DIAGNOSIS // PRACTICAL OBSERVATION",
       "options": [
         { "id": "A", "text": "...", "isCorrect": false, "rationale": "..." },
         { "id": "B", "text": "...", "isCorrect": true, "rationale": "..." },
@@ -458,7 +458,7 @@ CRITICAL CRAFTSMANSHIP RULES:
       messages: [
         {
           role: "system",
-          content: "You are the Grand Proctor of the Skillora Craftsman's Guild. Respond only with valid JSON.",
+          content: "You are Archimedes, the expert instructor at Skillora. Respond only with valid JSON.",
         },
         { role: "user", content: prompt },
       ],

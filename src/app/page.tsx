@@ -90,46 +90,46 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
-                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                  PILLAR // 01
+                <span className="font-mono text-xs font-semibold text-brand-600">
+                  01
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">15–30M BLOCKS</span>
+                <span className="text-3xs font-mono text-ink-muted">Bite-sized</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Short, ordered steps
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Concrete exercises, tactile memory cues, and focused drills sized for a single sitting without cognitive overload.
+                Clear exercises, memorable cues, and focused drills sized for a single sitting without cognitive overload.
               </p>
             </Card>
 
             <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
-                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                  PILLAR // 02
+                <span className="font-mono text-xs font-semibold text-brand-600">
+                  02
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">UNBIASED</span>
+                <span className="text-3xs font-mono text-ink-muted">Curated</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Hand-picked resources
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Zero sponsored filler. Every step links directly to masterclass breakdowns, authentic audio trainers, and verified diagrams.
+                Zero sponsored filler. Every step links directly to high-quality breakdowns, authentic audio guides, and verified diagrams.
               </p>
             </Card>
 
             <Card className="p-7 sm:p-8 text-left bg-white border border-surface-border hover:border-brand-300 transition-colors">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
-                <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                  PILLAR // 03
+                <span className="font-mono text-xs font-semibold text-brand-600">
+                  03
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">CALIBRATED</span>
+                <span className="text-3xs font-mono text-ink-muted">Realistic</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Honest time estimates
               </h3>
               <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                Know up front whether an atelier craft takes an afternoon or deliberate weeks of daily physical practice.
+                Know up front whether a skill takes an afternoon or several weeks of daily practice.
               </p>
             </Card>
           </div>
@@ -141,7 +141,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto mb-12">
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-ink">
-              Simple, transparent <span className="font-serif italic font-normal">tuition</span>.
+              Simple, transparent <span className="font-serif italic font-normal">pricing</span>.
             </h2>
             <p className="mt-2 text-sm text-ink-muted">
               Start free. Upgrade when you want multiple active studio tracks or unlimited coaching with Archimedes.
@@ -154,7 +154,7 @@ export default function LandingPage() {
               <div>
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
                   <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                    SPEC // 01
+                    Free plan
                   </span>
                   <span className="font-mono text-3xs text-ink-muted">ENTRY</span>
                 </div>
@@ -192,14 +192,14 @@ export default function LandingPage() {
             {/* Pro Tier (₱299/month) */}
             <div className="p-8 rounded-3xl border-2 border-ink bg-white flex flex-col justify-between relative shadow-elevated">
               <span className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-accent-vermilion text-white font-mono text-3xs font-semibold uppercase tracking-wider shadow-xs">
-                ATELIER PASS
+                PRO
               </span>
               <div>
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-border/60">
                   <span className="font-mono text-3xs font-medium uppercase tracking-wider text-ink-subtle">
-                    SPEC // 02
+                    Pro plan
                   </span>
-                  <span className="font-mono text-3xs text-accent-vermilion font-semibold">UNLIMITED</span>
+                  <span className="font-mono text-3xs text-accent-vermilion font-semibold">ALL ACCESS</span>
                 </div>
                 <h3 className="font-serif italic font-normal text-2xl text-ink">Skillora Pro</h3>
                 <div className="mt-3 flex items-baseline gap-1.5 font-mono">
@@ -207,7 +207,7 @@ export default function LandingPage() {
                   <span className="text-xs text-ink-muted font-sans">/ month</span>
                 </div>
                 <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                  For dedicated artisans practicing multiple disciplines across music, craft, and technology.
+                  For dedicated learners practicing multiple disciplines across music, craft, and technology.
                 </p>
                 <ul className="mt-6 space-y-3 text-xs text-ink-secondary">
                   <li className="flex items-center gap-2">
@@ -220,7 +220,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <SolarIcon name="check-read-linear" className="w-4 h-4 text-accent-emerald flex-shrink-0" />
-                    <span><strong>Continuous</strong> coaching, voice diagnostics &amp; exams</span>
+                    <span><strong>Continuous</strong> coaching, voice diagnostics &amp; certifications</span>
                   </li>
                 </ul>
               </div>

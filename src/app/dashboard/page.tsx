@@ -17,7 +17,6 @@ import {
   DurationFilter,
   SolarIcon,
   SubscriptionModal,
-  HankoSeal,
   MasteryPassportModal,
   GuildExamModal,
   GuidedPracticeSessionModal,
@@ -540,7 +539,7 @@ function Dashboard() {
                     </div>
                   )}
 
-                  {/* Japanese Hankō Mastery Passport Trigger */}
+                  {/* Certifications Modal Trigger */}
                   <Button
                     variant="secondary"
                     size="sm"
@@ -549,8 +548,8 @@ function Dashboard() {
                       setIsPassportOpen(true);
                     }}
                   >
-                    <HankoSeal size="sm" label="済" className="w-3.5 h-3.5 scale-75" />
-                    <span>Mastery Passport · {isClient ? masteredSkills.length : 0} seals</span>
+                    <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-amber-600" />
+                    <span>Certifications · {isClient ? masteredSkills.length : 0} earned</span>
                   </Button>
                 </div>
               </div>
@@ -609,7 +608,7 @@ function Dashboard() {
                         Spaced repetition
                       </span>
                       {docketItems.some((i) => i.urgency === "overdue") && (
-                        <Badge tone="danger">Decay detected</Badge>
+                        <Badge tone="danger">Needs review</Badge>
                       )}
                     </div>
                     <h3 className="font-display font-bold text-lg text-ink">
@@ -750,7 +749,7 @@ function Dashboard() {
                               }`}
                             >
                               {day.practiced ? (
-                                <span className="font-serif text-2xs text-rose-700 font-bold" aria-hidden="true">済</span>
+                                <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5 text-rose-700" />
                               ) : (
                                 <span aria-hidden="true">{day.label}</span>
                               )}
@@ -761,16 +760,14 @@ function Dashboard() {
 
                       <div
                         className={`inline-flex items-center gap-2 text-xs font-semibold self-start sm:self-auto ${
-                          isDocketDone ? "text-rose-700" : "text-ink-secondary"
+                          isDocketDone ? "text-accent-emerald" : "text-ink-secondary"
                         }`}
                       >
-                        <HankoSeal
-                          size="sm"
-                          label="済"
-                          variant={isDocketDone ? "vermilion" : "obsidian"}
-                          className="w-4 h-4 scale-75"
+                        <SolarIcon
+                          name={isDocketDone ? "check-circle-linear" : "clock-circle-linear"}
+                          className={`w-4 h-4 ${isDocketDone ? "text-accent-emerald" : "text-ink-muted"}`}
                         />
-                        <span>{isDocketDone ? "Done for today" : `${docketItems.length - docketDoneCount} left today`}</span>
+                        <span>{isDocketDone ? "Completed for today" : `${docketItems.length - docketDoneCount} left today`}</span>
                       </div>
                     </div>
                   </div>
@@ -915,7 +912,10 @@ function Dashboard() {
                             {skill.title}
                           </h3>
                           {isCertified && (
-                            <HankoSeal label="匠" subtext="GUILD" size="sm" variant="gold" className="flex-shrink-0" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300 text-amber-800 text-3xs font-mono font-semibold flex-shrink-0">
+                              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-amber-700" />
+                              <span>CERTIFIED</span>
+                            </span>
                           )}
                         </div>
                         <p className="text-xs text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
@@ -928,7 +928,7 @@ function Dashboard() {
                             <span className={`text-2xs font-mono uppercase tracking-wider ${
                               isCertified ? "text-amber-800 font-bold" : isCompleted ? "text-accent-emerald font-semibold" : "text-ink-subtle"
                             }`}>
-                              {isCertified ? "Guild certified" : isCompleted ? "Complete" : "Progress"}
+                              {isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}
                             </span>
                             <span className="text-ink font-mono text-2xs font-semibold tabular-nums">
                               {doneCount}/{totalCount} ({percent}%)
@@ -947,7 +947,7 @@ function Dashboard() {
 
                       {/* Action Buttons */}
                       <div className="space-y-2 pt-2 border-t border-surface-border">
-                        {/* Guild Exam / Certificate CTA when 100% complete */}
+                        {/* Certification CTA when 100% complete */}
                         {isCompleted && (
                           <button
                             type="button"
@@ -965,8 +965,8 @@ function Dashboard() {
                                 : "bg-amber-600 hover:bg-amber-700 text-white"
                             }`}
                           >
-                            <HankoSeal label="匠" subtext="" size="xs" variant={isCertified ? "gold" : "copper"} />
-                            <span>{isCertified ? "View Guild diploma" : "Take the Guild exam"}</span>
+                            <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
+                            <span>{isCertified ? "View Certificate" : "Take Assessment"}</span>
                           </button>
                         )}
 

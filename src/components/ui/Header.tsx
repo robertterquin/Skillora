@@ -219,8 +219,8 @@ export function Header({ activePath }: HeaderProps = {}) {
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
-                        <span className="font-serif text-xs text-rose-700 font-bold px-0.5" aria-hidden="true">済</span>
-                        <span>Mastery Passport</span>
+                        <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-ink-muted" />
+                        <span>Certifications</span>
                       </Link>
 
                       <Link

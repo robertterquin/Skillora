@@ -46,7 +46,7 @@ export function SkillSyllabusModal({
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2 font-mono text-3xs uppercase tracking-wider text-ink-subtle">
-              <span>{isViewOnly ? "SPEC // PREVIEW" : "SPEC // ACTIVE TRACK"}</span>
+              <span>{isViewOnly ? "PREVIEW" : "ACTIVE TRACK"}</span>
               <span>·</span>
               <span className="text-ink-muted">{skill.difficulty}</span>
             </div>
@@ -108,7 +108,7 @@ export function SkillSyllabusModal({
           </div>
         )}
 
-        {/* Guild Accreditation Banner */}
+        {/* Certification Banner */}
         {!isViewOnly && isAllComplete && (
           <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-3">
@@ -117,13 +117,12 @@ export function SkillSyllabusModal({
               </div>
               <div>
                 <div className="text-3xs font-mono font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>{isGuildCertified ? "CRAFTSMAN'S GUILD ACCREDITED" : "100% COMPLETE // GUILD EXAM UNLOCKED"}</span>
-                  <span className="px-1.5 py-px rounded bg-amber-200/60 text-amber-900 text-3xs">匠</span>
+                  <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE // ASSESSMENT UNLOCKED"}</span>
                 </div>
                 <div className="text-xs text-ink-secondary mt-0.5">
                   {isGuildCertified
-                    ? "You hold the Golden Hankō Seal and accredited diploma from Archimedes."
-                    : "Prove your sensory intuition in Archimedes' diagnostic exam to earn your Golden Hankō Seal."}
+                    ? "You hold the verified Certificate of Mastery for this skill."
+                    : "Complete the final assessment to earn your verified Certificate of Mastery."}
                 </div>
               </div>
             </div>
@@ -133,7 +132,7 @@ export function SkillSyllabusModal({
                 onClick={() => onOpenGuildExam(skill)}
                 className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
               >
-                <span>{isGuildCertified ? "View Guild Diploma (匠)" : "Take Guild Exam (匠)"}</span>
+                <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
                 <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
               </button>
             )}

@@ -59,7 +59,7 @@ export function SuggestionCards({
                     </span>
                     {isCatalog && (
                       <span className="px-1.5 py-0.5 rounded-md bg-surface-subtle text-ink text-3xs font-mono font-medium border border-surface-border">
-                        Catalog Craft
+                        In Catalog
                       </span>
                     )}
                   </div>
@@ -89,7 +89,7 @@ export function SuggestionCards({
 
               <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between">
                 <span className="text-3xs font-mono text-ink-muted">
-                  4-step deliberate practice track
+                  4-step practice plan
                 </span>
                 <Button
                   size="sm"
@@ -98,7 +98,7 @@ export function SuggestionCards({
                   onClick={() => onSelectSkill(sugg)}
                   className="gap-1.5 font-mono text-2xs hover:border-accent-vermilion/50 hover:text-accent-vermilion transition"
                 >
-                  <span>Build this path</span>
+                  <span>Build roadmap</span>
                   <SolarIcon
                     name="arrow-right-linear"
                     className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition"

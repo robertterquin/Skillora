@@ -446,7 +446,7 @@ export function getDisciplinePracticeProfile(
   if (isCoffee) {
     return {
       disciplineCategory: "culinary_coffee",
-      tagLabel: "CRAFT ATELIER // EXTRACTION DIAL",
+      tagLabel: "COFFEE // EXTRACTION DIAL",
       isRhythmCadenceSupported: false,
       metricHeading: "SHOT EXTRACTIONS & TASTES",
       metricUnitNoun: "extraction tests dialed",
@@ -859,13 +859,13 @@ function getDefaultProfile(
 
   return {
     disciplineCategory: "general",
-    tagLabel: "DELIBERATE PRACTICE // FOCUS SPRINT",
+    tagLabel: "SKILL PRACTICE // FOCUS SPRINT",
     isRhythmCadenceSupported: false,
     metricHeading: "PRACTICE CYCLES & DRILLS",
     metricUnitNoun: "practice cycles completed",
     actionButtonLabel: "Log Practice Cycle (+1)",
     guidanceTip:
-      "Log each focused deliberate practice drill or technique milestone completed.",
+      "Log each focused practice drill or technique milestone completed.",
     suggestedSprintMinutes: 15,
     recallPrompts: {
       hard: {
