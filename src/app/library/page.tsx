@@ -36,6 +36,23 @@ export default function SkillLibraryPage() {
     }
   }, []);
 
+  // Prevent outer window / document scrolling in the library workbench
+  useEffect(() => {
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyHeight = document.body.style.height;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100vh";
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.height = originalBodyHeight;
+    };
+  }, []);
+
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
   const [enrolledSkills, setEnrolledSkills] = useState<Skill[]>([]);
@@ -265,7 +282,7 @@ export default function SkillLibraryPage() {
   }, [startNewConsultation]);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-4rem)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
       {/* Main Workspace: Sidebar + Chat Canvas */}
       <div className="flex-1 flex h-full overflow-hidden min-h-0 relative">
         {/* Past Inquiries Collapsible Sidebar */}
@@ -288,7 +305,7 @@ export default function SkillLibraryPage() {
           }`}
         >
           {/* Top Bar: Always Pinned at Top of Workspace */}
-          <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/80 backdrop-blur-sm z-20 flex items-center justify-between gap-3">
+          <div className="shrink-0 sticky top-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/95 backdrop-blur-md z-20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
               {/* Minimalist Icon-Only Sidebar Toggle (Only shown when sidebar is collapsed) */}
               {!isSidebarOpen && (
@@ -491,7 +508,7 @@ export default function SkillLibraryPage() {
           </div>
 
           {/* Sticky Bottom Input Dock */}
-          <div className="shrink-0 px-4 sm:px-6 py-3 border-t border-surface-border bg-canvas/95 backdrop-blur-sm z-20">
+          <div className="shrink-0 sticky bottom-0 px-4 sm:px-6 py-3 border-t border-surface-border bg-canvas/95 backdrop-blur-md z-20">
             <div className="max-w-3xl w-full mx-auto">
               {/* Quick Prompt Suggestions */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 no-scrollbar">
