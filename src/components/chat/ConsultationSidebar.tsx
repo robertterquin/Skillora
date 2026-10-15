@@ -79,20 +79,20 @@ export function ConsultationSidebar({
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container: Fixed from header (top-16) to bottom of screen (bottom-0) */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 md:relative md:z-auto md:h-full bg-canvas border-r border-surface-border flex flex-col transition-all duration-300 ease-in-out shrink-0 select-none overflow-hidden
+          fixed top-0 md:top-16 bottom-0 left-0 z-40 md:z-30 w-72 md:w-64 bg-canvas border-r border-surface-border flex flex-col transition-all duration-300 ease-in-out select-none overflow-hidden
           ${
             isOpen
-              ? "w-72 md:w-64 opacity-100 translate-x-0"
-              : "-translate-x-full md:translate-x-0 md:w-0 md:border-r-0 md:opacity-0 md:pointer-events-none"
+              ? "translate-x-0 opacity-100 shadow-xl md:shadow-none"
+              : "-translate-x-full opacity-0 pointer-events-none"
           }
         `}
         aria-label="Consultation History"
       >
-        {/* Fixed Width Inner Container (Linear style) */}
-        <div className="w-72 md:w-64 h-full flex flex-col shrink-0 bg-canvas">
+        {/* Full-Height Column Container */}
+        <div className="w-full h-full flex flex-col bg-canvas">
           {/* Header & Close Icon */}
           <div className="h-12 px-3.5 border-b border-surface-border/70 flex items-center justify-between gap-2 shrink-0 bg-canvas">
             <div className="flex items-center gap-2 min-w-0">
@@ -146,7 +146,7 @@ export function ConsultationSidebar({
           </div>
 
           {/* Chronological List */}
-          <div className="flex-1 overflow-y-auto px-2 py-1 space-y-3 no-scrollbar">
+          <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1 space-y-3 no-scrollbar">
             {groups.length === 0 ? (
               <div className="text-center py-8 text-xs text-ink-muted font-serif italic">
                 No previous consultations yet.

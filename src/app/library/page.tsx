@@ -26,8 +26,15 @@ export default function SkillLibraryPage() {
   const supabase = createClient();
   const { user: currentUser } = useAuth();
 
-  // Consultation sidebar toggle (defaults to false or true; let's allow easy toggle)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Consultation sidebar toggle (defaults to true on desktop)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Auto-collapse on small screens initially
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
 
   // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
@@ -258,9 +265,9 @@ export default function SkillLibraryPage() {
   }, [startNewConsultation]);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
       {/* Main Workspace: Sidebar + Chat Canvas */}
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+      <div className="flex-1 flex h-full overflow-hidden min-h-0 relative">
         {/* Past Inquiries Collapsible Sidebar */}
         <ConsultationSidebar
           consultations={consultations}
@@ -275,7 +282,11 @@ export default function SkillLibraryPage() {
         />
 
         {/* Main Chat Canvas with Dedicated Internal Scroll */}
-        <main className="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative">
+        <main
+          className={`flex-1 flex flex-col h-full min-h-0 overflow-hidden relative transition-[margin] duration-300 ease-in-out ${
+            isSidebarOpen ? "md:ml-64" : "md:ml-0"
+          }`}
+        >
           {/* Top Bar: Always Pinned at Top of Workspace */}
           <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/80 backdrop-blur-sm z-20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
