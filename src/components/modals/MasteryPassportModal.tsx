@@ -203,35 +203,70 @@ export function MasteryPassportModal({
               </div>
 
               {/* Metrics Breakdown Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-center font-mono">
-                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">RANK</span>
-                  <span className="font-bold text-xs text-ink mt-0.5 block">{rankTier}</span>
-                  <span className="text-3xs text-stone-600 block">{rank}</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-6 text-center">
+                {/* RANK */}
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-stone-100 border border-stone-200/80 flex items-center justify-center text-stone-700 mb-2">
+                    <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Rank Tier</span>
+                    <span className="font-bold text-xs text-ink mt-0.5 block font-sans truncate">{rankTier}</span>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">{rank}</span>
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">TOTAL HOURS</span>
-                  <span className="font-bold text-lg text-ink mt-0.5 block tabular-nums">
-                    {totalHours.toFixed(1)}h
-                  </span>
-                  <span className="text-3xs text-stone-600 block">Accumulated</span>
+                {/* TOTAL HOURS */}
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 mb-2">
+                    <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Total Hours</span>
+                    <div className="mt-0.5 flex items-baseline justify-center gap-0.5">
+                      <span className="font-display font-bold text-base sm:text-lg text-ink tabular-nums leading-none">
+                        {totalHours.toFixed(1)}
+                      </span>
+                      <span className="text-3xs text-stone-500 font-sans font-normal">hrs</span>
+                    </div>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Accumulated</span>
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">CERTIFICATIONS EARNED</span>
-                  <span className="font-bold text-lg text-amber-700 mt-0.5 block tabular-nums">
-                    {certifiedCount}
-                  </span>
-                  <span className="text-3xs text-amber-800 font-semibold block">Verified</span>
+                {/* CERTIFICATIONS */}
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 mb-2">
+                    <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Certificates</span>
+                    <div className="mt-0.5 flex items-baseline justify-center gap-0.5">
+                      <span className="font-display font-bold text-base sm:text-lg text-amber-700 tabular-nums leading-none">
+                        {certifiedCount}
+                      </span>
+                      <span className="text-3xs text-amber-800 font-sans font-medium">earned</span>
+                    </div>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Verified</span>
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-                  <span className="text-3xs text-stone-500 block uppercase">SKILLS COMPLETED</span>
-                  <span className="font-bold text-lg text-rose-700 mt-0.5 block tabular-nums">
-                    {masteredSkills.length}
-                  </span>
-                  <span className="text-3xs text-stone-600 block">Completed</span>
+                {/* SKILLS COMPLETED */}
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mb-2">
+                    <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Completed</span>
+                    <div className="mt-0.5 flex items-baseline justify-center gap-0.5">
+                      <span className="font-display font-bold text-base sm:text-lg text-emerald-700 tabular-nums leading-none">
+                        {masteredSkills.length}
+                      </span>
+                      <span className="text-3xs text-emerald-800 font-sans font-medium">
+                        {masteredSkills.length === 1 ? "skill" : "skills"}
+                      </span>
+                    </div>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Mastered</span>
+                  </div>
                 </div>
               </div>
             </div>

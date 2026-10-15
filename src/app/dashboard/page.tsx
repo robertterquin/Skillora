@@ -509,37 +509,64 @@ function Dashboard() {
             </div>
 
             {/* Streak & Active & Mastered Metrics */}
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
               {/* STREAK */}
-              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
-                  <SolarIcon name="fire-linear" className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Streak</span>
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 flex-shrink-0">
+                  <SolarIcon name="fire-linear" className="w-4 h-4" />
                 </div>
-                <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
-                  {isClient ? streak : 0} {streak === 1 ? "day" : "days"}
+                <div className="text-center sm:text-left min-w-0">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Streak
+                  </div>
+                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
+                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
+                      {isClient ? streak : 0}
+                    </span>
+                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                      {streak === 1 ? "day" : "days"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* ACTIVE */}
-              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
-                  <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
-                  <span>Active</span>
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 flex-shrink-0">
+                  <SolarIcon name="clock-circle-linear" className="w-4 h-4" />
                 </div>
-                <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
-                  {isClient ? activeSkills.length : 0}
+                <div className="text-center sm:text-left min-w-0">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Active
+                  </div>
+                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
+                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
+                      {isClient ? activeSkills.length : 0}
+                    </span>
+                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                      {activeSkills.length === 1 ? "skill" : "skills"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* MASTERED */}
-              <div className="py-3 px-3.5 sm:px-4 rounded-2xl bg-canvas border border-surface-border text-center min-w-0 md:min-w-[102px] shadow-2xs">
-                <div className="flex items-center justify-center gap-1 text-ink-secondary text-xs font-medium">
-                  <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-accent-emerald" />
-                  <span>Mastered</span>
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                  <SolarIcon name="cup-first-linear" className="w-4 h-4" />
                 </div>
-                <div className="font-display font-bold text-xl text-ink mt-0.5 tabular-nums">
-                  {isClient ? masteredSkills.length : 0}
+                <div className="text-center sm:text-left min-w-0">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Mastered
+                  </div>
+                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
+                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
+                      {isClient ? masteredSkills.length : 0}
+                    </span>
+                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                      {masteredSkills.length === 1 ? "skill" : "skills"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -693,7 +720,7 @@ function Dashboard() {
                               }`}
                               className={`w-7 h-7 rounded-full border flex items-center justify-center text-3xs font-mono transition-all ${
                                 day.practiced
-                                  ? "bg-rose-50 border-rose-300 text-rose-700 font-bold"
+                                  ? "bg-emerald-50 border-emerald-300 text-emerald-700 font-bold"
                                   : day.isToday
                                   ? "bg-white border-dashed border-ink/40 text-ink"
                                   : day.isFuture
@@ -702,7 +729,7 @@ function Dashboard() {
                               }`}
                             >
                               {day.practiced ? (
-                                <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5 text-rose-700" />
+                                <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5 text-emerald-700" />
                               ) : (
                                 <span aria-hidden="true">{day.label}</span>
                               )}

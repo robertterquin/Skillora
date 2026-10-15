@@ -606,18 +606,50 @@ export function GuidedPracticeSessionModal({
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border border-stone-300 text-left font-mono text-xs space-y-2 shadow-2xs">
-              <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">DRILLS COMPLETED:</span>
-                <span className="font-bold text-ink">{sessionItems.length} exercises</span>
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 text-left">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mb-2">
+                  <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Completed
+                  </div>
+                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 tabular-nums">
+                    {sessionItems.length}
+                  </div>
+                  <div className="text-3xs text-stone-500 mt-0.5 font-sans">exercises</div>
+                </div>
               </div>
-              <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">NEXT REVIEW:</span>
-                <span className="font-bold text-ink">Tomorrow</span>
+
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 mb-2">
+                  <SolarIcon name="fire-linear" className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Daily Streak
+                  </div>
+                  <div className="font-display font-bold text-base sm:text-lg text-amber-700 mt-0.5 tabular-nums">
+                    +1 Day
+                  </div>
+                  <div className="text-3xs text-amber-800 font-semibold mt-0.5 font-sans">Extended</div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-stone-500">DAILY STREAK:</span>
-                <span className="font-bold text-rose-700">+1 Day Extended</span>
+
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 mb-2">
+                  <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                    Next Review
+                  </div>
+                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 font-sans">
+                    Tomorrow
+                  </div>
+                  <div className="text-3xs text-stone-500 mt-0.5 font-sans">Scheduled</div>
+                </div>
               </div>
             </div>
 
