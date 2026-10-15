@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { User } from "@supabase/supabase-js";
 import { Skill } from "@/types/database";
 import {
   OwlSuggestion,
@@ -13,17 +14,20 @@ import {
   ConsultationOutcome,
 } from "@/types/owl";
 import { aiService } from "@/services/aiService";
+import { consultationService } from "@/services/consultationService";
+import { createClient } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 import { playMechanicalClick, playChime, playStampThud } from "@/lib/workbench-audio";
 import { getUniformMaleVoice } from "@/lib/voice";
 
 export type { OwlMessage, OwlConsultation, ConsultationOutcome };
-
 
 export interface UseOwlChatOptions {
   enrolledSkills?: (Skill | string)[];
   catalogSkills?: string[];
   isPro?: boolean;
   daysRemaining?: number;
+  currentUser?: User | null;
   onSkillEnrolled?: (skill: Skill) => Promise<void> | void;
   onLimitReached?: () => void;
 }
@@ -91,6 +95,16 @@ function getSpokenSnippet(text: string): string {
 }
 
 export function useOwlChat(options: UseOwlChatOptions = {}) {
+  const { user: authUser } = useAuth();
+  const currentUser = options.currentUser !== undefined ? options.currentUser : authUser;
+  const userRef = useRef<User | null>(currentUser);
+  useEffect(() => {
+    userRef.current = currentUser;
+  }, [currentUser]);
+
+  const supabase = useMemo(() => createClient(), []);
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+
   const [consultations, setConsultations] = useState<OwlConsultation[]>([]);
   const [activeConsultationId, setActiveConsultationId] = useState<string>("");
   const [messages, setMessages] = useState<OwlMessage[]>(INITIAL_MESSAGES);
@@ -116,7 +130,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     consultationsRef.current = consultations;
   }, [consultations]);
 
-  // Load saved consultations & profile on mount
+  // Load saved consultations & profile on mount from local storage (instant initial render)
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -157,6 +171,47 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       console.warn("Failed to initialize consultations:", err);
     }
   }, []);
+
+  // Cloud Sync Effect: When an authenticated user is detected, seamlessly merge with Supabase
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    let cancelled = false;
+    setIsSyncingCloud(true);
+
+    consultationService
+      .syncLocalAndCloud(supabase, currentUser.id, consultationsRef.current)
+      .then((merged) => {
+        if (cancelled || !merged || merged.length === 0) return;
+
+        setConsultations(merged);
+        try {
+          localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(merged));
+        } catch {}
+
+        const currentActive = activeConsultationIdRef.current;
+        const target = merged.find((c) => c.id === currentActive) || merged[0];
+        if (target) {
+          setActiveConsultationId(target.id);
+          setMessages(
+            target.messages && target.messages.length > 0 ? target.messages : INITIAL_MESSAGES
+          );
+          try {
+            localStorage.setItem(STORAGE_ACTIVE_ID_KEY, target.id);
+          } catch {}
+        }
+      })
+      .catch((err) => {
+        console.warn("Cloud sync error:", err);
+      })
+      .finally(() => {
+        if (!cancelled) setIsSyncingCloud(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser?.id, supabase]);
 
   // Audio cleanup on unmount
   useEffect(() => {
@@ -257,6 +312,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
   const persistConsultationUpdate = useCallback(
     (targetId: string, updatedMsgs: OwlMessage[], explicitOutcome?: ConsultationOutcome) => {
       setConsultations((prev) => {
+        let updatedSession: OwlConsultation | null = null;
         const next = prev.map((c) => {
           if (c.id !== targetId) return c;
 
@@ -269,13 +325,14 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
           }
 
           const outcomeTag = explicitOutcome || getOutcomeFromMessages(updatedMsgs, c.outcomeTag);
-          return {
+          updatedSession = {
             ...c,
             title,
             messages: updatedMsgs,
             outcomeTag,
             updatedAt: new Date().toISOString(),
           };
+          return updatedSession;
         });
 
         try {
@@ -283,10 +340,17 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         } catch (err) {
           console.warn("Storage sync failed:", err);
         }
+
+        // Sync update to Supabase cloud if user is logged in
+        const user = userRef.current;
+        if (user?.id && updatedSession) {
+          consultationService.upsertUserConsultation(supabase, user.id, updatedSession);
+        }
+
         return next;
       });
     },
-    []
+    [supabase]
   );
 
   // Multi-session action: Start New Consultation
@@ -308,13 +372,19 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
         localStorage.setItem(STORAGE_ACTIVE_ID_KEY, newId);
       } catch {}
+
+      const user = userRef.current;
+      if (user?.id) {
+        consultationService.upsertUserConsultation(supabase, user.id, newSession);
+      }
+
       return next;
     });
 
     setActiveConsultationId(newId);
     setMessages(INITIAL_MESSAGES);
     setInputText("");
-  }, [stopVoice]);
+  }, [stopVoice, supabase]);
 
   // Multi-session action: Switch Consultation
   const selectConsultation = useCallback(
@@ -342,6 +412,11 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     (id: string) => {
       stopVoice();
 
+      const user = userRef.current;
+      if (user?.id) {
+        consultationService.deleteUserConsultation(supabase, user.id, id);
+      }
+
       setConsultations((prev) => {
         const next = prev.filter((c) => c.id !== id);
 
@@ -360,6 +435,11 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
             localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(fallback));
             localStorage.setItem(STORAGE_ACTIVE_ID_KEY, freshId);
           } catch {}
+
+          if (user?.id) {
+            consultationService.upsertUserConsultation(supabase, user.id, freshSession);
+          }
+
           setActiveConsultationId(freshId);
           setMessages(INITIAL_MESSAGES);
           return fallback;
@@ -384,12 +464,17 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         return next;
       });
     },
-    [stopVoice]
+    [stopVoice, supabase]
   );
 
   // Multi-session action: Clear All Consultations
   const clearAllConsultations = useCallback(() => {
     stopVoice();
+    const user = userRef.current;
+    if (user?.id) {
+      consultationService.clearUserConsultations(supabase, user.id);
+    }
+
     const freshId = `consultation-${Date.now()}`;
     const freshSession: OwlConsultation = {
       id: freshId,
@@ -404,11 +489,16 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(list));
       localStorage.setItem(STORAGE_ACTIVE_ID_KEY, freshId);
     } catch {}
+
+    if (user?.id) {
+      consultationService.upsertUserConsultation(supabase, user.id, freshSession);
+    }
+
     setConsultations(list);
     setActiveConsultationId(freshId);
     setMessages(INITIAL_MESSAGES);
     setInputText("");
-  }, [stopVoice]);
+  }, [stopVoice, supabase]);
 
   const toggleVoiceListening = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -617,20 +707,29 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       // Mark consultation outcome as enrolled
       const currentId = activeConsultationIdRef.current;
       setConsultations((prev) => {
-        const next = prev.map((c) =>
-          c.id === currentId
-            ? { ...c, outcomeTag: "enrolled" as const, updatedAt: new Date().toISOString() }
-            : c
-        );
+        let updated: OwlConsultation | null = null;
+        const next = prev.map((c) => {
+          if (c.id === currentId) {
+            updated = { ...c, outcomeTag: "enrolled" as const, updatedAt: new Date().toISOString() };
+            return updated;
+          }
+          return c;
+        });
         try {
           localStorage.setItem(STORAGE_CONSULTATIONS_KEY, JSON.stringify(next));
         } catch {}
+
+        const user = userRef.current;
+        if (user?.id && updated) {
+          consultationService.upsertUserConsultation(supabase, user.id, updated);
+        }
+
         return next;
       });
 
       return true;
     },
-    [options]
+    [options, supabase]
   );
 
   const currentConsultation =
@@ -658,5 +757,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     toggleVoiceListening,
     speakOwlVoice,
     stopVoice,
+    isCloudSynced: Boolean(currentUser),
+    isSyncingCloud,
   };
 }

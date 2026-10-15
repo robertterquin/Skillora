@@ -8,6 +8,8 @@ export interface ConsultationSidebarProps {
   consultations: OwlConsultation[];
   activeConsultationId: string;
   isOpen: boolean;
+  isCloudSynced?: boolean;
+  isSyncingCloud?: boolean;
   onToggle: () => void;
   onSelect: (id: string) => void;
   onNew: () => void;
@@ -59,6 +61,8 @@ export function ConsultationSidebar({
   consultations,
   activeConsultationId,
   isOpen,
+  isCloudSynced = false,
+  isSyncingCloud = false,
   onToggle,
   onSelect,
   onNew,
@@ -126,11 +130,27 @@ export function ConsultationSidebar({
         <div className="w-72 md:w-64 h-full flex flex-col shrink-0">
           {/* Header & Close Icon */}
           <div className="h-12 px-3.5 border-b border-surface-border flex items-center justify-between gap-2 shrink-0 bg-surface-subtle">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
               <SolarIcon name="history-linear" className="w-3.5 h-3.5 text-ink-muted shrink-0" />
               <span className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted truncate">
                 Past Inquiries
               </span>
+              {isCloudSynced ? (
+                <span
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 text-[9px] font-mono font-medium text-accent-emerald border border-emerald-200/50 shrink-0"
+                  title={isSyncingCloud ? "Syncing with Supabase..." : "Synced with Supabase Cloud Account"}
+                >
+                  <span className={`w-1 h-1 rounded-full bg-accent-emerald ${isSyncingCloud ? "animate-ping" : ""}`} />
+                  Cloud
+                </span>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-muted text-[9px] font-mono font-medium text-ink-subtle border border-surface-border shrink-0"
+                  title="Saved locally on this device"
+                >
+                  Device
+                </span>
+              )}
             </div>
 
             <button

@@ -173,3 +173,36 @@ create index if not exists idx_skill_steps_skill on public.skill_steps(skill_id)
 create index if not exists idx_learning_resources_step on public.learning_resources(step_id);
 create index if not exists idx_enrollments_user on public.user_enrollments(user_id);
 create index if not exists idx_completions_user on public.user_step_completions(user_id, step_id);
+
+-- 8. Archimedes Owl Consultations (Chat Sessions & Curriculum Conversations)
+create table if not exists public.owl_consultations (
+  id text primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title text not null default 'New Inquiry',
+  outcome_tag text check (outcome_tag in ('curriculum', 'suggestions', 'enrolled', 'inquiry')) default 'inquiry',
+  messages jsonb not null default '[]'::jsonb,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+create index if not exists idx_owl_consultations_user_updated
+  on public.owl_consultations(user_id, updated_at desc);
+
+alter table public.owl_consultations enable row level security;
+
+drop policy if exists "Users can view own consultations" on public.owl_consultations;
+create policy "Users can view own consultations" on public.owl_consultations
+  for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can insert own consultations" on public.owl_consultations;
+create policy "Users can insert own consultations" on public.owl_consultations
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update own consultations" on public.owl_consultations;
+create policy "Users can update own consultations" on public.owl_consultations
+  for update using (auth.uid() = user_id);
+
+drop policy if exists "Users can delete own consultations" on public.owl_consultations;
+create policy "Users can delete own consultations" on public.owl_consultations
+  for delete using (auth.uid() = user_id);
+

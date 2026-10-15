@@ -193,7 +193,10 @@ export default function SkillLibraryPage() {
     enrollSkill: triggerEnroll,
     toggleVoiceListening,
     speakOwlVoice,
+    isCloudSynced,
+    isSyncingCloud,
   } = useOwlChat({
+    currentUser,
     enrolledSkills,
     catalogSkills: catalogSkillTitles,
     isPro,
@@ -263,6 +266,8 @@ export default function SkillLibraryPage() {
           consultations={consultations}
           activeConsultationId={activeConsultationId}
           isOpen={isSidebarOpen}
+          isCloudSynced={isCloudSynced}
+          isSyncingCloud={isSyncingCloud}
           onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
           onSelect={handleSelectSession}
           onNew={handleNewSession}
