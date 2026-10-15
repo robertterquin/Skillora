@@ -293,9 +293,9 @@ export default function SkillLibraryPage() {
               )}
 
               {/* Active Thread Title Pill */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-2xs text-ink-secondary truncate max-w-[160px] sm:max-w-xs">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-surface-border text-2xs text-ink-secondary truncate max-w-[180px] sm:max-w-xs shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald shrink-0" />
-                <span className="truncate font-mono font-medium">
+                <span className="truncate font-sans font-medium text-ink">
                   {currentConsultation?.title || "New Inquiry"}
                 </span>
               </div>
