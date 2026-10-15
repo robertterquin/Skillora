@@ -3,6 +3,7 @@
 
 import { Skill, SkillStep } from "@/types/database";
 import { normalizeStepId } from "@/lib/mock-data";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export type RecallQuality = 1 | 2 | 3; // 1 = Hard/Rusty, 2 = Solid/Fluid, 3 = Effortless/Cemented
 
@@ -180,6 +181,128 @@ export function saveSpacedRepetitionStore(store: SpacedRepetitionStore): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   } catch (e) {
     console.error("Failed to save spaced repetition store:", e);
+  }
+}
+
+/**
+ * Merges local and remote SpacedRepetitionStores, uniting practice dates and keeping newer drill records.
+ */
+export function mergeSpacedRepetitionStores(
+  local: SpacedRepetitionStore,
+  remoteDates: string[] = [],
+  remoteRecords: Record<string, DrillRepetitionRecord> = {},
+  remoteTotalSeconds: number = 0
+): SpacedRepetitionStore {
+  const mergedDates = Array.from(new Set([...(local.practiceDates || []), ...remoteDates])).sort();
+
+  const mergedRecords: Record<string, DrillRepetitionRecord> = { ...(local.records || {}) };
+  for (const [key, remRec] of Object.entries(remoteRecords)) {
+    const locRec = mergedRecords[key];
+    if (!locRec) {
+      mergedRecords[key] = remRec;
+    } else {
+      const locTime = locRec.lastPracticedAt ? new Date(locRec.lastPracticedAt).getTime() : 0;
+      const remTime = remRec.lastPracticedAt ? new Date(remRec.lastPracticedAt).getTime() : 0;
+      if (remTime > locTime) {
+        mergedRecords[key] = remRec;
+      }
+    }
+  }
+
+  return {
+    ...local,
+    practiceDates: mergedDates,
+    records: mergedRecords,
+    totalPracticeSecondsToday: Math.max(local.totalPracticeSecondsToday || 0, remoteTotalSeconds || 0),
+  };
+}
+
+/**
+ * Syncs the local spaced repetition store with the Supabase cloud table user_practice_stats.
+ */
+export async function syncPracticeStatsWithCloud(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<SpacedRepetitionStore> {
+  const localStore = getSpacedRepetitionStore();
+  if (!userId) return localStore;
+
+  try {
+    const { data, error } = await supabase
+      .from("user_practice_stats")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      // Table may not exist yet or offline; fallback to local
+      return localStore;
+    }
+
+    if (data) {
+      const remoteDates = Array.isArray(data.practice_dates) ? data.practice_dates : [];
+      const remoteRecords =
+        typeof data.sm2_records === "object" && data.sm2_records !== null ? data.sm2_records : {};
+      const remoteSeconds = Number(data.total_practice_seconds) || 0;
+
+      const mergedStore = mergeSpacedRepetitionStores(localStore, remoteDates, remoteRecords, remoteSeconds);
+      saveSpacedRepetitionStore(mergedStore);
+
+      // If local store has dates not in remote, push merged data back up
+      const hasNewDates = (localStore.practiceDates || []).some((d) => !remoteDates.includes(d));
+      if (hasNewDates) {
+        await pushPracticeStatsToCloud(supabase, userId, mergedStore);
+      }
+
+      return mergedStore;
+    } else {
+      // No cloud record yet: push existing local store to cloud if user practiced previously
+      if (
+        (localStore.practiceDates && localStore.practiceDates.length > 0) ||
+        Object.keys(localStore.records).length > 0
+      ) {
+        await pushPracticeStatsToCloud(supabase, userId, localStore);
+      }
+      return localStore;
+    }
+  } catch (err) {
+    console.warn("Failed to sync practice stats with cloud:", err);
+    return localStore;
+  }
+}
+
+/**
+ * Pushes the current spaced repetition store to Supabase user_practice_stats.
+ */
+export async function pushPracticeStatsToCloud(
+  supabase: SupabaseClient,
+  userId: string,
+  store?: SpacedRepetitionStore
+): Promise<boolean> {
+  if (!userId) return false;
+  const currentStore = store || getSpacedRepetitionStore();
+
+  try {
+    const { error } = await supabase.from("user_practice_stats").upsert(
+      {
+        user_id: userId,
+        practice_dates: currentStore.practiceDates || [],
+        sm2_records: currentStore.records || {},
+        total_practice_seconds: currentStore.totalPracticeSecondsToday || 0,
+        last_active_date: currentStore.lastActiveDate,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+
+    if (error) {
+      console.warn("Failed to push practice stats to cloud:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn("Push practice stats error:", err);
+    return false;
   }
 }
 

@@ -28,6 +28,8 @@ import {
   getSpacedRepetitionStore,
   getWeekActivity,
   logPracticeDay,
+  syncPracticeStatsWithCloud,
+  pushPracticeStatsToCloud,
   DocketItem,
 } from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
@@ -168,6 +170,17 @@ function Dashboard() {
         } catch (e) {
           console.error("Error parsing completed steps", e);
         }
+      }
+
+      // --- Sync Practice Stats, Streak & Spaced Repetition with Cloud ---
+      if (user) {
+        syncPracticeStatsWithCloud(supabase, user.id).then((cloudStore) => {
+          if (cloudStore && cloudStore.practiceDates) {
+            setPracticeDates(cloudStore.practiceDates);
+          }
+        });
+      } else {
+        setPracticeDates(getSpacedRepetitionStore().practiceDates);
       }
     },
     [supabase]
@@ -310,7 +323,11 @@ function Dashboard() {
     }
     if (!isCurrentlyDone) {
       logPracticeDay();
-      setPracticeDates(getSpacedRepetitionStore().practiceDates);
+      const updatedStore = getSpacedRepetitionStore();
+      setPracticeDates(updatedStore.practiceDates);
+      if (currentUser) {
+        pushPracticeStatsToCloud(supabase, currentUser.id, updatedStore);
+      }
     }
 
     if (currentUser && isValidUuid(normStepId)) {
@@ -370,14 +387,18 @@ function Dashboard() {
   const [guidedPracticeInitialIndex, setGuidedPracticeInitialIndex] = useState(0);
 
   const refreshDocket = useCallback(() => {
-    setPracticeDates(getSpacedRepetitionStore().practiceDates);
+    const store = getSpacedRepetitionStore();
+    setPracticeDates(store.practiceDates);
+    if (currentUser) {
+      pushPracticeStatsToCloud(supabase, currentUser.id, store);
+    }
     if (myStudioSkills.length > 0) {
       const docket = getDailyDocket(myStudioSkills, completedStepIds);
       setDocketItems(docket.items);
     } else {
       setDocketItems([]);
     }
-  }, [myStudioSkills, completedStepIds]);
+  }, [myStudioSkills, completedStepIds, currentUser, supabase]);
 
   useEffect(() => {
     refreshDocket();
