@@ -7,7 +7,7 @@ import { SolarIcon } from "../ui/SolarIcon";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
-import { isStepCompleted } from "@/lib/mock-data";
+import { isStepCompleted } from "@/lib/catalog-data";
 
 interface SkillSyllabusModalProps {
   skill: Skill | null;

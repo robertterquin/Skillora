@@ -1,5 +1,5 @@
 import { Skill, SkillStep, LearningResource } from "@/types/database";
-import { INITIAL_SKILLS } from "@/lib/mock-data";
+import { INITIAL_SKILLS } from "@/lib/catalog-data";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 interface DbResource {

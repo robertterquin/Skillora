@@ -16,7 +16,7 @@ import {
 } from "@/components";
 import { playChime } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
-import { INITIAL_SKILLS, normalizeSkillId } from "@/lib/mock-data";
+import { INITIAL_SKILLS, normalizeSkillId } from "@/lib/catalog-data";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { useOwlChat } from "@/hooks/useOwlChat";

@@ -11,13 +11,13 @@ import {
   Card,
   buttonClasses,
   Header,
-  FlashcardLearningModal,
+  SkillPracticeModal,
   SkillSyllabusModal,
   SkillFilterBar,
   DurationFilter,
   SolarIcon,
   MasteryPassportModal,
-  GuildExamModal,
+  SkillAssessmentModal,
   GuidedPracticeSessionModal,
 } from "@/components";
 import {
@@ -39,7 +39,7 @@ import {
   normalizeStepId,
   isValidUuid,
   isStepCompleted,
-} from "@/lib/mock-data";
+} from "@/lib/catalog-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
@@ -1006,10 +1006,10 @@ function Dashboard() {
         </Card>
       </main>
 
-      {/* 1. Flashcard & Voice Pronunciation Learning Modal */}
+      {/* 1. Skill Practice & Simulators Modal */}
       <AnimatePresence>
         {activeLearningSkill && (
-          <FlashcardLearningModal
+          <SkillPracticeModal
             skill={activeLearningSkill}
             completedStepIds={completedStepIds}
             onToggleStep={handleToggleStep}
@@ -1054,10 +1054,10 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* 5. Archimedes Craftsman's Guild Diagnostic Exam Modal */}
+      {/* 5. Skill Assessment Certification Exam Modal */}
       <AnimatePresence>
         {activeExamSkill && (
-          <GuildExamModal
+          <SkillAssessmentModal
             isOpen={!!activeExamSkill}
             onClose={() => setActiveExamSkill(null)}
             skill={activeExamSkill}
@@ -1066,7 +1066,7 @@ function Dashboard() {
             userName={
               currentUser?.user_metadata?.full_name ||
               currentUser?.email?.split("@")[0] ||
-              "Journeyman Craftsman"
+              "Scholar"
             }
           />
         )}

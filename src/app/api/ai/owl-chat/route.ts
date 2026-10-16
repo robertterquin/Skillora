@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createChatCompletion } from "@/lib/openai";
-import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/mock-data";
+import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/catalog-data";
 import { createAdminClient, invokeEdgeFunction } from "@/lib/supabase";
 import { enrichStepsWithYouTube } from "@/lib/youtube-service";
 import {

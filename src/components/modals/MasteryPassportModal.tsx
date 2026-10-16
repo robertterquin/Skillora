@@ -8,7 +8,7 @@ import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
 import { playMechanicalClick, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { User } from "@supabase/supabase-js";
-import { isStepCompleted, normalizeSkillId } from "@/lib/mock-data";
+import { isStepCompleted, normalizeSkillId } from "@/lib/catalog-data";
 
 interface MasteryPassportModalProps {
   isOpen: boolean;

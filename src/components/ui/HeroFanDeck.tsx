@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Skill } from "@/types/database";
-import { normalizeCategoryId } from "@/lib/mock-data";
+import { normalizeCategoryId } from "@/lib/catalog-data";
 import { SolarIcon } from "./SolarIcon";
 
 interface HeroFanDeckProps {

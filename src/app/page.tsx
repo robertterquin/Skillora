@@ -13,7 +13,7 @@ import {
   SolarIcon,
   buttonClasses,
 } from "@/components";
-import { INITIAL_SKILLS } from "@/lib/mock-data";
+import { INITIAL_SKILLS } from "@/lib/catalog-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase";
 import { fetchLiveSkills } from "@/services/skillsService";

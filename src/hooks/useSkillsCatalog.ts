@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Skill } from "@/types/database";
-import { INITIAL_SKILLS } from "@/lib/mock-data";
+import { INITIAL_SKILLS } from "@/lib/catalog-data";
 import { createClient } from "@/lib/supabase";
 import { skillsService } from "@/services/skillsService";
 

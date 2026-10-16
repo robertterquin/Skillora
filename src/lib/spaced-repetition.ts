@@ -2,7 +2,7 @@
 // Calibrated for physical micro-mechanics, motor memory decay, and tactile drills.
 
 import { Skill, SkillStep } from "@/types/database";
-import { normalizeStepId } from "@/lib/mock-data";
+import { normalizeStepId } from "@/lib/catalog-data";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export type RecallQuality = 1 | 2 | 3; // 1 = Hard/Rusty, 2 = Solid/Fluid, 3 = Effortless/Cemented

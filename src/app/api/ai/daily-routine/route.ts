@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai, createChatCompletion } from "@/lib/openai";
-import { isStepCompleted } from "@/lib/mock-data";
+import { isStepCompleted } from "@/lib/catalog-data";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {

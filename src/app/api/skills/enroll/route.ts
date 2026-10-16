@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase";
-import { normalizeSkillId, normalizeCategoryId, normalizeStepId, isValidUuid } from "@/lib/mock-data";
+import { normalizeSkillId, normalizeCategoryId, normalizeStepId, isValidUuid } from "@/lib/catalog-data";
 import { Skill } from "@/types/database";
 
 export async function POST(req: NextRequest) {
