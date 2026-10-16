@@ -5,7 +5,6 @@ import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
   Badge,
-  Header,
   SolarIcon,
   InteractiveOwlAvatar,
   buttonClasses,

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Suspense, useState, useEffect, useCallback, useMemo } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
@@ -10,7 +9,6 @@ import {
   Button,
   Card,
   buttonClasses,
-  Header,
   SkillPracticeModal,
   SkillSyllabusModal,
   SkillFilterBar,
@@ -469,42 +467,30 @@ function Dashboard() {
         {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
         <section className="mb-8 sm:mb-10">
           <Card className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 relative">
-            <div className="flex items-start sm:items-center gap-4">
-              <div className="hidden sm:flex w-14 h-14 rounded-2xl bg-canvas border border-surface-border p-2.5 items-center justify-center flex-shrink-0 shadow-2xs">
-                <Image
-                  src="/logo.svg"
-                  alt=""
-                  width={38}
-                  height={38}
-                  className="w-9 h-9 object-contain"
-                />
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
+                  {displayName}&apos;s Studio
+                </h1>
               </div>
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
-                    {displayName}&apos;s Studio
-                  </h1>
-                </div>
-                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
-                  Your skills and today&apos;s practice, in one place.
-                </p>
+              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
+                Your skills and today&apos;s practice, in one place.
+              </p>
 
-                {/* Status Badges & Quick Action Row */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-
-                  {/* Certifications Modal Trigger */}
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      playWoodenThud();
-                      setIsPassportOpen(true);
-                    }}
-                  >
-                    <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-amber-600" />
-                    <span>Certifications · {isClient ? masteredSkills.length : 0} earned</span>
-                  </Button>
-                </div>
+              {/* Status Badges & Quick Action Row */}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {/* Certifications Modal Trigger */}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    playWoodenThud();
+                    setIsPassportOpen(true);
+                  }}
+                >
+                  <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-amber-600" />
+                  <span>Certifications · {isClient ? masteredSkills.length : 0} earned</span>
+                </Button>
               </div>
             </div>
 

@@ -606,7 +606,7 @@ export function SkillPracticeModal({
                 {/* 3. Bottom Utility Bar */}
                 <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs">
                   <span className="text-ink-muted text-3xs font-mono tracking-wider uppercase">
-                    {isCurrentStepDone ? "AFFIXED // 済 VERIFIED" : "DRILL IN PROGRESS"}
+                    {isCurrentStepDone ? "STEP COMPLETED" : "STEP IN PROGRESS"}
                   </span>
                   <button
                     type="button"
@@ -622,7 +622,7 @@ export function SkillPracticeModal({
                     }}
                     className={`px-4 py-2 rounded-xl font-mono text-2xs font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
                       isCurrentStepDone
-                        ? "bg-accent-vermilion/10 text-accent-vermilion border border-accent-vermilion/30 shadow-xs hover:bg-accent-vermilion/15"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs hover:bg-emerald-100/80"
                         : "bg-ink text-white hover:bg-accent-vermilion shadow-xs"
                     }`}
                   >

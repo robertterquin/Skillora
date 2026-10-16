@@ -165,7 +165,7 @@ export function SkillAssessmentModal({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">CERTIFICATION // EVALUATOR: ARCHIMEDES</span>
+              <span className="spec-tag text-stone-600">SKILL CERTIFICATION</span>
               <span className="text-3xs font-mono font-bold text-amber-700">
                 FINAL ASSESSMENT
               </span>
@@ -200,17 +200,8 @@ export function SkillAssessmentModal({
         {/* ============================================================ */}
         {stage === "intro" && (
           <div className="space-y-6 text-center max-w-lg mx-auto py-4">
-            <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-amber-800 shadow-sm">
-                <SolarIcon name="diploma-verified-linear" className="w-8 h-8" />
-              </div>
-            </div>
-
             <div>
-              <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2 py-0.5 rounded-full text-3xs">
-                FINAL ASSESSMENT
-              </span>
-              <h3 className="font-display font-bold text-2xl text-ink mt-3">
+              <h3 className="font-display font-bold text-2xl text-ink">
                 {skill.title}
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
@@ -494,15 +485,10 @@ export function SkillAssessmentModal({
               id="guild-diploma-print-area"
               className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-amber-800/40 shadow-inner relative overflow-hidden text-center corner-ticks print:p-8 print:border-amber-900"
             >
-              {/* Subtle Guilloche / Watermark */}
-              <div className="absolute right-6 -bottom-10 opacity-5 pointer-events-none select-none">
-                <span className="font-serif text-[240px] font-black">匠</span>
-              </div>
-
               {/* Top Crest & Monospace ID */}
               <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-amber-900/70 uppercase pb-4 border-b border-amber-900/20">
                 <span>SKILLORA CERTIFICATION</span>
-                <span>CREDENTIAL ID // SK-{skill.id.slice(0, 6).toUpperCase()}</span>
+                <span>CREDENTIAL ID · SK-{skill.id.slice(0, 6).toUpperCase()}</span>
               </div>
 
               {/* Diploma Main Title */}

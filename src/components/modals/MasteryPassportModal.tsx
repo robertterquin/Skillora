@@ -179,26 +179,20 @@ export function MasteryPassportModal({
                   </p>
                 </div>
 
-                {/* Status Badge */}
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-14 h-14 rounded-2xl border-2 ${
-                      certifiedCount > 0
-                        ? "border-amber-400 bg-amber-50 text-amber-700"
-                        : "border-stone-300 bg-stone-50 text-stone-600"
-                    } flex flex-col items-center justify-center shadow-xs`}
-                  >
-                    <SolarIcon
-                      name={certifiedCount > 0 ? "diploma-verified-linear" : "check-circle-linear"}
-                      className="w-6 h-6 mb-0.5"
-                    />
-                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase">
-                      {certifiedCount > 0 ? "CERTIFIED" : "ACTIVE"}
-                    </span>
-                  </div>
-                  <span className="text-3xs font-mono text-stone-400 mt-1 uppercase tracking-widest">
-                    {certifiedCount > 0 ? "Verified Scholar" : "Official Member"}
-                  </span>
+                {/* Status Pill */}
+                <div
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-3xs font-mono font-bold tracking-wider uppercase self-start ${
+                    certifiedCount > 0
+                      ? "border-amber-300 bg-amber-50 text-amber-800"
+                      : "border-stone-200 bg-stone-50 text-stone-600"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      certifiedCount > 0 ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                  />
+                  <span>{certifiedCount > 0 ? "Verified Scholar" : "Active Member"}</span>
                 </div>
               </div>
 
@@ -406,7 +400,7 @@ export function MasteryPassportModal({
                         <>
                           <div className="flex flex-col">
                             <span className="text-3xs font-mono font-semibold text-stone-500 uppercase">
-                              IN PROGRESS // {doneCount}/{steps.length} STEPS
+                              IN PROGRESS · {doneCount}/{steps.length} STEPS
                             </span>
                             <span className="text-3xs font-mono text-stone-400">
                               Assessment unlocked at 100%

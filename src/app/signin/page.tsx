@@ -81,9 +81,6 @@ export default function SignInPage() {
         <div className="w-full max-w-md">
           <Card className="p-8 sm:p-10">
             <div className="text-center mb-8">
-              <span className="font-mono text-3xs uppercase tracking-wider text-ink-subtle block mb-2">
-                STUDIO SESSION // AUTHENTICATION
-              </span>
               <h1 className="font-serif italic font-normal text-3xl sm:text-4xl text-ink tracking-tight">
                 Welcome back.
               </h1>

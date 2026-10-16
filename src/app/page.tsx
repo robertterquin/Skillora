@@ -7,7 +7,6 @@ import { AnimatePresence } from "motion/react";
 import {
   Badge,
   Card,
-  Header,
   HeroFanDeck,
   SkillSyllabusModal,
   SolarIcon,

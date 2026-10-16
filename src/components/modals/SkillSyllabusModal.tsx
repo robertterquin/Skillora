@@ -117,7 +117,7 @@ export function SkillSyllabusModal({
               </div>
               <div>
                 <div className="text-3xs font-mono font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE // ASSESSMENT UNLOCKED"}</span>
+                  <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE · ASSESSMENT UNLOCKED"}</span>
                 </div>
                 <div className="text-xs text-ink-secondary mt-0.5">
                   {isGuildCertified
