@@ -429,6 +429,14 @@ function Dashboard() {
     });
   }, [myStudioSkills, completedStepIds]);
 
+  const currentFocusSkill = activeSkills[0] || myStudioSkills[0];
+  const nextIncompleteStep = currentFocusSkill?.steps?.find(
+    (s) => !isStepCompleted(s.id, completedStepIds)
+  );
+  const currentFocusStepNumber = nextIncompleteStep
+    ? nextIncompleteStep.step_number
+    : (currentFocusSkill?.steps?.length || 1);
+
   const displayName =
     currentUser?.user_metadata?.full_name ||
     currentUser?.email?.split("@")[0] ||
@@ -463,16 +471,51 @@ function Dashboard() {
               {isClient
                 ? new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })
                 : "STUDIO RECORD"}
-              {" "}· PERSONAL ATELIER
+              {" "}· WORKSPACE RECORD
             </span>
             <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP</span>
           </div>
 
           {/* Title & Passport Action */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
-              Studio
-            </h1>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
+            <div className="space-y-1.5 min-w-0 flex-1">
+              <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
+                Personal <span className="font-serif italic font-normal text-brand-600">Atelier</span>
+              </h1>
+
+              {currentFocusSkill ? (
+                <div className="flex items-center gap-2 text-xs text-ink-muted">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse shrink-0" />
+                  <span className="font-mono text-3xs uppercase tracking-wider text-ink-subtle">
+                    Current focus:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playWoodenThud();
+                      setActiveLearningSkill(currentFocusSkill);
+                    }}
+                    className="font-medium text-ink hover:text-accent-vermilion transition inline-flex items-center gap-1.5 cursor-pointer truncate max-w-xs sm:max-w-md group"
+                    title={`Resume ${currentFocusSkill.title}`}
+                  >
+                    <span className="truncate group-hover:underline underline-offset-2">
+                      {currentFocusSkill.title}
+                    </span>
+                    <span className="text-ink-muted font-mono text-3xs shrink-0">
+                      (Step {currentFocusStepNumber})
+                    </span>
+                    <SolarIcon
+                      name="arrow-right-linear"
+                      className="w-3 h-3 text-accent-vermilion group-hover:translate-x-0.5 transition shrink-0"
+                    />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-xs text-ink-muted">
+                  Explore disciplines in the library to begin your first track.
+                </p>
+              )}
+            </div>
 
             <Button
               variant="secondary"
@@ -481,7 +524,7 @@ function Dashboard() {
                 playWoodenThud();
                 setIsPassportOpen(true);
               }}
-              className="self-start sm:self-auto"
+              className="self-start sm:self-auto shrink-0"
             >
               <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
               <span>Mastery Passport ({isClient ? masteredSkills.length : 0})</span>
