@@ -72,7 +72,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-canvas text-ink selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white">
       <header className="p-6 max-w-7xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-white border border-surface-border flex items-center justify-center group-hover:border-ink/30 transition">

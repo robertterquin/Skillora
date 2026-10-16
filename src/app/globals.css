@@ -87,16 +87,21 @@ body {
 }
 
 .workbench-grid {
-  background-color: #F9F8F5;
+  background-color: #F7F5F0;
   background-image: 
-    linear-gradient(to right, rgba(26, 25, 23, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(26, 25, 23, 0.02) 1px, transparent 1px);
-  background-size: 32px 32px;
+    radial-gradient(circle at 1px 1px, rgba(26, 25, 23, 0.05) 1px, transparent 1.5px),
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+  background-size: 24px 24px, 100% 720px;
+  background-repeat: repeat, no-repeat;
 }
 
 .workbench-dots {
-  background-image: radial-gradient(circle, rgba(26, 25, 23, 0.035) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-color: #F7F5F0;
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(26, 25, 23, 0.05) 1px, transparent 1.5px),
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+  background-size: 24px 24px, 100% 720px;
+  background-repeat: repeat, no-repeat;
 }
 
 .bento-card {

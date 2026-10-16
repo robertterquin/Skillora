@@ -31,7 +31,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col bg-canvas text-ink selection:bg-brand-500 selection:text-white">
+    <div className="flex-1 flex flex-col bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white">
 
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 overflow-hidden text-center">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
