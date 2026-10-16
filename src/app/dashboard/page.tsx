@@ -465,244 +465,226 @@ function Dashboard() {
           </div>
         )}
 
-        {/* User Learning Hub Header & Metrics Banner (Streak, Active, Mastered) */}
-        <section className="mb-8 sm:mb-10">
-          <Card className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 relative">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink tracking-tight">
-                  {displayName}&apos;s Studio
-                </h1>
-              </div>
-              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xl">
-                Your skills and today&apos;s practice, in one place.
-              </p>
+        {/* User Learning Hub Header & Metrics Banner (Unboxed Editorial Linear Style) */}
+        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="spec-tag text-ink-muted">PERSONAL ATELIER</span>
+            </div>
+            <h1 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-ink tracking-tight">
+              {displayName}&apos;s Studio
+            </h1>
+            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+              Your craftsmanship repertoire and daily spaced repetition practice.
+            </p>
+          </div>
 
-              {/* Status Badges & Quick Action Row */}
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {/* Certifications Modal Trigger */}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    playWoodenThud();
-                    setIsPassportOpen(true);
-                  }}
-                >
-                  <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-ink-muted" />
-                  <span>Certifications · {isClient ? masteredSkills.length : 0} earned</span>
-                </Button>
-              </div>
+          {/* Quick Metrics & Certifications Strip */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
+            {/* Streak */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
+              <SolarIcon
+                name="fire-linear"
+                className={`w-3.5 h-3.5 ${isClient && streak > 0 ? "text-accent-vermilion" : "text-ink-muted"}`}
+              />
+              <span className="font-bold text-ink tabular-nums">{isClient ? streak : 0}</span>
+              <span className="text-ink-muted text-2xs">{streak === 1 ? "day" : "days"}</span>
             </div>
 
-            {/* Streak & Active & Mastered Metrics */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
-              {/* STREAK */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
-                <div className={`w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center flex-shrink-0 ${
-                  isClient && streak > 0 ? "text-accent-vermilion" : "text-ink-muted"
-                }`}>
-                  <SolarIcon name="fire-linear" className="w-4 h-4" />
-                </div>
-                <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Streak
-                  </div>
-                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
-                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
-                      {isClient ? streak : 0}
-                    </span>
-                    <span className="text-3xs font-medium text-ink-muted font-sans">
-                      {streak === 1 ? "day" : "days"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* ACTIVE */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
-                  <SolarIcon name="clock-circle-linear" className="w-4 h-4" />
-                </div>
-                <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Active
-                  </div>
-                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
-                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
-                      {isClient ? activeSkills.length : 0}
-                    </span>
-                    <span className="text-3xs font-medium text-ink-muted font-sans">
-                      {activeSkills.length === 1 ? "skill" : "skills"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* MASTERED */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
-                  <SolarIcon name="cup-first-linear" className="w-4 h-4" />
-                </div>
-                <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Mastered
-                  </div>
-                  <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
-                    <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
-                      {isClient ? masteredSkills.length : 0}
-                    </span>
-                    <span className="text-3xs font-medium text-ink-muted font-sans">
-                      {masteredSkills.length === 1 ? "skill" : "skills"}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            {/* Active Skills */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
+              <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
+              <span className="font-bold text-ink tabular-nums">{isClient ? activeSkills.length : 0}</span>
+              <span className="text-ink-muted text-2xs">active</span>
             </div>
-          </Card>
-        </section>
 
-        {/* Spaced Repetition Daily Practice Docket */}
+            {/* Mastered */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
+              <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-ink-muted" />
+              <span className="font-bold text-ink tabular-nums">{isClient ? masteredSkills.length : 0}</span>
+              <span className="text-ink-muted text-2xs">mastered</span>
+            </div>
+
+            {/* Certifications Modal Trigger */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                playWoodenThud();
+                setIsPassportOpen(true);
+              }}
+            >
+              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Certifications ({isClient ? masteredSkills.length : 0})</span>
+            </Button>
+          </div>
+        </header>
+
+        {/* Asymmetric Bento Grid: Daily Practice Station (2/3) + Consistency Rhythm (1/3) */}
         {myStudioSkills.length > 0 && (
-          <section className="mb-8">
-            <Card className="p-6 sm:p-7 relative overflow-hidden">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
-                    <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
-                  </div>
+          <section className="mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+              {/* 2/3 Width (8 cols): Hero Practice Station */}
+              <div className="lg:col-span-8 flex flex-col">
+                <Card className="p-6 sm:p-7 flex-1 flex flex-col justify-between relative overflow-hidden bg-white border-surface-border shadow-2xs">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="spec-tag text-ink-subtle">
-                        Spaced repetition
-                      </span>
-                      {docketItems.some((i) => i.urgency === "overdue") && (
-                        <Badge tone="danger">Needs review</Badge>
+                    {/* Header of Practice */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
+                          <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="spec-tag text-ink-muted">DAILY DOCKET</span>
+                            {docketItems.some((i) => i.urgency === "overdue") && (
+                              <Badge tone="danger">Needs review</Badge>
+                            )}
+                          </div>
+                          <h2 className="font-display font-bold text-lg text-ink">
+                            Today&apos;s Practice
+                          </h2>
+                        </div>
+                      </div>
+
+                      {docketItems.length > 0 && (
+                        <Button
+                          onClick={() => {
+                            playMechanicalClick();
+                            setGuidedPracticeInitialIndex(0);
+                            setIsGuidedPracticeOpen(true);
+                          }}
+                        >
+                          <SolarIcon name="play-linear" className="w-4 h-4 text-white/80" />
+                          <span>
+                            {docketItems.every((i) => i.isCompletedToday)
+                              ? "Review today's drills"
+                              : `Start session · ~${docketItems.length * 5} min`}
+                          </span>
+                        </Button>
                       )}
                     </div>
-                    <h3 className="font-display font-bold text-lg text-ink">
-                      Today&apos;s practice
-                    </h3>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2 self-start sm:self-auto">
-                  {docketItems.length > 0 && (
-                    <Button
-                      onClick={() => {
-                        playMechanicalClick();
-                        setGuidedPracticeInitialIndex(0);
-                        setIsGuidedPracticeOpen(true);
-                      }}
-                    >
-                      <SolarIcon name="play-linear" className="w-4 h-4 text-white/80" />
-                      <span>
-                        {docketItems.every((i) => i.isCompletedToday)
-                          ? "Review today's practice"
-                          : "Start practice · 15 min"}
-                      </span>
-                    </Button>
-                  )}
-                </div>
+                    {/* Drill Cards Grid */}
+                    {docketItems.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {docketItems.slice(0, 4).map((item, idx) => {
+                          const isOverdue = item.urgency === "overdue";
+                          const isDueToday = item.urgency === "due_today";
+
+                          const openDrill = () => {
+                            playMechanicalClick();
+                            setGuidedPracticeInitialIndex(idx);
+                            setIsGuidedPracticeOpen(true);
+                          };
+
+                          return (
+                            <div
+                              key={item.step.id}
+                              role="button"
+                              tabIndex={0}
+                              onClick={openDrill}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  openDrill();
+                                }
+                              }}
+                              className={`p-4 rounded-xl border transition-all cursor-pointer group flex flex-col justify-between ${
+                                item.isCompletedToday
+                                  ? "bg-canvas border-surface-border shadow-2xs opacity-85"
+                                  : "bg-white border-surface-border hover:border-ink/30 shadow-2xs"
+                              }`}
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-2 mb-1.5">
+                                  <span className="text-3xs font-mono text-ink-muted uppercase font-semibold tracking-wider truncate">
+                                    {item.skill.title}
+                                  </span>
+                                  {item.isCompletedToday ? (
+                                    <Badge tone="success">
+                                      <SolarIcon name="check-circle-linear" className="w-3 h-3" />
+                                      Done
+                                    </Badge>
+                                  ) : isOverdue ? (
+                                    <Badge tone="danger">Overdue +{item.daysOverdue}d</Badge>
+                                  ) : isDueToday ? (
+                                    <Badge tone="warning">Due today</Badge>
+                                  ) : (
+                                    <Badge>New</Badge>
+                                  )}
+                                </div>
+
+                                <h4 className="font-display font-bold text-sm text-ink mb-1 group-hover:text-brand-700 transition line-clamp-1">
+                                  {item.step.title}
+                                </h4>
+                                <p className="text-xs text-ink-secondary line-clamp-2 leading-relaxed">
+                                  {item.step.instructions}
+                                </p>
+                              </div>
+
+                              <div className="mt-3 pt-2 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
+                                <span className="text-2xs text-ink-muted">
+                                  ~{item.step.estimated_minutes} min
+                                </span>
+                                <span className="text-2xs font-bold text-ink group-hover:text-accent-vermilion flex items-center gap-1 transition">
+                                  <span>{item.isCompletedToday ? "Review" : "Practice"}</span>
+                                  <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="py-8 text-center text-xs text-ink-muted font-sans">
+                        No pending practice drills scheduled for today.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Practice Footer status */}
+                  <div className="mt-5 pt-3 border-t border-surface-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                    <span className="text-2xs font-mono text-ink-muted">
+                      {docketDoneCount} of {docketItems.length} drills completed today
+                    </span>
+                    <span className={`text-2xs font-mono font-semibold flex items-center gap-1.5 ${
+                      isDocketDone ? "text-accent-emerald" : "text-ink-secondary"
+                    }`}>
+                      <SolarIcon
+                        name={isDocketDone ? "check-circle-linear" : "clock-circle-linear"}
+                        className="w-3.5 h-3.5"
+                      />
+                      <span>{isDocketDone ? "Daily target accomplished" : `${docketItems.length - docketDoneCount} remaining today`}</span>
+                    </span>
+                  </div>
+                </Card>
               </div>
 
-              {docketItems.length > 0 ? (
-                <div className="space-y-4 animate-fade-in pt-2 border-t border-surface-border">
-                  {/* Docket Drill Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {docketItems.map((item, idx) => {
-                      const isOverdue = item.urgency === "overdue";
-                      const isDueToday = item.urgency === "due_today";
-
-                      const openDrill = () => {
-                        playMechanicalClick();
-                        setGuidedPracticeInitialIndex(idx);
-                        setIsGuidedPracticeOpen(true);
-                      };
-
-                      return (
-                        <div
-                          key={item.step.id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={openDrill}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              openDrill();
-                            }
-                          }}
-                          className={`p-4 rounded-2xl border transition-all cursor-pointer group flex flex-col justify-between ${
-                            item.isCompletedToday
-                              ? "bg-canvas border-surface-border shadow-2xs opacity-85"
-                              : "bg-white border-surface-border hover:border-ink/30 shadow-2xs"
-                          }`}
-                        >
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <span className="text-3xs font-mono text-ink-muted uppercase font-semibold tracking-wider truncate">
-                                {item.skill.title}
-                              </span>
-                              {item.isCompletedToday ? (
-                                <Badge tone="success">
-                                  <SolarIcon name="check-circle-linear" className="w-3 h-3" />
-                                  Done
-                                </Badge>
-                              ) : isOverdue ? (
-                                <Badge tone="danger">Overdue +{item.daysOverdue}d</Badge>
-                              ) : isDueToday ? (
-                                <Badge tone="warning">Due today</Badge>
-                              ) : (
-                                <Badge>New</Badge>
-                              )}
-                            </div>
-
-                            <h4 className="font-display font-bold text-sm text-ink mb-1 group-hover:text-brand-700 transition">
-                              {item.step.title}
-                            </h4>
-                            <p className="text-xs text-ink-secondary line-clamp-2 leading-relaxed">
-                              {item.step.instructions}
-                            </p>
-                          </div>
-
-                          <div className="mt-3 pt-2.5 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
-                            <span className="text-2xs text-ink-muted">
-                              ~{item.step.estimated_minutes} min
-                            </span>
-                            <span className="text-2xs font-bold text-ink group-hover:text-brand-600 flex items-center gap-1">
-                              <span>{item.isCompletedToday ? "Review" : "Practice"}</span>
-                              <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Bottom Streak Strip & Philosophy */}
-                  <div className="p-4 rounded-2xl bg-canvas border border-surface-border text-xs space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <p className="text-ink-secondary italic font-serif">
-                        &ldquo;Repetition without tension creates speed without effort.&rdquo;
-                      </p>
-                      <span className="spec-tag text-ink-muted font-mono">
-                        {docketDoneCount} of {docketItems.length} done today
-                      </span>
+              {/* 1/3 Width (4 cols): Companion Consistency & Rhythm Tile */}
+              <div className="lg:col-span-4 flex flex-col">
+                <Card className="p-6 sm:p-7 flex-1 flex flex-col justify-between bg-white border-surface-border shadow-2xs">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="spec-tag text-ink-muted">CONSISTENCY</span>
+                      <span className="text-3xs font-mono font-bold text-ink-muted uppercase">7-DAY RHYTHM</span>
                     </div>
 
-                    {/* This week's practice, one seal per day practiced */}
-                    <div className="pt-3 border-t border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-wider">
-                          This week
-                        </span>
-                        <ol className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5" aria-label="Practice this week">
-                          {weekActivity.map((day) => (
-                            <li
-                              key={day.date}
-                              aria-label={`${day.date}${day.isToday ? " (today)" : ""}: ${
-                                day.practiced ? "practiced" : day.isFuture ? "upcoming" : "no practice"
-                              }`}
+                    {/* Weekly Activity Tracker */}
+                    <div>
+                      <div className="text-xs font-mono font-semibold text-ink mb-2.5">
+                        Practice Streak: {isClient ? streak : 0} {streak === 1 ? "day" : "days"}
+                      </div>
+                      <ol className="flex items-center justify-between gap-1 py-1" aria-label="Practice this week">
+                        {weekActivity.map((day) => (
+                          <li
+                            key={day.date}
+                            aria-label={`${day.date}${day.isToday ? " (today)" : ""}: ${
+                              day.practiced ? "practiced" : day.isFuture ? "upcoming" : "no practice"
+                            }`}
+                            className="flex flex-col items-center gap-1"
+                          >
+                            <div
                               className={`w-7 h-7 rounded-full border flex items-center justify-center text-3xs font-mono transition-all ${
                                 day.practiced
                                   ? "bg-ink border-ink text-white font-bold"
@@ -718,31 +700,44 @@ function Dashboard() {
                               ) : (
                                 <span aria-hidden="true">{day.label}</span>
                               )}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
+                            </div>
+                            <span className="text-[9px] font-mono text-ink-subtle uppercase">
+                              {day.label}
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
 
-                      <div
-                        className={`inline-flex items-center gap-2 text-xs font-semibold self-start sm:self-auto ${
-                          isDocketDone ? "text-ink" : "text-ink-secondary"
-                        }`}
-                      >
-                        <SolarIcon
-                          name={isDocketDone ? "check-circle-linear" : "clock-circle-linear"}
-                          className={`w-4 h-4 ${isDocketDone ? "text-ink" : "text-ink-muted"}`}
-                        />
-                        <span>{isDocketDone ? "Completed for today" : `${docketItems.length - docketDoneCount} left today`}</span>
+                    {/* Atelier Craft Axiom */}
+                    <div className="p-3.5 rounded-xl bg-canvas border border-surface-border/80">
+                      <p className="text-xs text-ink-secondary italic font-serif leading-relaxed">
+                        &ldquo;Repetition without tension creates speed without effort.&rdquo;
+                      </p>
+                      <div className="mt-2 text-3xs font-mono text-ink-muted uppercase tracking-wider text-right">
+                        — Craft Axiom
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="pt-2 border-t border-surface-border text-xs text-ink-muted">
-                  Add a skill from the Skill Library to get a daily practice plan.
-                </div>
-              )}
-            </Card>
+
+                  {/* Quick link to certificates passport */}
+                  <div className="mt-5 pt-3 border-t border-surface-border/70 flex items-center justify-between text-xs font-mono">
+                    <span className="text-2xs text-ink-muted">Mastery Passport</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playWoodenThud();
+                        setIsPassportOpen(true);
+                      }}
+                      className="text-2xs font-bold text-ink hover:text-accent-vermilion transition flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>View Records</span>
+                      <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
+                    </button>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </section>
         )}
 
