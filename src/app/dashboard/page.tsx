@@ -510,8 +510,8 @@ function Dashboard() {
             </Button>
           </div>
 
-          {/* Containerless Typographic Stat-Line Chain */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-5 border-y border-surface-border">
+          {/* Typographic Metric Summary Card */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white border border-surface-border shadow-2xs">
             <div>
               <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
                 Streak
@@ -562,11 +562,11 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* 100% Containerless Daily Practice Station */}
+        {/* Daily Practice Station (Tactile Atelier Workbench Card) */}
         {myStudioSkills.length > 0 && (
-          <section className="mb-14">
+          <section className="mb-12 p-6 sm:p-8 rounded-2xl bg-white border border-surface-border shadow-2xs">
             {/* Header: Practice Docket & Primary CTA */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 mb-1 border-b border-surface-border">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 mb-1 border-b border-surface-border/70">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="spec-tag text-ink-muted">DAILY DOCKET</span>
@@ -603,9 +603,9 @@ function Dashboard() {
               )}
             </div>
 
-            {/* Drill List (Linear/Read.cv containerless rows directly on oat canvas) */}
+            {/* Drill List (Linear/Read.cv containerless rows inside the workbench card) */}
             {docketItems.length > 0 ? (
-              <div className="divide-y divide-surface-border/70 border-b border-surface-border">
+              <div className="divide-y divide-surface-border/60">
                 {docketItems.slice(0, 4).map((item, idx) => {
                   const isOverdue = item.urgency === "overdue";
                   const isDueToday = item.urgency === "due_today";
@@ -628,7 +628,7 @@ function Dashboard() {
                           openDrill();
                         }
                       }}
-                      className="group py-4 px-3 -mx-3 rounded-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/80"
+                      className="group py-3.5 px-3 -mx-3 rounded-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-canvas/80"
                     >
                       {/* Left: Index + Status Dot + Step Details */}
                       <div className="flex items-start sm:items-center gap-3.5 min-w-0">
@@ -693,13 +693,13 @@ function Dashboard() {
                 })}
               </div>
             ) : (
-              <div className="py-8 text-center text-xs text-ink-muted font-sans border-b border-surface-border">
+              <div className="py-8 text-center text-xs text-ink-muted font-sans">
                 No pending practice drills scheduled for today.
               </div>
             )}
 
-            {/* Weekly Consistency Rhythm & Craft Axiom (Single Unboxed Footer Strip) */}
-            <div className="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
+            {/* Weekly Consistency Rhythm & Craft Axiom (Integrated Footer Strip) */}
+            <div className="mt-4 pt-4 border-t border-surface-border/70 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
               <div className="flex flex-wrap items-center gap-4">
                 <span className="text-3xs font-mono font-bold uppercase tracking-widest text-ink-muted">
                   7-DAY RHYTHM
@@ -866,8 +866,8 @@ function Dashboard() {
               </div>
             </div>
           ) : repertoireView === "ledger" ? (
-            /* 1. CONTINUOUS LEDGER STRIP LIST (Containerless Linear/Read.cv style) */
-            <div className="divide-y divide-surface-border/70 border-y border-surface-border">
+            /* 1. CONTINUOUS LEDGER STRIP LIST (Archival Ledger Register Card) */
+            <div className="bg-white rounded-2xl border border-surface-border shadow-2xs divide-y divide-surface-border/70 px-5 sm:px-6">
               {filteredStudioSkills.map((skill, idx) => {
                 const steps = skill.steps || [];
                 const doneCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
@@ -890,7 +890,7 @@ function Dashboard() {
                 return (
                   <div
                     key={skill.id}
-                    className="group py-4 px-3 -mx-3 rounded-xl hover:bg-white/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    className="group py-4 -mx-2 px-2 rounded-xl hover:bg-canvas/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
                     {/* Left: Index + Metadata + Title + Summary */}
                     <div className="flex items-start md:items-center gap-4 min-w-0 flex-1">
@@ -1203,9 +1203,9 @@ function Dashboard() {
         </section>
 
         {/* Discovery Callout Footer */}
-        <section className="pt-8 pb-4 border-t border-surface-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <section className="p-6 sm:p-7 rounded-2xl bg-white border border-surface-border shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink flex-shrink-0 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
               <SolarIcon name="compass-linear" className="w-5 h-5 text-ink-muted" />
             </div>
             <div>
