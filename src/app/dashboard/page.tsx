@@ -469,15 +469,10 @@ function Dashboard() {
           </div>
 
           {/* Title & Passport Action */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8">
-            <div className="space-y-1.5">
-              <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
-                {displayName}&apos;s Studio
-              </h1>
-              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-                Your craftsmanship repertoire and progress.
-              </p>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
+              Studio
+            </h1>
 
             <Button
               variant="secondary"
@@ -486,7 +481,7 @@ function Dashboard() {
                 playWoodenThud();
                 setIsPassportOpen(true);
               }}
-              className="self-start md:self-auto"
+              className="self-start sm:self-auto"
             >
               <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
               <span>Mastery Passport ({isClient ? masteredSkills.length : 0})</span>
