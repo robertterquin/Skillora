@@ -19,7 +19,7 @@ import { StepActionBlueprint } from "../simulators/StepActionBlueprint";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 import { aiService } from "@/services/aiService";
-import { getUniformMaleVoice } from "@/lib/voice";
+import { speakWithUniformMaleVoice, stopUniformVoice } from "@/lib/voice";
 
 export interface SkillPracticeModalProps {
   skill: Skill | null;
@@ -151,45 +151,31 @@ export function SkillPracticeModal({
     skill?.slug.includes("cyrillic") ||
     skill?.slug.includes("language");
 
-  // Reset drawers & flip when card index changes
+  // Reset drawers & flip when card index changes, and stop any active voice on unmount
   useEffect(() => {
+    stopUniformVoice();
+    setIsSpeaking(false);
     setIsFlipped(false);
     setCoachAdvice(null);
     setMnemonicData(null);
     setVoiceScoreResult(null);
   }, [currentCardIndex]);
 
-  // Audio Voice Speech Pronunciation using Web Speech API
+  useEffect(() => {
+    return () => {
+      stopUniformVoice();
+    };
+  }, []);
+
+  // Audio Voice Speech Pronunciation using unified male voice (OpenAI 'onyx' + strict male fallback)
   const speakText = (text: string, customLang?: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      alert("Speech synthesis is not supported in this browser.");
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    if (customLang) {
-      utterance.lang = customLang;
-    } else if (isLanguageSkill) {
-      utterance.lang = "ru-RU";
-    } else {
-      utterance.lang = "en-US";
-    }
-
-    const maleVoice = getUniformMaleVoice(utterance.lang);
-    if (maleVoice) {
-      utterance.voice = maleVoice;
-    }
-
-    utterance.rate = 0.88;
-    utterance.pitch = 0.75; // Uniform deep male register
-
-    setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
+    const lang = customLang || (isLanguageSkill ? "ru-RU" : "en-US");
+    speakWithUniformMaleVoice(text, {
+      lang,
+      speed: 0.92,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+    });
   };
 
   // --- Feature 2 Handler: Ask Technique Coach ---

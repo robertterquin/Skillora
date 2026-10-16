@@ -594,18 +594,19 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
   const handleTileClick = (letter: { char: string; sound: string; anchor: string; word: string }) => {
     playMechanicalClick();
     setSelectedLetter(letter);
-    onSpeak(letter.char, "ru-RU");
+    const spokenSample = `${letter.char}. ${letter.word.split(" ")[0]}`;
+    onSpeak(spokenSample, "ru-RU");
   };
 
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
+      className="w-full my-3 p-4 bg-canvas/90 border border-surface-border rounded-2xl text-ink shadow-2xs select-none"
     >
       <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
           <SolarIcon name="volume-loud-linear" className="w-3.5 h-3.5 text-brand-600" />
-          <span>MICRO-SIMULATOR // PHONETIC SOUNDBOARD</span>
+          <span>PHONETIC SOUNDBOARD</span>
         </span>
         <span className="text-brand-600 font-bold">CLICK TILE TO HEAR</span>
       </div>
@@ -669,8 +670,10 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
 
           <button
             type="button"
-            onClick={() => onSpeak(selectedLetter.char, "ru-RU")}
-            className="p-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition flex items-center gap-1 text-xs font-bold shrink-0"
+            onClick={() =>
+              onSpeak(`${selectedLetter.char}. ${selectedLetter.word.split(" ")[0]}`, "ru-RU")
+            }
+            className="p-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer"
             title="Hear native pronunciation"
           >
             <SolarIcon name="volume-loud-linear" className="w-4 h-4" />

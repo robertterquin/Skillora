@@ -18,7 +18,7 @@ import { consultationService } from "@/services/consultationService";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { playMechanicalClick, playChime, playStampThud } from "@/lib/workbench-audio";
-import { getUniformMaleVoice } from "@/lib/voice";
+import { speakWithUniformMaleVoice, stopUniformVoice } from "@/lib/voice";
 
 export type { OwlMessage, OwlConsultation, ConsultationOutcome };
 
@@ -117,8 +117,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
   const activeConsultationIdRef = useRef<string>("");
   const consultationsRef = useRef<OwlConsultation[]>([]);
-  const audioCacheRef = useRef<Map<string, string>>(new Map());
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
 
   // Keep refs in sync with state for access in callbacks
@@ -216,23 +214,12 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
   // Audio cleanup on unmount
   useEffect(() => {
     return () => {
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-      }
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+      stopUniformVoice();
     };
   }, []);
 
   const stopVoice = useCallback(() => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.currentTime = 0;
-    }
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
+    stopUniformVoice();
     setIsOwlSpeaking(false);
   }, []);
 
@@ -241,7 +228,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     if (typeof window === "undefined") return;
     const greeting = "I'm listening. Tell me what interests you or ask for suggestions.";
     const url = `/api/ai/tts?text=${encodeURIComponent(greeting)}&voice=onyx&speed=1.0`;
-    audioCacheRef.current.set(greeting, url);
     fetch(url).catch(() => {});
 
     if ("speechSynthesis" in window) {
@@ -252,60 +238,19 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     }
   }, []);
 
-  const fallbackBrowserSpeech = useCallback((text: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      setIsOwlSpeaking(false);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    // Strictly select a uniform male voice
-    const maleVoice = getUniformMaleVoice("en");
-    if (maleVoice) {
-      utterance.voice = maleVoice;
-    }
-
-    utterance.rate = 0.95;
-    utterance.pitch = 0.72; // Deep, uniform masculine tone
-    utterance.onend = () => setIsOwlSpeaking(false);
-    utterance.onerror = () => setIsOwlSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  }, []);
-
-
   const speakOwlVoice = useCallback(
     (text: string) => {
       if (!voiceEnabled || typeof window === "undefined") return;
 
-      stopVoice();
-      setIsOwlSpeaking(true);
-
       const spokenText = getSpokenSnippet(text);
-
-      try {
-        let audioUrl = audioCacheRef.current.get(spokenText);
-        if (!audioUrl) {
-          audioUrl = `/api/ai/tts?text=${encodeURIComponent(spokenText)}&voice=onyx&speed=1.0`;
-          audioCacheRef.current.set(spokenText, audioUrl);
-        }
-
-        const audio = new Audio(audioUrl);
-        currentAudioRef.current = audio;
-        audio.onplay = () => setIsOwlSpeaking(true);
-        audio.onended = () => setIsOwlSpeaking(false);
-        audio.onpause = () => setIsOwlSpeaking(false);
-        audio.onerror = () => {
-          fallbackBrowserSpeech(spokenText);
-        };
-        audio.play().catch(() => {
-          fallbackBrowserSpeech(spokenText);
-        });
-      } catch {
-        fallbackBrowserSpeech(spokenText);
-      }
+      speakWithUniformMaleVoice(spokenText, {
+        lang: "en-US",
+        speed: 1.0,
+        onStart: () => setIsOwlSpeaking(true),
+        onEnd: () => setIsOwlSpeaking(false),
+      });
     },
-    [voiceEnabled, stopVoice, fallbackBrowserSpeech]
+    [voiceEnabled]
   );
 
   // Persistence helper
