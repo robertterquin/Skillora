@@ -87,6 +87,14 @@ function Dashboard() {
   const [practiceDates, setPracticeDates] = useState<string[]>([]);
 
   const [isClient, setIsClient] = useState(false);
+  const [repertoireView, setRepertoireView] = useState<"ledger" | "grid">("ledger");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("skillora_repertoire_view");
+    if (saved === "ledger" || saved === "grid") {
+      setRepertoireView(saved);
+    }
+  }, []);
 
   // 1. Sync completions & enrollments from Supabase or localStorage
   const loadUserData = useCallback(async (user: User | null) => {
@@ -464,47 +472,30 @@ function Dashboard() {
           </div>
         )}
 
-        {/* User Learning Hub Header & Metrics Banner (Unboxed Editorial Linear Style) */}
-        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="spec-tag text-ink-muted">PERSONAL ATELIER</span>
-            </div>
-            <h1 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-ink tracking-tight">
-              {displayName}&apos;s Studio
-            </h1>
-            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-              Your craftsmanship repertoire and daily spaced repetition practice.
-            </p>
+        {/* Atelier Broadsheet Masthead */}
+        <header className="mb-10">
+          {/* Dateline & Issue Strip */}
+          <div className="flex items-center justify-between text-3xs font-mono uppercase tracking-widest text-ink-muted pb-3.5 mb-5 border-b border-surface-border">
+            <span>
+              {isClient
+                ? new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })
+                : "STUDIO DISPATCH"}
+              {" "}· PERSONAL ATELIER
+            </span>
+            <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP DISPATCH</span>
           </div>
 
-          {/* Quick Metrics & Certifications Strip */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
-            {/* Streak */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
-              <SolarIcon
-                name="fire-linear"
-                className={`w-3.5 h-3.5 ${isClient && streak > 0 ? "text-accent-vermilion" : "text-ink-muted"}`}
-              />
-              <span className="font-bold text-ink tabular-nums">{isClient ? streak : 0}</span>
-              <span className="text-ink-muted text-2xs">{streak === 1 ? "day" : "days"}</span>
+          {/* Title & Passport Action */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8">
+            <div className="space-y-1.5">
+              <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
+                {displayName}&apos;s Studio
+              </h1>
+              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+                Your craftsmanship repertoire and daily spaced repetition practice.
+              </p>
             </div>
 
-            {/* Active Skills */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
-              <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-muted" />
-              <span className="font-bold text-ink tabular-nums">{isClient ? activeSkills.length : 0}</span>
-              <span className="text-ink-muted text-2xs">active</span>
-            </div>
-
-            {/* Mastered */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-border shadow-2xs text-xs font-mono">
-              <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5 text-ink-muted" />
-              <span className="font-bold text-ink tabular-nums">{isClient ? masteredSkills.length : 0}</span>
-              <span className="text-ink-muted text-2xs">mastered</span>
-            </div>
-
-            {/* Certifications Modal Trigger */}
             <Button
               variant="secondary"
               size="sm"
@@ -512,18 +503,70 @@ function Dashboard() {
                 playWoodenThud();
                 setIsPassportOpen(true);
               }}
+              className="self-start md:self-auto"
             >
               <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
-              <span>Certifications ({isClient ? masteredSkills.length : 0})</span>
+              <span>Mastery Passport ({isClient ? masteredSkills.length : 0})</span>
             </Button>
+          </div>
+
+          {/* Containerless Typographic Stat-Line Chain */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-5 border-y border-surface-border">
+            <div>
+              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+                Streak
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
+                  {isClient ? streak : 0}
+                </span>
+                <span className="text-xs text-ink-muted font-mono">{streak === 1 ? "day" : "days"}</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+                Active Skills
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
+                  {isClient ? activeSkills.length : 0}
+                </span>
+                <span className="text-xs text-ink-muted font-mono">in studio</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+                Mastered
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
+                  {isClient ? masteredSkills.length : 0}
+                </span>
+                <span className="text-xs text-ink-muted font-mono">certified</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+                Daily Docket
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
+                  {isClient ? docketItems.length - docketDoneCount : 0}
+                </span>
+                <span className="text-xs text-ink-muted font-mono">pending</span>
+              </div>
+            </div>
           </div>
         </header>
 
-        {/* Containerless Editorial Daily Practice Station & Weekly Rhythm */}
+        {/* 100% Containerless Daily Practice Station */}
         {myStudioSkills.length > 0 && (
-          <section className="mb-12 bg-white rounded-2xl border border-surface-border p-6 sm:p-8 shadow-2xs">
+          <section className="mb-14">
             {/* Header: Practice Docket & Primary CTA */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-surface-border/70">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 mb-1 border-b border-surface-border">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="spec-tag text-ink-muted">DAILY DOCKET</span>
@@ -560,9 +603,9 @@ function Dashboard() {
               )}
             </div>
 
-            {/* Drill List (Linear/Read.cv containerless rows) */}
+            {/* Drill List (Linear/Read.cv containerless rows directly on oat canvas) */}
             {docketItems.length > 0 ? (
-              <div className="divide-y divide-surface-border/60">
+              <div className="divide-y divide-surface-border/70 border-b border-surface-border">
                 {docketItems.slice(0, 4).map((item, idx) => {
                   const isOverdue = item.urgency === "overdue";
                   const isDueToday = item.urgency === "due_today";
@@ -585,11 +628,15 @@ function Dashboard() {
                           openDrill();
                         }
                       }}
-                      className="group py-3.5 px-3 -mx-3 rounded-xl hover:bg-canvas/80 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="group py-4 px-3 -mx-3 rounded-xl transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/80"
                     >
-                      {/* Left: Indicator dot + Skill & Step Details */}
+                      {/* Left: Index + Status Dot + Step Details */}
                       <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-                        <div className="mt-0.5 sm:mt-0 flex-shrink-0">
+                        <span className="font-mono text-xs font-semibold text-ink-subtle w-5 shrink-0 mt-0.5 sm:mt-0">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+
+                        <div className="mt-0.5 sm:mt-0 shrink-0">
                           {item.isCompletedToday ? (
                             <div className="w-6 h-6 rounded-full bg-accent-emerald/10 text-accent-emerald flex items-center justify-center">
                               <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
@@ -624,7 +671,7 @@ function Dashboard() {
                               <Badge>New</Badge>
                             )}
                           </div>
-                          <h3 className="font-display font-semibold text-sm text-ink group-hover:text-accent-vermilion transition-colors truncate">
+                          <h3 className="font-display font-semibold text-sm sm:text-base text-ink group-hover:text-accent-vermilion transition-colors truncate">
                             {item.step.title}
                           </h3>
                           <p className="text-xs text-ink-secondary line-clamp-1 mt-0.5 leading-relaxed">
@@ -634,7 +681,7 @@ function Dashboard() {
                       </div>
 
                       {/* Right: Duration + Practice Action */}
-                      <div className="flex items-center gap-4 self-end sm:self-auto flex-shrink-0 text-xs font-mono">
+                      <div className="flex items-center gap-4 self-end sm:self-auto shrink-0 text-xs font-mono">
                         <span className="text-2xs text-ink-muted">~{item.step.estimated_minutes} min</span>
                         <span className="text-2xs font-bold text-ink group-hover:text-accent-vermilion flex items-center gap-1 transition">
                           <span>{item.isCompletedToday ? "Review" : "Practice"}</span>
@@ -646,22 +693,17 @@ function Dashboard() {
                 })}
               </div>
             ) : (
-              <div className="py-8 text-center text-xs text-ink-muted font-sans">
+              <div className="py-8 text-center text-xs text-ink-muted font-sans border-b border-surface-border">
                 No pending practice drills scheduled for today.
               </div>
             )}
 
-            {/* Weekly Consistency & Rhythm Strip */}
-            <div className="mt-4 pt-4 border-t border-surface-border/70 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              {/* 7-Day Rhythm Dots */}
+            {/* Weekly Consistency Rhythm & Craft Axiom (Single Unboxed Footer Strip) */}
+            <div className="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
               <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-3xs font-mono font-bold uppercase tracking-widest text-ink-muted">7-DAY RHYTHM</span>
-                  <span className="text-surface-border text-xs">/</span>
-                  <span className="text-xs font-mono font-bold text-ink">
-                    {isClient ? streak : 0} {streak === 1 ? "day streak" : "day streak"}
-                  </span>
-                </div>
+                <span className="text-3xs font-mono font-bold uppercase tracking-widest text-ink-muted">
+                  7-DAY RHYTHM
+                </span>
 
                 <ol className="flex items-center gap-1.5" aria-label="Practice this week">
                   {weekActivity.map((day) => (
@@ -694,23 +736,13 @@ function Dashboard() {
                 </ol>
               </div>
 
-              {/* Craft Axiom & Passport Link */}
-              <div className="flex items-center gap-5 text-xs">
-                <p className="hidden lg:block text-xs font-serif italic text-ink-muted">
-                  &ldquo;Repetition without tension creates speed without effort.&rdquo;
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    playWoodenThud();
-                    setIsPassportOpen(true);
-                  }}
-                  className="text-2xs font-mono font-bold text-ink hover:text-accent-vermilion transition flex items-center gap-1 cursor-pointer flex-shrink-0"
-                >
-                  <span>Mastery Passport</span>
-                  <SolarIcon name="arrow-right-linear" className="w-3 h-3" />
-                </button>
-              </div>
+              {/* Craft Axiom */}
+              <p className="text-xs font-serif italic text-ink-muted">
+                &ldquo;Repetition without tension creates speed without effort.&rdquo;
+                <span className="font-sans not-italic text-3xs font-mono uppercase tracking-wider text-ink-subtle ml-2">
+                  — Craft Axiom
+                </span>
+              </p>
             </div>
           </section>
         )}
@@ -727,13 +759,57 @@ function Dashboard() {
               </p>
             </div>
 
-            <Link
-              href="/library"
-              className={buttonClasses({ variant: "secondary", size: "sm", className: "self-start sm:self-auto" })}
-            >
-              <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
-              <span>Add a skill</span>
-            </Link>
+            <div className="flex items-center gap-2.5">
+              {/* Ledger vs Grid View Switcher */}
+              {myStudioSkills.length > 0 && (
+                <div className="inline-flex items-center p-0.5 rounded-lg bg-surface-muted border border-surface-border text-xs font-mono">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playMechanicalClick();
+                      setRepertoireView("ledger");
+                      localStorage.setItem("skillora_repertoire_view", "ledger");
+                    }}
+                    className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer text-xs ${
+                      repertoireView === "ledger"
+                        ? "bg-white text-ink shadow-2xs font-semibold"
+                        : "text-ink-muted hover:text-ink"
+                    }`}
+                    title="Ledger (Strip List) view"
+                    aria-pressed={repertoireView === "ledger"}
+                  >
+                    <SolarIcon name="list-linear" className="w-3.5 h-3.5" />
+                    <span>Ledger</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playMechanicalClick();
+                      setRepertoireView("grid");
+                      localStorage.setItem("skillora_repertoire_view", "grid");
+                    }}
+                    className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer text-xs ${
+                      repertoireView === "grid"
+                        ? "bg-white text-ink shadow-2xs font-semibold"
+                        : "text-ink-muted hover:text-ink"
+                    }`}
+                    title="Bookplate Grid view"
+                    aria-pressed={repertoireView === "grid"}
+                  >
+                    <SolarIcon name="grid-linear" className="w-3.5 h-3.5" />
+                    <span>Grid</span>
+                  </button>
+                </div>
+              )}
+
+              <Link
+                href="/library"
+                className={buttonClasses({ variant: "secondary", size: "sm", className: "self-start sm:self-auto" })}
+              >
+                <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
+                <span>Add a skill</span>
+              </Link>
+            </div>
           </div>
 
           {/* Filter Bar: Only displayed when user has skills in Studio */}
@@ -789,8 +865,176 @@ function Dashboard() {
                 </Link>
               </div>
             </div>
+          ) : repertoireView === "ledger" ? (
+            /* 1. CONTINUOUS LEDGER STRIP LIST (Containerless Linear/Read.cv style) */
+            <div className="divide-y divide-surface-border/70 border-y border-surface-border">
+              {filteredStudioSkills.map((skill, idx) => {
+                const steps = skill.steps || [];
+                const doneCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
+                const totalCount = steps.length;
+                const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+                const isCompleted = totalCount > 0 && doneCount === totalCount;
+                const isCertified = certifiedSkillIds.includes(normalizeSkillId(skill.id));
+                const isCustomAi = skill.id.startsWith("ai-skill-");
+                const isConfirmingRemove = confirmingRemoveId === skill.id;
+                const categoryName =
+                  skill.category?.name ||
+                  CATEGORIES.find((c) => normalizeCategoryId(c.id) === normalizeCategoryId(skill.category_id))?.name ||
+                  "Craft";
+
+                const openPractice = () => {
+                  playWoodenThud();
+                  setActiveLearningSkill(skill);
+                };
+
+                return (
+                  <div
+                    key={skill.id}
+                    className="group py-4 px-3 -mx-3 rounded-xl hover:bg-white/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    {/* Left: Index + Metadata + Title + Summary */}
+                    <div className="flex items-start md:items-center gap-4 min-w-0 flex-1">
+                      <span className="font-mono text-xs font-semibold text-ink-subtle w-6 shrink-0 mt-0.5 md:mt-0">
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          {isCustomAi && <Badge>AI</Badge>}
+                          <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted font-medium">
+                            {categoryName}
+                          </span>
+                          <span className="text-surface-border text-xs">·</span>
+                          <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted capitalize">
+                            {skill.difficulty}
+                          </span>
+                          <span className="text-surface-border text-xs">·</span>
+                          <span className="text-3xs font-mono text-ink-muted">{skill.estimated_hours}h</span>
+                          {isCertified && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-3xs font-mono font-semibold">
+                              <SolarIcon name="diploma-verified-linear" className="w-3 h-3 text-ink-muted" />
+                              <span>CERTIFIED</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <h3
+                          role="button"
+                          tabIndex={0}
+                          onClick={openPractice}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              openPractice();
+                            }
+                          }}
+                          className="font-serif italic font-normal text-lg sm:text-xl text-ink group-hover:text-accent-vermilion transition-colors cursor-pointer truncate"
+                        >
+                          {skill.title}
+                        </h3>
+                        <p className="text-xs text-ink-secondary line-clamp-1 mt-0.5 max-w-2xl">
+                          {skill.summary}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right: Architectural Progress Line + Actions */}
+                    <div className="flex items-center gap-5 self-stretch md:self-auto justify-between md:justify-end shrink-0 pl-10 md:pl-0">
+                      {/* Architectural Progress Indicator */}
+                      <div className="w-28 sm:w-36 space-y-1">
+                        <div className="flex items-center justify-between text-3xs font-mono text-ink-muted">
+                          <span>{isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}</span>
+                          <span className="font-semibold text-ink tabular-nums">{percent}% ({doneCount}/{totalCount})</span>
+                        </div>
+                        <div className="w-full h-1 rounded-full bg-surface-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500 bg-ink"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        {isCompleted && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isCertified) playStampThud();
+                              else playMechanicalClick();
+                              setActiveExamSkill(skill);
+                            }}
+                            className={`py-1.5 px-3 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 cursor-pointer shadow-2xs ${
+                              isCertified
+                                ? "bg-white border border-surface-border hover:border-ink/40 text-ink"
+                                : "bg-ink hover:bg-ink/90 text-white"
+                            }`}
+                          >
+                            <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
+                            <span>{isCertified ? "Certificate" : "Exam"}</span>
+                          </button>
+                        )}
+
+                        <Button
+                          size="sm"
+                          onClick={openPractice}
+                        >
+                          <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-white/80" />
+                          <span>{isCompleted ? "Review" : "Practice"}</span>
+                        </Button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playMechanicalClick();
+                            setActiveSyllabusSkill(skill);
+                          }}
+                          className="p-2 rounded-lg border border-surface-border hover:border-ink/30 bg-white hover:bg-surface-subtle text-ink-muted hover:text-ink transition flex items-center justify-center cursor-pointer shadow-2xs"
+                          title="View syllabus steps"
+                          aria-label={`View syllabus steps for ${skill.title}`}
+                        >
+                          <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5" />
+                        </button>
+
+                        {isConfirmingRemove ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setConfirmingRemoveId(null);
+                                handleRemoveFromStudio(skill.id);
+                              }}
+                              className="px-2 py-1 rounded bg-rose-600 text-white text-3xs font-mono font-bold hover:bg-rose-700 transition cursor-pointer"
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirmingRemoveId(null)}
+                              className="text-3xs font-mono text-ink-muted hover:text-ink px-1 cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmingRemoveId(skill.id)}
+                            className="text-3xs font-mono text-ink-subtle hover:text-accent-vermilion p-1 transition cursor-pointer"
+                            title="Remove from Studio"
+                            aria-label={`Remove ${skill.title} from Studio`}
+                          >
+                            <SolarIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
-            /* ENROLLED SKILLS GRID */
+            /* 2. CLASSIC BOOKPLATES GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
                 {filteredStudioSkills.map((skill) => {
