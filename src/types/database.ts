@@ -37,7 +37,7 @@ export interface Skill {
   summary: string;
   difficulty: DifficultyLevel;
   estimated_hours: number;
-  time_commitment_label: string; // e.g. "20 mins/day for 2 weeks", "45 mins total"
+  time_commitment_label: string;
   is_featured: boolean;
   steps_count?: number;
   steps?: SkillStep[];

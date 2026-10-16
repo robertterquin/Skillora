@@ -33,7 +33,6 @@ export function Header({ activePath }: HeaderProps = {}) {
   const pathname = usePathname();
   const currentPath = activePath || pathname || "/";
 
-  // Hide header on dedicated auth screens
   if (pathname === "/signin" || pathname === "/signup") {
     return null;
   }
@@ -49,7 +48,6 @@ export function Header({ activePath }: HeaderProps = {}) {
     setSoundOn(isSoundEnabled());
   }, []);
 
-  // Close the account dropdown and mobile menu on outside click or Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -93,7 +91,6 @@ export function Header({ activePath }: HeaderProps = {}) {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-canvas/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-          {/* Brand Logo & Title with Learning Owl */}
           <Link href={currentUser ? "/dashboard" : "/"} className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
             <div className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-surface border border-surface-border transition-all group-hover:scale-105 group-hover:border-brand-400">
               <Image
@@ -115,7 +112,6 @@ export function Header({ activePath }: HeaderProps = {}) {
             </div>
           </Link>
 
-          {/* Desktop navigation with Gliding Active Pill */}
           {!loadingUser && (
             <nav aria-label="Main" className="hidden md:flex items-center gap-1 p-1 bg-surface-muted/60 border border-surface-border/60 rounded-full text-xs font-medium">
               {navLinks.map((link) => {
@@ -144,9 +140,7 @@ export function Header({ activePath }: HeaderProps = {}) {
             </nav>
           )}
 
-          {/* Right Actions: Avatar & Dropdown when logged in, or Auth buttons */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Tactile Workbench Audio Toggle */}
             <button
               type="button"
               onClick={() => {
@@ -167,10 +161,8 @@ export function Header({ activePath }: HeaderProps = {}) {
             </button>
 
             {loadingUser ? (
-              // Reserve space so the header doesn't flash signed-out actions for signed-in users
               <div className="w-9 h-9 rounded-full bg-surface-muted animate-pulse" aria-hidden="true" />
             ) : currentUser ? (
-              // Logged-in DiceBear Big Smile Profile Dropdown
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
@@ -186,10 +178,8 @@ export function Header({ activePath }: HeaderProps = {}) {
                   </span>
                 </button>
 
-                {/* Dropdown Menu */}
                 {isDropdownOpen && (
                   <div role="menu" className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-surface-border shadow-xl p-2 z-50 animate-fade-in text-xs">
-                    {/* User Info Header */}
                     <div className="p-3 border-b border-surface-border/80 flex items-center gap-3 mb-1">
                       <UserAvatar seed={userSeed} size={36} />
                       <div className="overflow-hidden">
@@ -198,7 +188,6 @@ export function Header({ activePath }: HeaderProps = {}) {
                       </div>
                     </div>
 
-                    {/* Links */}
                     <div className="py-1">
                       <Link
                         href="/dashboard"
@@ -231,7 +220,6 @@ export function Header({ activePath }: HeaderProps = {}) {
                       </Link>
                     </div>
 
-                    {/* Divider & Sign Out */}
                     <div className="pt-1 mt-1 border-t border-surface-border">
                       <button
                         type="button"
@@ -247,7 +235,6 @@ export function Header({ activePath }: HeaderProps = {}) {
                 )}
               </div>
             ) : (
-              // Logged out actions (Sign in moves into the mobile menu on small screens)
               <>
                 <Link href="/signin" className={buttonClasses({ variant: "ghost", size: "sm", className: "hidden sm:inline-flex" })}>
                   Sign in

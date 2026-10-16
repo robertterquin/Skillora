@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#F7F5F0", // Warm Oat Linen (editorial paper backdrop)
+        canvas: "#F7F5F0",
         ink: {
-          DEFAULT: "#1A1917", // Deep Warm Obsidian
+          DEFAULT: "#1A1917",
           secondary: "#5A564F",
           muted: "#7A756D",
           subtle: "#9E988F",
@@ -30,17 +30,15 @@ const config: Config = {
         },
         surface: {
           DEFAULT: "#FFFFFF",
-          subtle: "#EFECE4", // recessed warm stone container
+          subtle: "#EFECE4",
           muted: "#E8E4DA",
-          border: "#E2DDD4", // warm hairline limestone
+          border: "#E2DDD4",
         },
-        // Archival paper tones for Passport, Guild Exam, and Guided Practice sheets
         paper: {
           DEFAULT: "#FAF8F4",
           warm: "#F1EDE4",
           deep: "#E8E4DA",
         },
-        // Muted category tones for the landing page skill deck
         deck: {
           music: "#8C4A28",
           languages: "#1E3A8A",
@@ -48,14 +46,14 @@ const config: Config = {
           tech: "#1F4E4A",
         },
         accent: {
-          vermilion: "#C84B15", // Dieter Rams Signal Vermilion
+          vermilion: "#C84B15",
           "vermilion-hover": "#B33F0F",
           "vermilion-light": "#FBF2ED",
           "vermilion-border": "#F3D2C4",
-          emerald: "#2D5A43",   // Deep Alpine Pine
+          emerald: "#2D5A43",  
           "emerald-light": "#EBF2EE",
           "emerald-border": "#C9DEC7",
-          amber: "#8A6F32",     // Muted Ochre
+          amber: "#8A6F32",    
           "amber-light": "#F7F2E7",
         },
       },
@@ -65,7 +63,6 @@ const config: Config = {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
-      // Smallest steps of the type scale. 3xs is reserved for uppercase mono labels.
       fontSize: {
         "2xs": "11px",
         "3xs": "10px",

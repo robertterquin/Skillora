@@ -9,7 +9,6 @@ export type ButtonSize = "sm" | "md" | "lg";
 interface ButtonStyleOptions {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Full-width, squarer button for actions inside cards and modals. */
   block?: boolean;
   className?: string;
 }
@@ -27,7 +26,6 @@ const SIZES: Record<ButtonSize, string> = {
   lg: "h-12 px-7 text-sm gap-2",
 };
 
-/** Class string for button-styled elements, so links can share the same look. */
 export function buttonClasses({
   variant = "primary",
   size = "md",

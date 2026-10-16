@@ -32,7 +32,6 @@ export interface SkillPracticeModalProps {
 
 export type FlashcardLearningModalProps = SkillPracticeModalProps;
 
-// Interactive Tactile Micro-Simulator Suite & Action Blueprint for each discipline
 function StepMicroSimulatorAid({
   step,
   skill,
@@ -46,22 +45,18 @@ function StepMicroSimulatorAid({
 }) {
   const slug = `${skill.slug || ""} ${skill.title || ""} ${step.title || ""}`.toLowerCase();
 
-  // 1. Language / Cyrillic Phonetic Soundboard
   if (slug.includes("cyrillic") || slug.includes("language") || slug.includes("alphabet") || slug.includes("script")) {
     return <PhoneticSoundboard onSpeak={onSpeak} />;
   }
 
-  // 2. Knife Sharpening 15° Caliper & Whetstone Stroke Simulator
   if (slug.includes("knife") || slug.includes("sharpen") || slug.includes("blade") || slug.includes("whetstone")) {
     return <KnifeAngleGauge />;
   }
 
-  // 3. Espresso 1:2 Shot Extraction Dial & Flow Timer
   if (slug.includes("espresso") || slug.includes("coffee") || slug.includes("extraction")) {
     return <EspressoExtractionSimulator />;
   }
 
-  // 4. Guitar & Rhythm / Typing -> Auditory Metronome + Action Blueprint
   if (
     slug.includes("guitar") ||
     slug.includes("fingerstyle") ||
@@ -83,8 +78,6 @@ function StepMicroSimulatorAid({
     );
   }
 
-  // 5. Universal Deliberate Practice Action Blueprint & Verifiable Checkpoints
-  // (Replaces generic 0/10 rep counters and 60s drill timers across all disciplines)
   return (
     <StepActionBlueprint
       step={step}
@@ -109,7 +102,6 @@ export function SkillPracticeModal({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeVideo, setActiveVideo] = useState<{ url: string; title: string; stepTitle?: string } | null>(null);
 
-  // --- Feature 2: Technique Coach States ---
   const [coachOpen, setCoachOpen] = useState(false);
   const [coachQuestion, setCoachQuestion] = useState("");
   const [coachLoading, setCoachLoading] = useState(false);
@@ -119,7 +111,6 @@ export function SkillPracticeModal({
     actionableDrill: string;
   } | null>(null);
 
-  // --- Feature 3: Whisper Voice Grader States ---
   const [voiceGraderOpen, setVoiceGraderOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [voiceGrading, setVoiceGrading] = useState(false);
@@ -133,7 +124,6 @@ export function SkillPracticeModal({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  // --- Feature 4: Mnemonic Generator States ---
   const [mnemonicOpen, setMnemonicOpen] = useState(false);
   const [mnemonicLoading, setMnemonicLoading] = useState(false);
   const [mnemonicData, setMnemonicData] = useState<{
@@ -151,7 +141,6 @@ export function SkillPracticeModal({
     skill?.slug.includes("cyrillic") ||
     skill?.slug.includes("language");
 
-  // Reset drawers & flip when card index changes, and stop any active voice on unmount
   useEffect(() => {
     stopUniformVoice();
     setIsSpeaking(false);
@@ -167,7 +156,6 @@ export function SkillPracticeModal({
     };
   }, []);
 
-  // Audio Voice Speech Pronunciation using unified male voice (OpenAI 'onyx' + strict male fallback)
   const speakText = (text: string, customLang?: string) => {
     const lang = customLang || (isLanguageSkill ? "ru-RU" : "en-US");
     speakWithUniformMaleVoice(text, {
@@ -178,7 +166,6 @@ export function SkillPracticeModal({
     });
   };
 
-  // --- Feature 2 Handler: Ask Technique Coach ---
   const handleAskCoach = async (presetQuestion?: string) => {
     const q = presetQuestion || coachQuestion;
     if (!q.trim() || !currentStep) return;
@@ -213,10 +200,8 @@ export function SkillPracticeModal({
     }
   };
 
-  // --- Feature 3 Handler: Record & Grade Pronunciation with Whisper ---
   const handleStartRecording = async () => {
     if (isRecording) {
-      // Stop recording
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
       }
@@ -245,7 +230,6 @@ export function SkillPracticeModal({
       setVoiceGraderOpen(true);
       setVoiceScoreResult(null);
 
-      // Auto stop after 4.5 seconds if user forgets
       setTimeout(() => {
         if (recorder.state === "recording") {
           recorder.stop();
@@ -254,7 +238,6 @@ export function SkillPracticeModal({
       }, 4500);
     } catch (err) {
       console.warn("Microphone access unavailable, evaluating with simulated audio test:", err);
-      // Fallback evaluation
       await sendAudioToGrader(null);
     }
   };
@@ -284,7 +267,6 @@ export function SkillPracticeModal({
     }
   };
 
-  // --- Feature 4 Handler: Generate Mnemonic ---
   const handleGenerateMnemonic = async () => {
     if (!currentStep) return;
     setMnemonicLoading(true);
@@ -323,14 +305,12 @@ export function SkillPracticeModal({
   const completedCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
   const progressPercent = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
-  // Voice sample text
   const voiceSample = isLanguageSkill
     ? currentStep.title.replace(/The True Friends|The False Friends|The Greek Siblings/g, "").trim()
     : currentStep.title;
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh]">
-      {/* Top Header */}
       <div className="p-5 sm:p-6 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
@@ -351,7 +331,6 @@ export function SkillPracticeModal({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Mode Switcher with Gliding Tab Indicator */}
           <div className="flex items-center p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-medium">
             <button
               type="button"
@@ -402,14 +381,9 @@ export function SkillPracticeModal({
         </div>
       </div>
 
-      {/* Content Body */}
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
         {activeTab === "flashcards" ? (
-          /* ============================================================ */
-          /* 1. FLASHCARD MODE WITH NATIVE AUDIO VOICE & 3D STYLING      */
-          /* ============================================================ */
           <div className="flex flex-col items-center">
-            {/* Card Meta & Voice Tools Bar */}
             <div className="w-full max-w-lg flex flex-wrap items-center justify-between text-xs text-ink-muted mb-4 gap-2">
               <span className="font-semibold text-ink">
                 Card {currentCardIndex + 1} of {steps.length}
@@ -417,7 +391,6 @@ export function SkillPracticeModal({
 
               {isLanguageSkill && (
                 <div className="flex items-center gap-2">
-                  {/* Pronunciation Voice Button */}
                   <button
                     type="button"
                     onClick={() => speakText(voiceSample)}
@@ -432,7 +405,6 @@ export function SkillPracticeModal({
                     <span>{isSpeaking ? "Speaking…" : "Pronounce"}</span>
                   </button>
 
-                  {/* Feature 3: Whisper Voice Pronunciation Grader */}
                   <button
                     type="button"
                     onClick={handleStartRecording}
@@ -450,7 +422,6 @@ export function SkillPracticeModal({
               )}
             </div>
 
-            {/* 3D Tactile Flip Card Stage */}
             <div className="w-full max-w-xl min-h-[380px] sm:min-h-[420px] select-none relative transition-transform duration-500 rounded-2xl">
               <div
                 className={`w-full h-full min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border flex flex-col justify-between transition-all duration-300 shadow-card ${
@@ -459,7 +430,6 @@ export function SkillPracticeModal({
                     : "bg-surface border-surface-border"
                 }`}
               >
-                {/* 1. Top Architectural Spec Ribbon */}
                 <div className="flex items-center justify-between border-b border-surface-border pb-3 mb-2">
                   <div className="flex items-center gap-2 text-3xs font-mono text-ink-muted uppercase tracking-widest font-semibold">
                     <span>Step {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
@@ -488,16 +458,13 @@ export function SkillPracticeModal({
                   </div>
                 </div>
 
-                {/* 2. Center of Card */}
                 <div className="my-auto py-2 text-center">
                   {!isFlipped ? (
-                    /* FRONT: Technique title + Tactile Micro-Simulator / Action Blueprint */
                     <div>
                       <h3 className="font-serif italic text-2xl sm:text-3xl text-ink max-w-lg mx-auto leading-tight mb-1">
                         {currentStep.title}
                       </h3>
 
-                      {/* Interactive Tactile Micro-Simulator / Action Blueprint */}
                       <StepMicroSimulatorAid
                         step={currentStep}
                         skill={skill}
@@ -506,7 +473,6 @@ export function SkillPracticeModal({
                       />
                     </div>
                   ) : (
-                    /* BACK: Full detailed instructions */
                     <div className="text-left animate-fade-in">
                       <h4 className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-widest mb-2">
                         Technique Notes:
@@ -515,7 +481,6 @@ export function SkillPracticeModal({
                         {currentStep.instructions}
                       </p>
 
-                      {/* Vetted Learning Platforms */}
                       {currentStep.resources && currentStep.resources.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-surface-border">
                           <span className="text-2xs font-semibold text-ink-muted block mb-2">
@@ -586,7 +551,6 @@ export function SkillPracticeModal({
                   )}
                 </div>
 
-                {/* 3. Bottom Utility Bar */}
                 <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs">
                   <span className="text-ink-muted text-3xs font-mono tracking-wider uppercase">
                     Step {currentStep.step_number} of {steps.length}
@@ -625,7 +589,6 @@ export function SkillPracticeModal({
               </div>
             </div>
 
-            {/* Navigation Controls */}
             <div className="mt-5 flex items-center gap-3">
               <button
                 type="button"
@@ -665,7 +628,6 @@ export function SkillPracticeModal({
               </button>
             </div>
 
-            {/* AI Coaching & Mnemonic Action Bar */}
             <div className="w-full max-w-lg mt-5 pt-4 border-t border-surface-border flex items-center justify-center gap-3">
               <button
                 type="button"
@@ -686,9 +648,6 @@ export function SkillPracticeModal({
               </button>
             </div>
 
-            {/* ============================================================ */}
-            {/* Feature 3 Result: Whisper Voice Grader Card                 */}
-            {/* ============================================================ */}
             {voiceGraderOpen && (voiceGrading || voiceScoreResult) && (
               <div className="w-full max-w-lg mt-4 p-4 rounded-2xl bg-white border-2 border-brand-500/40 shadow-sm animate-fade-in text-left">
                 <div className="flex items-center justify-between mb-2">
@@ -727,9 +686,6 @@ export function SkillPracticeModal({
               </div>
             )}
 
-            {/* ============================================================ */}
-            {/* Feature 2: Technique Coach Tray                              */}
-            {/* ============================================================ */}
             {coachOpen && (
               <div className="w-full max-w-lg mt-4 p-5 rounded-2xl bg-white border border-brand-500/40 shadow-sm text-left animate-fade-in">
                 <div className="flex items-center justify-between mb-3">
@@ -750,7 +706,6 @@ export function SkillPracticeModal({
                   </button>
                 </div>
 
-                {/* Preset prompt pills */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {profile.coachSuggestions.map((sug, i) => (
                     <button
@@ -764,7 +719,6 @@ export function SkillPracticeModal({
                   ))}
                 </div>
 
-                {/* Custom question input */}
                 <div className="flex items-center gap-2 mb-3">
                   <input
                     type="text"
@@ -784,7 +738,6 @@ export function SkillPracticeModal({
                   </button>
                 </div>
 
-                {/* Coach Advice Output */}
                 {coachLoading && (
                   <div className="p-3 text-center text-xs text-brand-600 font-semibold animate-pulse flex items-center justify-center gap-2">
                     <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
@@ -817,9 +770,6 @@ export function SkillPracticeModal({
               </div>
             )}
 
-            {/* ============================================================ */}
-            {/* Feature 4: Mnemonic & Mental Model Result Card               */}
-            {/* ============================================================ */}
             {mnemonicOpen && (
               <div className="w-full max-w-lg mt-4 p-5 rounded-2xl bg-white border border-indigo-300 shadow-sm text-left animate-fade-in">
                 <div className="flex items-center justify-between mb-2">
@@ -866,9 +816,6 @@ export function SkillPracticeModal({
             )}
           </div>
         ) : (
-          /* ============================================================ */
-          /* 2. STEP-BY-STEP CHECKLIST MODE                               */
-          /* ============================================================ */
           <div className="space-y-4">
             {steps.map((step, idx) => {
               const isDone = isStepCompleted(step.id, completedStepIds);
@@ -998,7 +945,6 @@ export function SkillPracticeModal({
         )}
       </div>
 
-      {/* Bottom Status Bar */}
       <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted">
         <div className="flex items-center gap-2">
           <span>Progress:</span>
@@ -1030,7 +976,6 @@ export function SkillPracticeModal({
         </div>
       </div>
 
-    {/* Distraction-Free Video Modal */}
     {activeVideo && (
       <VideoPlayerModal
         isOpen={!!activeVideo}
@@ -1044,6 +989,5 @@ export function SkillPracticeModal({
   );
 }
 
-// Backward-compatibility alias for existing references
 export const FlashcardLearningModal = SkillPracticeModal;
 

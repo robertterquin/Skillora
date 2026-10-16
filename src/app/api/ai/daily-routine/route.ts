@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Attempt execution via Supabase Edge Function first
     const edgeRes = await invokeEdgeFunction("daily-routine", {
       enrolledSkills,
       completedStepIds,

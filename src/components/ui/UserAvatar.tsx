@@ -20,7 +20,6 @@ export function UserAvatar({ seed, size = 36, className = "" }: UserAvatarProps)
       });
       return avatar.toDataUri();
     } catch (e) {
-      // Fallback to DiceBear CDN if anything fails
       return `https://api.dicebear.com/9.x/big-smile/svg?seed=${encodeURIComponent(seed || "Skillora")}`;
     }
   }, [seed]);
@@ -30,7 +29,6 @@ export function UserAvatar({ seed, size = 36, className = "" }: UserAvatarProps)
       style={{ width: size, height: size }}
       className={`relative rounded-full overflow-hidden border border-surface-border bg-white flex items-center justify-center flex-shrink-0 shadow-2xs ${className}`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={avatarDataUri}
         alt={`${seed}'s Avatar`}

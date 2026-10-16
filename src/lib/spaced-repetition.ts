@@ -1,11 +1,9 @@
-// SM-2 Spaced Repetition Engine for Physical & Cognitive Deliberate Practice
-// Calibrated for physical micro-mechanics, motor memory decay, and tactile drills.
 
 import { Skill, SkillStep } from "@/types/database";
 import { normalizeStepId } from "@/lib/catalog-data";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-export type RecallQuality = 1 | 2 | 3; // 1 = Hard/Rusty, 2 = Solid/Fluid, 3 = Effortless/Cemented
+export type RecallQuality = 1 | 2 | 3;
 
 export interface DrillRepetitionRecord {
   stepId: string;
@@ -16,23 +14,23 @@ export interface DrillRepetitionRecord {
   estimatedMinutes: number;
   repetitionCount: number;
   intervalDays: number;
-  easeFactor: number; // default 2.5
-  lastPracticedAt: string; // ISO date
-  nextDueAt: string; // ISO date
+  easeFactor: number;
+  lastPracticedAt: string;
+  nextDueAt: string;
   lastQuality?: RecallQuality;
 }
 
 export interface SpacedRepetitionStore {
   records: Record<string, DrillRepetitionRecord>;
   todayCompletedStepIds: string[];
-  lastActiveDate: string; // YYYY-MM-DD
+  lastActiveDate: string;
   totalPracticeSecondsToday: number;
-  practiceDates: string[]; // YYYY-MM-DD, one entry per day with any practice
+  practiceDates: string[];
 }
 
 export interface WeekDayActivity {
-  date: string; // YYYY-MM-DD
-  label: string; // single-letter weekday
+  date: string;
+  label: string;
   practiced: boolean;
   isToday: boolean;
   isFuture: boolean;
@@ -71,7 +69,6 @@ function emptyStore(): SpacedRepetitionStore {
   };
 }
 
-// Stores saved before practiceDates existed: seed it from each drill's last practice date.
 function backfillPracticeDates(store: SpacedRepetitionStore): string[] {
   const dates = new Set<string>();
   for (const record of Object.values(store.records)) {
@@ -80,10 +77,6 @@ function backfillPracticeDates(store: SpacedRepetitionStore): string[] {
   return Array.from(dates).sort();
 }
 
-/**
- * Loads the SM-2 spaced repetition state from localStorage,
- * automatically rolling over daily completions if a new calendar day has started.
- */
 export function getSpacedRepetitionStore(): SpacedRepetitionStore {
   if (typeof window === "undefined") {
     return emptyStore();
@@ -101,7 +94,6 @@ export function getSpacedRepetitionStore(): SpacedRepetitionStore {
       parsed.practiceDates = backfillPracticeDates(parsed);
     }
 
-    // If day changed, roll over today's completed step tracker
     if (parsed.lastActiveDate !== todayStr) {
       parsed.lastActiveDate = todayStr;
       parsed.todayCompletedStepIds = [];
@@ -121,19 +113,12 @@ function addPracticeDate(store: SpacedRepetitionStore, dateKey: string): void {
   store.practiceDates = [...store.practiceDates, dateKey].sort().slice(-MAX_PRACTICE_DATES);
 }
 
-/**
- * Records that the learner practiced today (completing a step or a guided drill).
- */
 export function logPracticeDay(): void {
   const store = getSpacedRepetitionStore();
   addPracticeDate(store, getTodayString());
   saveSpacedRepetitionStore(store);
 }
 
-/**
- * Consecutive days of practice ending today, or ending yesterday if today
- * hasn't been practiced yet (the streak is still alive until the day ends).
- */
 export function getPracticeStreak(practiceDates: string[]): number {
   const practiced = new Set(practiceDates);
   const cursor = new Date();
@@ -148,9 +133,6 @@ export function getPracticeStreak(practiceDates: string[]): number {
   return streak;
 }
 
-/**
- * Practice activity for the current Monday–Sunday week.
- */
 export function getWeekActivity(practiceDates: string[]): WeekDayActivity[] {
   const practiced = new Set(practiceDates);
   const today = new Date();
@@ -172,9 +154,6 @@ export function getWeekActivity(practiceDates: string[]): WeekDayActivity[] {
   });
 }
 
-/**
- * Persists the spaced repetition store to localStorage.
- */
 export function saveSpacedRepetitionStore(store: SpacedRepetitionStore): void {
   if (typeof window === "undefined") return;
   try {
@@ -184,9 +163,6 @@ export function saveSpacedRepetitionStore(store: SpacedRepetitionStore): void {
   }
 }
 
-/**
- * Merges local and remote SpacedRepetitionStores, uniting practice dates and keeping newer drill records.
- */
 export function mergeSpacedRepetitionStores(
   local: SpacedRepetitionStore,
   remoteDates: string[] = [],
@@ -217,9 +193,6 @@ export function mergeSpacedRepetitionStores(
   };
 }
 
-/**
- * Syncs the local spaced repetition store with the Supabase cloud table user_practice_stats.
- */
 export async function syncPracticeStatsWithCloud(
   supabase: SupabaseClient,
   userId: string
@@ -235,7 +208,6 @@ export async function syncPracticeStatsWithCloud(
       .maybeSingle();
 
     if (error) {
-      // Table may not exist yet or offline; fallback to local
       return localStore;
     }
 
@@ -248,7 +220,6 @@ export async function syncPracticeStatsWithCloud(
       const mergedStore = mergeSpacedRepetitionStores(localStore, remoteDates, remoteRecords, remoteSeconds);
       saveSpacedRepetitionStore(mergedStore);
 
-      // If local store has dates not in remote, push merged data back up
       const hasNewDates = (localStore.practiceDates || []).some((d) => !remoteDates.includes(d));
       if (hasNewDates) {
         await pushPracticeStatsToCloud(supabase, userId, mergedStore);
@@ -256,7 +227,6 @@ export async function syncPracticeStatsWithCloud(
 
       return mergedStore;
     } else {
-      // No cloud record yet: push existing local store to cloud if user practiced previously
       if (
         (localStore.practiceDates && localStore.practiceDates.length > 0) ||
         Object.keys(localStore.records).length > 0
@@ -271,9 +241,6 @@ export async function syncPracticeStatsWithCloud(
   }
 }
 
-/**
- * Pushes the current spaced repetition store to Supabase user_practice_stats.
- */
 export async function pushPracticeStatsToCloud(
   supabase: SupabaseClient,
   userId: string,
@@ -306,9 +273,6 @@ export async function pushPracticeStatsToCloud(
   }
 }
 
-/**
- * Calculates the memory decay status relative to today.
- */
 export function getDecayStatus(record?: DrillRepetitionRecord): {
   status: "overdue" | "due_today" | "fresh" | "new";
   daysDiff: number;
@@ -331,14 +295,6 @@ export function getDecayStatus(record?: DrillRepetitionRecord): {
   }
 }
 
-/**
- * Records practice of a drill with a 1-3 quality score and updates SM-2 schedule.
- *
- * Quality ratings:
- * 1 = Hard / Rusty (re-test tomorrow)
- * 2 = Solid / Fluid (gradual progression)
- * 3 = Effortless / Mastered (accelerated interval)
- */
 export function recordDrillPractice(
   stepId: string,
   quality: RecallQuality,
@@ -354,12 +310,10 @@ export function recordDrillPractice(
   let easeFactor = existing ? existing.easeFactor : 2.5;
 
   if (quality === 1) {
-    // Hard / Stiff: reset interval to 1 day to reinforce motor memory
     repetitionCount = 1;
     intervalDays = 1;
     easeFactor = Math.max(1.3, easeFactor - 0.2);
   } else if (quality === 2) {
-    // Solid / Fluid: standard SM-2 progression
     repetitionCount += 1;
     if (repetitionCount === 1) {
       intervalDays = 1;
@@ -369,7 +323,6 @@ export function recordDrillPractice(
       intervalDays = Math.round(intervalDays * easeFactor);
     }
   } else {
-    // Effortless: boost ease factor and jump interval
     repetitionCount += 1;
     easeFactor = Math.min(3.0, easeFactor + 0.15);
     if (repetitionCount === 1) {
@@ -416,13 +369,6 @@ export function recordDrillPractice(
   return updatedRecord;
 }
 
-/**
- * Generates today's curated 3 to 4 drill Spaced Repetition Docket.
- * Prioritizes:
- * 1. Overdue drills (highest days overdue first)
- * 2. Drills due today
- * 3. Fresh unpracticed / new drills from active enrolled skills
- */
 export function getDailyDocket(
   enrolledSkills: Skill[],
   completedStepIds: string[] = []
@@ -465,12 +411,6 @@ export function getDailyDocket(
     }
   }
 
-  // Sorting priority:
-  // 1. Incomplete today first
-  // 2. Overdue by highest days
-  // 3. Due today
-  // 4. New / unpracticed
-  // 5. Recommended
   candidateItems.sort((a, b) => {
     if (a.isCompletedToday !== b.isCompletedToday) {
       return a.isCompletedToday ? 1 : -1;
@@ -485,7 +425,6 @@ export function getDailyDocket(
     return 0;
   });
 
-  // Take top 3 drills (or up to 4 if user is deeply enrolled)
   const targetCount = candidateItems.length >= 4 ? 4 : Math.min(3, candidateItems.length);
   const selectedItems = candidateItems.slice(0, targetCount);
 

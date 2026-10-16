@@ -40,7 +40,6 @@ import { fetchLiveSkills } from "@/services/skillsService";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
-  // useSearchParams needs a Suspense boundary in the App Router
   return (
     <Suspense>
       <Dashboard />
@@ -55,31 +54,24 @@ function Dashboard() {
 
   const { user: currentUser, isLoading: loadingAuth } = useAuth();
 
-  // All available skills
   const [allSkills, setAllSkills] = useState<Skill[]>(INITIAL_SKILLS);
 
-  // User's enrolled skill IDs (Only these are shown in My Studio!)
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
 
-  // User's completed step IDs
   const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
 
-  // Category and duration filters for My Studio
   const [selectedCategory, setSelectedCategory] = useState<string>("cat-all");
   const [selectedDuration, setSelectedDuration] = useState<DurationFilter>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Modal states
   const [activeLearningSkill, setActiveLearningSkill] = useState<Skill | null>(null);
   const [activeSyllabusSkill, setActiveSyllabusSkill] = useState<Skill | null>(null);
   const [activeExamSkill, setActiveExamSkill] = useState<Skill | null>(null);
   const [isPassportOpen, setIsPassportOpen] = useState(false);
   const [confirmingRemoveId, setConfirmingRemoveId] = useState<string | null>(null);
 
-  // Craftsman's Guild Certified Skills
   const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
 
-  // Days with any practice, used for the streak and this week's seals
   const [practiceDates, setPracticeDates] = useState<string[]>([]);
 
   const [isClient, setIsClient] = useState(false);
@@ -92,9 +84,7 @@ function Dashboard() {
     }
   }, []);
 
-  // 1. Sync completions & enrollments from Supabase or localStorage
   const loadUserData = useCallback(async (user: User | null) => {
-    // --- Load Step Completions ---
     if (user) {
       try {
         const { data: stepData } = await supabase
@@ -115,7 +105,6 @@ function Dashboard() {
       }
     }
 
-      // --- Load Enrollments ---
       const savedEnrolled = localStorage.getItem("skillora_enrolled_skills");
       let localIds: string[] = [];
       if (savedEnrolled) {
@@ -134,7 +123,6 @@ function Dashboard() {
             .eq("user_id", user.id);
 
           const remoteIds = (enrollData || []).map((row: { skill_id: string }) => normalizeSkillId(row.skill_id));
-          // MERGE remote and local so newly added skills in the same session are NEVER lost!
           const merged = Array.from(new Set([...remoteIds, ...localIds]));
           if (merged.length > 0) {
             setEnrolledSkillIds(merged);
@@ -146,17 +134,14 @@ function Dashboard() {
         }
       }
 
-      // Fallback to local or default seed
       if (localIds.length > 0) {
         setEnrolledSkillIds(localIds);
       } else {
-        // Default seed for first-time / guest testing: Cyrillic script
         const defaultEnrolled = ["a2222222-2222-2222-2222-222222222222"];
         setEnrolledSkillIds(defaultEnrolled);
         localStorage.setItem("skillora_enrolled_skills", JSON.stringify(defaultEnrolled));
       }
 
-      // Fallback to localStorage for Step Completions
       const savedSteps = localStorage.getItem("skillora_completed_steps");
       if (savedSteps) {
         try {
@@ -166,7 +151,6 @@ function Dashboard() {
         }
       }
 
-      // --- Sync Practice Stats, Streak & Spaced Repetition with Cloud ---
       if (user) {
         syncPracticeStatsWithCloud(supabase, user.id).then((cloudStore) => {
           if (cloudStore && cloudStore.practiceDates) {
@@ -198,20 +182,17 @@ function Dashboard() {
             id: normalizeSkillId(s.id),
           }));
         } catch {
-          // ignore
         }
       }
 
       const baseSkills = live && live.length > 0 ? live : INITIAL_SKILLS;
       const allSkillsMap = new Map<string, Skill>();
 
-      // Put base skills
       baseSkills.forEach((s) => {
         const id = normalizeSkillId(s.id);
         allSkillsMap.set(id, { ...s, id });
       });
 
-      // Put custom AI skills
       customList.forEach((s) => {
         const id = normalizeSkillId(s.id);
         allSkillsMap.set(id, { ...s, id });
@@ -220,7 +201,6 @@ function Dashboard() {
       setAllSkills(Array.from(allSkillsMap.values()));
     });
 
-    // Load saved Guild certified skills from localStorage
     let localCertified: string[] = [];
     const savedCertified = localStorage.getItem("skillora_guild_certified_skills");
     if (savedCertified) {
@@ -232,7 +212,6 @@ function Dashboard() {
       }
     }
 
-    // Sync with Supabase user_certifications if user is authenticated
     if (currentUser) {
       supabase
         .from("user_certifications")
@@ -245,7 +224,6 @@ function Dashboard() {
             setCertifiedSkillIds(merged);
             localStorage.setItem("skillora_guild_certified_skills", JSON.stringify(merged));
 
-            // Upload any local-only certifications
             const unuploaded = localCertified.filter((id) => !remoteIds.includes(id) && isValidUuid(id));
             if (unuploaded.length > 0) {
               const rows = unuploaded.map((id) => ({
@@ -259,7 +237,6 @@ function Dashboard() {
     }
   }, [supabase, currentUser]);
 
-  // Handle passing Craftsman's Guild Diagnostic Exam
   const handlePassGuildExam = (skillId: string) => {
     const targetNorm = normalizeSkillId(skillId);
     const updated = Array.from(new Set([...certifiedSkillIds, targetNorm]));
@@ -280,7 +257,6 @@ function Dashboard() {
     }
   };
 
-  // 2. Step Completion Toggle with Supabase Sync
   const handleToggleStep = async (stepId: string) => {
     const normStepId = normalizeStepId(stepId);
     const isCurrentlyDone = isStepCompleted(stepId, completedStepIds);
@@ -329,7 +305,6 @@ function Dashboard() {
     }
   };
 
-  // 3. Remove Skill from My Studio
   const handleRemoveFromStudio = async (skillId: string) => {
     const targetNorm = normalizeSkillId(skillId);
     const updated = enrolledSkillIds.filter((id) => normalizeSkillId(id) !== targetNorm);
@@ -352,13 +327,11 @@ function Dashboard() {
     }
   };
 
-  // 5. Skills currently enrolled in My Studio (Memoized to prevent infinite re-render cycles)
   const myStudioSkills = useMemo(() => {
     const enrolledSet = new Set(enrolledSkillIds.map(normalizeSkillId));
     return allSkills.filter((s) => enrolledSet.has(normalizeSkillId(s.id)));
   }, [allSkills, enrolledSkillIds]);
 
-  // Practice Dates & Streak Tracking
   const refreshPracticeStats = useCallback(() => {
     const store = getSpacedRepetitionStore();
     setPracticeDates(store.practiceDates);
@@ -373,7 +346,6 @@ function Dashboard() {
 
   const streak = getPracticeStreak(practiceDates);
 
-  // Deep link from the account menu: /dashboard?open=passport
   useEffect(() => {
     if (searchParams.get("open") === "passport") {
       setIsPassportOpen(true);
@@ -381,7 +353,6 @@ function Dashboard() {
     }
   }, [searchParams, router]);
 
-  // 6. Filter enrolled studio skills by Category, Duration, and Search Query
   const filteredStudioSkills = useMemo(() => {
     return myStudioSkills.filter((skill) => {
       if (
@@ -413,7 +384,6 @@ function Dashboard() {
     });
   }, [myStudioSkills, selectedCategory, selectedDuration, searchQuery]);
 
-  // 7. Calculate Metrics (Streak, Active, Mastered)
   const masteredSkills = useMemo(() => {
     return myStudioSkills.filter((skill) => {
       const steps = skill.steps || [];
@@ -445,9 +415,7 @@ function Dashboard() {
   return (
     <div className="flex-1 flex flex-col workbench-grid text-ink selection:bg-brand-500 selection:text-white">
 
-
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Guest Notification Banner */}
         {!loadingAuth && !currentUser && (
           <div className="mb-6 p-4 rounded-2xl bg-brand-50 border border-brand-200 text-brand-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
@@ -463,9 +431,7 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Atelier Broadsheet Masthead */}
         <header className="mb-10">
-          {/* Dateline & Issue Strip */}
           <div className="flex items-center justify-between text-3xs font-mono uppercase tracking-widest text-ink-muted pb-3.5 mb-5 border-b border-surface-border">
             <span>
               {isClient
@@ -476,7 +442,6 @@ function Dashboard() {
             <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP</span>
           </div>
 
-          {/* Title & Passport Action */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
             <div className="space-y-1.5 min-w-0 flex-1">
               <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
@@ -531,7 +496,6 @@ function Dashboard() {
             </Button>
           </div>
 
-          {/* Typographic Metric Summary Card */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white border border-surface-border shadow-2xs">
             <div>
               <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
@@ -583,7 +547,6 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* My Studio Section: Filtered Repertoire */}
         <section className="mb-12">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
             <div>
@@ -596,7 +559,6 @@ function Dashboard() {
             </div>
 
             <div className="flex items-center gap-2.5">
-              {/* Ledger vs Grid View Switcher */}
               {myStudioSkills.length > 0 && (
                 <div className="inline-flex items-center p-0.5 rounded-lg bg-surface-muted border border-surface-border text-xs font-mono">
                   <button
@@ -648,7 +610,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Filter Bar: Only displayed when user has skills in Studio */}
           {myStudioSkills.length > 0 && (
             <div className="mb-6">
               <SkillFilterBar
@@ -663,7 +624,6 @@ function Dashboard() {
             </div>
           )}
 
-          {/* EMPTY STATE */}
           {filteredStudioSkills.length === 0 ? (
             <div className="p-10 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto">
               <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
@@ -702,7 +662,6 @@ function Dashboard() {
               </div>
             </div>
           ) : repertoireView === "ledger" ? (
-            /* 1. CONTINUOUS LEDGER STRIP LIST (Archival Ledger Register Card) */
             <div className="bg-white rounded-2xl border border-surface-border shadow-2xs divide-y divide-surface-border/70 px-5 sm:px-6">
               {filteredStudioSkills.map((skill, idx) => {
                 const steps = skill.steps || [];
@@ -728,7 +687,6 @@ function Dashboard() {
                     key={skill.id}
                     className="group py-4 -mx-2 px-2 rounded-xl hover:bg-canvas/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
-                    {/* Left: Index + Metadata + Title + Summary */}
                     <div className="flex items-start md:items-center gap-4 min-w-0 flex-1">
                       <span className="font-mono text-xs font-semibold text-ink-subtle w-6 shrink-0 mt-0.5 md:mt-0">
                         {String(idx + 1).padStart(2, "0")}
@@ -774,9 +732,7 @@ function Dashboard() {
                       </div>
                     </div>
 
-                    {/* Right: Architectural Progress Line + Actions */}
                     <div className="flex items-center gap-5 self-stretch md:self-auto justify-between md:justify-end shrink-0 pl-10 md:pl-0">
-                      {/* Architectural Progress Indicator */}
                       <div className="w-28 sm:w-36 space-y-1">
                         <div className="flex items-center justify-between text-3xs font-mono text-ink-muted">
                           <span>{isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}</span>
@@ -790,7 +746,6 @@ function Dashboard() {
                         </div>
                       </div>
 
-                      {/* Actions */}
                       <div className="flex items-center gap-2">
                         {isCompleted && (
                           <button
@@ -870,7 +825,6 @@ function Dashboard() {
               })}
             </div>
           ) : (
-            /* 2. CLASSIC BOOKPLATES GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
                 {filteredStudioSkills.map((skill) => {
@@ -898,7 +852,6 @@ function Dashboard() {
                       }`}
                     >
                       <div>
-                        {/* Unified Editorial Metadata Header */}
                         <div className="flex items-center justify-between text-3xs font-mono text-ink-muted uppercase tracking-widest mb-3 pb-2.5 border-b border-surface-border">
                           <div className="flex items-center gap-1.5 font-medium">
                             {isCustomAi && (
@@ -943,7 +896,6 @@ function Dashboard() {
                           )}
                         </div>
 
-                        {/* Title & Description with Golden Stamp badge */}
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink group-hover:text-accent-vermilion transition leading-tight">
                             {skill.title}
@@ -959,7 +911,6 @@ function Dashboard() {
                           {skill.summary}
                         </p>
 
-                        {/* Precision Architectural Progress Line */}
                         <div className="mb-5 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-2xs font-mono uppercase tracking-wider text-ink-muted">
@@ -978,9 +929,7 @@ function Dashboard() {
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
                       <div className="space-y-2 pt-2 border-t border-surface-border">
-                        {/* Certification CTA when 100% complete */}
                         {isCompleted && (
                           <button
                             type="button"
@@ -1003,7 +952,6 @@ function Dashboard() {
                           </button>
                         )}
 
-                        {/* Studio Action Row: Primary Practice + Syllabus Preview */}
                         <div className="flex items-center gap-2">
                           <Button
                             className="flex-1"
@@ -1038,7 +986,6 @@ function Dashboard() {
           )}
         </section>
 
-        {/* Discovery Callout Footer */}
         <section className="p-6 sm:p-7 rounded-2xl bg-white border border-surface-border shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
@@ -1059,7 +1006,6 @@ function Dashboard() {
         </section>
       </main>
 
-      {/* 1. Skill Practice & Simulators Modal */}
       <AnimatePresence>
         {activeLearningSkill && (
           <SkillPracticeModal
@@ -1073,7 +1019,6 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* 2. Step Syllabus & External Resources Modal */}
       <AnimatePresence>
         {activeSyllabusSkill && (
           <SkillSyllabusModal
@@ -1088,7 +1033,6 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* 4. Japanese Archival Mastery Passport Modal */}
       <AnimatePresence>
         {isPassportOpen && (
           <MasteryPassportModal
@@ -1107,7 +1051,6 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* 5. Skill Assessment Certification Exam Modal */}
       <AnimatePresence>
         {activeExamSkill && (
           <SkillAssessmentModal

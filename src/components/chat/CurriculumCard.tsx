@@ -56,7 +56,6 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
         {skill.summary}
       </p>
 
-      {/* Sequential Micro-Drills */}
       <div className="space-y-2 mb-5">
         {skill.steps?.map((st) => (
           <div
@@ -76,7 +75,6 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
         ))}
       </div>
 
-      {/* Action CTA: Either Open in Studio or Add to Studio */}
       <div className="pt-2 border-t border-surface-border flex items-center gap-2">
         {isEnrolled ? (
           <Link

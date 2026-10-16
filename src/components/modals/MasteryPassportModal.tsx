@@ -41,7 +41,6 @@ export function MasteryPassportModal({
     user?.email?.split("@")[0] ||
     "Explorer";
 
-  // Calculate mastered skills
   const masteredSkills = enrolledSkills.filter((s) => {
     const steps = s.steps || [];
     return steps.length > 0 && steps.every((st) => isStepCompleted(st.id, completedStepIds));
@@ -49,7 +48,6 @@ export function MasteryPassportModal({
 
   const inProgressSkills = enrolledSkills.filter((s) => !masteredSkills.includes(s));
 
-  // Calculate total accumulated practice hours
   const totalHours = enrolledSkills.reduce((acc, s) => {
     const steps = s.steps || [];
     const doneSteps = steps.filter((st) => isStepCompleted(st.id, completedStepIds));
@@ -57,12 +55,10 @@ export function MasteryPassportModal({
     return acc + stepHours;
   }, 0);
 
-  // Calculate certified skills
   const certifiedCount = enrolledSkills.filter((s) =>
     certifiedSkillIds.includes(normalizeSkillId(s.id))
   ).length;
 
-  // Proficiency Rank Calculation
   const rank =
     certifiedCount >= 3 || masteredSkills.length >= 3
       ? "ADVANCED PRACTITIONER"
@@ -80,7 +76,6 @@ export function MasteryPassportModal({
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none">
-      {/* Certifications Modal Header */}
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink">
@@ -100,7 +95,6 @@ export function MasteryPassportModal({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* View Switcher with Gliding Tab Indicator */}
           <div className="flex items-center p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-mono font-medium">
             <button
               type="button"
@@ -157,14 +151,9 @@ export function MasteryPassportModal({
         </div>
       </div>
 
-      {/* Passport Notebook Body */}
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-white">
         {activeTab === "credential" ? (
-          /* ============================================================ */
-          /* 1. ARCHIVAL CREDENTIAL PAGE                                  */
-          /* ============================================================ */
           <div className="max-w-2xl mx-auto space-y-6">
-            {/* Learner Credential Card */}
             <div className="p-6 sm:p-7 rounded-2xl bg-white border border-stone-300 shadow-xs relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-stone-200">
                 <div>
@@ -179,7 +168,6 @@ export function MasteryPassportModal({
                   </p>
                 </div>
 
-                {/* Status Pill */}
                 <div
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-3xs font-mono font-bold tracking-wider uppercase self-start ${
                     certifiedCount > 0
@@ -196,9 +184,7 @@ export function MasteryPassportModal({
                 </div>
               </div>
 
-              {/* Metrics Breakdown Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-6 text-center">
-                {/* RANK */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
                   <div className="w-7 h-7 mx-auto rounded-xl bg-stone-100 border border-stone-200/80 flex items-center justify-center text-stone-700 mb-2">
                     <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
@@ -210,7 +196,6 @@ export function MasteryPassportModal({
                   </div>
                 </div>
 
-                {/* TOTAL HOURS */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
                   <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
@@ -227,7 +212,6 @@ export function MasteryPassportModal({
                   </div>
                 </div>
 
-                {/* CERTIFICATIONS */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
                   <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
@@ -244,7 +228,6 @@ export function MasteryPassportModal({
                   </div>
                 </div>
 
-                {/* SKILLS COMPLETED */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
                   <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5" />
@@ -265,7 +248,6 @@ export function MasteryPassportModal({
               </div>
             </div>
 
-            {/* Actions: Print & Jump to Certificates Registry */}
             <div className="flex items-center justify-between pt-2">
               <button
                 type="button"
@@ -289,9 +271,6 @@ export function MasteryPassportModal({
             </div>
           </div>
         ) : (
-          /* ============================================================ */
-          /* 2. CERTIFICATES REGISTRY PAGE                                */
-          /* ============================================================ */
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-stone-300 text-xs">
               <div>
@@ -305,7 +284,6 @@ export function MasteryPassportModal({
               </span>
             </div>
 
-            {/* Grid of Visa Stamp Boxes */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {enrolledSkills.map((skill, idx) => {
                 const steps = skill.steps || [];
@@ -324,7 +302,6 @@ export function MasteryPassportModal({
                         : "bg-paper/60 border-dashed border-stone-300"
                     }`}
                   >
-                    {/* Top Spec Info */}
                     <div>
                       <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-stone-500 uppercase mb-2">
                         <span className={isCertified ? "text-amber-800 font-bold" : ""}>
@@ -340,7 +317,6 @@ export function MasteryPassportModal({
                       </p>
                     </div>
 
-                    {/* Bottom Status / Stamp */}
                     <div className="mt-4 pt-3 border-t border-stone-200 flex items-center justify-between gap-3">
                       {isCertified ? (
                         <>

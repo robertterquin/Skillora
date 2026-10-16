@@ -14,7 +14,6 @@ const TONES: Record<BadgeTone, string> = {
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
-  /** "label" is a compact uppercase mono tag; "pill" is a sentence-case status chip. */
   shape?: "label" | "pill";
 }
 

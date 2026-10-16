@@ -18,7 +18,6 @@ const CATEGORY_STYLES: Record<string, { label: string; bg: string }> = {
 };
 const FALLBACK_STYLE = CATEGORY_STYLES["33333333-3333-3333-3333-333333333333"];
 
-// How many cards fit without clipping at each breakpoint (matches Tailwind sm/md/lg).
 const DECK_BREAKPOINTS = [
   { query: "(min-width: 1024px)", count: 6 },
   { query: "(min-width: 768px)", count: 5 },
@@ -51,12 +50,10 @@ export function HeroFanDeck({ skills, onSelectSkill }: HeroFanDeckProps) {
 
   return (
     <div className="relative isolate w-full select-none">
-      {/* Fixed-height stage so the page doesn't shift while the deck size is measured */}
       <div className="flex items-center justify-center -space-x-6 sm:-space-x-8 md:-space-x-10 lg:-space-x-12 pt-8 pb-12 min-h-[248px] sm:min-h-[296px] md:min-h-[312px] lg:min-h-[344px]">
         {deckSkills.map((skill, idx) => {
           const style = CATEGORY_STYLES[normalizeCategoryId(skill.category_id)] ?? FALLBACK_STYLE;
           const isHovered = hoveredIdx === idx;
-          // Position in the fan from -1 (left) to 1 (right)
           const t = mid === 0 ? 0 : (idx - mid) / mid;
           const transform = isHovered
             ? "translateY(-16px) rotate(0deg) scale(1.06)"

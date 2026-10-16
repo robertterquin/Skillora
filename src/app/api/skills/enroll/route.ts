@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
     const normId = isValidUuid(rawNormId) ? rawNormId : crypto.randomUUID();
     const normCatId = normalizeCategoryId(skill.category_id);
 
-    // 1. Ensure category exists or fallback
     let validCatId = normCatId;
     const { data: catExists } = await admin
       .from("categories")
@@ -27,11 +26,9 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (!catExists) {
-      // Fallback to Everyday Craft & Life Skills category
       validCatId = "33333333-3333-3333-3333-333333333333";
     }
 
-    // 2. Upsert skill in public.skills table (bypassing RLS with service role)
     const slug = skill.slug || skill.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const { error: skillError } = await admin.from("skills").upsert(
       {
@@ -53,7 +50,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: skillError.message }, { status: 500 });
     }
 
-    // 3. Upsert steps if provided
     if (skill.steps && Array.isArray(skill.steps) && skill.steps.length > 0) {
       const stepsToUpsert = skill.steps.map((st, idx) => {
         const rawStepId = st.id ? normalizeStepId(st.id) : "";
@@ -76,7 +72,6 @@ export async function POST(req: NextRequest) {
         console.warn("Supabase admin skill_steps upsert note:", stepsError.message);
       }
 
-      // Upsert resources
       const resourcesToUpsert: {
         id: string;
         step_id: string;
@@ -112,7 +107,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Upsert user enrollment if user ID is present
     let enrolledInSupabase = false;
     if (userId) {
       const { error: enrollError } = await admin.from("user_enrollments").upsert(

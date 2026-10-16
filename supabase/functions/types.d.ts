@@ -1,5 +1,3 @@
-// Type definitions for Supabase Edge Functions in VSCode
-// Supabase Edge Functions run on Deno, which provides Deno globals and npm: specifiers
 
 declare const Deno: {
   env: {

@@ -169,10 +169,6 @@ export interface AppIconProps {
   strokeWidth?: number;
 }
 
-/**
- * Skillora Unified App Icon (powered by Lucide Icons)
- * Renders crisp, balanced 24x24 geometric SVG icons with instant SSR & 0ms latency.
- */
 export function AppIcon({
   name,
   className = "w-4 h-4",
@@ -192,7 +188,6 @@ export function AppIcon({
   );
 }
 
-// Backward-compatible aliases for existing imports
 export const SolarIcon = AppIcon;
 export const IconifyIcon = AppIcon;
 

@@ -35,21 +35,17 @@ export function GuidedPracticeSessionModal({
   onStepCompleted,
 }: GuidedPracticeSessionModalProps) {
   const titleId = useId();
-  // Stable snapshot of docket items for this guided practice session
   const [sessionItems, setSessionItems] = useState<DocketItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Timer states
   const [isRunning, setIsRunning] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(300);
   const [targetSeconds, setTargetSeconds] = useState(300);
 
-  // Practice drill states
   const [repCount, setRepCount] = useState(0);
   const [isEvaluationReady, setIsEvaluationReady] = useState(false);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
 
-  // Metronome states
   const [metronomeActive, setMetronomeActive] = useState(false);
   const [metronomeBpm, setMetronomeBpm] = useState(60);
 
@@ -57,7 +53,6 @@ export function GuidedPracticeSessionModal({
   const metronomeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const wasOpenRef = useRef(false);
 
-  // Initialize sessionItems snapshot ONLY when modal transitions from closed to open
   useEffect(() => {
     if (isOpen) {
       if (!wasOpenRef.current || sessionItems.length === 0) {
@@ -66,7 +61,7 @@ export function GuidedPracticeSessionModal({
           const validIndex = Math.min(Math.max(0, initialIndex), docketItems.length - 1);
           setCurrentIndex(validIndex);
           setIsSessionComplete(false);
-          activeStepIdRef.current = null; // force drill setup for first step
+          activeStepIdRef.current = null;
         }
       }
     } else {
@@ -78,7 +73,6 @@ export function GuidedPracticeSessionModal({
   const activeItem: DocketItem | undefined = sessionItems[currentIndex];
   const profile = getDisciplinePracticeProfile(activeItem?.skill, activeItem?.step);
 
-  // Configure timer and rep count ONLY when active drill step ID changes
   useEffect(() => {
     if (!activeItem) return;
 
@@ -86,8 +80,6 @@ export function GuidedPracticeSessionModal({
     if (stepId !== activeStepIdRef.current) {
       activeStepIdRef.current = stepId;
       const stepMinutes = Number(activeItem.step.estimated_minutes) || 15;
-      // Deliberate practice is high-intensity focused sprint:
-      // If step's estimated time is > 25 mins (e.g. 60m), default to discipline sprint (15-20m)
       const sprintMinutes = stepMinutes > 25 ? profile.suggestedSprintMinutes : stepMinutes;
       const totalSec = Math.max(60, sprintMinutes * 60);
       setSecondsRemaining(totalSec);
@@ -102,7 +94,6 @@ export function GuidedPracticeSessionModal({
     }
   }, [activeItem, profile]);
 
-  // Main countdown timer interval
   useEffect(() => {
     if (!isRunning) return;
 
@@ -121,7 +112,6 @@ export function GuidedPracticeSessionModal({
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Metronome beat interval
   useEffect(() => {
     if (metronomeActive) {
       const intervalMs = (60 / Math.max(30, Math.min(240, metronomeBpm))) * 1000;
@@ -142,7 +132,6 @@ export function GuidedPracticeSessionModal({
     };
   }, [metronomeActive, metronomeBpm]);
 
-  // Clean up metronome on modal close
   useEffect(() => {
     if (!isOpen) {
       setMetronomeActive(false);
@@ -154,7 +143,6 @@ export function GuidedPracticeSessionModal({
     playMechanicalClick();
     setIsRunning((prev) => !prev);
   }, []);
-
 
   const setSprintDuration = useCallback((minutes: number) => {
     playMechanicalClick();
@@ -191,8 +179,6 @@ export function GuidedPracticeSessionModal({
     setRepCount((prev) => prev + 1);
   }, []);
 
-
-  // Handle SM-2 recall rating
   const handleRateRecall = (quality: RecallQuality) => {
     if (!activeItem) return;
     playStampThud();
@@ -200,7 +186,6 @@ export function GuidedPracticeSessionModal({
     const { skill, step } = activeItem;
     const elapsedSeconds = Math.max(10, targetSeconds - secondsRemaining);
 
-    // Record to SM-2 spaced repetition engine
     recordDrillPractice(step.id, quality, elapsedSeconds, skill, step);
 
     if (onStepCompleted) {
@@ -209,7 +194,6 @@ export function GuidedPracticeSessionModal({
 
     onDocketUpdated();
 
-    // Move to next drill or complete docket session
     if (currentIndex < sessionItems.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
@@ -219,12 +203,10 @@ export function GuidedPracticeSessionModal({
     }
   };
 
-  // Keyboard shortcut listener
   useEffect(() => {
     if (!isOpen || isSessionComplete) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if focus is in an input
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -266,7 +248,6 @@ export function GuidedPracticeSessionModal({
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none">
-      {/* Top Folio Header */}
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
@@ -313,11 +294,9 @@ export function GuidedPracticeSessionModal({
         </div>
       </div>
 
-      {/* Modal Body */}
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
         {!isSessionComplete ? (
           <div className="space-y-6">
-            {/* Drill Headline & Instructions */}
             <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
               <div className="flex items-center justify-between text-xs text-stone-500 font-mono mb-2 flex-wrap gap-2">
                 <span className="text-3xs tracking-wider uppercase font-semibold text-ink bg-surface-muted px-2 py-0.5 rounded border border-surface-border">
@@ -337,15 +316,12 @@ export function GuidedPracticeSessionModal({
               </p>
             </div>
 
-            {/* Tactile Timer Gauge Block */}
             <div className="p-6 rounded-3xl bg-paper-warm border border-stone-300 text-center relative overflow-hidden">
               <div className="flex flex-col items-center justify-center">
-                {/* Digital Stopwatch Display */}
                 <div className="font-mono text-5xl sm:text-6xl font-black text-ink tracking-tight tabular-nums my-1">
                   {formatTime(secondsRemaining)}
                 </div>
 
-                {/* Progress Line */}
                 <div className="w-56 h-1.5 bg-stone-300 rounded-full overflow-hidden my-3">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
@@ -361,7 +337,6 @@ export function GuidedPracticeSessionModal({
                   </div>
                 )}
 
-                {/* Sprint Preset Selectors */}
                 <div className="flex items-center justify-center gap-1.5 mb-3 flex-wrap">
                   <span className="text-3xs font-mono text-stone-500 uppercase tracking-wider mr-1">
                     Sprint Mode:
@@ -403,9 +378,7 @@ export function GuidedPracticeSessionModal({
                   )}
                 </div>
 
-                {/* Timer Controls Row */}
                 <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
-                  {/* Primary Start / Pause Toggle */}
                   <button
                     type="button"
                     onClick={toggleTimer}
@@ -422,7 +395,6 @@ export function GuidedPracticeSessionModal({
                     <span>{isRunning ? "Pause Clock" : "Start Clock"}</span>
                   </button>
 
-                  {/* Reset Clock */}
                   <button
                     type="button"
                     onClick={resetTimer}
@@ -433,7 +405,6 @@ export function GuidedPracticeSessionModal({
                     <span>Reset</span>
                   </button>
 
-                  {/* Cadence / Metronome (Music, Typing, Juggling) OR Deep Focus Badge (Coding, Languages, Culinary) */}
                   {profile.isRhythmCadenceSupported ? (
                     <div className="inline-flex items-center rounded-full border border-stone-300 bg-white overflow-hidden shadow-2xs">
                       <button
@@ -481,7 +452,6 @@ export function GuidedPracticeSessionModal({
                 </div>
               </div>
 
-              {/* Discipline-Specific Repetition / Milestone Logger */}
               <div className="mt-6 pt-4 border-t border-stone-300/80 space-y-2">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="text-left">
@@ -505,7 +475,6 @@ export function GuidedPracticeSessionModal({
                   </div>
                 </div>
 
-                {/* Micro-Guidance Explaining What Counts for this Craft */}
                 <div className="flex items-start gap-1.5 text-2xs font-sans text-stone-600 bg-white/70 px-3 py-1.5 rounded-lg border border-stone-200/70 text-left">
                   <SolarIcon name="info-circle-linear" className="w-3.5 h-3.5 text-stone-400 mt-0.5 flex-shrink-0" />
                   <span>{profile.guidanceTip}</span>
@@ -513,7 +482,6 @@ export function GuidedPracticeSessionModal({
               </div>
             </div>
 
-            {/* Spaced Review Self-Rating Section */}
             <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-stone-200">
                 <div className="flex items-center gap-2">
@@ -534,7 +502,6 @@ export function GuidedPracticeSessionModal({
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Rating 1: Hard */}
                 <button
                   type="button"
                   onClick={() => handleRateRecall(1)}
@@ -549,7 +516,6 @@ export function GuidedPracticeSessionModal({
                   </p>
                 </button>
 
-                {/* Rating 2: Solid */}
                 <button
                   type="button"
                   onClick={() => handleRateRecall(2)}
@@ -564,7 +530,6 @@ export function GuidedPracticeSessionModal({
                   </p>
                 </button>
 
-                {/* Rating 3: Effortless */}
                 <button
                   type="button"
                   onClick={() => handleRateRecall(3)}
@@ -582,9 +547,6 @@ export function GuidedPracticeSessionModal({
             </div>
           </div>
         ) : (
-          /* ============================================================ */
-          /* SESSION COMPLETION SUMMARY                                   */
-          /* ============================================================ */
           <div className="text-center py-8 space-y-6 max-w-md mx-auto">
             <div className="flex justify-center">
               <div className="w-16 h-16 rounded-2xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-sm">

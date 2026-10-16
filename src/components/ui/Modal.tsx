@@ -8,20 +8,15 @@ import { cn } from "@/lib/cn";
 interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
-  /** Panel classes: width, background, border, and layout. */
   className?: string;
-  /** Replaces the default backdrop tone (e.g. a darker cinema backdrop). */
   overlayClassName?: string;
-  /** id of the visible title element. */
   labelledBy?: string;
-  /** Accessible name when there is no visible title. */
   label?: string;
 }
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])';
 
-// Open modals, innermost last. Only the top one reacts to Escape and Tab.
 const modalStack: symbol[] = [];
 let savedBodyOverflow = "";
 let savedBodyPaddingRight = "";
@@ -107,7 +102,6 @@ export function Modal({ onClose, children, className, overlayClassName, labelled
         pressStartedOnBackdrop.current = e.target === e.currentTarget;
       }}
       onClick={(e) => {
-        // Ignore drags that start inside the panel (e.g. text selection) and end on the backdrop.
         if (pressStartedOnBackdrop.current && e.target === e.currentTarget) onClose();
       }}
       className={cn(

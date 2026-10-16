@@ -1,9 +1,3 @@
--- ==============================================================================
--- Skillora: Allow Custom Skill Creation & Robust Studio Queue Enrollment
--- Run this in your Supabase Dashboard -> SQL Editor (or migrations)
--- ==============================================================================
-
--- 1. Ensure RLS policies allow authenticated users (and anon where appropriate) to insert custom skills
 alter table public.skills enable row level security;
 drop policy if exists "Users can insert skills" on public.skills;
 create policy "Users can insert skills" on public.skills
@@ -13,7 +7,6 @@ drop policy if exists "Users can update skills" on public.skills;
 create policy "Users can update skills" on public.skills
   for update using (true);
 
--- 2. Allow inserting steps and learning resources for newly created skills
 alter table public.skill_steps enable row level security;
 drop policy if exists "Users can insert skill_steps" on public.skill_steps;
 create policy "Users can insert skill_steps" on public.skill_steps
@@ -24,7 +17,6 @@ drop policy if exists "Users can insert learning_resources" on public.learning_r
 create policy "Users can insert learning_resources" on public.learning_resources
   for insert with check (true);
 
--- 3. Robust Enrollment Policy: Ensure users can insert/upsert their own enrollments
 alter table public.user_enrollments enable row level security;
 drop policy if exists "Users can insert own enrollments" on public.user_enrollments;
 create policy "Users can insert own enrollments" on public.user_enrollments
@@ -34,8 +26,6 @@ drop policy if exists "Users can update own enrollments" on public.user_enrollme
 create policy "Users can update own enrollments" on public.user_enrollments
   for update using (auth.uid() = user_id);
 
--- 4. Insert or update all 8 Canonical Skills with their official UUIDs
--- (Matching the frontend so canonical skills always exist in public.skills)
 insert into public.skills (id, category_id, title, slug, summary, difficulty, estimated_hours, time_commitment_label, is_featured)
 values
   (

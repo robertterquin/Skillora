@@ -2,18 +2,12 @@ import OpenAI from "npm:openai@^4.68.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.45.6";
 import { sanitizeOwlRequest, buildOwlMessages, parseOwlReply, toOwlReply } from "../_shared/owl.ts";
 
-// -------------------------------------------------------------
-// CORS Headers (matching Hapag architecture)
-// -------------------------------------------------------------
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-// -------------------------------------------------------------
-// Curated Guild Exams (Instant zero-latency responses)
-// -------------------------------------------------------------
 const CURATED_EXAMS: Record<string, any> = {
   "fingerstyle-acoustic-guitar": {
     examTitle: "Craftsman's Guild Acoustic Guild Examination",
@@ -329,9 +323,6 @@ const CURATED_EXAMS: Record<string, any> = {
   },
 };
 
-// -------------------------------------------------------------
-// Helpers & Initializers
-// -------------------------------------------------------------
 function getOpenAI(): OpenAI {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) {
@@ -340,7 +331,6 @@ function getOpenAI(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
-// Configured AI Model: defaults to gpt-6-luna with automatic fallback to gpt-4o-mini
 const PRIMARY_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-6-luna";
 const FALLBACK_MODEL = "gpt-4o-mini";
 
@@ -355,7 +345,6 @@ async function createChatCompletionWithFallback(
       model: modelToUse,
     });
   } catch (err: any) {
-    // If the selected model returns model_not_found or 404, smoothly fallback
     const isModelUnavailable =
       err?.status === 404 ||
       err?.code === "model_not_found" ||
@@ -424,10 +413,6 @@ function errorResponse(message: string, status = 500): Response {
   return jsonResponse({ error: message }, status);
 }
 
-// -------------------------------------------------------------
-// Action Handlers
-// -------------------------------------------------------------
-
 async function handleOwlChat(body: Record<string, any>): Promise<Response> {
   const request = sanitizeOwlRequest(body);
   if (!request) {
@@ -446,7 +431,6 @@ async function handleOwlChat(body: Record<string, any>): Promise<Response> {
 
   const reply = parseOwlReply(content, request.forceMode);
 
-  // Conversation and suggestion turns: no curriculum to enrich or persist.
   if (reply.mode !== "curriculum" || !reply.skillData) {
     return jsonResponse(toOwlReply(reply, null));
   }
@@ -488,7 +472,6 @@ async function handleOwlChat(body: Record<string, any>): Promise<Response> {
     };
   });
 
-  // Enrich with verified YouTube search
   const enrichedSteps = await Promise.all(
     initialSteps.map(async (st: any) => {
       const yt = await searchTopYouTube(`${formattedSkill.title} ${st.title} tutorial`);
@@ -507,7 +490,6 @@ async function handleOwlChat(body: Record<string, any>): Promise<Response> {
 
   formattedSkill.steps = enrichedSteps;
 
-  // Persist to Supabase DB if service key exists
   try {
     const admin = getSupabaseAdmin();
     if (admin) {
@@ -760,9 +742,6 @@ Return JSON:
   return jsonResponse(JSON.parse(content));
 }
 
-// -------------------------------------------------------------
-// Unified Edge Gateway (Single Entrypoint)
-// -------------------------------------------------------------
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -790,7 +769,6 @@ Deno.serve(async (req: Request) => {
           action = body.action;
         }
       } catch {
-        // empty json
       }
     }
 

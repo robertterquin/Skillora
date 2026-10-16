@@ -1,9 +1,5 @@
-// System-wide Uniform Male Voice Utility
-// Guarantees the same resonant male voice (OpenAI 'onyx' + strict male-only browser fallback)
-// across all courses, languages, simulators, and consultations.
 
 export const UNIFORM_MALE_VOICE_NAMES = [
-  // English & Global Male Voices (macOS / iOS / Windows / Chrome / Edge)
   "Daniel",
   "Alex",
   "Fred",
@@ -24,7 +20,6 @@ export const UNIFORM_MALE_VOICE_NAMES = [
   "Rishi",
   "Aman",
   "Google UK English Male",
-  // Multilingual Male Voices (Russian, Spanish, French, German, Japanese, Italian, etc.)
   "Yuri",
   "Pavel",
   "Maxim",
@@ -73,7 +68,6 @@ export const FEMALE_VOICE_BLACKLIST = [
   "fiona",
   "serena",
   "siri",
-  // Multilingual Female Voices (macOS / Windows / Chrome defaults)
   "milena",
   "katya",
   "irina",
@@ -116,7 +110,6 @@ export const FEMALE_VOICE_BLACKLIST = [
   "yelda",
   "zosia",
   "carmit",
-  // Chrome "Google <Language>" default voices are female unless explicitly "Male"
   "google us english",
   "google uk english female",
   "google русский",
@@ -136,10 +129,6 @@ export const FEMALE_VOICE_BLACKLIST = [
 const ttsAudioUrlCache = new Map<string, string>();
 let activeAudioElement: HTMLAudioElement | null = null;
 
-/**
- * Returns a guaranteed male voice from the browser's Web Speech API.
- * Strictly prioritizes verified male voice names and never selects default female voices.
- */
 export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | null {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
     return null;
@@ -150,7 +139,6 @@ export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | n
 
   const langPrefix = customLang.slice(0, 2).toLowerCase();
 
-  // 1. Priority: Known verified male voice matching the requested language
   for (const name of UNIFORM_MALE_VOICE_NAMES) {
     const match = voices.find(
       (v) =>
@@ -161,7 +149,6 @@ export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | n
     if (match) return match;
   }
 
-  // 2. Second Priority: Any voice for the requested language explicitly containing "Male"
   const explicitMale = voices.find(
     (v) =>
       /\bmale\b/i.test(v.name) &&
@@ -170,7 +157,6 @@ export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | n
   );
   if (explicitMale) return explicitMale;
 
-  // 3. Third Priority: Known verified English male voice (so we NEVER fall back to a female foreign OS voice like Milena/Katya/Google русский)
   for (const name of UNIFORM_MALE_VOICE_NAMES) {
     const match = voices.find(
       (v) =>
@@ -181,7 +167,6 @@ export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | n
     if (match) return match;
   }
 
-  // 4. Fourth Priority: Any non-blacklisted voice that is not a generic Google female default
   const safeNonFemale = voices.find((v) => {
     const nameLower = v.name.toLowerCase();
     const isFemale = FEMALE_VOICE_BLACKLIST.some((f) => nameLower.includes(f));
@@ -192,9 +177,6 @@ export function getUniformMaleVoice(customLang = "en"): SpeechSynthesisVoice | n
   return safeNonFemale || null;
 }
 
-/**
- * Stops any currently playing TTS audio or browser speech synthesis.
- */
 export function stopUniformVoice(): void {
   if (activeAudioElement) {
     activeAudioElement.pause();
@@ -206,10 +188,6 @@ export function stopUniformVoice(): void {
   }
 }
 
-/**
- * Speaks text using the system-wide uniform male voice (OpenAI 'onyx' multilingual TTS),
- * with a strict male-only browser speech fallback if offline.
- */
 export function speakWithUniformMaleVoice(
   text: string,
   options?: {
@@ -246,7 +224,7 @@ export function speakWithUniformMaleVoice(
     }
 
     utterance.rate = 0.9;
-    utterance.pitch = 0.72; // Deep masculine register
+    utterance.pitch = 0.72;
     utterance.onstart = () => options?.onStart?.();
     utterance.onend = () => options?.onEnd?.();
     utterance.onerror = () => options?.onEnd?.();

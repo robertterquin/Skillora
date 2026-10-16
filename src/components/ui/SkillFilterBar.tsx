@@ -35,9 +35,7 @@ export function SkillFilterBar({
 }: SkillFilterBarProps) {
   return (
     <div className="w-full space-y-3.5">
-      {/* Search Bar & Duration Hardware Controls Row */}
       <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
-        {/* Minimal Search Input */}
         <div className="relative flex-1 max-w-md">
           <SolarIcon
             name="magnifer-linear"
@@ -63,7 +61,6 @@ export function SkillFilterBar({
           )}
         </div>
 
-        {/* Duration Segmented Track with Gliding Indicator */}
         <div className="flex items-center gap-1 p-1 bg-surface-muted/80 border border-surface-border/70 rounded-2xl text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
           <div className="flex items-center gap-1.5 px-2 text-ink-muted shrink-0">
             <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5 text-ink-subtle" />
@@ -98,7 +95,6 @@ export function SkillFilterBar({
         </div>
       </div>
 
-      {/* Category Segmented Track with Gliding Indicator */}
       <div className="flex items-center gap-1.5 overflow-x-auto p-1 bg-surface-muted/80 border border-surface-border/70 rounded-2xl no-scrollbar">
         {categories.map((cat) => {
           const isActive = selectedCategory === cat.id;

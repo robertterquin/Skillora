@@ -41,7 +41,6 @@ export function VideoPlayerModal({
           overlayClassName="bg-black/80 backdrop-blur-md"
           className="max-w-4xl bg-neutral-950 text-white border border-neutral-800 flex flex-col"
         >
-          {/* Dark Cinema Header */}
           <div className="p-4 sm:p-5 bg-neutral-900/90 border-b border-neutral-800 flex items-center justify-between gap-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 text-3xs font-mono tracking-widest text-neutral-400 uppercase mb-1">
@@ -77,7 +76,6 @@ export function VideoPlayerModal({
             </div>
           </div>
 
-          {/* Video Iframe Container (16:9 Aspect Ratio) */}
           <div className="relative w-full aspect-video bg-black flex items-center justify-center">
             {videoId ? (
               <iframe
@@ -105,7 +103,6 @@ export function VideoPlayerModal({
             )}
           </div>
 
-          {/* Quiet Footer Note with Fallback */}
           <div className="p-3.5 sm:p-4 bg-neutral-900/60 border-t border-neutral-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-neutral-400 font-medium">
             <div className="flex flex-wrap items-center gap-2">
               <a

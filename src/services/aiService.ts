@@ -37,14 +37,7 @@ export interface DailyRoutineResult {
   dailyMantra: string;
 }
 
-/**
- * AI Service for Skillora
- * Centralizes all AI interactions, calling the Supabase Edge Function 'ai' with automatic fallback.
- */
 export const aiService = {
-  /**
-   * Archimedes Learning Owl - Conversational Skill Deconstruction & Guidance
-   */
   async chatWithOwl(
     message: string,
     history: OwlHistoryTurn[] = [],
@@ -69,10 +62,8 @@ export const aiService = {
         };
       }
     } catch {
-      // Edge function unavailable; proceed to local API fallback
     }
 
-    // Local route fallback
     const res = await fetch("/api/ai/owl-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -95,9 +86,6 @@ export const aiService = {
     };
   },
 
-  /**
-   * Technique Coach - Diagnoses hurdles and provides 3-minute drills
-   */
   async getCoachAdvice(params: {
     skillTitle: string;
     stepTitle: string;
@@ -113,7 +101,6 @@ export const aiService = {
         return data as CoachAdvice;
       }
     } catch {
-      // Fall through to local API
     }
 
     const res = await fetch("/api/ai/coach", {
@@ -130,9 +117,6 @@ export const aiService = {
     return await res.json();
   },
 
-  /**
-   * Memory Grandmaster - Vivid visual mnemonics & physical anchors
-   */
   async getMnemonic(params: {
     skillTitle: string;
     stepTitle: string;
@@ -147,7 +131,6 @@ export const aiService = {
         return data as MnemonicResult;
       }
     } catch {
-      // Fall through
     }
 
     const res = await fetch("/api/ai/mnemonic", {
@@ -164,9 +147,6 @@ export const aiService = {
     return await res.json();
   },
 
-  /**
-   * Craftsman's Guild Examination
-   */
   async getGuildExam(params: {
     skillTitle: string;
     skillSummary?: string;
@@ -182,7 +162,6 @@ export const aiService = {
         return data;
       }
     } catch {
-      // Fall through
     }
 
     const res = await fetch("/api/ai/guild-exam", {
@@ -199,9 +178,6 @@ export const aiService = {
     return await res.json();
   },
 
-  /**
-   * Archimedes Speech Synthesis (Fast Real-Time TTS-1 Onyx)
-   */
   async textToSpeech(text: string, voice = "onyx", speed = 1.0): Promise<Blob> {
     const res = await fetch("/api/ai/tts", {
       method: "POST",
@@ -216,9 +192,6 @@ export const aiService = {
     return await res.blob();
   },
 
-  /**
-   * Whisper Pronunciation & Phonetics Speech Grader
-   */
   async gradeVoice(
     audioFile: File | Blob | null,
     expectedText: string,
@@ -239,7 +212,6 @@ export const aiService = {
         return data as VoiceGradingResult;
       }
     } catch {
-      // Fall through
     }
 
     const res = await fetch("/api/ai/grade-voice", {
@@ -255,9 +227,6 @@ export const aiService = {
     return await res.json();
   },
 
-  /**
-   * 15-Minute Athletic Cross-Training Daily Routine
-   */
   async generateDailyRoutine(
     enrolledSkills: any[],
     completedStepIds: string[] = []
@@ -271,7 +240,6 @@ export const aiService = {
         return data as DailyRoutineResult;
       }
     } catch {
-      // Fall through
     }
 
     const res = await fetch("/api/ai/daily-routine", {

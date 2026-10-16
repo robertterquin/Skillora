@@ -28,7 +28,6 @@ body {
   letter-spacing: -0.015em;
 }
 
-/* Visible keyboard focus for every interactive element */
 :focus-visible {
   outline: 2px solid #1A1917;
   outline-offset: 2px;
@@ -45,28 +44,23 @@ body {
   }
 }
 
-/* Sharp architectural display typography */
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.028em;
 }
 
-/* Editorial atelier serif */
 .font-serif {
   font-family: var(--font-serif);
 }
 
-/* Calibrated precision monospace */
 .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Tabular figures for time commitments and precision metrics */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -82,7 +76,6 @@ body {
   background: #C7C2B8;
 }
 
-/* Utility to hide scrollbar while preserving touch and trackpad momentum scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
   width: 0;
@@ -93,11 +86,6 @@ body {
   scrollbar-width: none;
 }
 
-/* ========================================================
-   SWISS ATELIER MINIMALIST AESTHETIC (QUIET LUXURY)
-   ======================================================== */
-
-/* Whisper-light architectural drafting grid */
 .workbench-grid {
   background-color: #F9F8F5;
   background-image: 
@@ -106,14 +94,11 @@ body {
   background-size: 32px 32px;
 }
 
-/* Subtle precision dot matrix */
 .workbench-dots {
   background-image: radial-gradient(circle, rgba(26, 25, 23, 0.035) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
-
-/* Modern 3-tier bento card plate */
 .bento-card {
   background: #FFFFFF;
   border: 1px solid #E5E0D8;
@@ -126,7 +111,6 @@ body {
   box-shadow: 0 4px 12px 0 rgba(26, 25, 23, 0.05);
 }
 
-/* Technical spec badge */
 .spec-tag {
   font-family: var(--font-mono);
   font-size: 10px;

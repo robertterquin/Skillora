@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 
-// Fast in-memory LRU cache to eliminate TTS latency for repeated phrases and greetings
 const ttsMemoryCache = new Map<string, Buffer>();
 const MAX_CACHE_ENTRIES = 120;
 
@@ -21,19 +20,15 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
     );
   }
 
-  // Limit spoken text to 400 chars for punchy, real-time mentor responses
   const cleanText = text.trim().slice(0, 400);
 
-  // Validate voice - strictly enforce uniform male mentor voice throughout the system
   const maleVoices = ["onyx", "echo", "fable"];
   const chosenVoice = maleVoices.includes(voice) ? voice : "onyx";
 
-  // Clamp speed between 0.9 and 1.15 for natural, crisp mentor cadence
   const cleanSpeed = typeof speed === "number" ? Math.max(0.9, Math.min(1.15, speed)) : 1.0;
 
   const cacheKey = getCacheKey(cleanText, chosenVoice, cleanSpeed);
 
-  // 1. Instant Cache Hit (0ms latency)
   if (ttsMemoryCache.has(cacheKey)) {
     const cachedBuffer = ttsMemoryCache.get(cacheKey)!;
     return new Response(new Uint8Array(cachedBuffer), {
@@ -46,7 +41,6 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
     });
   }
 
-  // 2. High-speed Real-Time TTS with OpenAI tts-1 (not tts-1-hd which added 4+ seconds delay)
   const mp3 = await openai.audio.speech.create({
     model: "tts-1",
     voice: chosenVoice as "onyx" | "echo" | "fable" | "alloy" | "nova" | "shimmer",
@@ -58,7 +52,6 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
   const arrayBuffer = await mp3.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  // Store in LRU cache
   if (ttsMemoryCache.size >= MAX_CACHE_ENTRIES) {
     const firstKey = ttsMemoryCache.keys().next().value;
     if (firstKey) ttsMemoryCache.delete(firstKey);

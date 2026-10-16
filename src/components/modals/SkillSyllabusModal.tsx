@@ -41,7 +41,6 @@ export function SkillSyllabusModal({
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-white border border-surface-border">
-      {/* Modal Top Header */}
       <div className="p-6 sm:p-8 bg-canvas border-b border-surface-border">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -68,7 +67,6 @@ export function SkillSyllabusModal({
           {skill.summary}
         </p>
 
-        {/* Unified Metadata Strip */}
         <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted font-medium">
           <span className="capitalize">{skill.difficulty}</span>
           <span className="text-ink-subtle">·</span>
@@ -88,7 +86,6 @@ export function SkillSyllabusModal({
           )}
         </div>
 
-        {/* Progress Bar (Only shown for authenticated / tracked mode) */}
         {!isViewOnly && (
           <div className="mt-5 space-y-1.5">
             <div className="flex justify-between text-xs text-ink-muted">
@@ -108,7 +105,6 @@ export function SkillSyllabusModal({
           </div>
         )}
 
-        {/* Certification Banner */}
         {!isViewOnly && isAllComplete && (
           <div className="mt-5 p-4 rounded-2xl bg-surface border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-3">
@@ -140,7 +136,6 @@ export function SkillSyllabusModal({
         )}
       </div>
 
-      {/* Modal Steps Content */}
       <div className="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-6">
         <h3 className="font-display font-semibold text-base text-ink mb-2">
           Steps
@@ -159,7 +154,6 @@ export function SkillSyllabusModal({
                     : "bg-white border-surface-border hover:border-ink-muted/30"
                 }`}
               >
-                {/* Step Top Bar */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     {!isViewOnly ? (
@@ -205,12 +199,10 @@ export function SkillSyllabusModal({
                   )}
                 </div>
 
-                {/* Step Detailed Instructions */}
                 <div className={`mt-4 ${isViewOnly ? "pl-10" : "pl-9"} text-sm text-ink-secondary leading-relaxed`}>
                   <p>{step.instructions}</p>
                 </div>
 
-                {/* Recommended External Learning Sites */}
                 {step.resources && step.resources.length > 0 && (
                   <div className={`mt-4 ${isViewOnly ? "pl-10" : "pl-9"} pt-3 border-t border-surface-border/60`}>
                     <div className="text-xs font-semibold text-ink-muted mb-2">
@@ -283,7 +275,6 @@ export function SkillSyllabusModal({
         </div>
       </div>
 
-      {/* Modal Bottom Footer */}
       <div className="p-4 sm:p-6 bg-canvas border-t border-surface-border flex items-center justify-between">
         <span className="text-xs text-ink-muted">
           {isViewOnly
@@ -309,7 +300,6 @@ export function SkillSyllabusModal({
         </div>
       </div>
 
-    {/* Distraction-Free Video Modal */}
     {activeVideo && (
       <VideoPlayerModal
         isOpen={!!activeVideo}

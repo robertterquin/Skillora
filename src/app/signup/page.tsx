@@ -52,7 +52,6 @@ export default function SignUpPage() {
         return;
       }
 
-      // Check if email confirmation is required or if user is auto-logged in
       if (data.session) {
         setSuccessMsg("Account created! Redirecting to your learning studio...");
         setTimeout(() => {
@@ -74,7 +73,6 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-canvas text-ink selection:bg-brand-500 selection:text-white">
-      {/* Top minimal header */}
       <header className="p-6 max-w-7xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-white border border-surface-border flex items-center justify-center group-hover:border-ink/30 transition">
@@ -98,7 +96,6 @@ export default function SignUpPage() {
         </Link>
       </header>
 
-      {/* Main Sign Up Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-4">
         <div className="w-full max-w-lg">
           <Card className="p-8 sm:p-10">
@@ -124,7 +121,6 @@ export default function SignUpPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Primary Interest Picker (Zero emojis, pure minimal typography) */}
               <div>
                 <div id="signup-interest-label" className="block text-xs font-semibold text-ink mb-2">
                   What do you want to learn first?
@@ -151,7 +147,6 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Full Name */}
               <div>
                 <label htmlFor="signup-name" className="block text-xs font-semibold text-ink mb-1.5">
                   Your name
@@ -171,7 +166,6 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Email */}
               <div>
                 <label htmlFor="signup-email" className="block text-xs font-semibold text-ink mb-1.5">
                   Email address
@@ -191,7 +185,6 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Password with See Password Toggle */}
               <div>
                 <label htmlFor="signup-password" className="block text-xs font-semibold text-ink mb-1.5">
                   Password
@@ -209,7 +202,6 @@ export default function SignUpPage() {
                     placeholder="At least 6 characters"
                     className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
                   />
-                  {/* See Password Button */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -244,7 +236,6 @@ export default function SignUpPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="p-6 text-center text-xs text-ink-subtle">
         <span>&copy; {new Date().getFullYear()} Skillora • Secured by Supabase Row Level Security</span>
       </footer>

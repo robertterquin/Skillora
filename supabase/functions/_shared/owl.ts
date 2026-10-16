@@ -1,9 +1,3 @@
-// Archimedes (owl-chat) shared contract.
-//
-// Imported by BOTH the Supabase Edge Function (supabase/functions/ai) and the
-// Next.js fallback route (src/app/api/ai/owl-chat), so the prompt, request
-// sanitizing and reply shape can never drift between cloud and local.
-// Keep this file free of Deno- or Node-specific APIs.
 
 export type OwlMode = "chat" | "suggestions" | "curriculum";
 export type OwlDifficulty = "beginner" | "intermediate" | "advanced";
@@ -17,7 +11,6 @@ export interface OwlSuggestion {
   category_id: string;
 }
 
-/** Learner preferences Archimedes picks up during discovery. */
 export interface OwlProfile {
   interests?: string;
   dailyMinutes?: string;
@@ -27,9 +20,7 @@ export interface OwlProfile {
 export interface OwlHistoryTurn {
   role: "user" | "owl";
   text: string;
-  /** Titles suggested in that owl turn, so "build the first one" can resolve. */
   suggestionTitles?: string[];
-  /** Title of the curriculum built in that owl turn. */
   skillTitle?: string;
 }
 
@@ -43,11 +34,9 @@ export interface OwlRequest {
   message: string;
   history: OwlHistoryTurn[];
   context: OwlContext;
-  /** Set when the user explicitly picks a skill (e.g. taps "Build this path"). */
   forceMode?: "curriculum";
 }
 
-/** Normalized model output. `skillData` is raw and gets formatted server-side. */
 export interface OwlParsedReply {
   mode: OwlMode;
   owlMessage: string;
@@ -57,7 +46,6 @@ export interface OwlParsedReply {
   skillData: any | null;
 }
 
-/** What the client receives. */
 export interface OwlReply<TSkill = unknown> {
   mode: OwlMode;
   owlMessage: string;
@@ -172,11 +160,6 @@ function sanitizeProfile(value: unknown): OwlProfile | undefined {
   return Object.keys(profile).length > 0 ? profile : undefined;
 }
 
-/**
- * Validates an incoming request body. Returns null when `message` is missing.
- * Requests without a `history` array come from older clients that expect a
- * curriculum on every message, so they are forced into curriculum mode.
- */
 export function sanitizeOwlRequest(body: Record<string, any>): OwlRequest | null {
   const message = clip(body?.message, MAX_MESSAGE_CHARS);
   if (!message) return null;
@@ -210,7 +193,6 @@ export function sanitizeOwlRequest(body: Record<string, any>): OwlRequest | null
   };
 }
 
-/** Builds the chat-completion message list (system + history + latest turn). */
 export function buildOwlMessages(
   req: OwlRequest
 ): { role: "system" | "user" | "assistant"; content: string }[] {
@@ -277,7 +259,6 @@ const FALLBACK_MESSAGES: Record<OwlMode, string> = {
   curriculum: "I've laid out a pathway for you. Add it to My Studio when you're ready.",
 };
 
-/** Parses and validates raw model JSON into a safe, predictable reply. */
 export function parseOwlReply(raw: string, forceMode?: "curriculum"): OwlParsedReply {
   let parsed: Record<string, any> = {};
   try {

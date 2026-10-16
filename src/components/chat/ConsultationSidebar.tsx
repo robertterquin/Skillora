@@ -33,7 +33,6 @@ export function ConsultationSidebar({
   onNew,
   onDelete,
 }: ConsultationSidebarProps) {
-  // Chronological grouping (Claude / Linear style)
   const groups: GroupedConsultations[] = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -70,7 +69,6 @@ export function ConsultationSidebar({
 
   return (
     <>
-      {/* Mobile Backdrop Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-ink/20 backdrop-blur-xs md:hidden transition-opacity"
@@ -79,7 +77,6 @@ export function ConsultationSidebar({
         />
       )}
 
-      {/* Sidebar Container: Fixed from header (top-16) to bottom of screen (bottom-0) */}
       <aside
         className={`
           fixed top-0 md:top-16 bottom-0 left-0 z-40 md:z-30 w-72 md:w-64 bg-canvas border-r border-surface-border flex flex-col transition-all duration-300 ease-in-out select-none overflow-hidden
@@ -91,9 +88,7 @@ export function ConsultationSidebar({
         `}
         aria-label="Consultation History"
       >
-        {/* Full-Height Column Container */}
         <div className="w-full h-full flex flex-col bg-canvas">
-          {/* Header & Close Icon */}
           <div className="h-12 px-3.5 border-b border-surface-border/70 flex items-center justify-between gap-2 shrink-0 bg-canvas">
             <span className="text-xs font-semibold text-ink tracking-tight">
               Consultations
@@ -110,7 +105,6 @@ export function ConsultationSidebar({
             </button>
           </div>
 
-          {/* New Consultation Action (Linear/Claude minimal button) */}
           <div className="p-2.5 pb-1 shrink-0">
             <button
               type="button"
@@ -130,7 +124,6 @@ export function ConsultationSidebar({
             </button>
           </div>
 
-          {/* Chronological List */}
           <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1 space-y-3 no-scrollbar">
             {groups.length === 0 ? (
               <div className="text-center py-8 text-xs text-ink-muted font-serif italic">
@@ -178,7 +171,6 @@ export function ConsultationSidebar({
                             </span>
                           </div>
 
-                          {/* Delete Action (visible on mobile/focus, hover on desktop) */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -200,7 +192,6 @@ export function ConsultationSidebar({
             )}
           </div>
 
-          {/* Sidebar Footer */}
           <div className="h-9 px-3.5 border-t border-surface-border/70 bg-canvas/40 shrink-0 flex items-center justify-between text-3xs font-mono text-ink-muted">
             <div className="flex items-center gap-1.5 min-w-0">
               <span

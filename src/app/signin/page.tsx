@@ -52,7 +52,6 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-canvas text-ink selection:bg-brand-500 selection:text-white">
-      {/* Top minimal header */}
       <header className="p-6 max-w-7xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-white border border-surface-border flex items-center justify-center group-hover:border-ink/30 transition">
@@ -76,7 +75,6 @@ export default function SignInPage() {
         </Link>
       </header>
 
-      {/* Main Sign In Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
           <Card className="p-8 sm:p-10">
@@ -101,7 +99,6 @@ export default function SignInPage() {
               </div>
             )}
 
-            {/* Email / Password Form with Show Password Eye Toggle */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="signin-email" className="block text-xs font-semibold text-ink mb-1.5">
@@ -155,7 +152,6 @@ export default function SignInPage() {
                     placeholder="••••••••••••"
                     className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
                   />
-                  {/* See Password Button */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -186,7 +182,6 @@ export default function SignInPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="p-6 text-center text-xs text-ink-subtle">
         <span>&copy; {new Date().getFullYear()} Skillora • Secured by Supabase</span>
       </footer>

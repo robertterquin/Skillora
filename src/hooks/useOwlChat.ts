@@ -119,7 +119,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
   const consultationsRef = useRef<OwlConsultation[]>([]);
   const recognitionRef = useRef<any>(null);
 
-  // Keep refs in sync with state for access in callbacks
   useEffect(() => {
     activeConsultationIdRef.current = activeConsultationId;
   }, [activeConsultationId]);
@@ -128,7 +127,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     consultationsRef.current = consultations;
   }, [consultations]);
 
-  // Load saved consultations & profile on mount from local storage (instant initial render)
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -170,7 +168,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     }
   }, []);
 
-  // Cloud Sync Effect: When an authenticated user is detected, seamlessly merge with Supabase
   useEffect(() => {
     if (!currentUser?.id) return;
 
@@ -211,7 +208,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     };
   }, [currentUser?.id, supabase]);
 
-  // Audio cleanup on unmount
   useEffect(() => {
     return () => {
       stopUniformVoice();
@@ -223,7 +219,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     setIsOwlSpeaking(false);
   }, []);
 
-  // Pre-warm avatar greeting audio and populate Web Speech voices cache
   useEffect(() => {
     if (typeof window === "undefined") return;
     const greeting = "I'm listening. Tell me what interests you or ask for suggestions.";
@@ -253,7 +248,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [voiceEnabled]
   );
 
-  // Persistence helper
   const persistConsultationUpdate = useCallback(
     (targetId: string, updatedMsgs: OwlMessage[], explicitOutcome?: ConsultationOutcome) => {
       setConsultations((prev) => {
@@ -286,7 +280,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
           console.warn("Storage sync failed:", err);
         }
 
-        // Sync update to Supabase cloud if user is logged in
         const user = userRef.current;
         if (user?.id && updatedSession) {
           consultationService.upsertUserConsultation(supabase, user.id, updatedSession);
@@ -298,7 +291,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [supabase]
   );
 
-  // Multi-session action: Start New Consultation
   const startNewConsultation = useCallback(() => {
     stopVoice();
     const newId = `consultation-${Date.now()}`;
@@ -331,7 +323,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     setInputText("");
   }, [stopVoice, supabase]);
 
-  // Multi-session action: Switch Consultation
   const selectConsultation = useCallback(
     (id: string) => {
       if (id === activeConsultationIdRef.current) return;
@@ -352,7 +343,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [stopVoice]
   );
 
-  // Multi-session action: Delete Consultation
   const deleteConsultation = useCallback(
     (id: string) => {
       stopVoice();
@@ -412,7 +402,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [stopVoice, supabase]
   );
 
-  // Multi-session action: Clear All Consultations
   const clearAllConsultations = useCallback(() => {
     stopVoice();
     const user = userRef.current;
@@ -468,7 +457,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         try {
           recognitionRef.current.stop();
         } catch {
-          // ignore
         }
       }
       setIsListening(false);
@@ -527,10 +515,8 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
       setInputText("");
       setIsThinking(true);
 
-      // Persist user message to the session
       persistConsultationUpdate(currentSessionId, updatedWithUser);
 
-      // Build conversation history
       const history: OwlHistoryTurn[] = messages
         .filter((m) => m.id !== "intro" && m.id !== "owl-init")
         .slice(-8)
@@ -565,7 +551,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
             try {
               localStorage.setItem("skillora_owl_profile", JSON.stringify(next));
             } catch {
-              // ignore
             }
             return next;
           });
@@ -583,10 +568,8 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
         const updatedWithOwl = [...updatedWithUser, owlMsg];
 
-        // Persist to session
         persistConsultationUpdate(currentSessionId, updatedWithOwl);
 
-        // If the user hasn't switched away to another thread, update active messages & play audio
         if (activeConsultationIdRef.current === currentSessionId) {
           setMessages(updatedWithOwl);
           playChime();
@@ -639,7 +622,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
         await options.onSkillEnrolled(skillToEnroll);
       }
 
-      // Mark consultation outcome as enrolled
       const currentId = activeConsultationIdRef.current;
       setConsultations((prev) => {
         let updated: OwlConsultation | null = null;

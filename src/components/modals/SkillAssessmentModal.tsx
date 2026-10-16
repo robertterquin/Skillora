@@ -35,7 +35,6 @@ export function SkillAssessmentModal({
   const [error, setError] = useState<string | null>(null);
   const [examData, setExamData] = useState<GuildExamPayload | null>(null);
 
-  // Exam execution state
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, "A" | "B" | "C" | "D">>({});
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
@@ -61,7 +60,6 @@ export function SkillAssessmentModal({
     }
   }, [isOpen, isAlreadyCertified]);
 
-  // Fetch or prepare the exam
   const startExam = async () => {
     if (!skill) return;
     playMechanicalClick();
@@ -98,7 +96,6 @@ export function SkillAssessmentModal({
   const questions: ExamQuestion[] = examData?.questions || [];
   const currentQuestion: ExamQuestion | undefined = questions[currentQuestionIdx];
 
-  // Calculate score
   const calculateScore = () => {
     if (!examData) return 0;
     let correct = 0;
@@ -132,7 +129,6 @@ export function SkillAssessmentModal({
       setCurrentQuestionIdx((prev) => prev + 1);
       setIsAnswerRevealed(false);
     } else {
-      // Completed all questions
       const finalScore = calculateScore();
       const passing = examData?.passingScore ?? 2;
       const passed = finalScore >= passing;
@@ -157,7 +153,6 @@ export function SkillAssessmentModal({
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none print:border-none print:shadow-none print:max-w-none print:w-full print:rounded-none print:bg-white">
-      {/* Modal Top Bar */}
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-2xs">
@@ -190,11 +185,7 @@ export function SkillAssessmentModal({
         </div>
       </div>
 
-      {/* Modal Body */}
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
-        {/* ============================================================ */}
-        {/* 1. INTRO STAGE                                               */}
-        {/* ============================================================ */}
         {stage === "intro" && (
           <div className="space-y-6 text-center max-w-lg mx-auto py-4">
             <div>
@@ -206,7 +197,6 @@ export function SkillAssessmentModal({
               </p>
             </div>
 
-            {/* Protocol Spec Box */}
             <div className="p-4 rounded-2xl bg-white border border-stone-300 text-left space-y-2.5 text-xs font-mono shadow-2xs">
               <div className="flex justify-between border-b border-stone-200 pb-1.5">
                 <span className="text-stone-500">FORMAT:</span>
@@ -263,12 +253,8 @@ export function SkillAssessmentModal({
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 2. ACTIVE QUESTIONS STAGE                                    */}
-        {/* ============================================================ */}
         {stage === "exam" && currentQuestion && (
           <div className="space-y-6">
-            {/* Question Header & Cue */}
             <div>
               <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-stone-500 uppercase mb-1.5">
                 <span className="text-amber-800 font-bold">
@@ -284,7 +270,6 @@ export function SkillAssessmentModal({
               </h3>
             </div>
 
-            {/* Options List */}
             <div className="space-y-3">
               {currentQuestion.options.map((opt) => {
                 const isSelected = userAnswers[currentQuestionIdx] === opt.id;
@@ -320,7 +305,6 @@ export function SkillAssessmentModal({
                           {opt.text}
                         </p>
 
-                        {/* Reveal Rationale */}
                         {isAnswerRevealed && (opt.isCorrect || isSelected) && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
@@ -344,7 +328,6 @@ export function SkillAssessmentModal({
               })}
             </div>
 
-            {/* Action Button */}
             {isAnswerRevealed && (
               <div className="pt-2 flex justify-end">
                 <button
@@ -364,9 +347,6 @@ export function SkillAssessmentModal({
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 3. EVALUATION RESULT STAGE                                   */}
-        {/* ============================================================ */}
         {stage === "result" && (
           <div className="text-center space-y-6 max-w-lg mx-auto py-4">
             {isPassed ? (
@@ -460,23 +440,17 @@ export function SkillAssessmentModal({
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 4. GUILD DIPLOMA / CERTIFICATE VIEW                          */}
-        {/* ============================================================ */}
         {stage === "diploma" && (
           <div className="space-y-6">
-            {/* Parchment Diploma Frame */}
             <div
               id="guild-diploma-print-area"
               className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-amber-800/40 shadow-inner relative overflow-hidden text-center print:p-8 print:border-amber-900"
             >
-              {/* Top Crest & Monospace ID */}
               <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-amber-900/70 uppercase pb-4 border-b border-amber-900/20">
                 <span>SKILLORA CERTIFICATION</span>
                 <span>CREDENTIAL ID · SK-{skill.id.slice(0, 6).toUpperCase()}</span>
               </div>
 
-              {/* Diploma Main Title */}
               <div className="mt-8">
                 <span className="text-2xs font-mono tracking-[0.25em] text-amber-900 uppercase font-bold block mb-2">
                   OFFICIAL CREDENTIAL
@@ -486,7 +460,6 @@ export function SkillAssessmentModal({
                 </h1>
               </div>
 
-              {/* Conferral Text */}
               <div className="my-8 space-y-4 max-w-lg mx-auto">
                 <p className="text-xs font-mono uppercase tracking-widest text-stone-500">
                   THIS IS TO CERTIFY THAT
@@ -508,9 +481,7 @@ export function SkillAssessmentModal({
                 </div>
               </div>
 
-              {/* Bottom Seals & Signatures */}
               <div className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-6">
-                {/* Left: Proctor Signature */}
                 <div className="text-left font-mono">
                   <div className="font-serif italic text-base text-ink mb-1">
                     Archimedes of Syracuse
@@ -520,7 +491,6 @@ export function SkillAssessmentModal({
                   </div>
                 </div>
 
-                {/* Center: Golden Verified Stamp */}
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 rounded-full border border-surface-border bg-white flex flex-col items-center justify-center shadow-xs">
                     <SolarIcon name="diploma-verified-linear" className="w-7 h-7 text-ink mb-0.5" />
@@ -533,7 +503,6 @@ export function SkillAssessmentModal({
                   </span>
                 </div>
 
-                {/* Right: Date of Conferral */}
                 <div className="text-right font-mono">
                   <div className="text-xs font-bold text-ink mb-1">
                     {certifiedDate || "OCTOBER 11, 2026"}
@@ -545,7 +514,6 @@ export function SkillAssessmentModal({
               </div>
             </div>
 
-            {/* Action Toolbar (Hidden in print) */}
             <div className="flex items-center justify-between pt-2 print:hidden">
               <button
                 type="button"
@@ -584,6 +552,5 @@ export function SkillAssessmentModal({
   );
 }
 
-// Backward-compatibility alias for existing references
 export const GuildExamModal = SkillAssessmentModal;
 

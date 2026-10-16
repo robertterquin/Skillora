@@ -19,16 +19,11 @@ export interface StepBlueprint {
   proTip: string;
 }
 
-/**
- * Intelligently generates informative, actionable deliberate practice blueprints
- * and verifiable quality checkpoints for any skill step.
- */
 export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprint {
   const slug = `${skill.slug || ""} ${skill.title || ""} ${step.title || ""}`.toLowerCase();
   const stepNum = step.step_number || 1;
   const rawInstructions = step.instructions || "";
 
-  // 1. Acoustic Fingerstyle Guitar
   if (slug.includes("guitar") || slug.includes("fingerstyle")) {
     if (stepNum === 1) {
       return {
@@ -130,7 +125,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 2. Cyrillic / Language Script
   if (slug.includes("cyrillic") || slug.includes("russian") || slug.includes("alphabet")) {
     if (stepNum === 1) {
       return {
@@ -232,7 +226,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 3. Sourdough & Artisan Baking
   if (slug.includes("bread") || slug.includes("sourdough") || slug.includes("dough") || slug.includes("baking")) {
     if (stepNum === 1) {
       return {
@@ -334,7 +327,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 4. Rubik's Cube & Speedcubing
   if (slug.includes("rubik") || slug.includes("cube") || slug.includes("puzzle")) {
     if (stepNum === 1) {
       return {
@@ -436,7 +428,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 5. Juggling
   if (slug.includes("juggle") || slug.includes("juggling")) {
     if (stepNum === 1) {
       return {
@@ -538,7 +529,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 6. Coding / Software Development
   if (
     slug.includes("code") ||
     slug.includes("coding") ||
@@ -575,7 +565,6 @@ export function deriveStepBlueprint(step: SkillStep, skill: Skill): StepBlueprin
     };
   }
 
-  // 7. Universal Dynamic Blueprint for any other skill
   const sentences = rawInstructions
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
@@ -624,7 +613,6 @@ export function StepActionBlueprint({
   const blueprint = deriveStepBlueprint(step, skill);
   const [checkedMap, setCheckedMap] = useState<Record<string, boolean>>({});
 
-  // Reset checked map when step changes
   useEffect(() => {
     setCheckedMap({});
   }, [step.id]);
@@ -646,7 +634,6 @@ export function StepActionBlueprint({
     });
   };
 
-  // Find first video resource if available
   const videoResource: LearningResource | undefined = step.resources?.find(
     (r) => r.resource_type === "video" || r.url.includes("youtube.com") || r.url.includes("youtu.be")
   );
@@ -656,7 +643,6 @@ export function StepActionBlueprint({
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 sm:p-5 bg-surface border border-surface-border rounded-2xl corner-ticks text-ink shadow-xs select-none transition-all"
     >
-      {/* 1. TOP SPEC RIBBON */}
       <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-muted uppercase mb-3 pb-2.5 border-b border-surface-border">
         <span className="flex items-center gap-1.5 font-bold">
           <SolarIcon name="clipboard-check-linear" className="w-3.5 h-3.5 text-accent-vermilion" />
@@ -671,7 +657,6 @@ export function StepActionBlueprint({
         </span>
       </div>
 
-      {/* 2. CORE OBJECTIVE (Recessed warm-stone plate) */}
       <div className="p-3 bg-surface-subtle border border-surface-border/80 rounded-xl text-left mb-3">
         <div className="flex items-center gap-1.5 text-3xs font-mono font-bold text-ink-muted uppercase mb-1">
           <SolarIcon name="target-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
@@ -682,7 +667,6 @@ export function StepActionBlueprint({
         </p>
       </div>
 
-      {/* 3. INTERACTIVE CHECKPOINTS MATRIX */}
       <div className="space-y-2 mb-3">
         {blueprint.checkpoints.map((chk, idx) => {
           const isChecked = Boolean(checkedMap[chk.id]);
@@ -728,7 +712,6 @@ export function StepActionBlueprint({
         })}
       </div>
 
-      {/* 4. UTILITY TIER: MASTERY BENCHMARK & VIDEO LAUNCHER */}
       <div className="space-y-2 pt-1 border-t border-surface-border/60">
         <div
           className={`p-2.5 rounded-xl border text-left flex items-start gap-2 text-2xs transition ${
@@ -748,7 +731,6 @@ export function StepActionBlueprint({
           </div>
         </div>
 
-        {/* Video Tutorial Launcher Quick-Pill (if video exists) */}
         {videoResource && onOpenVideo && (
           <div className="flex items-center justify-between pt-1">
             <button

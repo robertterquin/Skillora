@@ -11,16 +11,12 @@ import {
   playWaterDrop,
 } from "@/lib/workbench-audio";
 
-// ============================================================================
-// 1. LIVE PRACTICE METRONOME (Guitar, Rhythm, Typing, Speed Drills)
-// ============================================================================
 export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) {
   const [bpm, setBpm] = useState(initialBpm);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentBeat, setCurrentBeat] = useState(0); // 0 to 3 for 4/4 time
+  const [currentBeat, setCurrentBeat] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Play metronome clicks and track beat count
   useEffect(() => {
     if (!isPlaying) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -37,7 +33,6 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
       });
     }, intervalMs);
 
-    // Initial first beat tick
     playMetronomeClick(true);
 
     return () => {
@@ -63,9 +58,7 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
         <span className="text-brand-600 font-bold">4/4 TIME</span>
       </div>
 
-      {/* Main Beat & Tempo Controls */}
       <div className="flex items-center justify-between gap-4">
-        {/* Play/Pause Button */}
         <button
           type="button"
           onClick={() => {
@@ -85,7 +78,6 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
           <span>{isPlaying ? "HALT" : "START TEMPO"}</span>
         </button>
 
-        {/* BPM Counter Display & Steppers */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -135,7 +127,6 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
         </div>
       </div>
 
-      {/* 4-Beat Visual Pulsing LEDs */}
       <div className="mt-4 pt-3 border-t border-surface-border/60 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {[0, 1, 2, 3].map((b) => {
@@ -167,7 +158,6 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
           })}
         </div>
 
-        {/* Quick Tempo Presets */}
         <div className="flex items-center gap-1">
           {[
             { label: "Slow", val: 55 },
@@ -196,9 +186,6 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
   );
 }
 
-// ============================================================================
-// 2. TACTILE 15° ANGLE GAUGE (Knife Sharpening / Honing)
-// ============================================================================
 export function KnifeAngleGauge() {
   const [angle, setAngle] = useState(15);
   const [strokesCompleted, setStrokesCompleted] = useState(0);
@@ -228,36 +215,27 @@ export function KnifeAngleGauge() {
         </span>
       </div>
 
-      {/* Interactive Blade Cross-Section Diagram */}
       <div className="relative h-28 bg-white border border-surface-border rounded-xl p-3 flex flex-col justify-between overflow-hidden">
-        {/* Whetstone Base */}
         <div className="absolute bottom-0 inset-x-0 h-7 bg-neutral-200 border-t border-neutral-300 flex items-center justify-between px-3 text-3xs font-mono text-neutral-600 uppercase">
           <span>#1000 GRIT WATERSTONE SURFACE</span>
           <span>FLAT HORIZONTAL PLANE (0°)</span>
         </div>
 
-        {/* Dynamic Blade Vector Pivot */}
         <div className="relative w-full h-16 flex items-end justify-center">
           <svg className="w-64 h-20 overflow-visible" viewBox="0 0 200 60">
-            {/* Horizontal Waterstone Line */}
             <line x1="10" y1="50" x2="190" y2="50" stroke="#94A3B8" strokeWidth="2" strokeDasharray="3 3" />
 
-            {/* Knife Blade Pivot Angle */}
             <g transform={`rotate(-${angle}, 100, 50)`}>
-              {/* Blade Body */}
               <polygon
                 points="100,50 170,44 175,36 100,48"
                 fill="#CBD5E1"
                 stroke="#334155"
                 strokeWidth="1.5"
               />
-              {/* Razor Apex Edge */}
               <line x1="98" y1="50" x2="102" y2="50" stroke="#2563EB" strokeWidth="3" />
-              {/* Coin stack spacer indicator */}
               <rect x="155" y="44" width="12" height="6" fill="#F59E0B" rx="1" />
             </g>
 
-            {/* Angle Arc Indicator */}
             <path
               d={`M 130 50 A 30 30 0 0 0 ${100 + 30 * Math.cos((-angle * Math.PI) / 180)} ${
                 50 + 30 * Math.sin((-angle * Math.PI) / 180)
@@ -269,7 +247,6 @@ export function KnifeAngleGauge() {
           </svg>
         </div>
 
-        {/* Live Tactile Angle Badge */}
         <div className="absolute top-2 right-2 flex items-center gap-1.5">
           <div
             className={`px-2.5 py-0.5 rounded-lg border text-xs font-mono font-bold ${
@@ -285,7 +262,6 @@ export function KnifeAngleGauge() {
         </div>
       </div>
 
-      {/* Interactive Angle Slider & Coin Guide */}
       <div className="mt-3 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-2xs text-ink-muted">
@@ -315,7 +291,6 @@ export function KnifeAngleGauge() {
         />
 
         <div className="flex items-center justify-between pt-1">
-          {/* Quick Snap Buttons */}
           <div className="flex items-center gap-1.5">
             <button
               type="button"
@@ -339,7 +314,6 @@ export function KnifeAngleGauge() {
             </button>
           </div>
 
-          {/* Tactile Sharpening Stroke Simulator */}
           <button
             type="button"
             onClick={handleStroke}
@@ -350,7 +324,6 @@ export function KnifeAngleGauge() {
           </button>
         </div>
 
-        {/* Verdict Explainer */}
         <p className="text-2xs text-ink-muted leading-tight pt-1">
           {angle < 13
             ? "Too flat: The blade face scratches against the stone without creating a sharp cutting bevel."
@@ -363,9 +336,6 @@ export function KnifeAngleGauge() {
   );
 }
 
-// ============================================================================
-// 3. SHOT TIMER & EXTRACTION DIAL (Espresso 1:2 Brew Ratio)
-// ============================================================================
 export function EspressoExtractionSimulator() {
   const [isRunning, setIsRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -380,7 +350,6 @@ export function EspressoExtractionSimulator() {
     timerRef.current = setInterval(() => {
       setSeconds((prev) => {
         const next = Math.round((prev + 0.1) * 10) / 10;
-        // Periodic drop sounds
         if (next <= 6 && Math.round(next * 10) % 15 === 0) {
           playWaterDrop();
         } else if (next > 6 && next <= 30 && Math.round(next * 10) % 8 === 0) {
@@ -413,7 +382,6 @@ export function EspressoExtractionSimulator() {
     setSeconds(0);
   };
 
-  // Dynamic Yield Calculation (18g dry in -> ~36g out around 28-30s)
   const calcYield = () => {
     if (seconds <= 4) return 0;
     if (seconds <= 7) return Math.min(3, (seconds - 4) * 1.0);
@@ -437,9 +405,7 @@ export function EspressoExtractionSimulator() {
         <span className="text-amber-700 font-bold">DOSE: 18.0G &rarr; YIELD: 36.0G</span>
       </div>
 
-      {/* Main Stopwatch Stage */}
       <div className="grid grid-cols-2 gap-3 my-2">
-        {/* Real-time Extraction Timer */}
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-center">
           <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
             SHOT ELAPSED TIME
@@ -466,7 +432,6 @@ export function EspressoExtractionSimulator() {
           </span>
         </div>
 
-        {/* Live Liquid Yield Scale */}
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-center">
           <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
             SCALE WEIGHT (LIQUID)
@@ -480,7 +445,6 @@ export function EspressoExtractionSimulator() {
         </div>
       </div>
 
-      {/* Extraction Phase Progress Bar */}
       <div className="space-y-1 mb-3">
         <div className="h-2 w-full bg-surface-muted rounded-full overflow-hidden flex">
           <div
@@ -496,7 +460,6 @@ export function EspressoExtractionSimulator() {
         </div>
       </div>
 
-      {/* Control Actions */}
       <div className="flex items-center justify-between gap-3 pt-2 border-t border-surface-border/60">
         <div className="flex items-center gap-2">
           <button
@@ -521,7 +484,6 @@ export function EspressoExtractionSimulator() {
           </button>
         </div>
 
-        {/* Verdict Badge */}
         {seconds > 0 && !isRunning && (
           <div
             className={`text-2xs font-mono font-bold px-2.5 py-1 rounded-lg ${
@@ -538,9 +500,6 @@ export function EspressoExtractionSimulator() {
   );
 }
 
-// ============================================================================
-// 4. INTERACTIVE PHONETIC SOUNDBOARD (Cyrillic, Languages)
-// ============================================================================
 export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?: string) => void }) {
   const [selectedLetter, setSelectedLetter] = useState<{
     char: string;
@@ -611,7 +570,6 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
         <span className="text-brand-600 font-bold">CLICK TILE TO HEAR</span>
       </div>
 
-      {/* Phonetic Tiles by Category */}
       <div className="space-y-3">
         {categories.map((cat) => (
           <div key={cat.name}>
@@ -651,7 +609,6 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
         ))}
       </div>
 
-      {/* Active Selected Anchor & Audio Replay */}
       {selectedLetter && (
         <div className="mt-3 p-3 bg-white border border-surface-border rounded-xl flex items-center justify-between gap-3">
           <div>
@@ -685,9 +642,6 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
   );
 }
 
-// ============================================================================
-// 5. CODE MILESTONE & TEST RUNNER TERMINAL (Software, Web, Algorithms)
-// ============================================================================
 export function CodeMilestoneTerminalSimulator({
   stepTitle,
   targetMilestones = 5,
@@ -696,7 +650,7 @@ export function CodeMilestoneTerminalSimulator({
   targetMilestones?: number;
 }) {
   const [milestones, setMilestones] = useState(0);
-  const [timerSeconds, setTimerSeconds] = useState(1200); // 20m deliberate focus sprint
+  const [timerSeconds, setTimerSeconds] = useState(1200);
   const [timerActive, setTimerActive] = useState(false);
   const [isTestRunning, setIsTestRunning] = useState(false);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
@@ -783,7 +737,6 @@ export function CodeMilestoneTerminalSimulator({
         </span>
       </div>
 
-      {/* Mini Monospace Terminal Display */}
       <div className="p-3 bg-black/70 rounded-xl border border-stone-800 text-2xs leading-relaxed mb-3 space-y-1 overflow-x-auto text-stone-300">
         {terminalLogs.map((log, i) => (
           <div
@@ -807,7 +760,6 @@ export function CodeMilestoneTerminalSimulator({
       </div>
 
       <div className="grid grid-cols-2 gap-3 my-2">
-        {/* Milestone Logger */}
         <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
           <span className="text-3xs font-mono font-bold text-stone-400 uppercase">
             CODE MILESTONES
@@ -842,7 +794,6 @@ export function CodeMilestoneTerminalSimulator({
           </button>
         </div>
 
-        {/* 20-min Focus Sprint Clock */}
         <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
           <span className="text-3xs font-mono font-bold text-stone-400 uppercase">
             20M FOCUS SPRINT
@@ -871,9 +822,6 @@ export function CodeMilestoneTerminalSimulator({
   );
 }
 
-// ============================================================================
-// 6. UNIVERSAL FOCUS REPETITION DRILL (Juggling, Rubik's Cube, Custom Skills)
-// ============================================================================
 export function FocusRepetitionDrill({
   stepTitle,
   targetReps = 10,
@@ -948,7 +896,6 @@ export function FocusRepetitionDrill({
       </div>
 
       <div className="grid grid-cols-2 gap-3 my-2">
-        {/* Rep / Drill Counter */}
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-between">
           <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
             {metricHeading}
@@ -977,7 +924,6 @@ export function FocusRepetitionDrill({
           </span>
         </div>
 
-        {/* 60s Focus Interval Timer */}
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-between">
           <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
             60-SEC DRILL CLOCK

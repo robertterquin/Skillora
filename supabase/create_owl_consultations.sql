@@ -1,9 +1,3 @@
--- ==============================================================================
--- Skillora: Archimedes Owl Consultations & Cloud Chat History Table
--- Run this in your Supabase Dashboard -> SQL Editor
--- ==============================================================================
-
--- 1. Create table for storing conversation history per user account
 create table if not exists public.owl_consultations (
   id text primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -14,14 +8,11 @@ create table if not exists public.owl_consultations (
   updated_at timestamptz default now() not null
 );
 
--- 2. Performance index for instant retrieval ordered by last updated
 create index if not exists idx_owl_consultations_user_updated
   on public.owl_consultations(user_id, updated_at desc);
 
--- 3. Enable Row Level Security (RLS)
 alter table public.owl_consultations enable row level security;
 
--- 4. RLS Policies: Authenticated users have full control over their own consultations
 drop policy if exists "Users can view own consultations" on public.owl_consultations;
 create policy "Users can view own consultations" on public.owl_consultations
   for select using (auth.uid() = user_id);

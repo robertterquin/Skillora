@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
-    // Attempt execution via Supabase Edge Function first
     const edgeRes = await invokeEdgeFunction("owl-chat", body);
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
@@ -57,14 +56,12 @@ export async function POST(req: NextRequest) {
 
     const reply = parseOwlReply(content, request.forceMode);
 
-    // Conversation and suggestion turns: nothing to enrich or persist.
     if (reply.mode !== "curriculum" || !reply.skillData) {
       return NextResponse.json(toOwlReply(reply, null));
     }
 
     const skillData = reply.skillData;
 
-    // If the model picked a catalog skill (it is given exact catalog titles), serve the curated version.
     const catalogMatch = INITIAL_SKILLS.find(
       (s) => s.title.toLowerCase() === String(skillData.title || "").trim().toLowerCase()
     );
@@ -112,11 +109,9 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    // Auto-resolve real, verified YouTube video tutorials for newly generated skills
     const finalSteps = await enrichStepsWithYouTube(formattedSkill.title, initialSteps);
     formattedSkill.steps = finalSteps;
 
-    // Persist to Supabase using service role client
     try {
       const admin = createAdminClient();
       await admin.from("skills").upsert(
@@ -147,7 +142,6 @@ export async function POST(req: NextRequest) {
           { onConflict: "id" }
         );
 
-        // Persist real video learning_resources to Supabase
         const resourcesToUpsert: {
           id: string;
           step_id: string;

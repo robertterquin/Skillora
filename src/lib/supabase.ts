@@ -41,7 +41,6 @@ export function createAdminClient(): SupabaseClient {
   });
 }
 
-// Singleton browser client instance (similar to Hapag's src/lib/supabase.ts)
 let clientInstance: SupabaseClient | null = null;
 export function getSupabase(): SupabaseClient {
   if (typeof window === "undefined") {

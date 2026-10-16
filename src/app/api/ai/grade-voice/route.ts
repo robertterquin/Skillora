@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Audio file or target text is required" }, { status: 400 });
     }
 
-    // Attempt execution via Supabase Edge Function first
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
@@ -38,7 +37,6 @@ export async function POST(req: NextRequest) {
           return NextResponse.json(edgeData);
         }
       } catch (e) {
-        // Fall back to local OpenAI
       }
     }
 
@@ -61,14 +59,12 @@ export async function POST(req: NextRequest) {
         transcribedText = transcription.text.trim();
       } catch (whisperErr) {
         console.warn("Whisper transcription error:", whisperErr);
-        // Fallback simulation if local audio format issues occur
         transcribedText = expectedText;
       }
     } else {
       transcribedText = expectedText;
     }
 
-    // Now grade with GPT-4o-mini
     const gradingPrompt = `You are a native phonetics and pronunciation evaluator for language learners in Skillora.
 Expected phrase / letters: "${expectedText}"
 Learner's spoken audio transcription: "${transcribedText}"
@@ -77,7 +73,7 @@ Evaluate the pronunciation and accuracy.
 Respond with JSON matching this schema:
 {
   "transcribedText": "${transcribedText}",
-  "matchScore": 92, // Integer 0 to 100
+  "matchScore": 92,
   "verdict": "Mastered" | "Near Native" | "Practicing",
   "feedback": "1 sentence congratulating or pointing out what was heard.",
   "phoneticTip": "1 practical mouth/tongue/vowel placement tip for improvement."

@@ -37,7 +37,6 @@ export interface DisciplinePracticeProfile {
     solid: { title: string; desc: string };
     effortless: { title: string; desc: string };
   };
-  // Technique Coach Tray fields
   coachButtonLabel: string;
   coachTitle: string;
   coachInputPlaceholder: string;
@@ -47,10 +46,6 @@ export interface DisciplinePracticeProfile {
   mnemonicAnchorLabel: string;
 }
 
-/**
- * Generates 3 contextual, high-value coach suggestion prompts
- * tailored to the exact course domain, skill title, and current step.
- */
 export function generateCourseCoachSuggestions(
   category: DisciplineCategory,
   skill?: Skill | null,
@@ -286,10 +281,6 @@ export function generateCourseCoachSuggestions(
   }
 }
 
-/**
- * Intelligently analyzes any discipline, skill metadata, and current step
- * to return an accurate, contextual deliberate practice profile.
- */
 export function getDisciplinePracticeProfile(
   skill?: Skill | null,
   step?: SkillStep | null
@@ -309,7 +300,6 @@ export function getDisciplinePracticeProfile(
     .join(" ")
     .toLowerCase();
 
-  // 1. Coding / Tech / Software Engineering / Python / JS
   const isCoding =
     skill.category_id === "44444444-4444-4444-4444-444444444444" ||
     skill.category_id === "cat-tech" ||
@@ -352,7 +342,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 2. Touch Typing
   const isTyping =
     /\b(typing|touch type|touch-typing|keyboard|wpm|home row|keystroke)\b/.test(
       textToScan
@@ -395,7 +384,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 3. Languages & Alphabets
   const isLanguage =
     skill.category_id === "22222222-2222-2222-2222-222222222222" ||
     skill.category_id === "cat-language" ||
@@ -438,7 +426,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 4. Espresso & Coffee
   const isCoffee = /\b(espresso|coffee|dialing|extraction|barista|latte|pour-over|grinder|crema)\b/.test(
     textToScan
   );
@@ -478,7 +465,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 5. Knife Sharpening
   const isKnife = /\b(knife|sharpen|whetstone|blade|burr|apex|grit|water stone|bevel)\b/.test(
     textToScan
   );
@@ -518,7 +504,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 6. Sourdough & Baking / Culinary
   const isBaking = /\b(sourdough|bread|ferment|dough|baking|proofing|starter|cooking|culinary|chef|recipe|roasting|pan-sear)\b/.test(
     textToScan
   );
@@ -558,7 +543,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 7. Rubik's Cube & Spatial Puzzles
   const isPuzzle = /\b(rubik|cube|puzzle|cfop|f2l|oll|pll|fingertrick|chess|sudoku)\b/.test(
     textToScan
   );
@@ -598,7 +582,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 8. Guitar & Musical Instruments
   const isMusic =
     skill.category_id === "11111111-1111-1111-1111-111111111111" ||
     skill.category_id === "cat-music" ||
@@ -643,7 +626,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 9. Juggling & Hand-Eye Coordination
   const isJuggling = /\b(juggle|juggling|cascade|toss|catch|coordination)\b/.test(
     textToScan
   );
@@ -685,7 +667,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 10. Design, UI/UX, & Photography
   const isDesign = /\b(design|ui|ux|figma|graphic|visual|layout|typography|photo|photography|camera|lens|lighting|sketch|drawing|illustration|render|color theory)\b/.test(
     textToScan
   );
@@ -725,7 +706,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 11. Writing, Copywriting, & Storytelling
   const isWriting = /\b(writing|writer|copywriting|story|storytelling|author|novel|blog|screenplay|essay|prose|editing|content creation|scriptwriting)\b/.test(
     textToScan
   );
@@ -765,7 +745,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 12. Public Speaking, Speech & Communication
   const isCommunication = /\b(speaking|speech|presentation|pitch|debate|public speaking|communication|negotiation|interview|conversation|charisma)\b/.test(
     textToScan
   );
@@ -807,7 +786,6 @@ export function getDisciplinePracticeProfile(
     };
   }
 
-  // 13. Business, Finance & Strategy
   const isBusiness = /\b(finance|investing|stocks|accounting|budget|business|product|marketing|seo|sales|startup|management|strategy|economics)\b/.test(
     textToScan
   );

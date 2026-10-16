@@ -33,16 +33,12 @@ export default function LandingPage() {
   return (
     <div className="flex-1 flex flex-col bg-canvas text-ink selection:bg-brand-500 selection:text-white">
 
-
-      {/* Hero Section inspired by Image 1 (Pallet Ross Composition) */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 overflow-hidden text-center">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Main Hero Headline */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
             A place to master your next <span className="font-serif italic font-normal text-ink/90">craft</span>.
           </h1>
 
-          {/* Fanned Tactile Deck of Skill Cards with Floating @learner Tags */}
           <div className="my-6 sm:my-8" id="skills">
             <HeroFanDeck
               skills={skills}
@@ -50,12 +46,10 @@ export default function LandingPage() {
             />
           </div>
 
-          {/* Minimalist Subtitle */}
           <p className="text-base sm:text-lg text-ink-muted max-w-xl mx-auto font-normal leading-relaxed mb-8">
             Master practical crafts, arts, and techniques through short, focused daily sessions.
           </p>
 
-          {/* Hero CTAs: Matching the pill buttons in Image 1 */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/signup"
@@ -74,7 +68,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* The 3 Pillars of Skillora (Ultra-Minimalist, No Emojis or Icon Boxes) */}
       <section id="methodology" className="py-16 sm:py-24 bg-canvas border-t border-surface-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -135,7 +128,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Minimalist Footer */}
       <footer className="border-t border-surface-border bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
@@ -160,7 +152,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Curriculum View Modal for Landing Page */}
       <AnimatePresence>
         {activeModalSkill && (
           <SkillSyllabusModal

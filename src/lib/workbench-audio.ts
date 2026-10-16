@@ -1,4 +1,3 @@
-// Web Audio API physical workbench sounds (Zero external assets needed)
 
 let audioCtx: AudioContext | null = null;
 
@@ -29,7 +28,6 @@ export function setSoundEnabled(enabled: boolean) {
   localStorage.setItem("skillora_sound_enabled", String(enabled));
 }
 
-// 1. Crisp Leica-style mechanical shutter / tactile switch click
 export function playMechanicalClick() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -53,11 +51,9 @@ export function playMechanicalClick() {
     osc.start(now);
     osc.stop(now + 0.016);
   } catch {
-    // ignore
   }
 }
 
-// 2. Resonant tuning-fork chime for completing steps or daily routines
 export function playChime() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -69,8 +65,8 @@ export function playChime() {
     const gain = ctx.createGain();
 
     osc.type = "triangle";
-    osc.frequency.setValueAtTime(587.33, now); // D5
-    osc.frequency.setValueAtTime(880, now + 0.07); // A5
+    osc.frequency.setValueAtTime(587.33, now);
+    osc.frequency.setValueAtTime(880, now + 0.07);
 
     gain.gain.setValueAtTime(0.08, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
@@ -81,11 +77,9 @@ export function playChime() {
     osc.start(now);
     osc.stop(now + 0.36);
   } catch {
-    // ignore
   }
 }
 
-// 3. Tactile wooden thud for card flips or modal switches
 export function playWoodenThud() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -109,11 +103,9 @@ export function playWoodenThud() {
     osc.start(now);
     osc.stop(now + 0.035);
   } catch {
-    // ignore
   }
 }
 
-// 4. Metronome Woodblock Click for practice tempo
 export function playMetronomeClick(accent: boolean = false) {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -138,11 +130,9 @@ export function playMetronomeClick(accent: boolean = false) {
     osc.start(now);
     osc.stop(now + 0.022);
   } catch {
-    // ignore
   }
 }
 
-// 5. Whetstone scrape audio simulation
 export function playWhetstoneSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -150,7 +140,6 @@ export function playWhetstoneSound() {
 
   try {
     const now = ctx.currentTime;
-    // Buffer with pink noise filtered through bandpass
     const bufferSize = ctx.sampleRate * 0.08;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -176,11 +165,9 @@ export function playWhetstoneSound() {
 
     noise.start(now);
   } catch {
-    // ignore
   }
 }
 
-// 6. Water / Espresso drip audio
 export function playWaterDrop() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -204,11 +191,9 @@ export function playWaterDrop() {
     osc.start(now);
     osc.stop(now + 0.045);
   } catch {
-    // ignore
   }
 }
 
-// 7. Authentic Japanese Hankō Seal / Wax Stamp heavy desk thud
 export function playStampThud() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -217,7 +202,6 @@ export function playStampThud() {
   try {
     const now = ctx.currentTime;
 
-    // 1. Initial wooden block strike click
     const clickOsc = ctx.createOscillator();
     const clickGain = ctx.createGain();
     clickOsc.type = "triangle";
@@ -230,7 +214,6 @@ export function playStampThud() {
     clickOsc.start(now);
     clickOsc.stop(now + 0.035);
 
-    // 2. Heavy acoustic desk resonance thud
     const thudOsc = ctx.createOscillator();
     const thudGain = ctx.createGain();
     thudOsc.type = "sine";
@@ -243,8 +226,6 @@ export function playStampThud() {
     thudOsc.start(now + 0.01);
     thudOsc.stop(now + 0.13);
   } catch {
-    // ignore
   }
 }
-
 

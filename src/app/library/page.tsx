@@ -24,17 +24,14 @@ export default function SkillLibraryPage() {
   const supabase = createClient();
   const { user: currentUser } = useAuth();
 
-  // Consultation sidebar toggle (defaults to true on desktop)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Auto-collapse on small screens initially
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setIsSidebarOpen(false);
     }
   }, []);
 
-  // Prevent outer window / document scrolling in the library workbench
   useEffect(() => {
     const originalHtmlOverflow = document.documentElement.style.overflow;
     const originalBodyOverflow = document.body.style.overflow;
@@ -51,13 +48,11 @@ export default function SkillLibraryPage() {
     };
   }, []);
 
-  // Enrolled skills tracking
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
   const [enrolledSkills, setEnrolledSkills] = useState<Skill[]>([]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Check existing enrollments
   useEffect(() => {
     const init = async () => {
       const user = currentUser;
@@ -68,18 +63,15 @@ export default function SkillLibraryPage() {
         try {
           localIds = (JSON.parse(savedEnrolled) as string[]).map(normalizeSkillId);
         } catch {
-          // ignore
         }
       }
 
-      // Load custom AI skills
       const savedCustom = localStorage.getItem("skillora_custom_ai_skills");
       let customSkills: Skill[] = [];
       if (savedCustom) {
         try {
           customSkills = JSON.parse(savedCustom);
         } catch {
-          // ignore
         }
       }
       const allKnown = [...INITIAL_SKILLS, ...customSkills];
@@ -115,7 +107,6 @@ export default function SkillLibraryPage() {
     init();
   }, [supabase, currentUser]);
 
-  // Handle skill enrollment to LocalStorage and Supabase backend
   const handleEnrollSkill = async (skillToEnroll: Skill): Promise<void> => {
     const normId = normalizeSkillId(skillToEnroll.id);
     const updatedSkill = { ...skillToEnroll, id: normId };
@@ -168,7 +159,6 @@ export default function SkillLibraryPage() {
     [enrolledSkills]
   );
 
-  // Hook-powered Archimedes dialogue & multi-session state
   const {
     consultations,
     activeConsultationId,
@@ -198,7 +188,6 @@ export default function SkillLibraryPage() {
     onSkillEnrolled: handleEnrollSkill,
   });
 
-  // Keyboard shortcuts (⌘B to toggle sidebar, ⌘N to start new consultation)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
@@ -213,7 +202,6 @@ export default function SkillLibraryPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [startNewConsultation]);
 
-  // Scroll to newest message
   useEffect(() => {
     if (messages.length > 1 || isThinking) {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -249,9 +237,7 @@ export default function SkillLibraryPage() {
 
   return (
     <div className="flex-1 flex flex-col h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-4rem)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
-      {/* Main Workspace: Sidebar + Chat Canvas */}
       <div className="flex-1 flex h-full overflow-hidden min-h-0 relative">
-        {/* Past Inquiries Collapsible Sidebar */}
         <ConsultationSidebar
           consultations={consultations}
           activeConsultationId={activeConsultationId}
@@ -264,16 +250,13 @@ export default function SkillLibraryPage() {
           onDelete={deleteConsultation}
         />
 
-        {/* Main Chat Canvas with Dedicated Internal Scroll */}
         <main
           className={`flex-1 flex flex-col h-full min-h-0 overflow-hidden relative transition-[margin] duration-300 ease-in-out ${
             isSidebarOpen ? "md:ml-64" : "md:ml-0"
           }`}
         >
-          {/* Top Bar: Always Pinned at Top of Workspace */}
           <div className="shrink-0 sticky top-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/95 backdrop-blur-md z-20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              {/* Minimalist Icon-Only Sidebar Toggle (Only shown when sidebar is collapsed) */}
               {!isSidebarOpen && (
                 <button
                   type="button"
@@ -286,7 +269,6 @@ export default function SkillLibraryPage() {
                 </button>
               )}
 
-              {/* Active Thread Title Pill */}
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-surface-border text-2xs text-ink-secondary truncate max-w-[180px] sm:max-w-xs shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald shrink-0" />
                 <span className="truncate font-sans font-medium text-ink">
@@ -295,7 +277,6 @@ export default function SkillLibraryPage() {
               </div>
             </div>
 
-            {/* Right: Studio Link */}
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 href="/dashboard"
@@ -306,11 +287,9 @@ export default function SkillLibraryPage() {
             </div>
           </div>
 
-          {/* Scrollable Dialogue Stream */}
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 min-h-0">
             <div className="max-w-3xl w-full mx-auto flex flex-col min-h-full justify-between">
               {!hasUserEngaged ? (
-                /* Empty State: Center Hero Archimedes */
                 <section className="flex flex-col items-center text-center my-auto py-8">
                   <InteractiveOwlAvatar
                     isListening={isListening}
@@ -332,7 +311,6 @@ export default function SkillLibraryPage() {
                     Explore curated disciplines or design a custom practice plan.
                   </p>
 
-                  {/* Voice Audio Toggle */}
                   <div className="mt-4 flex items-center gap-2">
                     <button
                       type="button"
@@ -353,7 +331,6 @@ export default function SkillLibraryPage() {
                   </div>
                 </section>
               ) : (
-                /* Active Conversation Stream */
                 <section className="my-2 space-y-6 flex-1">
                   {messages.map((msg, index) => {
                     const isLatest = index === messages.length - 1;
@@ -370,10 +347,8 @@ export default function SkillLibraryPage() {
                       );
                     }
 
-                    // Unboxed Archimedes Response
                     return (
                       <div key={msg.id} className="space-y-3.5 my-6">
-                        {/* Author Header */}
                         <div className="flex items-center justify-between text-2xs font-mono text-ink-muted uppercase tracking-wider pb-1.5 border-b border-surface-border/50">
                           <div className="flex items-center gap-2">
                             <SolarIcon
@@ -395,12 +370,10 @@ export default function SkillLibraryPage() {
                           )}
                         </div>
 
-                        {/* Editorial Body Text */}
                         <div className="text-ink text-xs sm:text-sm md:text-base leading-relaxed font-sans whitespace-pre-wrap pl-0.5">
                           {msg.text}
                         </div>
 
-                        {/* Suggestions Mode: Tailored Pathway Cards */}
                         {msg.suggestions && msg.suggestions.length > 0 && (
                           <div className="pt-2">
                             <SuggestionCards
@@ -413,7 +386,6 @@ export default function SkillLibraryPage() {
                           </div>
                         )}
 
-                        {/* Curriculum Mode: Single 4-Step Practice Track */}
                         {msg.skill && (
                           <div className="pt-2">
                             <CurriculumCard
@@ -426,7 +398,6 @@ export default function SkillLibraryPage() {
                           </div>
                         )}
 
-                        {/* Quick Reply Chips (shown under latest response) */}
                         {isLatest && msg.quickReplies && (
                           <div className="pt-2">
                             <QuickReplies
@@ -453,10 +424,8 @@ export default function SkillLibraryPage() {
             </div>
           </div>
 
-          {/* Sticky Bottom Input Dock */}
           <div className="shrink-0 sticky bottom-0 px-4 sm:px-6 py-3 border-t border-surface-border bg-canvas/95 backdrop-blur-md z-20">
             <div className="max-w-3xl w-full mx-auto">
-              {/* Quick Prompt Suggestions */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 no-scrollbar">
                 <span className="text-2xs text-ink-muted font-mono whitespace-nowrap pl-0.5">
                   Inspiration:
@@ -473,9 +442,7 @@ export default function SkillLibraryPage() {
                 ))}
               </div>
 
-              {/* Unified Voice & Text Input Bar */}
               <div className="p-1.5 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all">
-                {/* Microphone Voice Button */}
                 <button
                   type="button"
                   onClick={toggleVoiceListening}
@@ -493,7 +460,6 @@ export default function SkillLibraryPage() {
                   />
                 </button>
 
-                {/* Text Input */}
                 <input
                   type="text"
                   value={inputText}
@@ -508,7 +474,6 @@ export default function SkillLibraryPage() {
                   className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
                 />
 
-                {/* Send Button */}
                 <button
                   type="button"
                   disabled={isThinking || !inputText.trim()}

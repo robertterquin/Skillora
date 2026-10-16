@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Question is required" }, { status: 400 });
     }
 
-    // Attempt execution via Supabase Edge Function first
     const edgeRes = await invokeEdgeFunction("coach", {
       skillTitle,
       stepTitle,

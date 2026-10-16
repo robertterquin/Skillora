@@ -1,8 +1,3 @@
--- ==============================================================================
--- Skillora Database Schema & Row Level Security (Supabase PostgreSQL)
--- ==============================================================================
-
--- 1. User Profiles (Synced automatically with auth.users)
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text not null,
@@ -12,7 +7,6 @@ create table if not exists public.profiles (
   updated_at timestamptz default now() not null
 );
 
--- 2. Categories Table (e.g. Music, Languages, Tech, Crafts, Daily Life)
 create table if not exists public.categories (
   id uuid default gen_random_uuid() primary key,
   name text not null unique,
@@ -23,7 +17,6 @@ create table if not exists public.categories (
   created_at timestamptz default now() not null
 );
 
--- 3. Skills Table
 create table if not exists public.skills (
   id uuid default gen_random_uuid() primary key,
   category_id uuid references public.categories(id) on delete set null,
@@ -32,13 +25,11 @@ create table if not exists public.skills (
   summary text not null,
   difficulty text check (difficulty in ('beginner', 'intermediate', 'advanced', 'all-levels')) default 'beginner',
   estimated_hours numeric(5,2) default 1.0,
-  time_commitment_label text not null, -- e.g. "15 mins/day for 2 weeks", "2 hours total"
-  is_featured boolean default false,
+  time_commitment_label text not null,   is_featured boolean default false,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
 
--- 4. Skill Steps Table (Sequential syllabus)
 create table if not exists public.skill_steps (
   id uuid default gen_random_uuid() primary key,
   skill_id uuid references public.skills(id) on delete cascade not null,
@@ -50,18 +41,15 @@ create table if not exists public.skill_steps (
   unique(skill_id, step_number)
 );
 
--- 5. Curated Learning Resources Table (External links & materials)
 create table if not exists public.learning_resources (
   id uuid default gen_random_uuid() primary key,
   step_id uuid references public.skill_steps(id) on delete cascade not null,
-  platform_name text not null, -- e.g. "YouTube", "Duolingo", "Coursera", "Interactive Sandbox"
-  url text not null,
+  platform_name text not null,   url text not null,
   resource_type text check (resource_type in ('video', 'interactive', 'article', 'book', 'tool', 'course')) default 'interactive',
   is_free boolean default true,
   created_at timestamptz default now() not null
 );
 
--- 6. User Enrollments (Learning Journey)
 create table if not exists public.user_enrollments (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
@@ -72,7 +60,6 @@ create table if not exists public.user_enrollments (
   unique(user_id, skill_id)
 );
 
--- 7. User Step Completions
 create table if not exists public.user_step_completions (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
@@ -80,10 +67,6 @@ create table if not exists public.user_step_completions (
   completed_at timestamptz default now() not null,
   unique(user_id, step_id)
 );
-
--- ==============================================================================
--- Row Level Security (RLS) Configuration
--- ==============================================================================
 
 alter table public.profiles enable row level security;
 alter table public.categories enable row level security;
@@ -93,7 +76,6 @@ alter table public.learning_resources enable row level security;
 alter table public.user_enrollments enable row level security;
 alter table public.user_step_completions enable row level security;
 
--- Public Read Catalog Policies
 drop policy if exists "Public can view categories" on public.categories;
 create policy "Public can view categories" on public.categories for select using (true);
 
@@ -115,7 +97,6 @@ create policy "Public can view learning_resources" on public.learning_resources 
 drop policy if exists "Users can insert learning_resources" on public.learning_resources;
 create policy "Users can insert learning_resources" on public.learning_resources for insert with check (true);
 
--- User Private Data Policies
 drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
 
@@ -143,10 +124,6 @@ create policy "Users can toggle own step completions" on public.user_step_comple
 drop policy if exists "Users can delete own step completions" on public.user_step_completions;
 create policy "Users can delete own step completions" on public.user_step_completions for delete using (auth.uid() = user_id);
 
--- ==============================================================================
--- Triggers: Auto-create Profile upon Supabase Auth Signup
--- ==============================================================================
-
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -166,7 +143,6 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- Performance Indexes
 create index if not exists idx_skills_category on public.skills(category_id);
 create index if not exists idx_skills_slug on public.skills(slug);
 create index if not exists idx_skill_steps_skill on public.skill_steps(skill_id);
@@ -174,7 +150,6 @@ create index if not exists idx_learning_resources_step on public.learning_resour
 create index if not exists idx_enrollments_user on public.user_enrollments(user_id);
 create index if not exists idx_completions_user on public.user_step_completions(user_id, step_id);
 
--- 8. Archimedes Owl Consultations (Chat Sessions & Curriculum Conversations)
 create table if not exists public.owl_consultations (
   id text primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -206,7 +181,6 @@ drop policy if exists "Users can delete own consultations" on public.owl_consult
 create policy "Users can delete own consultations" on public.owl_consultations
   for delete using (auth.uid() = user_id);
 
--- 9. User Certifications (Hankō Seals earned by passing Guild Exams)
 create table if not exists public.user_certifications (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -232,7 +206,6 @@ drop policy if exists "Users can delete own certifications" on public.user_certi
 create policy "Users can delete own certifications" on public.user_certifications
   for delete using (auth.uid() = user_id);
 
--- 10. User Practice Stats (Streak, Practice Activity, and SM-2 Review Schedule)
 create table if not exists public.user_practice_stats (
   user_id uuid references auth.users(id) on delete cascade primary key,
   practice_dates jsonb not null default '[]'::jsonb,
@@ -262,6 +235,3 @@ create policy "Users can update own practice stats" on public.user_practice_stat
 drop policy if exists "Users can delete own practice stats" on public.user_practice_stats;
 create policy "Users can delete own practice stats" on public.user_practice_stats
   for delete using (auth.uid() = user_id);
-
-
-

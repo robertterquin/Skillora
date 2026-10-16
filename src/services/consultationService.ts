@@ -11,9 +11,6 @@ export interface DbOwlConsultationRow {
   updated_at: string;
 }
 
-/**
- * Maps a Supabase row to the client-side OwlConsultation model.
- */
 export function mapRowToConsultation(row: DbOwlConsultationRow): OwlConsultation {
   return {
     id: row.id,
@@ -25,9 +22,6 @@ export function mapRowToConsultation(row: DbOwlConsultationRow): OwlConsultation
   };
 }
 
-/**
- * Maps a client-side OwlConsultation to a Supabase database payload.
- */
 export function mapConsultationToRow(
   consultation: OwlConsultation,
   userId: string
@@ -44,9 +38,6 @@ export function mapConsultationToRow(
 }
 
 export const consultationService = {
-  /**
-   * Fetches all saved consultations for an authenticated user, ordered newest first.
-   */
   async fetchUserConsultations(
     supabase: SupabaseClient,
     userId: string
@@ -61,7 +52,6 @@ export const consultationService = {
         .order("updated_at", { ascending: false });
 
       if (error) {
-        // Table might not exist yet if migration hasn't run in Supabase Dashboard
         if (error.code === "42P01" || error.message?.includes("does not exist")) {
           console.info(
             "Note: 'owl_consultations' table not yet found in Supabase. Using local offline storage fallback."
@@ -79,9 +69,6 @@ export const consultationService = {
     }
   },
 
-  /**
-   * Upserts a consultation to Supabase for the current user.
-   */
   async upsertUserConsultation(
     supabase: SupabaseClient,
     userId: string,
@@ -107,9 +94,6 @@ export const consultationService = {
     }
   },
 
-  /**
-   * Deletes a single consultation from Supabase.
-   */
   async deleteUserConsultation(
     supabase: SupabaseClient,
     userId: string,
@@ -136,9 +120,6 @@ export const consultationService = {
     }
   },
 
-  /**
-   * Clears all consultations for a user from Supabase.
-   */
   async clearUserConsultations(
     supabase: SupabaseClient,
     userId: string
@@ -163,9 +144,6 @@ export const consultationService = {
     }
   },
 
-  /**
-   * Seamlessly merges and syncs local consultations to cloud when user logs in.
-   */
   async syncLocalAndCloud(
     supabase: SupabaseClient,
     userId: string,
@@ -174,19 +152,15 @@ export const consultationService = {
     const cloudConsultations = await this.fetchUserConsultations(supabase, userId);
 
     if (!cloudConsultations) {
-      // Remote table not available yet or fetch failed; keep local
       return localConsultations;
     }
 
-    // Merge: Create a map keyed by consultation id
     const map = new Map<string, OwlConsultation>();
 
-    // Add all cloud consultations
     for (const c of cloudConsultations) {
       map.set(c.id, c);
     }
 
-    // Add local consultations if they have meaningful user turns and don't exist remotely
     const toUpload: OwlConsultation[] = [];
     for (const local of localConsultations) {
       const existing = map.get(local.id);
@@ -196,7 +170,6 @@ export const consultationService = {
         map.set(local.id, local);
         toUpload.push(local);
       } else if (existing) {
-        // Keep the one with the more recent updatedAt timestamp
         const localTime = new Date(local.updatedAt).getTime();
         const existingTime = new Date(existing.updatedAt).getTime();
         if (localTime > existingTime) {
@@ -206,7 +179,6 @@ export const consultationService = {
       }
     }
 
-    // Asynchronously push any unuploaded local sessions to cloud
     if (toUpload.length > 0) {
       const rows = toUpload.map((c) => mapConsultationToRow(c, userId));
       supabase
@@ -217,7 +189,6 @@ export const consultationService = {
         });
     }
 
-    // Return sorted newest first
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );

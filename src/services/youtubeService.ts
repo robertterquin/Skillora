@@ -7,13 +7,8 @@ export interface YouTubeSearchResult {
   url: string;
 }
 
-// In-memory cache for search queries during the runtime lifecycle
 const searchCache = new Map<string, YouTubeSearchResult | null>();
 
-/**
- * Searches YouTube for the top relevant tutorial and extracts the real, verified video ID,
- * video title, and channel name without requiring a paid API key.
- */
 export async function searchTopYouTubeVideo(
   query: string,
   timeoutMs = 4000
@@ -42,7 +37,6 @@ export async function searchTopYouTubeVideo(
         res.on("data", (chunk) => (data += chunk));
         res.on("end", () => {
           try {
-            // Attempt 1: Parse ytInitialData JSON object from YouTube search page
             const jsonMatch =
               data.match(/var ytInitialData = ({[\s\S]*?});<\/script>/) ||
               data.match(/ytInitialData\s*=\s*({[\s\S]+?});/);
@@ -86,10 +80,8 @@ export async function searchTopYouTubeVideo(
               }
             }
           } catch {
-            // JSON parse failed; fall through to regex fallback
           }
 
-          // Attempt 2: Regex extraction for standard 11-char videoId
           const match = data.match(/"videoRenderer":\{"videoId":"([a-zA-Z0-9_-]{11})"/);
           if (match && match[1]) {
             const result: YouTubeSearchResult = {
@@ -140,10 +132,6 @@ export interface StepInput {
   resources?: ResourceInput[];
 }
 
-/**
- * Enriches newly AI-deconstructed steps by finding real, embeddable YouTube tutorials
- * for any video resource, and ensuring each step has at least one verified video demonstration.
- */
 export async function enrichStepsWithYouTube(
   skillTitle: string,
   steps: StepInput[]
@@ -161,7 +149,6 @@ export async function enrichStepsWithYouTube(
             return res;
           }
 
-          // Search query combining skill context and specific drill
           const query = `${skillTitle} ${st.title} tutorial`;
           const ytResult = await searchTopYouTubeVideo(query);
 
@@ -174,7 +161,6 @@ export async function enrichStepsWithYouTube(
             };
           }
 
-          // Fallback to targeted search URL
           return {
             ...res,
             platform_name: "YouTube",
@@ -184,7 +170,6 @@ export async function enrichStepsWithYouTube(
         })
       );
 
-      // If no video was included in AI's suggestions, automatically find and link one
       const hasVideo = resources.some(
         (r) =>
           r.resource_type === "video" ||

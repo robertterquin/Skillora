@@ -25,7 +25,6 @@ export interface GuildExamPayload {
   questions: ExamQuestion[];
 }
 
-// Canonical curated fallback exams for instant zero-latency loading & offline resilience
 const CURATED_EXAMS: Record<string, GuildExamPayload> = {
   "fingerstyle-acoustic-guitar": {
     examTitle: "Acoustic Guitar Skill Assessment",
@@ -349,7 +348,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "skillTitle is required" }, { status: 400 });
     }
 
-    // Check curated library first for instantaneous, handcrafted perfection
     const cleanSlug = (skillSlug || skillTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase();
     for (const [key, exam] of Object.entries(CURATED_EXAMS)) {
       if (cleanSlug.includes(key) || key.includes(cleanSlug)) {
@@ -357,7 +355,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Attempt execution via Supabase Edge Function first
     const edgeRes = await invokeEdgeFunction("guild-exam", {
       skillTitle,
       skillSummary,
@@ -368,9 +365,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(edgeRes.data);
     }
 
-    // Dynamic generation with GPT-4o-mini for all custom user-prompted crafts
     if (!process.env.OPENAI_API_KEY) {
-      // Fallback generic physical diagnostic
       return NextResponse.json({
         exam: {
           examTitle: "Skill Practical Assessment",
