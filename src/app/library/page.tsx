@@ -236,7 +236,7 @@ export default function SkillLibraryPage() {
   }, [startNewConsultation]);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-4rem)] bg-canvas workbench-grid text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] md:h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-4rem)] bg-canvas text-ink selection:bg-brand-500 selection:text-white overflow-hidden">
       <div className="flex-1 flex h-full overflow-hidden min-h-0 relative">
         <ConsultationSidebar
           consultations={consultations}

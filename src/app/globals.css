@@ -88,20 +88,10 @@ body {
 
 .workbench-grid {
   background-color: #F7F5F0;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(26, 25, 23, 0.05) 1px, transparent 1.5px),
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
-  background-size: 24px 24px, 100% 720px;
-  background-repeat: repeat, no-repeat;
 }
 
 .workbench-dots {
   background-color: #F7F5F0;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(26, 25, 23, 0.05) 1px, transparent 1.5px),
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
-  background-size: 24px 24px, 100% 720px;
-  background-repeat: repeat, no-repeat;
 }
 
 .bento-card {
