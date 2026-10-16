@@ -112,29 +112,6 @@ body {
   background-size: 20px 20px;
 }
 
-/* Technical corner ticks (+) for architectural cards */
-.corner-ticks {
-  position: relative;
-}
-.corner-ticks::before,
-.corner-ticks::after {
-  content: "+";
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1;
-  color: rgba(26, 25, 23, 0.18);
-  pointer-events: none;
-  font-weight: 300;
-}
-.corner-ticks::before {
-  top: 8px;
-  left: 9px;
-}
-.corner-ticks::after {
-  top: 8px;
-  right: 9px;
-}
 
 /* Modern 3-tier bento card plate */
 .bento-card {

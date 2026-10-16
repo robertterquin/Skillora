@@ -28,7 +28,7 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
   };
 
   return (
-    <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-2xl bg-surface border border-surface-border shadow-card animate-fade-in text-left corner-ticks relative overflow-hidden">
+    <div className="mt-3 w-full max-w-xl p-5 sm:p-6 rounded-2xl bg-surface border border-surface-border shadow-card animate-fade-in text-left relative overflow-hidden">
       <div className="flex items-center justify-between text-3xs font-mono text-ink-muted uppercase tracking-widest mb-3 pb-2.5 border-b border-surface-border">
         <div className="flex items-center gap-2 font-medium">
           <span className="capitalize">{skill.difficulty}</span>

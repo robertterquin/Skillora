@@ -79,6 +79,7 @@ function Dashboard() {
   const [activeSyllabusSkill, setActiveSyllabusSkill] = useState<Skill | null>(null);
   const [activeExamSkill, setActiveExamSkill] = useState<Skill | null>(null);
   const [isPassportOpen, setIsPassportOpen] = useState(false);
+  const [confirmingRemoveId, setConfirmingRemoveId] = useState<string | null>(null);
 
   // Craftsman's Guild Certified Skills
   const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
@@ -562,7 +563,7 @@ function Dashboard() {
         {/* Spaced Repetition Daily Practice Docket */}
         {myStudioSkills.length > 0 && (
           <section className="mb-8">
-            <Card className="p-6 sm:p-7 relative overflow-hidden corner-ticks">
+            <Card className="p-6 sm:p-7 relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
@@ -747,24 +748,9 @@ function Dashboard() {
           </section>
         )}
 
-        {/* Discipline & Duration Filter Bar in My Studio */}
-        <section className="mb-8">
-          <Card className="p-5 sm:p-6">
-            <SkillFilterBar
-              categories={CATEGORIES}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-              selectedDuration={selectedDuration}
-              onSelectDuration={setSelectedDuration}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-            />
-          </Card>
-        </section>
-
         {/* My Studio Section: Filtered Repertoire */}
         <section className="mb-12">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
             <div>
               <h2 className="font-display font-bold text-xl text-ink">
                 Your skills ({filteredStudioSkills.length})
@@ -782,6 +768,21 @@ function Dashboard() {
               <span>Add a skill</span>
             </Link>
           </div>
+
+          {/* Filter Bar: Only displayed when user has skills in Studio */}
+          {myStudioSkills.length > 0 && (
+            <div className="mb-6">
+              <SkillFilterBar
+                categories={CATEGORIES}
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                selectedDuration={selectedDuration}
+                onSelectDuration={setSelectedDuration}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+            </div>
+          )}
 
           {/* EMPTY STATE */}
           {filteredStudioSkills.length === 0 ? (
@@ -825,7 +826,7 @@ function Dashboard() {
             /* ENROLLED SKILLS GRID */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
-                {filteredStudioSkills.map((skill, idx) => {
+                {filteredStudioSkills.map((skill) => {
                   const steps = skill.steps || [];
                   const doneCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
                   const totalCount = steps.length;
@@ -833,6 +834,7 @@ function Dashboard() {
                   const isCompleted = totalCount > 0 && doneCount === totalCount;
                   const isCertified = certifiedSkillIds.includes(normalizeSkillId(skill.id));
                   const isCustomAi = skill.id.startsWith("ai-skill-");
+                  const isConfirmingRemove = confirmingRemoveId === skill.id;
 
                   return (
                     <motion.div
@@ -842,7 +844,7 @@ function Dashboard() {
                       exit={{ opacity: 0, scale: 0.96 }}
                       transition={{ duration: 0.22, ease: "easeOut" }}
                       key={skill.id}
-                      className={`flex flex-col justify-between p-6 bg-surface rounded-2xl border transition-all duration-200 ease-out group corner-ticks ${
+                      className={`flex flex-col justify-between p-6 bg-surface rounded-2xl border transition-all duration-200 ease-out group ${
                         isCertified
                           ? "border-amber-400/80 shadow-card ring-1 ring-amber-400/20 hover:border-amber-500 hover:-translate-y-0.5 hover:shadow-elevated"
                           : "border-surface-border shadow-card hover:border-brand-400 hover:-translate-y-0.5 hover:shadow-elevated"
@@ -862,14 +864,36 @@ function Dashboard() {
                             <span>{totalCount} steps</span>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveFromStudio(skill.id)}
-                            className="text-3xs font-mono text-ink-muted hover:text-accent-vermilion transition cursor-pointer"
-                            aria-label={`Remove ${skill.title} from My Studio`}
-                          >
-                            Remove
-                          </button>
+                          {isConfirmingRemove ? (
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfirmingRemoveId(null);
+                                  handleRemoveFromStudio(skill.id);
+                                }}
+                                className="px-1.5 py-0.5 rounded bg-rose-600 text-white text-3xs font-mono font-bold hover:bg-rose-700 transition cursor-pointer"
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setConfirmingRemoveId(null)}
+                                className="text-3xs font-mono text-ink-muted hover:text-ink transition cursor-pointer"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setConfirmingRemoveId(skill.id)}
+                              className="text-3xs font-mono text-ink-subtle hover:text-accent-vermilion transition cursor-pointer"
+                              aria-label={`Remove ${skill.title} from My Studio`}
+                            >
+                              Remove
+                            </button>
+                          )}
                         </div>
 
                         {/* Title & Description with Golden Stamp badge */}

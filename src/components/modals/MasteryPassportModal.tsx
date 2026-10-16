@@ -79,17 +79,17 @@ export function MasteryPassportModal({
   };
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-paper border-2 border-stone-300 flex flex-col max-h-[92vh] text-ink select-none corner-ticks">
+    <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none">
       {/* Certifications Modal Header */}
-      <div className="p-4 sm:p-5 bg-paper-deep border-b border-stone-300 flex items-center justify-between">
+      <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-stone-200 border border-stone-300 flex items-center justify-center text-ink">
-            <SolarIcon name="diploma-verified-linear" className="w-5 h-5 text-stone-700" />
+          <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+            <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">VERIFIED CREDENTIALS</span>
-              <span className="text-3xs font-mono font-bold text-stone-500">
+              <span className="spec-tag text-ink-muted">VERIFIED CREDENTIALS</span>
+              <span className="text-3xs font-mono font-bold text-ink-subtle">
                 NO. SK-{user?.id ? user.id.slice(0, 6).toUpperCase() : "882190"}
               </span>
             </div>
@@ -101,7 +101,7 @@ export function MasteryPassportModal({
 
         <div className="flex items-center gap-2">
           {/* View Switcher with Gliding Tab Indicator */}
-          <div className="flex items-center p-1 bg-stone-200 border border-stone-300 rounded-xl text-xs font-mono font-medium">
+          <div className="flex items-center p-1 bg-surface-muted border border-surface-border rounded-xl text-xs font-mono font-medium">
             <button
               type="button"
               onClick={() => {
@@ -111,7 +111,7 @@ export function MasteryPassportModal({
               className={`relative px-3 py-1 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "credential"
                   ? "text-ink font-bold"
-                  : "text-stone-600 hover:text-ink"
+                  : "text-ink-muted hover:text-ink"
               }`}
             >
               {activeTab === "credential" && (
@@ -132,7 +132,7 @@ export function MasteryPassportModal({
               className={`relative px-3 py-1 rounded-lg transition-colors cursor-pointer ${
                 activeTab === "visas"
                   ? "text-ink font-bold"
-                  : "text-stone-600 hover:text-ink"
+                  : "text-ink-muted hover:text-ink"
               }`}
             >
               {activeTab === "visas" && (
@@ -149,7 +149,7 @@ export function MasteryPassportModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200 transition"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition"
             aria-label="Close"
           >
             <SolarIcon name="close-circle-linear" className="w-5 h-5" />
@@ -158,7 +158,7 @@ export function MasteryPassportModal({
       </div>
 
       {/* Passport Notebook Body */}
-      <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-paper">
+      <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-white">
         {activeTab === "credential" ? (
           /* ============================================================ */
           /* 1. ARCHIVAL CREDENTIAL PAGE                                  */

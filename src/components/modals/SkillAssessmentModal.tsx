@@ -156,16 +156,16 @@ export function SkillAssessmentModal({
   };
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-paper border-2 border-stone-300 flex flex-col max-h-[92vh] text-ink select-none corner-ticks print:border-none print:shadow-none print:max-w-none print:w-full print:rounded-none print:bg-white">
+    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none print:border-none print:shadow-none print:max-w-none print:w-full print:rounded-none print:bg-white">
       {/* Modal Top Bar */}
-      <div className="p-4 sm:p-5 bg-paper-deep border-b border-stone-300 flex items-center justify-between print:hidden">
+      <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-900 shadow-2xs">
+          <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shadow-2xs">
             <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">SKILL CERTIFICATION</span>
+              <span className="spec-tag text-ink-muted">SKILL CERTIFICATION</span>
               <span className="text-3xs font-mono font-bold text-amber-700">
                 FINAL ASSESSMENT
               </span>
@@ -178,14 +178,14 @@ export function SkillAssessmentModal({
 
         <div className="flex items-center gap-2">
           {stage === "exam" && (
-            <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white border border-stone-300 text-stone-700">
+            <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white border border-surface-border text-ink-secondary">
               Question {currentQuestionIdx + 1} / {questions.length}
             </span>
           )}
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200 transition"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition"
             aria-label="Close assessment"
           >
             <SolarIcon name="close-circle-linear" className="w-5 h-5" />
@@ -382,7 +382,7 @@ export function SkillAssessmentModal({
 
                 <div>
                   <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-0.5 rounded-full text-3xs font-bold">
-                    ASSESSMENT PASSED // CERTIFICATE UNLOCKED
+                    ASSESSMENT PASSED · CERTIFICATE UNLOCKED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
                     Mastery Certified: {honorific}
@@ -467,7 +467,7 @@ export function SkillAssessmentModal({
                     onClick={onClose}
                     className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
                   >
-                    Return to Workbench
+                    Return to Studio
                   </button>
                 </div>
               </>
@@ -483,7 +483,7 @@ export function SkillAssessmentModal({
             {/* Parchment Diploma Frame */}
             <div
               id="guild-diploma-print-area"
-              className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-amber-800/40 shadow-inner relative overflow-hidden text-center corner-ticks print:p-8 print:border-amber-900"
+              className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-amber-800/40 shadow-inner relative overflow-hidden text-center print:p-8 print:border-amber-900"
             >
               {/* Top Crest & Monospace ID */}
               <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-amber-900/70 uppercase pb-4 border-b border-amber-900/20">
@@ -531,7 +531,7 @@ export function SkillAssessmentModal({
                     Archimedes of Syracuse
                   </div>
                   <div className="text-3xs uppercase tracking-wider text-stone-500 border-t border-stone-300 pt-1">
-                    Master Instructor // Archimedes, Skillora
+                    Master Instructor · Skillora
                   </div>
                 </div>
 

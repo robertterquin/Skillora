@@ -465,24 +465,18 @@ export function SkillPracticeModal({
             </div>
 
             {/* 3D Tactile Flip Card Stage */}
-            <div
-              onClick={() => {
-                playWoodenThud();
-                setIsFlipped(!isFlipped);
-              }}
-              className="w-full max-w-xl min-h-[380px] sm:min-h-[420px] cursor-pointer select-none relative transition-transform duration-500 rounded-2xl corner-ticks"
-            >
+            <div className="w-full max-w-xl min-h-[380px] sm:min-h-[420px] select-none relative transition-transform duration-500 rounded-2xl">
               <div
                 className={`w-full h-full min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border flex flex-col justify-between transition-all duration-300 shadow-card ${
                   isFlipped
                     ? "bg-surface border-brand-700 shadow-elevated"
-                    : "bg-surface border-surface-border hover:border-brand-300"
+                    : "bg-surface border-surface-border"
                 }`}
               >
                 {/* 1. Top Architectural Spec Ribbon */}
                 <div className="flex items-center justify-between border-b border-surface-border pb-3 mb-2">
                   <div className="flex items-center gap-2 text-3xs font-mono text-ink-muted uppercase tracking-widest font-semibold">
-                    <span>Drill {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
+                    <span>Step {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
                     <span className="text-surface-border">|</span>
                     <span>~{currentStep.estimated_minutes} mins</span>
                   </div>
@@ -494,10 +488,17 @@ export function SkillPracticeModal({
                         <span>COMPLETED</span>
                       </span>
                     )}
-                    <span className="text-3xs text-ink-muted flex items-center gap-1 font-mono tracking-wider uppercase">
-                      <span>{isFlipped ? "Flip to Front" : "Flip Details"}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playWoodenThud();
+                        setIsFlipped(!isFlipped);
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-surface-muted border border-surface-border text-3xs text-ink font-mono tracking-wider uppercase flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <span>{isFlipped ? "Back to Practice" : "Step Notes"}</span>
                       <SolarIcon name="refresh-linear" className="w-3 h-3 text-ink-muted" />
-                    </span>
+                    </button>
                   </div>
                 </div>
 
@@ -517,10 +518,6 @@ export function SkillPracticeModal({
                         onSpeak={speakText}
                         onOpenVideo={(video) => setActiveVideo(video)}
                       />
-
-                      <p className="mt-1 text-3xs font-mono text-ink-muted tracking-wider uppercase">
-                        Tap outer card edges to inspect full step notes &rarr;
-                      </p>
                     </div>
                   ) : (
                     /* BACK: Full detailed instructions */

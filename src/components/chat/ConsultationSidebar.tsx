@@ -95,24 +95,9 @@ export function ConsultationSidebar({
         <div className="w-full h-full flex flex-col bg-canvas">
           {/* Header & Close Icon */}
           <div className="h-12 px-3.5 border-b border-surface-border/70 flex items-center justify-between gap-2 shrink-0 bg-canvas">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xs font-semibold text-ink tracking-tight">
-                Consultations
-              </span>
-              {isCloudSynced ? (
-                <span
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 text-[10px] font-medium text-accent-emerald border border-emerald-200/60 shrink-0"
-                  title={isSyncingCloud ? "Syncing with cloud..." : "Synced with cloud"}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full bg-accent-emerald ${
-                      isSyncingCloud ? "animate-ping" : ""
-                    }`}
-                  />
-                  Cloud
-                </span>
-              ) : null}
-            </div>
+            <span className="text-xs font-semibold text-ink tracking-tight">
+              Consultations
+            </span>
 
             <button
               type="button"
@@ -199,14 +184,14 @@ export function ConsultationSidebar({
                             </span>
                           </div>
 
-                          {/* Delete Action on Hover */}
+                          {/* Delete Action (visible on mobile/focus, hover on desktop) */}
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               onDelete(c.id);
                             }}
-                            className="opacity-0 group-hover:opacity-100 hover:text-accent-vermilion p-1 rounded-md text-ink-muted hover:bg-surface-muted transition cursor-pointer shrink-0"
+                            className="opacity-70 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 hover:text-accent-vermilion p-1 rounded-md text-ink-muted hover:bg-surface-muted transition cursor-pointer shrink-0"
                             aria-label={`Delete consultation "${c.title}"`}
                             title="Delete consultation"
                           >

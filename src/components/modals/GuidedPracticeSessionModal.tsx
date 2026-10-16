@@ -265,16 +265,16 @@ export function GuidedPracticeSessionModal({
       : 0;
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-paper border-2 border-stone-300 flex flex-col max-h-[92vh] text-ink select-none corner-ticks">
+    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none">
       {/* Top Folio Header */}
-      <div className="p-4 sm:p-5 bg-paper-deep border-b border-stone-300 flex items-center justify-between">
+      <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-stone-200 border border-stone-300 flex items-center justify-center text-ink flex-shrink-0">
-            <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-stone-700" />
+          <div className="w-9 h-9 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
+            <SolarIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-stone-600">DAILY PRACTICE SESSION</span>
+              <span className="spec-tag text-ink-muted">DAILY PRACTICE SESSION</span>
               <span className="text-3xs font-mono font-bold text-amber-800">
                 DRILL {currentIndex + 1} OF {sessionItems.length}
               </span>
@@ -290,10 +290,10 @@ export function GuidedPracticeSessionModal({
             <span
               className={`text-3xs font-mono uppercase px-2.5 py-0.5 rounded-full font-bold ${
                 urgency === "overdue"
-                  ? "bg-rose-100 text-rose-800 border border-rose-300"
+                  ? "bg-rose-50 text-rose-800 border border-rose-200"
                   : urgency === "due_today"
-                  ? "bg-amber-100 text-amber-800 border border-amber-300"
-                  : "bg-stone-200 text-stone-700 border border-stone-300"
+                  ? "bg-amber-50 text-amber-800 border border-amber-200"
+                  : "bg-surface-muted text-ink-secondary border border-surface-border"
               }`}
             >
               {urgency === "overdue"
@@ -307,7 +307,7 @@ export function GuidedPracticeSessionModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200 transition cursor-pointer"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition cursor-pointer"
             aria-label="Close practice station"
           >
             <SolarIcon name="close-circle-linear" className="w-5 h-5" />
