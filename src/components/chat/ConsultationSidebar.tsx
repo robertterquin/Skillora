@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { OwlConsultation, ConsultationOutcome } from "@/types/owl";
+import { OwlConsultation } from "@/types/owl";
 import { SolarIcon } from "@/components/ui/SolarIcon";
 
 export interface ConsultationSidebarProps {
@@ -166,13 +166,7 @@ export function ConsultationSidebar({
                         >
                           <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-1.5">
                             <SolarIcon
-                              name={
-                                c.outcomeTag === "enrolled"
-                                  ? "bookmark-square-linear"
-                                  : c.outcomeTag === "curriculum"
-                                  ? "document-text-linear"
-                                  : "chat-round-dots-linear"
-                              }
+                              name="chat-round-dots-linear"
                               className={`w-3.5 h-3.5 shrink-0 ${
                                 isActive
                                   ? "text-accent-emerald"
