@@ -9,20 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#F9F8F5", // Warm Alabaster
+        canvas: "#F7F5F0", // Warm Oat Linen (editorial paper backdrop)
         ink: {
           DEFAULT: "#1A1917", // Deep Warm Obsidian
-          secondary: "#524F4A",
-          muted: "#78746D",
-          subtle: "#99948D",
+          secondary: "#5A564F",
+          muted: "#7A756D",
+          subtle: "#9E988F",
         },
         brand: {
-          50: "#F9F8F5",
-          100: "#F2EFE9",
-          200: "#E5E0D8",
-          300: "#C7C2B8",
-          400: "#99948D",
-          500: "#524F4A",
+          50: "#F7F5F0",
+          100: "#F0ECE3",
+          200: "#E2DDD4",
+          300: "#C5BFB4",
+          400: "#9E988F",
+          500: "#5A564F",
           600: "#2E2C29",
           700: "#1A1917",
           800: "#121110",
@@ -30,15 +30,15 @@ const config: Config = {
         },
         surface: {
           DEFAULT: "#FFFFFF",
-          subtle: "#F4F0E8", // recessed warm stone container
-          muted: "#EFECE5",
-          border: "#E5E0D8", // warm hairline limestone
+          subtle: "#EFECE4", // recessed warm stone container
+          muted: "#E8E4DA",
+          border: "#E2DDD4", // warm hairline limestone
         },
         // Archival paper tones for Passport, Guild Exam, and Guided Practice sheets
         paper: {
-          DEFAULT: "#FAF8F5",
-          warm: "#F4F0E8",
-          deep: "#EFECE5",
+          DEFAULT: "#FAF8F4",
+          warm: "#F1EDE4",
+          deep: "#E8E4DA",
         },
         // Muted category tones for the landing page skill deck
         deck: {
@@ -50,10 +50,13 @@ const config: Config = {
         accent: {
           vermilion: "#C84B15", // Dieter Rams Signal Vermilion
           "vermilion-hover": "#B33F0F",
+          "vermilion-light": "#FBF2ED",
+          "vermilion-border": "#F3D2C4",
           emerald: "#2D5A43",   // Deep Alpine Pine
           "emerald-light": "#EBF2EE",
-          amber: "#C57E12",
-          lapis: "#1E3A8A",
+          "emerald-border": "#C9DEC7",
+          amber: "#8A6F32",     // Muted Ochre
+          "amber-light": "#F7F2E7",
         },
       },
       fontFamily: {

@@ -10,17 +10,17 @@
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --color-canvas: #F9F8F5;
+  --color-canvas: #F7F5F0;
   --color-ink: #1A1917;
   --color-surface: #FFFFFF;
-  --color-surface-subtle: #F4F0E8;
-  --color-border: #E5E0D8;
+  --color-surface-subtle: #EFECE4;
+  --color-border: #E2DDD4;
   --color-accent-vermilion: #C84B15;
   --color-accent-pine: #2D5A43;
 }
 
 body {
-  background-color: #F9F8F5;
+  background-color: #F7F5F0;
   color: #1A1917;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

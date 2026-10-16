@@ -499,7 +499,9 @@ function Dashboard() {
             <div className="grid grid-cols-3 gap-2 sm:gap-3 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
               {/* STREAK */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
+                <div className={`w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center flex-shrink-0 ${
+                  isClient && streak > 0 ? "text-accent-vermilion" : "text-ink-muted"
+                }`}>
                   <SolarIcon name="fire-linear" className="w-4 h-4" />
                 </div>
                 <div className="text-center sm:text-left min-w-0">

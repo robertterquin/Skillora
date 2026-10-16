@@ -169,7 +169,7 @@ export function ConsultationSidebar({
                               name="chat-round-dots-linear"
                               className={`w-3.5 h-3.5 shrink-0 ${
                                 isActive
-                                  ? "text-accent-emerald"
+                                  ? "text-accent-vermilion"
                                   : "text-ink-subtle group-hover:text-ink-secondary"
                               }`}
                             />
