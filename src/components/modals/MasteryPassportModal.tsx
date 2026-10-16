@@ -83,7 +83,7 @@ export function MasteryPassportModal({
       {/* Certifications Modal Header */}
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+          <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink">
             <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
           </div>
           <div>
@@ -183,13 +183,13 @@ export function MasteryPassportModal({
                 <div
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-3xs font-mono font-bold tracking-wider uppercase self-start ${
                     certifiedCount > 0
-                      ? "border-amber-300 bg-amber-50 text-amber-800"
+                      ? "border-surface-border bg-surface-muted text-ink"
                       : "border-stone-200 bg-stone-50 text-stone-600"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      certifiedCount > 0 ? "bg-amber-500" : "bg-emerald-500"
+                      certifiedCount > 0 ? "bg-ink" : "bg-stone-400"
                     }`}
                   />
                   <span>{certifiedCount > 0 ? "Verified Scholar" : "Active Member"}</span>
@@ -212,7 +212,7 @@ export function MasteryPassportModal({
 
                 {/* TOTAL HOURS */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                  <div className="w-7 h-7 mx-auto rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 mb-2">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
                   </div>
                   <div>
@@ -229,16 +229,16 @@ export function MasteryPassportModal({
 
                 {/* CERTIFICATIONS */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                  <div className="w-7 h-7 mx-auto rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 mb-2">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
                   </div>
                   <div>
                     <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Certificates</span>
                     <div className="mt-0.5 flex items-baseline justify-center gap-0.5">
-                      <span className="font-display font-bold text-base sm:text-lg text-amber-700 tabular-nums leading-none">
+                      <span className="font-display font-bold text-base sm:text-lg text-ink tabular-nums leading-none">
                         {certifiedCount}
                       </span>
-                      <span className="text-3xs text-amber-800 font-sans font-medium">earned</span>
+                      <span className="text-3xs text-stone-500 font-sans font-medium">earned</span>
                     </div>
                     <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Verified</span>
                   </div>
@@ -246,16 +246,16 @@ export function MasteryPassportModal({
 
                 {/* SKILLS COMPLETED */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                  <div className="w-7 h-7 mx-auto rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mb-2">
+                  <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                     <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5" />
                   </div>
                   <div>
                     <span className="text-3xs font-mono font-semibold text-stone-500 block uppercase tracking-wider">Completed</span>
                     <div className="mt-0.5 flex items-baseline justify-center gap-0.5">
-                      <span className="font-display font-bold text-base sm:text-lg text-emerald-700 tabular-nums leading-none">
+                      <span className="font-display font-bold text-base sm:text-lg text-ink tabular-nums leading-none">
                         {masteredSkills.length}
                       </span>
-                      <span className="text-3xs text-emerald-800 font-sans font-medium">
+                      <span className="text-3xs text-stone-500 font-sans font-medium">
                         {masteredSkills.length === 1 ? "skill" : "skills"}
                       </span>
                     </div>
@@ -350,32 +350,32 @@ export function MasteryPassportModal({
                       {isCertified ? (
                         <>
                           <div className="flex flex-col">
-                            <span className="text-3xs font-mono font-bold text-amber-800 uppercase flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            <span className="text-3xs font-mono font-bold text-ink uppercase flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-ink" />
                               <span>OFFICIALLY CERTIFIED</span>
                             </span>
-                            <span className="text-3xs font-mono text-amber-700/80">
+                            <span className="text-3xs font-mono text-ink-muted">
                               PASSED ASSESSMENT
                             </span>
                             {onOpenExam && (
                               <button
                                 type="button"
                                 onClick={() => onOpenExam(skill)}
-                                className="mt-1 text-3xs font-mono font-bold text-amber-800 hover:text-amber-950 underline text-left cursor-pointer"
+                                className="mt-1 text-3xs font-mono font-bold text-ink hover:underline text-left cursor-pointer"
                               >
                                 View Certificate &rarr;
                               </button>
                             )}
                           </div>
-                          <div className="w-10 h-10 rounded-full border-2 border-amber-400 bg-amber-50 flex items-center justify-center text-amber-700 shadow-xs">
+                          <div className="w-10 h-10 rounded-full border border-surface-border bg-surface-muted flex items-center justify-center text-ink shadow-xs">
                             <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
                           </div>
                         </>
                       ) : isDone ? (
                         <>
                           <div className="flex flex-col">
-                            <span className="text-3xs font-mono font-bold text-rose-800 uppercase flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                            <span className="text-3xs font-mono font-bold text-ink-secondary uppercase flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-ink" />
                               <span>ALL STEPS COMPLETED</span>
                             </span>
                             <span className="text-3xs font-mono text-stone-400">
@@ -385,15 +385,15 @@ export function MasteryPassportModal({
                               <button
                                 type="button"
                                 onClick={() => onOpenExam(skill)}
-                                className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-3xs font-mono font-bold text-amber-800 hover:bg-amber-500/20 transition cursor-pointer"
+                                className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-muted border border-surface-border text-3xs font-mono font-bold text-ink hover:bg-surface transition cursor-pointer"
                               >
                                 <span>Take Assessment</span>
                                 <SolarIcon name="arrow-right-linear" className="w-2.5 h-2.5" />
                               </button>
                             )}
                           </div>
-                          <div className="w-10 h-10 rounded-full border-2 border-stone-300 bg-stone-100 flex items-center justify-center text-stone-600 shadow-xs">
-                            <SolarIcon name="check-circle-bold" className="w-5 h-5 text-emerald-600" />
+                          <div className="w-10 h-10 rounded-full border border-surface-border bg-surface-muted flex items-center justify-center text-ink shadow-xs">
+                            <SolarIcon name="check-circle-bold" className="w-5 h-5 text-ink" />
                           </div>
                         </>
                       ) : (

@@ -713,13 +713,13 @@ export function SkillPracticeModal({
                 ) : voiceScoreResult ? (
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold text-sm">
+                      <div className="px-3 py-1 rounded-full bg-surface-muted border border-surface-border text-ink font-mono font-bold text-sm">
                         {voiceScoreResult.matchScore}% Match
                       </div>
                       <span className="text-xs font-bold text-ink">{voiceScoreResult.verdict}</span>
                     </div>
                     <p className="text-xs text-ink-secondary mb-2">{voiceScoreResult.feedback}</p>
-                    <div className="p-2.5 rounded-xl bg-canvas border border-surface-border text-2xs text-brand-800">
+                    <div className="p-2.5 rounded-xl bg-canvas border border-surface-border text-2xs text-ink">
                       <strong>Phonetic Tip:</strong> {voiceScoreResult.phoneticTip}
                     </div>
                   </div>
@@ -839,17 +839,17 @@ export function SkillPracticeModal({
                 </div>
 
                 {mnemonicLoading ? (
-                  <div className="p-3 text-center text-xs text-indigo-600 font-semibold animate-pulse flex items-center justify-center gap-2">
+                  <div className="p-3 text-center text-xs text-ink-muted font-semibold animate-pulse flex items-center justify-center gap-2">
                     <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
                     <span>Synthesizing mnemonic...</span>
                   </div>
                 ) : mnemonicData ? (
                   <div className="space-y-2 text-xs">
-                    <div className="p-3 rounded-xl bg-indigo-50/50 border border-indigo-100">
-                      <strong className="text-indigo-900 block text-2xs uppercase tracking-wider mb-1">
+                    <div className="p-3 rounded-xl bg-surface border border-surface-border">
+                      <strong className="text-ink block text-2xs uppercase tracking-wider mb-1">
                         Visual Image / Mental Model:
                       </strong>
-                      <p className="text-indigo-950">{mnemonicData.visualMnemonic}</p>
+                      <p className="text-ink-secondary">{mnemonicData.visualMnemonic}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-canvas border border-surface-border">
                       <strong className="text-ink block text-2xs uppercase tracking-wider mb-1">

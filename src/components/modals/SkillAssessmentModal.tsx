@@ -160,13 +160,13 @@ export function SkillAssessmentModal({
       {/* Modal Top Bar */}
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shadow-2xs">
+          <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-2xs">
             <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="spec-tag text-ink-muted">SKILL CERTIFICATION</span>
-              <span className="text-3xs font-mono font-bold text-amber-700">
+              <span className="text-3xs font-mono font-bold text-ink-muted">
                 FINAL ASSESSMENT
               </span>
             </div>
@@ -375,13 +375,13 @@ export function SkillAssessmentModal({
             {isPassed ? (
               <>
                 <div className="flex justify-center">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-200/60 to-yellow-100 border-2 border-amber-400 flex items-center justify-center text-amber-700 shadow-sm">
-                    <SolarIcon name="diploma-verified-linear" className="w-10 h-10 text-amber-700" />
+                  <div className="w-20 h-20 rounded-2xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-sm">
+                    <SolarIcon name="diploma-verified-linear" className="w-10 h-10 text-ink" />
                   </div>
                 </div>
 
                 <div>
-                  <span className="spec-tag text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-0.5 rounded-full text-3xs font-bold">
+                  <span className="spec-tag text-ink bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full text-3xs font-bold">
                     ASSESSMENT PASSED · CERTIFICATE UNLOCKED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
@@ -392,13 +392,13 @@ export function SkillAssessmentModal({
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-300 text-xs text-amber-950 font-mono text-left flex items-start gap-3">
-                  <SolarIcon name="cup-first-linear" className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-surface-muted/60 border border-surface-border text-xs text-ink font-mono text-left flex items-start gap-3">
+                  <SolarIcon name="cup-first-linear" className="w-5 h-5 text-ink flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block uppercase tracking-wider text-2xs font-bold text-amber-900">
+                    <strong className="block uppercase tracking-wider text-2xs font-bold text-ink">
                       Certificate of Mastery Earned
                     </strong>
-                    <p className="mt-0.5 text-amber-900/90 font-sans text-xs">
+                    <p className="mt-0.5 text-ink-secondary font-sans text-xs">
                       You have demonstrated practical mastery in this skill. You can now view, download, or print your verified certificate.
                     </p>
                   </div>
@@ -411,7 +411,7 @@ export function SkillAssessmentModal({
                       playMechanicalClick();
                       setStage("diploma");
                     }}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
                     <span>View Certificate</span>
@@ -512,19 +512,19 @@ export function SkillAssessmentModal({
                 <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-serif italic pt-1">
                   has successfully completed the structured curriculum steps and demonstrated practical proficiency in
                 </p>
-                <h2 className="font-display font-bold text-xl sm:text-2xl text-amber-950 uppercase tracking-wide">
+                <h2 className="font-display font-bold text-xl sm:text-2xl text-ink uppercase tracking-wide">
                   {skill.title}
                 </h2>
                 <p className="text-xs font-mono uppercase tracking-widest text-stone-500 pt-2">
                   AND HAS EARNED THE DESIGNATION OF
                 </p>
-                <div className="text-base sm:text-lg font-mono font-extrabold text-amber-900 tracking-wider uppercase bg-amber-100/60 border border-amber-300 py-1.5 px-4 rounded-xl inline-block">
+                <div className="text-base sm:text-lg font-mono font-bold text-ink tracking-wider uppercase bg-surface-muted border border-surface-border py-1.5 px-4 rounded-xl inline-block">
                   {honorific}
                 </div>
               </div>
 
               {/* Bottom Seals & Signatures */}
-              <div className="mt-12 pt-6 border-t border-amber-900/20 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-6">
                 {/* Left: Proctor Signature */}
                 <div className="text-left font-mono">
                   <div className="font-serif italic text-base text-ink mb-1">
@@ -537,13 +537,13 @@ export function SkillAssessmentModal({
 
                 {/* Center: Golden Verified Stamp */}
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full border-2 border-amber-500 bg-amber-50/60 flex flex-col items-center justify-center shadow-xs">
-                    <SolarIcon name="diploma-verified-linear" className="w-7 h-7 text-amber-600 mb-0.5" />
-                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase text-amber-800">
+                  <div className="w-16 h-16 rounded-full border border-surface-border bg-white flex flex-col items-center justify-center shadow-xs">
+                    <SolarIcon name="diploma-verified-linear" className="w-7 h-7 text-ink mb-0.5" />
+                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase text-ink">
                       VERIFIED
                     </span>
                   </div>
-                  <span className="text-3xs font-mono tracking-widest uppercase text-amber-900 mt-1 font-bold">
+                  <span className="text-3xs font-mono tracking-widest uppercase text-ink-muted mt-1 font-bold">
                     OFFICIAL SEAL
                   </span>
                 </div>

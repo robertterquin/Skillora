@@ -489,7 +489,7 @@ function Dashboard() {
                     setIsPassportOpen(true);
                   }}
                 >
-                  <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-amber-600" />
+                  <SolarIcon name="diploma-verified-linear" className="w-4 h-4 text-ink-muted" />
                   <span>Certifications · {isClient ? masteredSkills.length : 0} earned</span>
                 </Button>
               </div>
@@ -498,19 +498,19 @@ function Dashboard() {
             {/* Streak & Active & Mastered Metrics */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3 md:flex md:items-center flex-shrink-0 pt-2 lg:pt-0">
               {/* STREAK */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
                   <SolarIcon name="fire-linear" className="w-4 h-4" />
                 </div>
                 <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Streak
                   </div>
                   <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
                     <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
                       {isClient ? streak : 0}
                     </span>
-                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                    <span className="text-3xs font-medium text-ink-muted font-sans">
                       {streak === 1 ? "day" : "days"}
                     </span>
                   </div>
@@ -518,19 +518,19 @@ function Dashboard() {
               </div>
 
               {/* ACTIVE */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
                   <SolarIcon name="clock-circle-linear" className="w-4 h-4" />
                 </div>
                 <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Active
                   </div>
                   <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
                     <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
                       {isClient ? activeSkills.length : 0}
                     </span>
-                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                    <span className="text-3xs font-medium text-ink-muted font-sans">
                       {activeSkills.length === 1 ? "skill" : "skills"}
                     </span>
                   </div>
@@ -538,19 +538,19 @@ function Dashboard() {
               </div>
 
               {/* MASTERED */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all min-w-0 md:min-w-[124px]">
-                <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white border border-surface-border shadow-2xs hover:border-ink/20 transition-all min-w-0 md:min-w-[124px]">
+                <div className="w-8 h-8 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted flex-shrink-0">
                   <SolarIcon name="cup-first-linear" className="w-4 h-4" />
                 </div>
                 <div className="text-center sm:text-left min-w-0">
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Mastered
                   </div>
                   <div className="mt-0.5 flex items-baseline justify-center sm:justify-start gap-1">
                     <span className="font-display font-bold text-lg sm:text-xl text-ink tabular-nums leading-none">
                       {isClient ? masteredSkills.length : 0}
                     </span>
-                    <span className="text-3xs font-medium text-stone-500 font-sans">
+                    <span className="text-3xs font-medium text-ink-muted font-sans">
                       {masteredSkills.length === 1 ? "skill" : "skills"}
                     </span>
                   </div>
@@ -593,7 +593,7 @@ function Dashboard() {
                         setIsGuidedPracticeOpen(true);
                       }}
                     >
-                      <SolarIcon name="play-linear" className="w-4 h-4 text-amber-300" />
+                      <SolarIcon name="play-linear" className="w-4 h-4 text-white/80" />
                       <span>
                         {docketItems.every((i) => i.isCompletedToday)
                           ? "Review today's practice"
@@ -632,12 +632,8 @@ function Dashboard() {
                           }}
                           className={`p-4 rounded-2xl border transition-all cursor-pointer group flex flex-col justify-between ${
                             item.isCompletedToday
-                              ? "bg-canvas border-emerald-300/80 shadow-2xs"
-                              : isOverdue
-                              ? "bg-rose-50/40 border-rose-300 hover:border-rose-400 shadow-xs"
-                              : isDueToday
-                              ? "bg-amber-50/40 border-amber-300 hover:border-amber-400 shadow-xs"
-                              : "bg-white border-surface-border hover:border-ink/40 shadow-2xs"
+                              ? "bg-canvas border-surface-border shadow-2xs opacity-85"
+                              : "bg-white border-surface-border hover:border-ink/30 shadow-2xs"
                           }`}
                         >
                           <div>
@@ -707,7 +703,7 @@ function Dashboard() {
                               }`}
                               className={`w-7 h-7 rounded-full border flex items-center justify-center text-3xs font-mono transition-all ${
                                 day.practiced
-                                  ? "bg-emerald-50 border-emerald-300 text-emerald-700 font-bold"
+                                  ? "bg-ink border-ink text-white font-bold"
                                   : day.isToday
                                   ? "bg-white border-dashed border-ink/40 text-ink"
                                   : day.isFuture
@@ -716,7 +712,7 @@ function Dashboard() {
                               }`}
                             >
                               {day.practiced ? (
-                                <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5 text-emerald-700" />
+                                <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5 text-white" />
                               ) : (
                                 <span aria-hidden="true">{day.label}</span>
                               )}
@@ -727,12 +723,12 @@ function Dashboard() {
 
                       <div
                         className={`inline-flex items-center gap-2 text-xs font-semibold self-start sm:self-auto ${
-                          isDocketDone ? "text-accent-emerald" : "text-ink-secondary"
+                          isDocketDone ? "text-ink" : "text-ink-secondary"
                         }`}
                       >
                         <SolarIcon
                           name={isDocketDone ? "check-circle-linear" : "clock-circle-linear"}
-                          className={`w-4 h-4 ${isDocketDone ? "text-accent-emerald" : "text-ink-muted"}`}
+                          className={`w-4 h-4 ${isDocketDone ? "text-ink" : "text-ink-muted"}`}
                         />
                         <span>{isDocketDone ? "Completed for today" : `${docketItems.length - docketDoneCount} left today`}</span>
                       </div>
@@ -902,8 +898,8 @@ function Dashboard() {
                             {skill.title}
                           </h3>
                           {isCertified && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300 text-amber-800 text-3xs font-mono font-semibold flex-shrink-0">
-                              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-amber-700" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-3xs font-mono font-semibold flex-shrink-0">
+                              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
                               <span>CERTIFIED</span>
                             </span>
                           )}
@@ -915,9 +911,7 @@ function Dashboard() {
                         {/* Precision Architectural Progress Line */}
                         <div className="mb-5 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className={`text-2xs font-mono uppercase tracking-wider ${
-                              isCertified ? "text-amber-800 font-bold" : isCompleted ? "text-accent-emerald font-semibold" : "text-ink-subtle"
-                            }`}>
+                            <span className="text-2xs font-mono uppercase tracking-wider text-ink-muted">
                               {isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}
                             </span>
                             <span className="text-ink font-mono text-2xs font-semibold tabular-nums">
@@ -926,9 +920,7 @@ function Dashboard() {
                           </div>
                           <div className="w-full h-1 rounded-full bg-surface-muted overflow-hidden">
                             <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                isCertified ? "bg-amber-500" : isCompleted ? "bg-accent-emerald" : "bg-ink"
-                              }`}
+                              className="h-full rounded-full transition-all duration-500 bg-ink"
                               style={{ width: `${percent}%` }}
                             />
                           </div>
@@ -951,8 +943,8 @@ function Dashboard() {
                             }}
                             className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs ${
                               isCertified
-                                ? "bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/15 border border-amber-500/50 text-amber-900 hover:from-amber-500/30 hover:to-amber-500/25"
-                                : "bg-amber-600 hover:bg-amber-700 text-white"
+                                ? "bg-surface hover:bg-surface-muted border border-surface-border text-ink"
+                                : "bg-ink hover:bg-ink/90 text-white"
                             }`}
                           >
                             <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />

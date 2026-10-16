@@ -289,10 +289,8 @@ export function GuidedPracticeSessionModal({
           {!isSessionComplete && (
             <span
               className={`text-3xs font-mono uppercase px-2.5 py-0.5 rounded-full font-bold ${
-                urgency === "overdue"
-                  ? "bg-rose-50 text-rose-800 border border-rose-200"
-                  : urgency === "due_today"
-                  ? "bg-amber-50 text-amber-800 border border-amber-200"
+                urgency === "overdue" || urgency === "due_today"
+                  ? "bg-surface-muted text-ink border border-surface-border"
                   : "bg-surface-muted text-ink-secondary border border-surface-border"
               }`}
             >
@@ -322,7 +320,7 @@ export function GuidedPracticeSessionModal({
             {/* Drill Headline & Instructions */}
             <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
               <div className="flex items-center justify-between text-xs text-stone-500 font-mono mb-2 flex-wrap gap-2">
-                <span className="text-3xs tracking-wider uppercase font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
+                <span className="text-3xs tracking-wider uppercase font-semibold text-ink bg-surface-muted px-2 py-0.5 rounded border border-surface-border">
                   {profile.tagLabel}
                 </span>
                 <div className="flex items-center gap-2">
@@ -443,7 +441,7 @@ export function GuidedPracticeSessionModal({
                         onClick={toggleMetronome}
                         className={`px-3 py-2 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           metronomeActive
-                            ? "bg-amber-500 text-white"
+                            ? "bg-ink text-white"
                             : "text-stone-700 hover:bg-stone-100"
                         }`}
                         title={metronomeActive ? "Cadence active (click to mute)" : `Activate rhythmic ${profile.cadenceLabel || "metronome"}`}
@@ -519,7 +517,7 @@ export function GuidedPracticeSessionModal({
             <div className="p-5 rounded-2xl bg-white border border-stone-300 shadow-2xs">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-stone-200">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800">
+                  <div className="w-6 h-6 rounded-md bg-surface-muted border border-surface-border flex items-center justify-center text-ink">
                     <SolarIcon name="tuning-2-linear" className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-display font-bold text-sm text-ink">
@@ -540,11 +538,11 @@ export function GuidedPracticeSessionModal({
                 <button
                   type="button"
                   onClick={() => handleRateRecall(1)}
-                  className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-amber-600 bg-paper hover:bg-amber-50/60 text-left transition group cursor-pointer shadow-2xs"
+                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-stone-50/60 text-left transition group cursor-pointer shadow-2xs"
                 >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-amber-800 mb-1">
+                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
                     <span>{profile.recallPrompts.hard.title}</span>
-                    <span className="text-3xs bg-amber-100 px-1.5 py-0.5 rounded font-mono">1 Day</span>
+                    <span className="text-3xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">1 Day</span>
                   </div>
                   <p className="text-2xs text-stone-600 leading-tight">
                     {profile.recallPrompts.hard.desc}
@@ -555,11 +553,11 @@ export function GuidedPracticeSessionModal({
                 <button
                   type="button"
                   onClick={() => handleRateRecall(2)}
-                  className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-sky-600 bg-paper hover:bg-sky-50/60 text-left transition group cursor-pointer shadow-2xs"
+                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-stone-50/60 text-left transition group cursor-pointer shadow-2xs"
                 >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-sky-800 mb-1">
+                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
                     <span>{profile.recallPrompts.solid.title}</span>
-                    <span className="text-3xs bg-sky-100 px-1.5 py-0.5 rounded font-mono">3-4 Days</span>
+                    <span className="text-3xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">3-4 Days</span>
                   </div>
                   <p className="text-2xs text-stone-600 leading-tight">
                     {profile.recallPrompts.solid.desc}
@@ -570,11 +568,11 @@ export function GuidedPracticeSessionModal({
                 <button
                   type="button"
                   onClick={() => handleRateRecall(3)}
-                  className="p-3.5 rounded-xl border-2 border-stone-300 hover:border-emerald-600 bg-paper hover:bg-emerald-50/60 text-left transition group cursor-pointer shadow-2xs"
+                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-stone-50/60 text-left transition group cursor-pointer shadow-2xs"
                 >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-emerald-800 mb-1">
+                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
                     <span>{profile.recallPrompts.effortless.title}</span>
-                    <span className="text-3xs bg-emerald-100 px-1.5 py-0.5 rounded font-mono">7-10 Days</span>
+                    <span className="text-3xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">7-10 Days</span>
                   </div>
                   <p className="text-2xs text-stone-600 leading-tight">
                     {profile.recallPrompts.effortless.desc}
@@ -589,13 +587,13 @@ export function GuidedPracticeSessionModal({
           /* ============================================================ */
           <div className="text-center py-8 space-y-6 max-w-md mx-auto">
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center text-emerald-700 shadow-sm">
+              <div className="w-16 h-16 rounded-2xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-sm">
                 <SolarIcon name="check-circle-bold" className="w-9 h-9" />
               </div>
             </div>
 
             <div>
-              <span className="spec-tag text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 rounded-full text-3xs font-bold">
+              <span className="spec-tag text-ink bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full text-3xs font-bold">
                 PRACTICE SESSION COMPLETED
               </span>
               <h3 className="font-display font-bold text-2xl text-ink mt-3">
@@ -607,48 +605,48 @@ export function GuidedPracticeSessionModal({
             </div>
 
             <div className="grid grid-cols-3 gap-2.5 sm:gap-3 text-left">
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mb-2">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                   <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Completed
                   </div>
                   <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 tabular-nums">
                     {sessionItems.length}
                   </div>
-                  <div className="text-3xs text-stone-500 mt-0.5 font-sans">exercises</div>
+                  <div className="text-3xs text-ink-muted mt-0.5 font-sans">exercises</div>
                 </div>
               </div>
 
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 mb-2">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                   <SolarIcon name="fire-linear" className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Daily Streak
                   </div>
-                  <div className="font-display font-bold text-base sm:text-lg text-amber-700 mt-0.5 tabular-nums">
+                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 tabular-nums">
                     +1 Day
                   </div>
-                  <div className="text-3xs text-amber-800 font-semibold mt-0.5 font-sans">Extended</div>
+                  <div className="text-3xs text-ink-muted font-medium mt-0.5 font-sans">Extended</div>
                 </div>
               </div>
 
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-sky-50 border border-sky-200/80 flex items-center justify-center text-sky-600 mb-2">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
+                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
                   <SolarIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-stone-500">
+                  <div className="text-3xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
                     Next Review
                   </div>
                   <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 font-sans">
                     Tomorrow
                   </div>
-                  <div className="text-3xs text-stone-500 mt-0.5 font-sans">Scheduled</div>
+                  <div className="text-3xs text-ink-muted mt-0.5 font-sans">Scheduled</div>
                 </div>
               </div>
             </div>

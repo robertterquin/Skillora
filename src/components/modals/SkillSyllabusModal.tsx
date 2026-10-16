@@ -110,13 +110,13 @@ export function SkillSyllabusModal({
 
         {/* Certification Banner */}
         {!isViewOnly && isAllComplete && (
-          <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="mt-5 p-4 rounded-2xl bg-surface border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 flex-shrink-0 shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink flex-shrink-0 shadow-2xs">
                 <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-3xs font-mono font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-3xs font-mono font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
                   <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE · ASSESSMENT UNLOCKED"}</span>
                 </div>
                 <div className="text-xs text-ink-secondary mt-0.5">
@@ -130,7 +130,7 @@ export function SkillSyllabusModal({
               <button
                 type="button"
                 onClick={() => onOpenGuildExam(skill)}
-                className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                className="px-4 py-2 rounded-xl bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
               >
                 <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
                 <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />

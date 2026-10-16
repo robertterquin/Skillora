@@ -835,7 +835,7 @@ export function CodeMilestoneTerminalSimulator({
             type="button"
             onClick={handleRunVerification}
             disabled={isTestRunning}
-            className="w-full mt-1 py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-2xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="w-full mt-1 py-1.5 px-2 rounded-lg bg-ink hover:bg-ink/90 text-white font-mono text-2xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <SolarIcon name="play-linear" className="w-3 h-3" />
             <span>Run Test Suite (+1)</span>
