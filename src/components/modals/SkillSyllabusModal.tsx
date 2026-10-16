@@ -76,7 +76,7 @@ export function SkillSyllabusModal({
           <span className="text-ink-subtle">·</span>
           <span>{skill.estimated_hours}h estimated</span>
           <span className="text-ink-subtle">·</span>
-          <span>{totalSteps} practice steps</span>
+          <span>{totalSteps} steps</span>
           {!isViewOnly && isAllComplete && (
             <>
               <span className="text-ink-subtle">·</span>
@@ -143,7 +143,7 @@ export function SkillSyllabusModal({
       {/* Modal Steps Content */}
       <div className="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-6">
         <h3 className="font-display font-semibold text-base text-ink mb-2">
-          Steps &amp; resources
+          Steps
         </h3>
 
         <div className="space-y-4">
@@ -214,7 +214,7 @@ export function SkillSyllabusModal({
                 {step.resources && step.resources.length > 0 && (
                   <div className={`mt-4 ${isViewOnly ? "pl-10" : "pl-9"} pt-3 border-t border-surface-border/60`}>
                     <div className="text-xs font-semibold text-ink-muted mb-2">
-                      Where to practice & learn this step:
+                      Resources:
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {step.resources.map((res) => {
@@ -304,7 +304,7 @@ export function SkillSyllabusModal({
             onClick={onClose}
             className="px-4 py-2 rounded-full border border-surface-border bg-white text-ink text-xs font-semibold hover:bg-surface-muted transition"
           >
-            Close Pathway
+            Close
           </button>
         </div>
       </div>

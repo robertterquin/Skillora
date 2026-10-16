@@ -76,7 +76,7 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
         ))}
       </div>
 
-      {/* Action CTA: Either Practice or Add to My Studio */}
+      {/* Action CTA: Either Open in Studio or Add to Studio */}
       <div className="pt-2 border-t border-surface-border flex items-center gap-2">
         {isEnrolled ? (
           <Link
@@ -84,7 +84,7 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
             onClick={() => playWoodenThud()}
             className={buttonClasses({ block: true, className: "group" })}
           >
-            <span>Practice in My Studio</span>
+            <span>Open in Studio</span>
             <SolarIcon
               name="arrow-right-linear"
               className="w-4 h-4 group-hover:translate-x-0.5 transition"
@@ -96,7 +96,7 @@ export function CurriculumCard({ skill, isEnrolled, onEnroll }: CurriculumCardPr
               name="check-circle-linear"
               className="w-4 h-4 text-accent-emerald"
             />
-            <span>{enrolling ? "Enrolling…" : "Add to My Studio"}</span>
+            <span>{enrolling ? "Adding…" : "Add to Studio"}</span>
           </Button>
         )}
       </div>

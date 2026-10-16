@@ -15,17 +15,13 @@ import {
   SolarIcon,
   MasteryPassportModal,
   SkillAssessmentModal,
-  GuidedPracticeSessionModal,
 } from "@/components";
 import {
-  getDailyDocket,
   getPracticeStreak,
   getSpacedRepetitionStore,
-  getWeekActivity,
   logPracticeDay,
   syncPracticeStatsWithCloud,
   pushPracticeStatsToCloud,
-  DocketItem,
 } from "@/lib/spaced-repetition";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import {
@@ -362,33 +358,20 @@ function Dashboard() {
     return allSkills.filter((s) => enrolledSet.has(normalizeSkillId(s.id)));
   }, [allSkills, enrolledSkillIds]);
 
-  // Spaced Repetition Docket State
-  const [docketItems, setDocketItems] = useState<DocketItem[]>([]);
-  const [isGuidedPracticeOpen, setIsGuidedPracticeOpen] = useState(false);
-  const [guidedPracticeInitialIndex, setGuidedPracticeInitialIndex] = useState(0);
-
-  const refreshDocket = useCallback(() => {
+  // Practice Dates & Streak Tracking
+  const refreshPracticeStats = useCallback(() => {
     const store = getSpacedRepetitionStore();
     setPracticeDates(store.practiceDates);
     if (currentUser) {
       pushPracticeStatsToCloud(supabase, currentUser.id, store);
     }
-    if (myStudioSkills.length > 0) {
-      const docket = getDailyDocket(myStudioSkills, completedStepIds);
-      setDocketItems(docket.items);
-    } else {
-      setDocketItems([]);
-    }
-  }, [myStudioSkills, completedStepIds, currentUser, supabase]);
+  }, [currentUser, supabase]);
 
   useEffect(() => {
-    refreshDocket();
-  }, [refreshDocket]);
+    refreshPracticeStats();
+  }, [refreshPracticeStats]);
 
   const streak = getPracticeStreak(practiceDates);
-  const weekActivity = getWeekActivity(practiceDates);
-  const docketDoneCount = docketItems.filter((i) => i.isCompletedToday).length;
-  const isDocketDone = docketItems.length > 0 && docketDoneCount === docketItems.length;
 
   // Deep link from the account menu: /dashboard?open=passport
   useEffect(() => {
@@ -479,10 +462,10 @@ function Dashboard() {
             <span>
               {isClient
                 ? new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })
-                : "STUDIO DISPATCH"}
+                : "STUDIO RECORD"}
               {" "}· PERSONAL ATELIER
             </span>
-            <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP DISPATCH</span>
+            <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP</span>
           </div>
 
           {/* Title & Passport Action */}
@@ -492,7 +475,7 @@ function Dashboard() {
                 {displayName}&apos;s Studio
               </h1>
               <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-                Your craftsmanship repertoire and daily spaced repetition practice.
+                Your craftsmanship repertoire and progress.
               </p>
             </div>
 
@@ -532,7 +515,7 @@ function Dashboard() {
                 <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
                   {isClient ? activeSkills.length : 0}
                 </span>
-                <span className="text-xs text-ink-muted font-mono">in studio</span>
+                <span className="text-xs text-ink-muted font-mono">active</span>
               </div>
             </div>
 
@@ -544,7 +527,7 @@ function Dashboard() {
                 <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
                   {isClient ? completedStepIds.length : 0}
                 </span>
-                <span className="text-xs text-ink-muted font-mono">completed</span>
+                <span className="text-xs text-ink-muted font-mono">steps</span>
               </div>
             </div>
 
@@ -570,7 +553,7 @@ function Dashboard() {
                 Your skills ({filteredStudioSkills.length})
               </h2>
               <p className="text-xs text-ink-muted mt-0.5">
-                Open a skill to practice with flashcards, interactive tools, voice grading, and technique coaching.
+                Select a skill to resume practice.
               </p>
             </div>
 
@@ -786,7 +769,7 @@ function Dashboard() {
                             }`}
                           >
                             <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
-                            <span>{isCertified ? "Certificate" : "Exam"}</span>
+                            <span>{isCertified ? "Certificate" : "Assessment"}</span>
                           </button>
                         )}
 
@@ -978,7 +961,7 @@ function Dashboard() {
                             }`}
                           >
                             <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
-                            <span>{isCertified ? "View Certificate" : "Take Assessment"}</span>
+                            <span>{isCertified ? "Certificate" : "Assessment"}</span>
                           </button>
                         )}
 
@@ -1025,15 +1008,15 @@ function Dashboard() {
             </div>
             <div>
               <h4 className="font-display font-bold text-sm text-ink">
-                Ready for another skill?
+                Explore more skills
               </h4>
               <p className="text-xs text-ink-muted">
-                Tell Archimedes what you want to learn next.
+                Ask Archimedes to build a custom curriculum or browse the library.
               </p>
             </div>
           </div>
           <Link href="/library" className={buttonClasses({ variant: "secondary" })}>
-            Open Skill Library
+            Open Library
           </Link>
         </section>
       </main>
@@ -1100,20 +1083,6 @@ function Dashboard() {
               currentUser?.email?.split("@")[0] ||
               "Scholar"
             }
-          />
-        )}
-      </AnimatePresence>
-
-      {/* 6. Guided Deliberate Practice Session Modal (SM-2 Spaced Repetition) */}
-      <AnimatePresence>
-        {isGuidedPracticeOpen && docketItems.length > 0 && (
-          <GuidedPracticeSessionModal
-            isOpen={isGuidedPracticeOpen}
-            onClose={() => setIsGuidedPracticeOpen(false)}
-            docketItems={docketItems}
-            initialIndex={guidedPracticeInitialIndex}
-            onDocketUpdated={refreshDocket}
-            onStepCompleted={handleToggleStep}
           />
         )}
       </AnimatePresence>

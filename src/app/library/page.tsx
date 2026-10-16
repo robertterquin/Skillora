@@ -329,7 +329,7 @@ export default function SkillLibraryPage() {
                     What would you like to master?
                   </h1>
                   <p className="text-xs sm:text-sm text-ink-muted mt-2 max-w-md leading-relaxed">
-                    Chat to explore skills, evaluate learning roadmaps, or build a structured practice plan.
+                    Explore curated disciplines or design a custom practice plan.
                   </p>
 
                   {/* Voice Audio Toggle */}
@@ -503,7 +503,7 @@ export default function SkillLibraryPage() {
                   placeholder={
                     isListening
                       ? "Listening to your voice…"
-                      : "Ask Archimedes anything or request suggestions…"
+                      : "Ask Archimedes anything…"
                   }
                   className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
                 />

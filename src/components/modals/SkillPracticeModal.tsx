@@ -429,7 +429,7 @@ export function SkillPracticeModal({
                     title="Listen to native voice pronunciation"
                   >
                     <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
-                    <span>{isSpeaking ? "Speaking..." : "Pronounce (Voice)"}</span>
+                    <span>{isSpeaking ? "Speaking…" : "Pronounce"}</span>
                   </button>
 
                   {/* Feature 3: Whisper Voice Pronunciation Grader */}
@@ -444,7 +444,7 @@ export function SkillPracticeModal({
                     title="Speak into microphone and get an AI pronunciation grade"
                   >
                     <SolarIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
-                    <span>{isRecording ? "Listening... (Tap to grade)" : "Test My Voice (AI)"}</span>
+                    <span>{isRecording ? "Listening…" : "Test Pronunciation"}</span>
                   </button>
                 </div>
               )}
@@ -509,7 +509,7 @@ export function SkillPracticeModal({
                     /* BACK: Full detailed instructions */
                     <div className="text-left animate-fade-in">
                       <h4 className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-widest mb-2">
-                        Instructions & Muscle Memory Cue:
+                        Technique Notes:
                       </h4>
                       <p className="text-sm text-ink leading-relaxed">
                         {currentStep.instructions}
@@ -519,7 +519,7 @@ export function SkillPracticeModal({
                       {currentStep.resources && currentStep.resources.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-surface-border">
                           <span className="text-2xs font-semibold text-ink-muted block mb-2">
-                            External tools for this step:
+                            Resources:
                           </span>
                           <div className="flex flex-wrap gap-2">
                             {currentStep.resources.map((res) => {
@@ -589,7 +589,7 @@ export function SkillPracticeModal({
                 {/* 3. Bottom Utility Bar */}
                 <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs">
                   <span className="text-ink-muted text-3xs font-mono tracking-wider uppercase">
-                    {isCurrentStepDone ? "STEP COMPLETED" : "STEP IN PROGRESS"}
+                    Step {currentStep.step_number} of {steps.length}
                   </span>
                   <button
                     type="button"
@@ -612,12 +612,12 @@ export function SkillPracticeModal({
                     {isCurrentStepDone ? (
                       <>
                         <SolarIcon name="check-circle-bold" className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>COMPLETED</span>
+                        <span>Completed</span>
                       </>
                     ) : (
                       <>
                         <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                        <span>MARK AS COMPLETED</span>
+                        <span>Mark as complete</span>
                       </>
                     )}
                   </button>
@@ -708,7 +708,7 @@ export function SkillPracticeModal({
                 {voiceGrading ? (
                   <div className="py-3 text-center text-xs text-brand-600 font-semibold animate-pulse flex items-center justify-center gap-2">
                     <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
-                    <span>Transcribing and grading with Whisper AI...</span>
+                    <span>Transcribing and grading…</span>
                   </div>
                 ) : voiceScoreResult ? (
                   <div>
@@ -847,7 +847,7 @@ export function SkillPracticeModal({
                   <div className="space-y-2 text-xs">
                     <div className="p-3 rounded-xl bg-surface border border-surface-border">
                       <strong className="text-ink block text-2xs uppercase tracking-wider mb-1">
-                        Visual Image / Mental Model:
+                        Mental Model:
                       </strong>
                       <p className="text-ink-secondary">{mnemonicData.visualMnemonic}</p>
                     </div>
@@ -1001,8 +1001,8 @@ export function SkillPracticeModal({
       {/* Bottom Status Bar */}
       <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted">
         <div className="flex items-center gap-2">
-          <span>Overall Progress:</span>
-          <strong className="text-ink font-semibold">{completedCount} of {steps.length} steps ({progressPercent}%)</strong>
+          <span>Progress:</span>
+          <strong className="text-ink font-semibold">{completedCount} of {steps.length} completed ({progressPercent}%)</strong>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -1025,7 +1025,7 @@ export function SkillPracticeModal({
             onClick={onClose}
             className={buttonClasses()}
           >
-            Done Practicing
+            Done
           </button>
         </div>
       </div>

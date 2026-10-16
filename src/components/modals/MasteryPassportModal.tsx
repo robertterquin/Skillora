@@ -223,7 +223,7 @@ export function MasteryPassportModal({
                       </span>
                       <span className="text-3xs text-stone-500 font-sans font-normal">hrs</span>
                     </div>
-                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Accumulated</span>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">total</span>
                   </div>
                 </div>
 
@@ -240,7 +240,7 @@ export function MasteryPassportModal({
                       </span>
                       <span className="text-3xs text-stone-500 font-sans font-medium">earned</span>
                     </div>
-                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Verified</span>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">verified</span>
                   </div>
                 </div>
 
@@ -259,15 +259,10 @@ export function MasteryPassportModal({
                         {masteredSkills.length === 1 ? "skill" : "skills"}
                       </span>
                     </div>
-                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">Mastered</span>
+                    <span className="text-3xs text-stone-500 block mt-0.5 font-mono">mastered</span>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Practical Mindset Quote */}
-            <div className="p-5 rounded-2xl bg-paper-warm border border-stone-300 text-xs text-stone-700 leading-relaxed font-serif italic text-center">
-              &ldquo;Consistency beats intensity. Small daily practice sessions compound into true mastery.&rdquo;
             </div>
 
             {/* Actions: Print & Jump to Certificates Registry */}
@@ -289,7 +284,7 @@ export function MasteryPassportModal({
                 }}
                 className={buttonClasses()}
               >
-                <span>View Certificates ({masteredSkills.length}) &rarr;</span>
+                <span>View Certificates ({certifiedCount}) &rarr;</span>
               </button>
             </div>
           </div>
@@ -306,7 +301,7 @@ export function MasteryPassportModal({
                 </p>
               </div>
               <span className="font-mono text-xs font-bold text-stone-700">
-                {masteredSkills.length} of {enrolledSkills.length} Certified
+                {certifiedCount} of {enrolledSkills.length} Certified
               </span>
             </div>
 

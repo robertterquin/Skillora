@@ -52,7 +52,7 @@ export default function LandingPage() {
 
           {/* Minimalist Subtitle */}
           <p className="text-base sm:text-lg text-ink-muted max-w-xl mx-auto font-normal leading-relaxed mb-8">
-            Learn any skill through short, ordered steps, hand-picked resources, and honest time estimates.
+            Master practical crafts, arts, and techniques through short, focused daily sessions.
           </p>
 
           {/* Hero CTAs: Matching the pill buttons in Image 1 */}
@@ -68,7 +68,7 @@ export default function LandingPage() {
               href="/library"
               className={buttonClasses({ variant: "ghost", size: "lg", className: "w-full sm:w-auto" })}
             >
-              Browse skill library &rarr;
+              Browse library &rarr;
             </Link>
           </div>
         </div>
@@ -147,12 +147,12 @@ export default function LandingPage() {
               className="w-6 h-6 object-contain"
             />
             <span className="font-display font-semibold text-sm text-ink">
-              Skillora — The Learning Engine
+              Skillora
             </span>
           </div>
 
           <div className="flex items-center gap-6 text-xs text-ink-muted">
-            <Link href="/library" className="hover:text-ink transition">Skill Library</Link>
+            <Link href="/library" className="hover:text-ink transition">Library</Link>
             <Link href="/signin" className="hover:text-ink transition">Sign in</Link>
             <Link href="/signup" className="hover:text-ink transition">Sign up</Link>
             <span>&copy; {new Date().getFullYear()} Skillora</span>

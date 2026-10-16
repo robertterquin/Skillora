@@ -29,7 +29,7 @@ export function SuggestionCards({
           Suggested Pathways ({suggestions.length})
         </span>
         <span className="text-3xs text-ink-subtle font-mono">
-          Pick one to build your custom curriculum
+          Select a path to build curriculum
         </span>
       </div>
 

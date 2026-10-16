@@ -17,13 +17,13 @@ interface HeaderProps {
 }
 
 const SIGNED_IN_LINKS = [
-  { href: "/dashboard", label: "My Studio" },
-  { href: "/library", label: "Skill Library" },
+  { href: "/dashboard", label: "Studio" },
+  { href: "/library", label: "Library" },
 ];
 
 const SIGNED_OUT_LINKS = [
   { href: "/", label: "Overview" },
-  { href: "/library", label: "Skill Library" },
+  { href: "/library", label: "Library" },
 ];
 
 import { useAuth } from "@/hooks/useAuth";
@@ -207,7 +207,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
                         <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
-                        <span>My Studio</span>
+                        <span>Studio</span>
                       </Link>
 
                       <Link
@@ -227,7 +227,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-canvas text-ink transition"
                       >
                         <SolarIcon name="book-bookmark-linear" className="w-4 h-4 text-ink-muted" />
-                        <span>Skill Library</span>
+                        <span>Library</span>
                       </Link>
                     </div>
 

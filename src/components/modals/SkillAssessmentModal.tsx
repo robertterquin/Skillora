@@ -165,13 +165,10 @@ export function SkillAssessmentModal({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="spec-tag text-ink-muted">SKILL CERTIFICATION</span>
-              <span className="text-3xs font-mono font-bold text-ink-muted">
-                FINAL ASSESSMENT
-              </span>
+              <span className="spec-tag text-ink-muted">CERTIFICATION</span>
             </div>
             <h2 id={titleId} className="font-display font-bold text-base sm:text-lg text-ink leading-tight">
-              Skill Certification Assessment
+              Final Assessment
             </h2>
           </div>
         </div>
@@ -388,20 +385,8 @@ export function SkillAssessmentModal({
                     Mastery Certified: {honorific}
                   </h3>
                   <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-                    You scored <strong className="text-ink font-bold">{score} of {questions.length}</strong> on your skill assessment. You have demonstrated practical competence and understanding in this discipline.
+                    You scored <strong className="text-ink font-bold">{score} of {questions.length}</strong> on your assessment and demonstrated practical competence in this discipline.
                   </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-surface-muted/60 border border-surface-border text-xs text-ink font-mono text-left flex items-start gap-3">
-                  <SolarIcon name="cup-first-linear" className="w-5 h-5 text-ink flex-shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block uppercase tracking-wider text-2xs font-bold text-ink">
-                      Certificate of Mastery Earned
-                    </strong>
-                    <p className="mt-0.5 text-ink-secondary font-sans text-xs">
-                      You have demonstrated practical mastery in this skill. You can now view, download, or print your verified certificate.
-                    </p>
-                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -459,7 +444,7 @@ export function SkillAssessmentModal({
                     className={buttonClasses({ className: "w-full sm:w-auto font-mono" })}
                   >
                     <SolarIcon name="refresh-linear" className="w-4 h-4" />
-                    <span>Retake Diagnostic Assessment</span>
+                    <span>Retake Assessment</span>
                   </button>
 
                   <button
@@ -570,7 +555,7 @@ export function SkillAssessmentModal({
                 }}
                 className="px-4 py-2 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
               >
-                &larr; Exam Details
+                &larr; Back
               </button>
 
               <div className="flex items-center gap-3">
@@ -580,7 +565,7 @@ export function SkillAssessmentModal({
                   className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer"
                 >
                   <SolarIcon name="printer-linear" className="w-4 h-4" />
-                  <span>Print Official Diploma</span>
+                  <span>Print Certificate</span>
                 </button>
 
                 <button
