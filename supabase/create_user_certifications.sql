@@ -1,5 +1,5 @@
 -- ==============================================================================
--- Skillora: Craftsman's Guild Mastery Certifications Table (Hankō Seals)
+-- Skillora: User Certifications & Verified Mastery Table
 -- Run this in your Supabase Dashboard -> SQL Editor
 -- ==============================================================================
 
