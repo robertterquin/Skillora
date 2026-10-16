@@ -172,7 +172,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                   aria-haspopup="menu"
                   aria-expanded={isDropdownOpen}
                 >
-                  <UserAvatar seed={userSeed} size={30} />
+                  <UserAvatar seed={userSeed} name={displayName} size={30} />
                   <span className="text-xs font-semibold text-ink max-w-[100px] truncate hidden sm:inline pr-2">
                     {displayName}
                   </span>
@@ -181,7 +181,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                 {isDropdownOpen && (
                   <div role="menu" className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-surface-border shadow-xl p-2 z-50 animate-fade-in text-xs">
                     <div className="p-3 border-b border-surface-border/80 flex items-center gap-3 mb-1">
-                      <UserAvatar seed={userSeed} size={36} />
+                      <UserAvatar seed={userSeed} name={displayName} size={36} />
                       <div className="overflow-hidden">
                         <div className="font-semibold text-ink text-sm truncate">{displayName}</div>
                         <div className="text-2xs text-ink-muted truncate">{currentUser.email}</div>
