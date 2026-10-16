@@ -239,7 +239,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                         onClick={handleSignOut}
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 transition text-left font-medium"
                       >
-                        <SolarIcon name="login-2-linear" className="w-4 h-4 rotate-180" />
+                        <SolarIcon name="login-2-linear" className="w-4 h-4" />
                         <span>Sign out</span>
                       </button>
                     </div>
@@ -266,7 +266,7 @@ export function Header({ activePath }: HeaderProps = {}) {
                     aria-expanded={isMobileMenuOpen}
                     aria-controls="mobile-nav"
                   >
-                    <SolarIcon name={isMobileMenuOpen ? "ph:x-light" : "ph:list-light"} className="w-5 h-5" />
+                    <SolarIcon name={isMobileMenuOpen ? "close" : "menu"} className="w-5 h-5" />
                   </button>
 
                   {isMobileMenuOpen && (

@@ -1,53 +1,192 @@
 "use client";
 
 import React from "react";
-import { Icon, addIcon } from "@iconify/react";
-import { ICON_NAME_MAP, BUNDLED_ICONS } from "@/lib/icons-data";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  AudioLines,
+  Award,
+  BookMarked,
+  BookmarkCheck,
+  Check,
+  CheckCheck,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock,
+  Code2,
+  Coffee,
+  Compass,
+  Eye,
+  EyeOff,
+  FileText,
+  Flag,
+  Flame,
+  History,
+  Info,
+  Layers,
+  Lightbulb,
+  Lock,
+  LogOut,
+  Mail,
+  Menu,
+  MessageSquare,
+  Mic,
+  PanelLeft,
+  Pause,
+  Play,
+  PlusCircle,
+  Printer,
+  RefreshCw,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  SquarePen,
+  Target,
+  Timer,
+  Trash2,
+  Trophy,
+  User,
+  Volume2,
+  VolumeX,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 
-// Register all offline bundled icons once so they render synchronously on first render
-let iconsRegistered = false;
-function ensureIconsRegistered() {
-  if (iconsRegistered) return;
-  for (const [key, iconData] of Object.entries(BUNDLED_ICONS)) {
-    addIcon(key, iconData);
-  }
-  iconsRegistered = true;
-}
-
-// Immediately register icons on client initialization
-ensureIconsRegistered();
+const LUCIDE_ICON_MAP: Record<string, LucideIcon> = {
+  "add-circle-linear": PlusCircle,
+  "plus-circle-light": PlusCircle,
+  "arrow-left-linear": ArrowLeft,
+  "arrow-left-light": ArrowLeft,
+  "arrow-right-linear": ArrowRight,
+  "arrow-right-light": ArrowRight,
+  "book-bookmark-linear": BookMarked,
+  "book-bookmark-light": BookMarked,
+  "bookmark-square-linear": BookmarkCheck,
+  "chat-round-dots-linear": MessageSquare,
+  "check-circle-bold": CheckCircle2,
+  "check-circle-linear": CheckCircle2,
+  "check-circle-light": CheckCircle2,
+  "check-linear": Check,
+  "check-light": Check,
+  "check-read-linear": CheckCheck,
+  "checks-light": CheckCheck,
+  "clipboard-check-linear": ClipboardCheck,
+  "clipboard-text-light": ClipboardCheck,
+  "clock-circle-linear": Clock,
+  "clock-light": Clock,
+  "close-circle-linear": X,
+  "x-circle-light": X,
+  "code-linear": Code2,
+  "code-light": Code2,
+  "compass-linear": Compass,
+  "compass-light": Compass,
+  "cup-first-linear": Trophy,
+  "trophy-light": Trophy,
+  "cup-hot-linear": Coffee,
+  "coffee-light": Coffee,
+  "danger-circle-linear": AlertCircle,
+  "warning-circle-light": AlertCircle,
+  "diploma-verified-linear": Award,
+  "certificate-light": Award,
+  "document-text-linear": FileText,
+  "eye-closed-linear": EyeOff,
+  "eye-linear": Eye,
+  "fire-linear": Flame,
+  "flame-light": Flame,
+  "flag-2-linear": Flag,
+  "history-linear": History,
+  "clock-counter-clockwise-light": History,
+  "info-circle-linear": Info,
+  "info-light": Info,
+  "layers-minimalistic-linear": Layers,
+  "stack-light": Layers,
+  "letter-linear": Mail,
+  "envelope-simple-light": Mail,
+  "lightbulb-linear": Lightbulb,
+  "lightbulb-minimalistic-linear": Lightbulb,
+  "lightbulb-filament-light": Lightbulb,
+  "lock-keyhole-linear": Lock,
+  "lock-key-light": Lock,
+  "login-2-linear": LogOut,
+  "sign-out-light": LogOut,
+  "magnifer-linear": Search,
+  "magnifying-glass-light": Search,
+  "microphone-3-linear": Mic,
+  "microphone-light": Mic,
+  "pause-linear": Pause,
+  "pen-new-square-linear": SquarePen,
+  "note-pencil-light": SquarePen,
+  "play-linear": Play,
+  "play-circle-light": Play,
+  "printer-2-linear": Printer,
+  "printer-linear": Printer,
+  "printer-light": Printer,
+  "refresh-linear": RefreshCw,
+  "arrows-clockwise-light": RefreshCw,
+  "restart-linear": RotateCcw,
+  "arrow-counter-clockwise-light": RotateCcw,
+  "sidebar-minimalistic-linear": PanelLeft,
+  "sidebar-simple-light": PanelLeft,
+  "soundwave-linear": AudioLines,
+  "waveform-light": AudioLines,
+  "square-arrow-right-up-linear": ArrowUpRight,
+  "arrow-square-out-light": ArrowUpRight,
+  "stars-minimalistic-linear": Sparkles,
+  "sparkle-light": Sparkles,
+  "stopwatch-linear": Timer,
+  "timer-light": Timer,
+  "target-linear": Target,
+  "crosshair-light": Target,
+  "trash-bin-trash-linear": Trash2,
+  "trash-light": Trash2,
+  "tuning-2-linear": SlidersHorizontal,
+  "sliders-horizontal-light": SlidersHorizontal,
+  "user-linear": User,
+  "user-light": User,
+  "volume-cross-linear": VolumeX,
+  "speaker-slash-light": VolumeX,
+  "volume-loud-linear": Volume2,
+  "speaker-high-light": Volume2,
+  "ph:x-light": X,
+  "ph:list-light": Menu,
+  menu: Menu,
+  close: X,
+};
 
 export interface AppIconProps {
   name: string;
   className?: string;
   style?: React.CSSProperties;
+  strokeWidth?: number;
 }
 
 /**
- * Skillora Unified App Icon (powered by Iconify)
- * Renders high-precision Phosphor Light architectural icons with instant 0ms offline rendering.
+ * Skillora Unified App Icon (powered by Lucide Icons)
+ * Renders crisp, balanced 24x24 geometric SVG icons with instant SSR & 0ms latency.
  */
-export function AppIcon({ name, className = "w-4 h-4", style }: AppIconProps) {
-  ensureIconsRegistered();
+export function AppIcon({
+  name,
+  className = "w-4 h-4",
+  style,
+  strokeWidth,
+}: AppIconProps) {
+  const IconComponent = LUCIDE_ICON_MAP[name] || Sparkles;
+  const resolvedStroke = strokeWidth ?? (name.endsWith("-bold") ? 2.25 : 1.85);
 
-  let iconId: string;
-
-  if (name.includes(":")) {
-    // Explicit Iconify namespace (e.g. "ph:sidebar-simple-light" or "solar:clock-circle-linear")
-    iconId = name;
-  } else if (ICON_NAME_MAP[name]) {
-    // Mapped standard name -> offline bundled Phosphor Light icon
-    iconId = `ph:${ICON_NAME_MAP[name]}`;
-  } else if (name.endsWith("-linear")) {
-    const cleanName = name.replace("-linear", "");
-    iconId = `ph:${cleanName}-light`;
-  } else {
-    iconId = `ph:${name}-light`;
-  }
-
-  return <Icon icon={iconId} className={className} style={style} />;
+  return (
+    <IconComponent
+      className={className}
+      style={style}
+      strokeWidth={resolvedStroke}
+      aria-hidden="true"
+    />
+  );
 }
 
-// Backward-compatible alias for existing imports
+// Backward-compatible aliases for existing imports
 export const SolarIcon = AppIcon;
 export const IconifyIcon = AppIcon;
+
