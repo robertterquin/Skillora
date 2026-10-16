@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "An intentional learning engine breaking down music, languages, tactile crafts, and micro-skills into structured steps, curated sites, and clear time commitments.",
   icons: {
     icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
   },
 };
 

@@ -231,52 +231,65 @@ export function InteractiveOwlAvatar({
           <defs>
             {/* Left Eye Clipping Portal (Inside Spectacle Frame) */}
             <clipPath id="owl-left-eye-clip">
-              <circle cx="50" cy="44" r="9.75" />
+              <circle cx="44" cy="46" r="10.25" />
             </clipPath>
 
             {/* Right Eye Clipping Portal (Inside Spectacle Frame) */}
             <clipPath id="owl-right-eye-clip">
-              <circle cx="76" cy="44" r="9.75" />
+              <circle cx="76" cy="46" r="10.25" />
             </clipPath>
           </defs>
 
-          {/* Cobalt Blue Feather Accent */}
+          {/* Solid White Owl Body & Head Silhouette */}
           <path
-            d="M54 82C58 68 70 64 72 65C73 73 66 84 54 86L54 82Z"
-            fill="#1D4ED8"
-            className="transition-all duration-300"
-          />
-          <path
-            d="M50 88L66 70"
-            stroke="#1D4ED8"
-            strokeWidth="2.5"
-            strokeLinecap="round"
+            d="M 28 42 C 28 24 42 16 60 16 C 78 16 92 24 92 42 V 70 C 92 90 78 104 60 104 C 42 104 28 90 28 70 Z"
+            fill="#FFFFFF"
+            stroke="#0F172A"
+            strokeWidth="5"
+            strokeLinejoin="round"
           />
 
-          {/* Outer Head & Body Arch */}
+          {/* Left Sculpted Wing Fold */}
           <path
-            d="M42 38C45 27 55 22 68 22C81 22 90 30 90 44V76C90 92 78 100 62 100C46 100 36 90 36 78V58"
-            stroke="#111827"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-
-          {/* Wing Fold */}
-          <path
-            d="M36 62C44 54 55 58 55 74C55 86 46 96 36 98V62Z"
-            stroke="#111827"
-            strokeWidth="5"
+            d="M 28 60 C 40 57 49 65 49 79 C 49 90 41 98 32 100"
+            fill="#F8FAFC"
+            stroke="#0F172A"
+            strokeWidth="4.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Spectacles Top Bridge Bar */}
-          <line
-            x1="36"
-            y1="36"
-            x2="92"
-            y2="36"
-            stroke="#111827"
+          {/* Cobalt Blue Quill Feather Accent */}
+          <path
+            d="M 56 87 C 59 71 73 64 79 65 C 80 76 71 88 56 90 Z"
+            fill="#2563EB"
+            className="transition-all duration-300"
+          />
+          <path
+            d="M 52 93 L 72 71"
+            stroke="#1D4ED8"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Scholarly Ear Tufts / Brow Arch */}
+          <path
+            d="M 24 35 Q 34 29 45 33"
+            stroke="#0F172A"
+            strokeWidth="4.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 96 35 Q 86 29 75 33"
+            stroke="#0F172A"
+            strokeWidth="4.8"
+            strokeLinecap="round"
+          />
+
+          {/* Spectacles Nose Bridge */}
+          <path
+            d="M 56.5 45 Q 60 41.5 63.5 45"
+            stroke="#0F172A"
             strokeWidth="4.5"
             strokeLinecap="round"
           />
@@ -286,7 +299,7 @@ export function InteractiveOwlAvatar({
           {/* ======================================================== */}
           <g>
             {/* White Eye Sclera Underlay */}
-            <circle cx="50" cy="44" r="10" fill="#FFFFFF" />
+            <circle cx="44" cy="46" r="10.5" fill="#FFFFFF" />
 
             {/* Clipped Eye Interior: Pupil, Catchlights & Sliding Eyelid */}
             <g clipPath="url(#owl-left-eye-clip)">
@@ -298,20 +311,20 @@ export function InteractiveOwlAvatar({
                 }}
               >
                 {/* Deep Obsidian Pupil */}
-                <circle cx="50" cy="44" r={pupilRadius} fill="#111827" />
+                <circle cx="44" cy="46" r={pupilRadius} fill="#0F172A" />
 
                 {/* Primary Glint / Catchlight Sparkle (top-right) */}
-                <circle cx={51.6} cy={42.4} r={1.6} fill="#FFFFFF" />
+                <circle cx={45.6} cy={44.4} r={1.6} fill="#FFFFFF" />
 
                 {/* Secondary Micro-Sheen (bottom-left) */}
-                <circle cx={48.6} cy={45.4} r={0.8} fill="#FFFFFF" opacity={0.65} />
+                <circle cx={42.6} cy={47.4} r={0.8} fill="#FFFFFF" opacity={0.65} />
               </g>
 
               {/* Upper Eyelid Curtain (Slides down smoothly during blinks) */}
               <rect
-                x="38"
-                y="32"
-                width="24"
+                x="31"
+                y="33"
+                width="26"
                 height={leftLidHeight}
                 fill="#FFFFFF"
                 style={{
@@ -321,8 +334,8 @@ export function InteractiveOwlAvatar({
 
               {/* Curved Closed Eyelid Line (Serene, happy curved lash when fully closed) */}
               <path
-                d="M 42 44.5 Q 50 49 58 44.5"
-                stroke="#111827"
+                d="M 36 46.5 Q 44 51 52 46.5"
+                stroke="#0F172A"
                 strokeWidth="3.2"
                 strokeLinecap="round"
                 fill="none"
@@ -335,11 +348,11 @@ export function InteractiveOwlAvatar({
 
             {/* Crisp Spectacle Outer Frame Rim */}
             <circle
-              cx="50"
-              cy="44"
-              r="12"
-              stroke="#111827"
-              strokeWidth="4.5"
+              cx="44"
+              cy="46"
+              r="12.5"
+              stroke="#0F172A"
+              strokeWidth="4.8"
               fill="none"
             />
           </g>
@@ -349,7 +362,7 @@ export function InteractiveOwlAvatar({
           {/* ======================================================== */}
           <g>
             {/* White Eye Sclera Underlay */}
-            <circle cx="76" cy="44" r="10" fill="#FFFFFF" />
+            <circle cx="76" cy="46" r="10.5" fill="#FFFFFF" />
 
             {/* Clipped Eye Interior: Pupil, Catchlights & Sliding Eyelid */}
             <g clipPath="url(#owl-right-eye-clip)">
@@ -361,20 +374,20 @@ export function InteractiveOwlAvatar({
                 }}
               >
                 {/* Deep Obsidian Pupil */}
-                <circle cx="76" cy="44" r={pupilRadius} fill="#111827" />
+                <circle cx="76" cy="46" r={pupilRadius} fill="#0F172A" />
 
                 {/* Primary Glint / Catchlight Sparkle (top-right) */}
-                <circle cx={77.6} cy={42.4} r={1.6} fill="#FFFFFF" />
+                <circle cx={77.6} cy={44.4} r={1.6} fill="#FFFFFF" />
 
                 {/* Secondary Micro-Sheen (bottom-left) */}
-                <circle cx={74.6} cy={45.4} r={0.8} fill="#FFFFFF" opacity={0.65} />
+                <circle cx={74.6} cy={47.4} r={0.8} fill="#FFFFFF" opacity={0.65} />
               </g>
 
               {/* Upper Eyelid Curtain (Slides down smoothly during blinks or winks) */}
               <rect
-                x="64"
-                y="32"
-                width="24"
+                x="63"
+                y="33"
+                width="26"
                 height={rightLidHeight}
                 fill="#FFFFFF"
                 style={{
@@ -384,8 +397,8 @@ export function InteractiveOwlAvatar({
 
               {/* Curved Closed Eyelid Line (Serene, happy curved lash when fully closed) */}
               <path
-                d="M 68 44.5 Q 76 49 84 44.5"
-                stroke="#111827"
+                d="M 68 46.5 Q 76 51 84 46.5"
+                stroke="#0F172A"
                 strokeWidth="3.2"
                 strokeLinecap="round"
                 fill="none"
@@ -399,18 +412,18 @@ export function InteractiveOwlAvatar({
             {/* Crisp Spectacle Outer Frame Rim */}
             <circle
               cx="76"
-              cy="44"
-              r="12"
-              stroke="#111827"
-              strokeWidth="4.5"
+              cy="46"
+              r="12.5"
+              stroke="#0F172A"
+              strokeWidth="4.8"
               fill="none"
             />
           </g>
 
           {/* Beak */}
           <path
-            d="M58 48L63 58L68 48"
-            stroke="#111827"
+            d="M 56 54 L 60 61 L 64 54"
+            stroke="#0F172A"
             strokeWidth="4.5"
             strokeLinecap="round"
             strokeLinejoin="round"
