@@ -119,20 +119,6 @@ export function logPracticeDay(): void {
   saveSpacedRepetitionStore(store);
 }
 
-export function getPracticeStreak(practiceDates: string[]): number {
-  const practiced = new Set(practiceDates);
-  const cursor = new Date();
-  if (!practiced.has(toDateKey(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  let streak = 0;
-  while (practiced.has(toDateKey(cursor))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
-}
-
 export function getWeekActivity(practiceDates: string[]): WeekDayActivity[] {
   const practiced = new Set(practiceDates);
   const today = new Date();

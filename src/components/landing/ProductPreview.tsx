@@ -81,8 +81,8 @@ export function ProductPreview({ draftSkill, draftPrompt, pathSkill }: ProductPr
       <div className="grid md:grid-cols-2 gap-10 md:gap-14 items-center">
         <StepCopy n={1} title="Tell Archimedes what you want to learn">
           <p>
-            Describe a skill, or ask for ideas. Archimedes, the owl, drafts a short plan: a few ordered steps,
-            each sized for one sitting, with an honest total time.
+            Describe a skill, or ask for ideas. Archimedes, the owl, drafts a short plan with a total time for
+            the whole skill.
           </p>
           <p>Make it shorter or longer before anything is added.</p>
         </StepCopy>
@@ -128,7 +128,7 @@ export function ProductPreview({ draftSkill, draftPrompt, pathSkill }: ProductPr
         <PreviewFrame label="Your Studio" className="max-w-4xl">
           <div className="space-y-4">
             <ContinueCard skill={pathSkill} completedStepIds={sampleDone} onResume={toSignup} onViewSteps={toSignup} />
-            <StatsStrip week={week} activeCount={2} stepsDone={sampleDone.length + 5} masteredCount={1} />
+            <StatsStrip week={week} stepsDone={sampleDone.length + 5} masteredCount={1} />
           </div>
         </PreviewFrame>
       </div>

@@ -43,8 +43,3 @@ export interface Skill {
   steps?: SkillStep[];
 }
 
-export interface UserProgress {
-  enrolled: boolean;
-  status: "active" | "completed" | "not_started";
-  completed_step_ids: string[];
-}

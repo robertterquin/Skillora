@@ -209,6 +209,7 @@ export default function SkillLibraryPage() {
                 title="New chat (⌘N)"
                 size="sm"
                 variant="ghost"
+                className={isSidebarOpen ? "md:hidden" : undefined}
                 onClick={handleNewSession}
               />
               <Link href="/dashboard" className={buttonClasses({ variant: "secondary", size: "sm" })}>

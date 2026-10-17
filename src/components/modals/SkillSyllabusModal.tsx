@@ -51,8 +51,12 @@ export function SkillSyllabusModal({
               </span>
               <span aria-hidden="true">·</span>
               <span className="capitalize">{skill.difficulty}</span>
-              <span aria-hidden="true">·</span>
-              <span>{totalCount} steps</span>
+              {isViewOnly && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{totalCount} steps</span>
+                </>
+              )}
               {totalMinutes > 0 && (
                 <>
                   <span aria-hidden="true">·</span>
@@ -71,12 +75,9 @@ export function SkillSyllabusModal({
 
         {!isViewOnly && totalCount > 0 && (
           <div className="mt-5">
-            <div className="flex justify-between mb-1.5 text-xs text-ink-muted">
-              <span>
-                {doneCount} of {totalCount} steps done
-              </span>
-              <span className="font-semibold text-ink tabular-nums">{percent}%</span>
-            </div>
+            <p className="mb-1.5 text-xs text-ink-muted">
+              {doneCount} of {totalCount} steps done
+            </p>
             <div
               className="h-1.5 w-full rounded-full bg-surface-muted overflow-hidden"
               role="progressbar"
@@ -106,21 +107,15 @@ export function SkillSyllabusModal({
         />
       </div>
 
-      <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between gap-3">
-        <span className="text-xs text-ink-muted">
-          {isViewOnly ? "Sign up to track your progress." : "Progress saves automatically."}
-        </span>
-        <div className="flex items-center gap-2">
-          {isViewOnly && (
-            <Link href="/signup" className={buttonClasses({ size: "sm" })}>
-              Start this skill
-            </Link>
-          )}
-          <button type="button" onClick={onClose} className={buttonClasses({ variant: "secondary", size: "sm" })}>
-            Close
-          </button>
+      {/* Only previews need a footer: the sign-up prompt. The close button sits in the header. */}
+      {isViewOnly && (
+        <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between gap-3">
+          <span className="text-xs text-ink-muted">Sign up to track your progress.</span>
+          <Link href="/signup" className={buttonClasses({ size: "sm" })}>
+            Start this skill
+          </Link>
         </div>
-      </div>
+      )}
 
       {activeVideo && (
         <VideoPlayerModal

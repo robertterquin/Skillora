@@ -192,17 +192,17 @@ export function LearningPath({
                     >
                       {step.title}
                     </span>
-                    <span className="mt-0.5 flex items-center gap-2 text-xs text-ink-muted">
-                      <span>Step {step.step_number}</span>
-                      {STATE_LABEL[state] && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <span className={cn(state === "current" && cn("font-semibold", category.text))}>
-                            {STATE_LABEL[state]}
-                          </span>
-                        </>
-                      )}
-                    </span>
+                    {/* The node already shows the step number; only the state needs a label. */}
+                    {STATE_LABEL[state] && (
+                      <span
+                        className={cn(
+                          "mt-0.5 block text-xs text-ink-muted",
+                          state === "current" && cn("font-semibold", category.text)
+                        )}
+                      >
+                        {STATE_LABEL[state]}
+                      </span>
+                    )}
                   </span>
                   <span className="flex items-center gap-2 shrink-0 pt-0.5">
                     {step.estimated_minutes > 0 && (

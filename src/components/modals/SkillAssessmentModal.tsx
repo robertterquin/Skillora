@@ -37,7 +37,9 @@ export function SkillAssessmentModal({
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, "A" | "B" | "C" | "D">>({});
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
-  const [certifiedDate, setCertifiedDate] = useState<string>("");
+  const [certifiedDate, setCertifiedDate] = useState<string>(() =>
+    new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -255,7 +257,7 @@ export function SkillAssessmentModal({
           category={category}
           userName={userName}
           honorific={honorific}
-          issuedOn={certifiedDate || "October 11, 2026"}
+          issuedOn={certifiedDate}
         />
       )}
     </PracticeShell>

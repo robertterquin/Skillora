@@ -37,6 +37,8 @@ export function CurriculumCard({
   const category = getCategoryStyle(skill);
   const steps = skill.steps || [];
   const totalMinutes = steps.reduce((sum, s) => sum + (Number(s.estimated_minutes) || 0), 0);
+  // Labels like "20 mins/day for 3 weeks" add a schedule; ones like "90 minutes total" repeat the total.
+  const schedule = /\/day|per day|a day|daily/i.test(skill.time_commitment_label || "") ? skill.time_commitment_label : "";
 
   const handleEnroll = async () => {
     if (enrolling) return;
@@ -88,10 +90,10 @@ export function CurriculumCard({
               <span>about {formatMinutes(totalMinutes)} in total</span>
             </>
           )}
-          {skill.time_commitment_label && (
+          {schedule && (
             <>
               <span aria-hidden="true">·</span>
-              <span>{skill.time_commitment_label}</span>
+              <span>{schedule}</span>
             </>
           )}
           <span aria-hidden="true">·</span>

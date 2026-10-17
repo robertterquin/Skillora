@@ -75,7 +75,7 @@ export function SkillPracticeModal({
   if (!step) return null;
 
   const category = getCategoryStyle(skill);
-  const { doneCount, totalCount, isComplete } = getSkillProgress(skill, completedStepIds);
+  const { isComplete } = getSkillProgress(skill, completedStepIds);
   const isDone = isStepCompleted(step.id, completedStepIds);
 
   const goTo = (next: number) => {
@@ -131,13 +131,7 @@ export function SkillPracticeModal({
       }
       footer={
         <>
-          <span>
-            <strong className="text-ink font-semibold">
-              {doneCount} of {totalCount}
-            </strong>{" "}
-            steps done
-          </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:ml-auto">
             {openAssessment && isComplete && (
               <Button size="sm" variant={isGuildCertified ? "secondary" : "accent"} onClick={openAssessment}>
                 <AppIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />

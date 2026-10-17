@@ -44,7 +44,6 @@ export function StepCard({
     >
       <div className="flex items-center justify-between gap-3 border-b border-surface-border pb-3 mb-2">
         <div className="flex items-center gap-2 text-xs text-ink-muted">
-          <span className="font-semibold text-ink">Step {step.step_number}</span>
           {step.estimated_minutes > 0 && (
             <span className="inline-flex items-center gap-1">
               <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />

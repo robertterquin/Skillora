@@ -56,14 +56,6 @@ export const UUID_TO_LEGACY_STEP_ID_MAP: Record<string, string> = Object.entries
   {} as Record<string, string>
 );
 
-export const UUID_TO_LEGACY_SKILL_ID_MAP: Record<string, string> = Object.entries(LEGACY_SKILL_ID_MAP).reduce(
-  (acc, [legacy, uuid]) => {
-    acc[uuid] = legacy;
-    return acc;
-  },
-  {} as Record<string, string>
-);
-
 export function normalizeSkillId(id: string): string {
   if (!id) return id;
   return LEGACY_SKILL_ID_MAP[id] || id;

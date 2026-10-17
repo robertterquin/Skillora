@@ -196,9 +196,7 @@ function Studio() {
             <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight">
               Your <span className="font-serif italic font-normal text-brand-600">Studio</span>
             </h1>
-            <p className="mt-1 text-sm text-ink-muted">
-              {firstName ? `Welcome back, ${firstName}.` : "Everything you're learning, in one place."}
-            </p>
+            {firstName && <p className="mt-1 text-sm text-ink-muted">Welcome back, {firstName}.</p>}
           </div>
           <Button
             variant="secondary"
@@ -241,7 +239,6 @@ function Studio() {
 
             <StatsStrip
               week={practice.week}
-              activeCount={studioSkills.length - masteredCount}
               stepsDone={completedStepIds.length}
               masteredCount={masteredCount}
             />

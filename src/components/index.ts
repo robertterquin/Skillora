@@ -11,7 +11,6 @@ export * from "./simulators/StepActionBlueprint";
 export * from "./ui/AppIcon";
 export * from "./ui/Badge";
 export * from "./ui/Button";
-export * from "./ui/Card";
 export * from "./ui/EmptyState";
 export * from "./ui/Header";
 export * from "./ui/HeroFanDeck";

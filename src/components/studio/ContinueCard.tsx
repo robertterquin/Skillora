@@ -78,12 +78,7 @@ export function ContinueCard({ skill, completedStepIds, onResume, onViewSteps }:
 
         {totalCount > 0 && (
           <div className="md:w-48 shrink-0">
-            <div className="flex items-baseline justify-between md:justify-start md:gap-2 mb-2">
-              <span className="font-serif italic text-4xl text-ink tabular-nums">{percent}%</span>
-              <span className="text-xs text-ink-muted">
-                {doneCount} of {totalCount} steps
-              </span>
-            </div>
+            <span className="block mb-2 font-serif italic text-4xl text-ink tabular-nums">{percent}%</span>
             <div
               className="h-1.5 w-full rounded-full bg-surface-muted overflow-hidden"
               role="progressbar"

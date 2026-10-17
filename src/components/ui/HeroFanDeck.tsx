@@ -96,7 +96,6 @@ export function HeroFanDeck({ skills, onSelectSkill }: HeroFanDeckProps) {
 
                 <span className="pt-2 border-t border-white/20 flex items-center justify-between text-xs text-white/75 font-mono">
                   <span>{skill.steps?.length ?? 0} STEPS</span>
-                  <span className="hidden sm:inline font-sans font-medium">Preview &rarr;</span>
                 </span>
               </span>
             </button>

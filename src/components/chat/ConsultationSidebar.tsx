@@ -243,7 +243,6 @@ export function ConsultationSidebar({
                   : "Local storage"}
               </span>
             </div>
-            <span className="hidden md:inline text-ink-subtle text-xs">⌘B</span>
           </div>
         </div>
       </aside>

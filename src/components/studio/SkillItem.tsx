@@ -61,7 +61,7 @@ function RemoveControl({
   );
 }
 
-function Meta({ skill, totalCount }: { skill: Skill; totalCount: number }) {
+function Meta({ skill }: { skill: Skill }) {
   const category = getCategoryStyle(skill);
   const isCustomAi = skill.id.startsWith("ai-skill-");
   return (
@@ -70,8 +70,6 @@ function Meta({ skill, totalCount }: { skill: Skill; totalCount: number }) {
         <span className={cn("w-1.5 h-1.5 rounded-full", category.fill)} aria-hidden="true" />
         {category.label}
       </span>
-      <span aria-hidden="true">·</span>
-      <span>{totalCount} steps</span>
       <span aria-hidden="true">·</span>
       <span>{skill.estimated_hours}h</span>
       {isCustomAi && <Badge>AI</Badge>}
@@ -115,7 +113,7 @@ export function SkillRow(props: SkillItemProps) {
   return (
     <div className="group py-4 flex flex-col md:flex-row md:items-center gap-4">
       <div className="min-w-0 flex-1">
-        <Meta skill={skill} totalCount={totalCount} />
+        <Meta skill={skill} />
         <button
           type="button"
           onClick={props.onPractice}
@@ -141,7 +139,6 @@ export function SkillRow(props: SkillItemProps) {
                 `${doneCount} of ${totalCount}`
               )}
             </span>
-            <span className="font-semibold text-ink tabular-nums">{percent}%</span>
           </div>
           <ProgressBar skill={skill} percent={percent} />
         </div>
@@ -187,7 +184,7 @@ export function SkillCard(props: SkillItemProps) {
       className="flex flex-col p-5 sm:p-6 bg-white rounded-2xl border border-surface-border shadow-2xs hover:border-brand-300 hover:shadow-card transition-[border-color,box-shadow]"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <Meta skill={skill} totalCount={totalCount} />
+        <Meta skill={skill} />
         <RemoveControl
           skill={skill}
           isConfirming={props.isConfirmingRemove}
@@ -212,7 +209,6 @@ export function SkillCard(props: SkillItemProps) {
               `${doneCount} of ${totalCount} steps`
             )}
           </span>
-          <span className="font-semibold text-ink tabular-nums">{percent}%</span>
         </div>
         <ProgressBar skill={skill} percent={percent} />
 

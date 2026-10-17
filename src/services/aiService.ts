@@ -25,18 +25,6 @@ export interface VoiceGradingResult {
   phoneticTip: string;
 }
 
-export interface DailyRoutineResult {
-  headline: string;
-  totalMinutes: number;
-  blocks: {
-    minutes: number;
-    skillTitle: string;
-    drillTitle: string;
-    action: string;
-  }[];
-  dailyMantra: string;
-}
-
 export const aiService = {
   async chatWithOwl(
     message: string,
@@ -178,20 +166,6 @@ export const aiService = {
     return await res.json();
   },
 
-  async textToSpeech(text: string, voice = "onyx", speed = 1.0): Promise<Blob> {
-    const res = await fetch("/api/ai/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, speed }),
-    });
-
-    if (!res.ok) {
-      throw new Error("TTS API unavailable");
-    }
-
-    return await res.blob();
-  },
-
   async gradeVoice(
     audioFile: File | Blob | null,
     expectedText: string,
@@ -222,35 +196,6 @@ export const aiService = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || "Failed to grade voice pronunciation");
-    }
-
-    return await res.json();
-  },
-
-  async generateDailyRoutine(
-    enrolledSkills: any[],
-    completedStepIds: string[] = []
-  ): Promise<DailyRoutineResult> {
-    try {
-      const { data, error } = await supabase.functions.invoke("ai", {
-        body: { action: "daily-routine", enrolledSkills, completedStepIds },
-      });
-
-      if (!error && data && data.blocks) {
-        return data as DailyRoutineResult;
-      }
-    } catch {
-    }
-
-    const res = await fetch("/api/ai/daily-routine", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enrolledSkills, completedStepIds }),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to generate daily routine");
     }
 
     return await res.json();

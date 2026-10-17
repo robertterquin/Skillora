@@ -56,7 +56,7 @@ export default function LandingPage() {
             </h1>
             <p className="mt-6 text-base sm:text-lg text-ink-muted max-w-xl mx-auto leading-relaxed">
               Pick a practical skill. Archimedes turns it into a few short, ordered steps you can finish in one
-              sitting, with honest time estimates.
+              sitting.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">

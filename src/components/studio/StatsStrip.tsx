@@ -4,7 +4,6 @@ import { cn } from "@/lib/cn";
 
 interface StatsStripProps {
   week: WeekDayActivity[];
-  activeCount: number;
   stepsDone: number;
   masteredCount: number;
 }
@@ -38,17 +37,16 @@ function WeekDots({ week }: { week: WeekDayActivity[] }) {
 }
 
 /** One quiet row of progress numbers. */
-export function StatsStrip({ week, activeCount, stepsDone, masteredCount }: StatsStripProps) {
+export function StatsStrip({ week, stepsDone, masteredCount }: StatsStripProps) {
   const daysThisWeek = week.filter((d) => d.practiced).length;
   const stats = [
-    { label: "In progress", value: activeCount },
     { label: "Steps done", value: stepsDone },
     { label: "Mastered", value: masteredCount },
   ];
 
   return (
-    <dl className="grid grid-cols-3 sm:grid-cols-4 gap-px overflow-hidden rounded-2xl border border-surface-border bg-surface-border">
-      <div className="col-span-3 sm:col-span-1 bg-white px-5 py-4">
+    <dl className="grid grid-cols-2 sm:grid-cols-3 gap-px overflow-hidden rounded-2xl border border-surface-border bg-surface-border">
+      <div className="col-span-2 sm:col-span-1 bg-white px-5 py-4">
         <dt className="text-xs text-ink-muted">Practice days this week</dt>
         <dd className="mt-0.5">
           <span className="font-display font-semibold text-2xl text-ink tabular-nums">{daysThisWeek}</span>
