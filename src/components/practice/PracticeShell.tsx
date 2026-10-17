@@ -106,7 +106,7 @@ export function PracticeShell({
       labelledBy={titleId}
       className={cn("max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh]", className)}
     >
-      <header className="px-5 sm:px-6 pt-5 pb-4 bg-canvas border-b border-surface-border space-y-4">
+      <header className="px-5 sm:px-6 pt-5 pb-4 bg-canvas border-b border-surface-border space-y-4 print:hidden">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 shrink-0 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink">
@@ -130,7 +130,7 @@ export function PracticeShell({
       <div className="p-6 sm:p-8 flex-1 overflow-y-auto">{children}</div>
 
       {footer && (
-        <footer className="px-5 sm:px-6 py-4 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted">
+        <footer className="px-5 sm:px-6 py-4 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted print:hidden">
           {footer}
         </footer>
       )}
