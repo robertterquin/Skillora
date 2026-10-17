@@ -25,3 +25,5 @@ export * from "./ui/SkillFilterBar";
 export * from "./ui/UserAvatar";
 
 export * from "./chat";
+export * from "./learning";
+export * from "./practice";

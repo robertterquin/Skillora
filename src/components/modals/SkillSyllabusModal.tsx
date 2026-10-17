@@ -3,12 +3,13 @@
 import React, { useState, useId } from "react";
 import Link from "next/link";
 import { Skill } from "@/types/database";
-import { AppIcon } from "../ui/AppIcon";
+import { getCategoryStyle, getSkillProgress } from "@/lib/skill-progress";
+import { cn } from "@/lib/cn";
 import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
-import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
-import { isStepCompleted } from "@/lib/catalog-data";
+import { LearningPath, WatchRequest, formatMinutes } from "../learning";
+import { VideoPlayerModal } from "./VideoPlayerModal";
 
 interface SkillSyllabusModalProps {
   skill: Skill | null;
@@ -30,284 +31,106 @@ export function SkillSyllabusModal({
   onOpenGuildExam,
 }: SkillSyllabusModalProps) {
   const titleId = useId();
-  const [activeVideo, setActiveVideo] = useState<{ url: string; title: string; stepTitle?: string } | null>(null);
+  const [activeVideo, setActiveVideo] = useState<WatchRequest | null>(null);
 
   if (!skill) return null;
 
-  const steps = skill.steps || [];
-  const totalSteps = steps.length;
-  const completedCount = steps.filter((s) => isStepCompleted(s.id, completedStepIds)).length;
-  const progressPercent = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
-  const isAllComplete = totalSteps > 0 && completedCount === totalSteps;
+  const category = getCategoryStyle(skill);
+  const { steps, doneCount, totalCount, percent } = getSkillProgress(skill, completedStepIds);
+  const totalMinutes = steps.reduce((sum, s) => sum + (Number(s.estimated_minutes) || 0), 0);
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId} className="max-w-3xl bg-white border border-surface-border">
+    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh]">
       <div className="p-6 sm:p-8 bg-canvas border-b border-surface-border">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2 font-mono text-xs uppercase tracking-wider text-ink-subtle">
-              <span>{isViewOnly ? "PREVIEW" : "ACTIVE TRACK"}</span>
-              <span>·</span>
-              <span className="text-ink-muted">{skill.difficulty}</span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 text-xs text-ink-muted">
+              <span className={cn("inline-flex items-center gap-1.5 font-semibold", category.text)}>
+                <span className={cn("w-1.5 h-1.5 rounded-full", category.fill)} aria-hidden="true" />
+                {category.label}
+              </span>
+              <span aria-hidden="true">·</span>
+              <span className="capitalize">{skill.difficulty}</span>
+              <span aria-hidden="true">·</span>
+              <span>{totalCount} steps</span>
+              {totalMinutes > 0 && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>about {formatMinutes(totalMinutes)}</span>
+                </>
+              )}
             </div>
             <h2 id={titleId} className="font-serif italic font-normal text-3xl sm:text-4xl text-ink leading-tight">
               {skill.title}
             </h2>
           </div>
-          <IconButton
-            icon="close"
-            label="Close modal"
-            variant="ghost"
-            onClick={onClose}
-          />
+          <IconButton icon="close" label="Close" variant="ghost" onClick={onClose} />
         </div>
 
-        <p className="mt-3 text-sm text-ink-secondary leading-relaxed max-w-2xl">
-          {skill.summary}
-        </p>
+        <p className="mt-3 text-sm text-ink-secondary leading-relaxed max-w-prose">{skill.summary}</p>
 
-        <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted font-medium">
-          <span className="capitalize">{skill.difficulty}</span>
-          <span className="text-ink-subtle">·</span>
-          <span>{skill.time_commitment_label}</span>
-          <span className="text-ink-subtle">·</span>
-          <span>{skill.estimated_hours}h estimated</span>
-          <span className="text-ink-subtle">·</span>
-          <span>{totalSteps} steps</span>
-          {!isViewOnly && isAllComplete && (
-            <>
-              <span className="text-ink-subtle">·</span>
-              <span className="text-accent-emerald font-semibold inline-flex items-center gap-1">
-                <AppIcon name="cup-first-linear" className="w-3.5 h-3.5" />
-                <span>Mastered</span>
+        {!isViewOnly && totalCount > 0 && (
+          <div className="mt-5">
+            <div className="flex justify-between mb-1.5 text-xs text-ink-muted">
+              <span>
+                {doneCount} of {totalCount} steps done
               </span>
-            </>
-          )}
-        </div>
-
-        {!isViewOnly && (
-          <div className="mt-5 space-y-1.5">
-            <div className="flex justify-between text-xs text-ink-muted">
-              <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">Path Progress</span>
-              <span className="tabular-nums font-mono text-xs font-semibold text-ink">
-                {completedCount}/{totalSteps} ({progressPercent}%)
-              </span>
+              <span className="font-semibold text-ink tabular-nums">{percent}%</span>
             </div>
-            <div className="w-full h-1 bg-surface-muted rounded-full overflow-hidden">
+            <div
+              className="h-1.5 w-full rounded-full bg-surface-muted overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              aria-label={`${skill.title} progress`}
+            >
               <div
-                className={`h-full rounded-full transition-all duration-300 ease-out ${
-                  isAllComplete ? "bg-accent-emerald" : "bg-ink"
-                }`}
-                style={{ width: `${progressPercent}%` }}
+                className={cn("h-full rounded-full transition-all duration-500", category.fill)}
+                style={{ width: `${percent}%` }}
               />
             </div>
           </div>
         )}
-
-        {!isViewOnly && isAllComplete && (
-          <div className="mt-5 p-4 rounded-2xl bg-surface border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink flex-shrink-0 shadow-2xs">
-                <AppIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-mono font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
-                  <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE · ASSESSMENT UNLOCKED"}</span>
-                </div>
-                <div className="text-xs text-ink-secondary mt-0.5">
-                  {isGuildCertified
-                    ? "You hold the verified Certificate of Mastery for this skill."
-                    : "Complete the final assessment to earn your verified Certificate of Mastery."}
-                </div>
-              </div>
-            </div>
-            {onOpenGuildExam && (
-              <button
-                type="button"
-                onClick={() => onOpenGuildExam(skill)}
-                className="px-4 py-2 rounded-xl bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
-              >
-                <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
-                <AppIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
-      <div className="p-6 sm:p-8 max-h-[60vh] overflow-y-auto space-y-6">
-        <h3 className="font-display font-semibold text-base text-ink mb-2">
-          Steps
-        </h3>
-
-        <div className="space-y-4">
-          {steps.map((step) => {
-            const isStepDone = !isViewOnly && isStepCompleted(step.id, completedStepIds);
-
-            return (
-              <div
-                key={step.id}
-                className={`p-5 rounded-2xl border transition-all ${
-                  isStepDone
-                    ? "bg-canvas border-accent-emerald/30 shadow-xs"
-                    : "bg-white border-surface-border hover:border-ink-muted/30"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    {!isViewOnly ? (
-                      <button
-                        type="button"
-                        onClick={() => onToggleStep && onToggleStep(step.id)}
-                        className="mt-0.5 text-ink-subtle hover:text-ink transition cursor-pointer"
-                        aria-label={isStepDone ? "Mark step incomplete" : "Mark step completed"}
-                      >
-                        {isStepDone ? (
-                          <AppIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border border-surface-border hover:border-ink bg-white transition shadow-2xs" />
-                        )}
-                      </button>
-                    ) : (
-                      <div className="w-5 h-5 rounded-md bg-canvas border border-surface-border flex items-center justify-center font-mono text-xs font-semibold text-ink mt-0.5">
-                        {step.step_number}
-                      </div>
-                    )}
-                    <div>
-                      <div className="text-xs font-mono text-ink-subtle mb-0.5">
-                        Step {step.step_number} · ~{step.estimated_minutes} mins
-                      </div>
-                      <h4 className={`font-serif italic font-normal text-lg sm:text-xl leading-snug ${isStepDone ? "line-through text-ink-muted" : "text-ink"}`}>
-                        {step.title}
-                      </h4>
-                    </div>
-                  </div>
-
-                  {!isViewOnly ? (
-                    <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-full transition ${
-                      isStepDone
-                        ? "bg-accent-emerald/10 text-accent-emerald"
-                        : "text-ink-subtle bg-surface-muted"
-                    }`}>
-                      {isStepDone ? "Done" : `${step.estimated_minutes}m`}
-                    </span>
-                  ) : (
-                    <span className="text-xs font-mono text-ink-subtle">
-                      ~{step.estimated_minutes}m
-                    </span>
-                  )}
-                </div>
-
-                <div className={`mt-4 ${isViewOnly ? "pl-10" : "pl-9"} text-sm text-ink-secondary leading-relaxed`}>
-                  <p>{step.instructions}</p>
-                </div>
-
-                {step.resources && step.resources.length > 0 && (
-                  <div className={`mt-4 ${isViewOnly ? "pl-10" : "pl-9"} pt-3 border-t border-surface-border/60`}>
-                    <div className="text-xs font-semibold text-ink-muted mb-2">
-                      Resources:
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {step.resources.map((res) => {
-                        const isYouTube = !!extractYouTubeId(res.url);
-
-                        if (isYouTube) {
-                          return (
-                            <div
-                              key={res.id}
-                              className="inline-flex items-center rounded-xl overflow-hidden border border-accent-vermilion-border bg-accent-vermilion-light hover:bg-accent-vermilion-border/80 transition shadow-2xs group"
-                            >
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setActiveVideo({
-                                    url: res.url,
-                                    title: res.platform_name,
-                                    stepTitle: step.title,
-                                  })
-                                }
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-ink transition cursor-pointer"
-                                title="Watch tutorial inside workbench player"
-                              >
-                                <AppIcon name="play-linear" className="w-3.5 h-3.5 text-accent-vermilion group-hover:scale-110 transition" />
-                                <span>{res.platform_name}</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-white text-accent-vermilion font-semibold font-mono">
-                                  Watch
-                                </span>
-                              </button>
-
-                              <a
-                                href={res.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-2 py-1.5 text-accent-vermilion hover:text-ink hover:bg-accent-vermilion-border/60 border-l border-accent-vermilion-border transition flex items-center"
-                                title="Open directly on YouTube (external link)"
-                              >
-                                <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
-                              </a>
-                            </div>
-                          );
-                        }
-
-                        return (
-                          <a
-                            key={res.id}
-                            href={res.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-muted hover:bg-brand-50 border border-surface-border hover:border-brand-500/30 text-xs font-medium text-ink hover:text-brand-700 transition"
-                          >
-                            <span>{res.platform_name}</span>
-                            <span className="text-xs px-1 py-px rounded bg-white text-ink-muted font-normal">
-                              {res.is_free ? "Free" : "Course"}
-                            </span>
-                            <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
+        <LearningPath
+          skill={skill}
+          completedStepIds={completedStepIds}
+          isPreview={isViewOnly}
+          onToggleStep={isViewOnly ? undefined : onToggleStep}
+          onWatch={setActiveVideo}
+          isCertified={isGuildCertified}
+          onOpenAssessment={onOpenGuildExam ? () => onOpenGuildExam(skill) : undefined}
+        />
       </div>
 
-      <div className="p-4 sm:p-6 bg-canvas border-t border-surface-border flex items-center justify-between">
+      <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between gap-3">
         <span className="text-xs text-ink-muted">
-          {isViewOnly
-            ? "Sign up to track your progress."
-            : "Progress saves automatically."}
+          {isViewOnly ? "Sign up to track your progress." : "Progress saves automatically."}
         </span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {isViewOnly && (
-            <Link
-              href="/signup"
-              className={buttonClasses()}
-            >
+            <Link href="/signup" className={buttonClasses({ size: "sm" })}>
               Start this skill
             </Link>
           )}
-          <button
-            type="button"
-            onClick={onClose}
-            className={buttonClasses({ variant: "secondary", size: "sm" })}
-          >
+          <button type="button" onClick={onClose} className={buttonClasses({ variant: "secondary", size: "sm" })}>
             Close
           </button>
         </div>
       </div>
 
-    {activeVideo && (
-      <VideoPlayerModal
-        isOpen={!!activeVideo}
-        onClose={() => setActiveVideo(null)}
-        videoUrl={activeVideo.url}
-        title={activeVideo.title}
-        stepTitle={activeVideo.stepTitle}
-      />
-    )}
+      {activeVideo && (
+        <VideoPlayerModal
+          isOpen
+          onClose={() => setActiveVideo(null)}
+          videoUrl={activeVideo.url}
+          title={activeVideo.title}
+          stepTitle={activeVideo.stepTitle}
+        />
+      )}
     </Modal>
   );
 }

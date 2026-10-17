@@ -1,10 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useId } from "react";
-import { AppIcon } from "../ui/AppIcon";
-import { IconButton } from "../ui/IconButton";
-import { Modal } from "../ui/Modal";
-import { buttonClasses } from "../ui/Button";
 import {
   playMechanicalClick,
   playChime,
@@ -17,6 +13,8 @@ import {
   recordDrillPractice,
 } from "@/lib/spaced-repetition";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
+import { getCategoryStyle } from "@/lib/skill-progress";
+import { PracticeShell, RecallRating, SessionSummary, SprintTimer, StepIndicator } from "../practice";
 
 interface GuidedPracticeSessionModalProps {
   isOpen: boolean;
@@ -44,7 +42,6 @@ export function GuidedPracticeSessionModal({
   const [targetSeconds, setTargetSeconds] = useState(300);
 
   const [repCount, setRepCount] = useState(0);
-  const [isEvaluationReady, setIsEvaluationReady] = useState(false);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
 
   const [metronomeActive, setMetronomeActive] = useState(false);
@@ -86,7 +83,6 @@ export function GuidedPracticeSessionModal({
       setSecondsRemaining(totalSec);
       setTargetSeconds(totalSec);
       setIsRunning(false);
-      setIsEvaluationReady(false);
       setRepCount(0);
       setMetronomeActive(false);
       if (profile.defaultBpm) {
@@ -103,7 +99,6 @@ export function GuidedPracticeSessionModal({
         if (prev <= 1) {
           playChime();
           setIsRunning(false);
-          setIsEvaluationReady(true);
           return 0;
         }
         return prev - 1;
@@ -233,395 +228,76 @@ export function GuidedPracticeSessionModal({
 
   if (!isOpen || sessionItems.length === 0) return null;
 
-  const currentDisplayItem = sessionItems[currentIndex] || sessionItems[0];
-  const { skill, step, urgency, daysOverdue } = currentDisplayItem;
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  };
-
-  const progressPercent =
-    targetSeconds > 0
-      ? Math.round(((targetSeconds - secondsRemaining) / targetSeconds) * 100)
-      : 0;
+  const { skill, step, urgency, daysOverdue } = sessionItems[currentIndex] || sessionItems[0];
+  const category = getCategoryStyle(skill);
 
   return (
-    <Modal onClose={onClose} labelledBy={titleId} className="max-w-2xl bg-white border border-surface-border flex flex-col max-h-[92vh] text-ink select-none">
-      <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
-            <AppIcon name="stopwatch-linear" className="w-5 h-5 text-ink" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="spec-tag text-ink-muted">DAILY PRACTICE SESSION</span>
-              <span className="text-xs font-mono font-bold text-warning-strong">
-                DRILL {currentIndex + 1} OF {sessionItems.length}
-              </span>
-            </div>
-            <h2 id={titleId} className="font-display font-bold text-base text-ink leading-tight">
-              {isSessionComplete ? "Practice Completed" : skill.title}
-            </h2>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
+    <PracticeShell
+      titleId={titleId}
+      icon="stopwatch-linear"
+      title={isSessionComplete ? "Practice complete" : skill.title}
+      eyebrow={
+        <>
+          <span>Daily practice</span>
           {!isSessionComplete && (
-            <span
-              className={`text-xs font-mono uppercase px-2.5 py-0.5 rounded-full font-bold ${
-                urgency === "overdue" || urgency === "due_today"
-                  ? "bg-surface-muted text-ink border border-surface-border"
-                  : "bg-surface-muted text-ink-secondary border border-surface-border"
-              }`}
-            >
-              {urgency === "overdue"
-                ? `OVERDUE (+${daysOverdue}d)`
-                : urgency === "due_today"
-                ? "DUE TODAY"
-                : "ACTIVE DRILL"}
-            </span>
+            <>
+              <span aria-hidden="true">·</span>
+              <span className={category.text}>{category.label}</span>
+            </>
           )}
-
-          <IconButton
-            icon="close"
-            label="Close practice station"
-            variant="ghost"
-            onClick={onClose}
-          />
-        </div>
-      </div>
-
-      <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
-        {!isSessionComplete ? (
-          <div className="space-y-6">
-            <div className="p-5 rounded-2xl bg-white border border-brand-300 shadow-2xs">
-              <div className="flex items-center justify-between text-xs text-ink-muted font-mono mb-2 flex-wrap gap-2">
-                <span className="text-xs tracking-wider uppercase font-semibold text-ink bg-surface-muted px-2 py-0.5 rounded border border-surface-border">
-                  {profile.tagLabel}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span>STEP {step.step_number}</span>
-                  <span>·</span>
-                  <span>EST. {step.estimated_minutes} MINS</span>
-                </div>
-              </div>
-              <h3 className="font-display font-bold text-xl text-ink mb-2">
-                {step.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed font-sans">
-                {step.instructions}
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-paper-warm border border-brand-300 text-center relative overflow-hidden">
-              <div className="flex flex-col items-center justify-center">
-                <div className="font-mono text-5xl sm:text-6xl font-black text-ink tracking-tight tabular-nums my-1">
-                  {formatTime(secondsRemaining)}
-                </div>
-
-                <div className="w-56 h-1.5 bg-brand-300 rounded-full overflow-hidden my-3">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      secondsRemaining === 0 ? "bg-accent-emerald" : "bg-ink"
-                    }`}
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-
-                {secondsRemaining === 0 && (
-                  <div className="text-xs font-mono font-bold text-accent-emerald mb-2 animate-bounce">
-                    ✓ Time Completed! Rate your recall below.
-                  </div>
-                )}
-
-                <div className="flex items-center justify-center gap-1.5 mb-3 flex-wrap">
-                  <span className="text-xs font-mono text-ink-muted uppercase tracking-wider mr-1">
-                    Sprint Mode:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSprintDuration(15)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition cursor-pointer ${
-                      targetSeconds === 15 * 60
-                        ? "bg-ink text-white shadow-2xs"
-                        : "bg-white border border-brand-300 text-ink-secondary hover:bg-surface-subtle"
-                    }`}
-                  >
-                    15m Sprint
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSprintDuration(20)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition cursor-pointer ${
-                      targetSeconds === 20 * 60
-                        ? "bg-ink text-white shadow-2xs"
-                        : "bg-white border border-brand-300 text-ink-secondary hover:bg-surface-subtle"
-                    }`}
-                  >
-                    20m Focus
-                  </button>
-                  {Number(step.estimated_minutes) > 20 && (
-                    <button
-                      type="button"
-                      onClick={() => setSprintDuration(Number(step.estimated_minutes))}
-                      className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition cursor-pointer ${
-                        targetSeconds === Number(step.estimated_minutes) * 60
-                          ? "bg-ink text-white shadow-2xs"
-                          : "bg-white border border-brand-300 text-ink-secondary hover:bg-surface-subtle"
-                      }`}
-                    >
-                      Full Step ({step.estimated_minutes}m)
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={toggleTimer}
-                    className={`px-6 py-2.5 rounded-full font-mono text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer ${
-                      isRunning
-                        ? "bg-warning hover:bg-warning-hover text-white"
-                        : "bg-ink hover:bg-brand-500 text-white"
-                    }`}
-                  >
-                    <AppIcon
-                      name={isRunning ? "pause-linear" : "play-linear"}
-                      className="w-4 h-4"
-                    />
-                    <span>{isRunning ? "Pause Clock" : "Start Clock"}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={resetTimer}
-                    className={buttonClasses({ variant: "secondary" })}
-                    title="Reset clock to drill duration"
-                  >
-                    <AppIcon name="restart-linear" className="w-3.5 h-3.5" />
-                    <span>Reset</span>
-                  </button>
-
-                  {profile.isRhythmCadenceSupported ? (
-                    <div className="inline-flex items-center rounded-full border border-brand-300 bg-white overflow-hidden shadow-2xs">
-                      <button
-                        type="button"
-                        onClick={toggleMetronome}
-                        className={`px-3 py-2 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                          metronomeActive
-                            ? "bg-ink text-white"
-                            : "text-ink-secondary hover:bg-surface-subtle"
-                        }`}
-                        title={metronomeActive ? "Cadence active (click to mute)" : `Activate rhythmic ${profile.cadenceLabel || "metronome"}`}
-                      >
-                        <AppIcon
-                          name={metronomeActive ? "volume-loud-linear" : "tuning-2-linear"}
-                          className={`w-3.5 h-3.5 ${metronomeActive ? "animate-pulse" : ""}`}
-                        />
-                        <span>{metronomeActive ? `${profile.cadenceLabel || "Pulse"}: ${metronomeBpm}` : `${metronomeBpm} BPM`}</span>
-                      </button>
-
-                      <div className="flex border-l border-surface-border">
-                        <button
-                          type="button"
-                          onClick={() => changeBpm(-10)}
-                          className="px-2 py-2 text-xs font-mono text-ink-secondary hover:bg-surface-subtle transition cursor-pointer"
-                          title="Slow tempo (-10 BPM)"
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => changeBpm(+10)}
-                          className="px-2 py-2 text-xs font-mono text-ink-secondary hover:bg-surface-subtle border-l border-surface-border transition cursor-pointer"
-                          title="Increase tempo (+10 BPM)"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-brand-300 text-ink-secondary text-xs font-mono shadow-2xs">
-                      <AppIcon name="target-linear" className="w-3.5 h-3.5 text-ink-subtle" />
-                      <span>Deep Focus Sprint</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-brand-300/80 space-y-2">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <div className="text-left">
-                    <span className="text-xs text-ink-muted uppercase block tracking-wider font-semibold">
-                      {profile.metricHeading}
-                    </span>
-                    <strong className="text-base text-ink font-bold tabular-nums">
-                      {repCount} {profile.metricUnitNoun}
-                    </strong>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={incrementRep}
-                      className={buttonClasses({ variant: "secondary" })}
-                    >
-                      <AppIcon name="add-circle-linear" className="w-4 h-4 text-warning" />
-                      <span>{profile.actionButtonLabel}</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-1.5 text-xs font-sans text-ink-secondary bg-white/70 px-3 py-1.5 rounded-lg border border-surface-border/70 text-left">
-                  <AppIcon name="info-circle-linear" className="w-3.5 h-3.5 text-ink-subtle mt-0.5 flex-shrink-0" />
-                  <span>{profile.guidanceTip}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white border border-brand-300 shadow-2xs">
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-surface-border">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-surface-muted border border-surface-border flex items-center justify-center text-ink">
-                    <AppIcon name="tuning-2-linear" className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="font-display font-bold text-sm text-ink">
-                    Rate Recall & Understanding
-                  </span>
-                </div>
-                <span className="text-xs font-mono text-ink-muted uppercase">
-                  SPACED REPETITION REVIEW
-                </span>
-              </div>
-
-              <p className="text-xs text-ink-secondary mb-4 font-sans">
-                How comfortable did you feel during this drill? Select a rating to set your next review date:
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleRateRecall(1)}
-                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-paper/60 text-left transition group cursor-pointer shadow-2xs"
-                >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
-                    <span>{profile.recallPrompts.hard.title}</span>
-                    <span className="text-xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">1 Day</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-tight">
-                    {profile.recallPrompts.hard.desc}
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRateRecall(2)}
-                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-paper/60 text-left transition group cursor-pointer shadow-2xs"
-                >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
-                    <span>{profile.recallPrompts.solid.title}</span>
-                    <span className="text-xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">3-4 Days</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-tight">
-                    {profile.recallPrompts.solid.desc}
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRateRecall(3)}
-                  className="p-3.5 rounded-xl border border-surface-border hover:border-ink/50 bg-white hover:bg-paper/60 text-left transition group cursor-pointer shadow-2xs"
-                >
-                  <div className="flex items-center justify-between font-mono text-xs font-bold text-ink mb-1">
-                    <span>{profile.recallPrompts.effortless.title}</span>
-                    <span className="text-xs bg-surface-muted text-ink-muted border border-surface-border px-1.5 py-0.5 rounded font-mono">7-10 Days</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-tight">
-                    {profile.recallPrompts.effortless.desc}
-                  </p>
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8 space-y-6 max-w-md mx-auto">
-            <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-sm">
-                <AppIcon name="check-circle-bold" className="w-9 h-9" />
-              </div>
-            </div>
-
-            <div>
-              <span className="spec-tag text-ink bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full text-xs font-bold">
-                PRACTICE SESSION COMPLETED
+        </>
+      }
+      onClose={onClose}
+      className="max-w-2xl select-none"
+      headerActions={
+        !isSessionComplete && (urgency === "overdue" || urgency === "due_today") ? (
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-warning-light text-warning-strong border border-warning-border whitespace-nowrap">
+            {urgency === "overdue" ? `Overdue ${daysOverdue}d` : "Due today"}
+          </span>
+        ) : undefined
+      }
+      indicator={
+        <StepIndicator
+          noun="Drill"
+          total={sessionItems.length}
+          current={isSessionComplete ? sessionItems.length - 1 : currentIndex}
+          isDone={(i) => isSessionComplete || i < currentIndex}
+        />
+      }
+    >
+      {!isSessionComplete ? (
+        <div className="space-y-6">
+          <section className="p-5 rounded-2xl bg-white border border-surface-border shadow-2xs">
+            <div className="flex items-center justify-between text-xs text-ink-muted mb-2 flex-wrap gap-2">
+              <span className="font-semibold text-ink bg-surface-muted px-2 py-0.5 rounded border border-surface-border">
+                {profile.tagLabel}
               </span>
-              <h3 className="font-display font-bold text-2xl text-ink mt-3">
-                Great Work Today!
-              </h3>
-              <p className="text-xs sm:text-sm text-ink-secondary mt-2 leading-relaxed font-sans">
-                You have completed all {sessionItems.length} practice drills scheduled for today. Keep building your consistency!
-              </p>
+              <span>
+                Step {step.step_number} · about {step.estimated_minutes} min
+              </span>
             </div>
+            <h3 className="font-display font-bold text-xl text-ink mb-2">{step.title}</h3>
+            <p className="text-sm text-ink-secondary leading-relaxed">{step.instructions}</p>
+          </section>
 
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 text-left">
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
-                  <AppIcon name="check-circle-linear" className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Completed
-                  </div>
-                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 tabular-nums">
-                    {sessionItems.length}
-                  </div>
-                  <div className="text-xs text-ink-muted mt-0.5 font-sans">exercises</div>
-                </div>
-              </div>
+          <SprintTimer
+            profile={profile}
+            stepMinutes={Number(step.estimated_minutes) || 0}
+            secondsRemaining={secondsRemaining}
+            targetSeconds={targetSeconds}
+            isRunning={isRunning}
+            onToggle={toggleTimer}
+            onReset={resetTimer}
+            onSetDuration={setSprintDuration}
+            metronome={{ active: metronomeActive, bpm: metronomeBpm, onToggle: toggleMetronome, onChangeBpm: changeBpm }}
+            reps={{ count: repCount, onAdd: incrementRep }}
+          />
 
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
-                  <AppIcon name="fire-linear" className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Daily Streak
-                  </div>
-                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 tabular-nums">
-                    +1 Day
-                  </div>
-                  <div className="text-xs text-ink-muted font-medium mt-0.5 font-sans">Extended</div>
-                </div>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-surface-border shadow-2xs text-center flex flex-col justify-between">
-                <div className="w-7 h-7 mx-auto rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink-muted mb-2">
-                  <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
-                    Next Review
-                  </div>
-                  <div className="font-display font-bold text-base sm:text-lg text-ink mt-0.5 font-sans">
-                    Tomorrow
-                  </div>
-                  <div className="text-xs text-ink-muted mt-0.5 font-sans">Scheduled</div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className={buttonClasses({ className: "w-full font-mono" })}
-            >
-              Back to Studio
-            </button>
-          </div>
-        )}
-      </div>
-    </Modal>
+          <RecallRating profile={profile} onRate={handleRateRecall} />
+        </div>
+      ) : (
+        <SessionSummary drillCount={sessionItems.length} onClose={onClose} />
+      )}
+    </PracticeShell>
   );
 }

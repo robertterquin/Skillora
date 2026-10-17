@@ -1,0 +1,120 @@
+"use client";
+
+import React from "react";
+import { Skill, SkillStep } from "@/types/database";
+import { playChime, playMechanicalClick, playStampThud, playWoodenThud } from "@/lib/workbench-audio";
+import { cn } from "@/lib/cn";
+import { AppIcon } from "../ui/AppIcon";
+import { Button } from "../ui/Button";
+import { StepResources, WatchRequest, formatMinutes } from "../learning";
+import { StepPracticeAid } from "./StepPracticeAid";
+
+interface StepCardProps {
+  skill: Skill;
+  step: SkillStep;
+  isDone: boolean;
+  showNotes: boolean;
+  onToggleNotes: () => void;
+  onToggleDone: () => void;
+  onSpeak: (text: string, lang?: string) => void;
+  onWatch: (video: WatchRequest) => void;
+}
+
+/** One step: the practice aid on the front, technique notes and resources on the back. */
+export function StepCard({
+  skill,
+  step,
+  isDone,
+  showNotes,
+  onToggleNotes,
+  onToggleDone,
+  onSpeak,
+  onWatch,
+}: StepCardProps) {
+  return (
+    <article
+      className={cn(
+        "w-full max-w-xl min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border bg-surface flex flex-col shadow-card transition-colors",
+        showNotes ? "border-ink/40" : "border-surface-border"
+      )}
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-surface-border pb-3 mb-2">
+        <div className="flex items-center gap-2 text-xs text-ink-muted">
+          <span className="font-semibold text-ink">Step {step.step_number}</span>
+          {step.estimated_minutes > 0 && (
+            <span className="inline-flex items-center gap-1">
+              <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
+              {formatMinutes(step.estimated_minutes)}
+            </span>
+          )}
+          {isDone && (
+            <span className="inline-flex items-center gap-1 text-success font-semibold">
+              <AppIcon name="check-circle-bold" className="w-3.5 h-3.5" />
+              Done
+            </span>
+          )}
+        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          aria-pressed={showNotes}
+          onClick={() => {
+            playWoodenThud();
+            onToggleNotes();
+          }}
+        >
+          <AppIcon name={showNotes ? "play-linear" : "document-text-linear"} className="w-3.5 h-3.5" />
+          <span>{showNotes ? "Practice" : "Notes"}</span>
+        </Button>
+      </div>
+
+      <div className="my-auto py-2">
+        {!showNotes ? (
+          <div className="text-center">
+            <h3 className="font-serif italic text-2xl sm:text-3xl text-ink max-w-lg mx-auto leading-tight mb-1">
+              {step.title}
+            </h3>
+            <StepPracticeAid
+              step={step}
+              skill={skill}
+              onSpeak={onSpeak}
+              onOpenVideo={(video) => onWatch(video)}
+            />
+          </div>
+        ) : (
+          <div className="text-left animate-fade-in space-y-4">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-2">Technique notes</h4>
+              <p className="text-[15px] text-ink leading-relaxed">{step.instructions}</p>
+            </div>
+            {step.resources && step.resources.length > 0 && (
+              <div className="pt-3 border-t border-surface-border">
+                <h4 className="text-xs font-semibold text-ink-muted mb-2">Resources</h4>
+                <StepResources resources={step.resources} stepTitle={step.title} onWatch={onWatch} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="pt-3 border-t border-surface-border flex justify-end">
+        <Button
+          size="sm"
+          variant={isDone ? "secondary" : "primary"}
+          onClick={() => {
+            if (isDone) {
+              playMechanicalClick();
+            } else {
+              playStampThud();
+              playChime();
+            }
+            onToggleDone();
+          }}
+        >
+          <AppIcon name={isDone ? "check-circle-bold" : "check-circle-linear"} className={cn("w-3.5 h-3.5", isDone && "text-success")} />
+          <span>{isDone ? "Done" : "Mark as done"}</span>
+        </Button>
+      </div>
+    </article>
+  );
+}

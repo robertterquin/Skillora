@@ -10,6 +10,8 @@ export interface CategoryStyle {
   fill: string;
   /** Soft background for tags. */
   soft: string;
+  /** Border colour for outlined nodes and rings. */
+  border: string;
 }
 
 // Literal class strings so Tailwind can see them.
@@ -19,24 +21,28 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
     text: "text-deck-music",
     fill: "bg-deck-music",
     soft: "bg-deck-music/10",
+    border: "border-deck-music",
   },
   "22222222-2222-2222-2222-222222222222": {
     label: "Languages",
     text: "text-deck-languages",
     fill: "bg-deck-languages",
     soft: "bg-deck-languages/10",
+    border: "border-deck-languages",
   },
   "33333333-3333-3333-3333-333333333333": {
     label: "Crafts & life",
     text: "text-deck-life",
     fill: "bg-deck-life",
     soft: "bg-deck-life/10",
+    border: "border-deck-life",
   },
   "44444444-4444-4444-4444-444444444444": {
     label: "Tech",
     text: "text-deck-tech",
     fill: "bg-deck-tech",
     soft: "bg-deck-tech/10",
+    border: "border-deck-tech",
   },
 };
 
@@ -48,6 +54,7 @@ export function getCategoryStyle(skill: Skill): CategoryStyle {
       text: "text-ink-secondary",
       fill: "bg-ink",
       soft: "bg-surface-muted",
+      border: "border-ink",
     }
   );
 }
