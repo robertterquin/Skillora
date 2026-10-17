@@ -2,11 +2,12 @@
 
 import React from "react";
 import { Category } from "@/types/database";
+import type { DurationFilter } from "@/lib/skill-progress";
 import { Input } from "./Input";
 import { IconButton } from "./IconButton";
 import { SegmentedControl } from "./SegmentedControl";
 
-export type DurationFilter = "all" | "quick" | "sprint" | "deep";
+export type { DurationFilter };
 
 interface SkillFilterBarProps {
   categories: Category[];
