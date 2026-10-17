@@ -615,6 +615,20 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [sendMessage]
   );
 
+  /** Asks Archimedes to rebuild a draft plan with fewer or more steps. */
+  const resizeCurriculum = useCallback(
+    async (skill: Skill, direction: "shorter" | "longer") => {
+      const title = skill.title.replace(/\s*\((Quick|Extended) version\)$/, "");
+      await sendMessage(
+        direction === "shorter"
+          ? `Make the "${title}" plan shorter`
+          : `Make the "${title}" plan longer and more thorough`,
+        "curriculum"
+      );
+    },
+    [sendMessage]
+  );
+
   const enrollSkill = useCallback(
     async (skillToEnroll: Skill): Promise<boolean> => {
       playStampThud();
@@ -670,6 +684,7 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     setVoiceEnabled,
     sendMessage,
     buildCurriculum,
+    resizeCurriculum,
     enrollSkill,
     toggleVoiceListening,
     speakOwlVoice,

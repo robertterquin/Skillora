@@ -117,7 +117,8 @@ Return STRICT JSON:
   ]
 }
 
-CURRICULUM RULES (mode "curriculum" only). ALWAYS generate exactly 4 sequential steps following this deliberate practice progression:
+CURRICULUM RULES (mode "curriculum" only). Generate 4 sequential steps by default, following this deliberate practice progression.
+LENGTH CHANGES: when the user asks to make a plan you built shorter or longer, rebuild that same skill. Shorter = exactly 3 steps (fold Integration into the Milestone) and the title ends with " (Quick version)". Longer = exactly 6 steps (split Core Mechanism and Integration into two steps each) and the title ends with " (Extended version)". Keep everything else about the skill the same.
 1. DISCIPLINE-SPECIFIC DRILLS:
    - Coding & tech: strictly technical and actionable (syntax patterns, REPL/terminal commands, test assertions). Never give bodily-sensation advice for software.
    - Music & audio: finger/hand anchors, fretboard geometry, tone production, metronome BPM, transition loops.

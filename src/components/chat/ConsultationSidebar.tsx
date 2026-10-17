@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { OwlConsultation } from "@/types/owl";
 import { IconButton } from "@/components/ui/IconButton";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -34,6 +34,18 @@ export function ConsultationSidebar({
   onNew,
   onDelete,
 }: ConsultationSidebarProps) {
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+
+  // On phones the sidebar is an overlay drawer, so Escape should close it.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && window.innerWidth < 768) onToggle();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onToggle]);
+
   const groups: GroupedConsultations[] = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -91,7 +103,7 @@ export function ConsultationSidebar({
       >
         <div className="w-full h-full flex flex-col bg-canvas">
           <div className="h-12 px-3.5 border-b border-surface-border/70 flex items-center justify-between gap-2 shrink-0 bg-canvas">
-            <span className="text-xs font-semibold text-ink tracking-tight">
+            <span className="text-sm font-semibold text-ink tracking-tight">
               Past chats
             </span>
 
@@ -109,7 +121,7 @@ export function ConsultationSidebar({
             <button
               type="button"
               onClick={onNew}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-surface hover:bg-white border border-surface-border hover:border-ink/20 text-xs font-medium text-ink shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-surface hover:bg-white border border-surface-border hover:border-ink/20 text-sm font-medium text-ink shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-2">
                 <AppIcon
@@ -118,7 +130,7 @@ export function ConsultationSidebar({
                 />
                 <span>New chat</span>
               </div>
-              <kbd className="text-xs font-mono px-1.5 py-0.5 rounded bg-surface-muted text-ink-muted border border-surface-border/60">
+              <kbd className="hidden md:inline text-xs font-mono px-1.5 py-0.5 rounded bg-surface-muted text-ink-muted border border-surface-border/60">
                 ⌘N
               </kbd>
             </button>
@@ -126,7 +138,7 @@ export function ConsultationSidebar({
 
           <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1 space-y-3 no-scrollbar">
             {groups.length === 0 ? (
-              <div className="text-center py-8 text-xs text-ink-muted font-serif italic">
+              <div className="text-center py-8 text-sm text-ink-muted">
                 No past chats yet.
               </div>
             ) : (
@@ -136,57 +148,81 @@ export function ConsultationSidebar({
                     {group.label}
                   </div>
 
-                  <div className="space-y-0.5">
+                  <ul className="space-y-0.5">
                     {group.items.map((c) => {
                       const isActive = c.id === activeConsultationId;
+                      const title = !c.title || c.title === "New Inquiry" ? "New chat" : c.title;
+
+                      if (confirmingId === c.id) {
+                        return (
+                          <li
+                            key={c.id}
+                            className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-danger-light border border-danger-border"
+                          >
+                            <span className="text-sm text-ink truncate">Delete this chat?</span>
+                            <span className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfirmingId(null);
+                                  onDelete(c.id);
+                                }}
+                                className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-semibold hover:bg-danger-hover cursor-pointer"
+                              >
+                                Delete
+                              </button>
+                              <button
+                                type="button"
+                                autoFocus
+                                onClick={() => setConfirmingId(null)}
+                                className="px-2 py-1 rounded-lg text-xs font-semibold text-ink-secondary hover:bg-white cursor-pointer"
+                              >
+                                Cancel
+                              </button>
+                            </span>
+                          </li>
+                        );
+                      }
 
                       return (
-                        <div
+                        <li
                           key={c.id}
-                          onClick={() => onSelect(c.id)}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              onSelect(c.id);
-                            }
-                          }}
-                          className={`group relative flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                          className={`group relative flex items-center rounded-xl transition-colors ${
                             isActive
-                              ? "bg-surface border border-surface-border shadow-2xs text-ink font-medium"
-                              : "text-ink-secondary hover:text-ink hover:bg-surface/60 border border-transparent"
+                              ? "bg-surface border border-surface-border shadow-2xs"
+                              : "border border-transparent hover:bg-surface/60"
                           }`}
                         >
-                          <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-1.5">
+                          <button
+                            type="button"
+                            onClick={() => onSelect(c.id)}
+                            aria-current={isActive ? "page" : undefined}
+                            className={`flex-1 min-w-0 flex items-center gap-2.5 pl-2.5 pr-1 py-2 text-left cursor-pointer rounded-xl ${
+                              isActive ? "text-ink font-medium" : "text-ink-secondary hover:text-ink"
+                            }`}
+                          >
                             <AppIcon
                               name="chat-round-dots-linear"
                               className={`w-3.5 h-3.5 shrink-0 ${
-                                isActive
-                                  ? "text-accent-vermilion"
-                                  : "text-ink-subtle group-hover:text-ink-secondary"
+                                isActive ? "text-accent-vermilion" : "text-ink-subtle group-hover:text-ink-secondary"
                               }`}
                             />
-                            <span className="text-xs truncate flex-1 leading-snug">
-                              {!c.title || c.title === "New Inquiry" ? "New chat" : c.title}
-                            </span>
-                          </div>
+                            <span className="text-sm truncate leading-snug">{title}</span>
+                          </button>
 
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDelete(c.id);
-                            }}
-                            className="opacity-70 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 hover:text-danger p-1 rounded-md text-ink-muted hover:bg-danger-light transition cursor-pointer shrink-0"
-                            aria-label={`Delete chat "${c.title}"`}
+                            onClick={() => setConfirmingId(c.id)}
+                            className="mr-1 p-1.5 rounded-md text-ink-muted hover:text-danger hover:bg-danger-light opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition cursor-pointer shrink-0"
+                            aria-label={`Delete chat "${title}"`}
                             title="Delete chat"
                           >
                             <AppIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
                           </button>
-                        </div>
+                        </li>
                       );
                     })}
-                  </div>
+                  </ul>
                 </div>
               ))
             )}
@@ -207,7 +243,7 @@ export function ConsultationSidebar({
                   : "Local storage"}
               </span>
             </div>
-            <span className="text-ink-subtle text-xs">⌘B</span>
+            <span className="hidden md:inline text-ink-subtle text-xs">⌘B</span>
           </div>
         </div>
       </aside>

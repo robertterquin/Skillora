@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Skill } from "@/types/database";
 import { INITIAL_SKILLS, normalizeSkillId } from "@/lib/catalog-data";
 import { getSupabase } from "@/lib/supabase";
 import { fetchLiveSkills } from "@/services/skillsService";
-import { readJSON, STORAGE_KEYS } from "@/lib/storage";
+import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
 
 /**
  * Every skill the Studio can show: the live catalog (or the built-in fallback)
@@ -39,5 +39,14 @@ export function useStudioCatalog() {
     };
   }, []);
 
-  return { allSkills, isLoaded };
+  /** Saves an AI-built skill in this browser so the Studio can show it. */
+  const rememberSkill = useCallback((skill: Skill) => {
+    const id = normalizeSkillId(skill.id);
+    const saved = { ...skill, id };
+    const custom = readJSON<Skill[]>(STORAGE_KEYS.customAiSkills, []);
+    writeJSON(STORAGE_KEYS.customAiSkills, [saved, ...custom.filter((s) => normalizeSkillId(s.id) !== id)]);
+    setAllSkills((prev) => [saved, ...prev.filter((s) => s.id !== id)]);
+  }, []);
+
+  return { allSkills, isLoaded, rememberSkill };
 }

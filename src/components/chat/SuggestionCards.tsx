@@ -50,21 +50,21 @@ export function SuggestionCards({
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="px-2 py-0.5 rounded-full bg-surface-subtle text-xs font-mono font-medium text-ink-muted capitalize">
+                    <span className="px-2 py-0.5 rounded-full bg-surface-subtle text-xs font-medium text-ink-muted capitalize">
                       {sugg.difficulty}
                     </span>
                     <span className="text-xs text-ink-muted">·</span>
-                    <span className="text-xs text-ink-muted font-mono">
+                    <span className="text-xs text-ink-muted">
                       {sugg.timeToBasics}
                     </span>
                     {isCatalog && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-surface-subtle text-ink text-xs font-mono font-medium border border-surface-border">
+                      <span className="px-1.5 py-0.5 rounded-md bg-surface-subtle text-ink text-xs font-medium border border-surface-border">
                         In Catalog
                       </span>
                     )}
                   </div>
                   {isEnrolled && (
-                    <span className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-accent-emerald bg-accent-emerald-light/60 px-2 py-0.5 rounded-full border border-accent-emerald/30">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-success bg-success-light px-2 py-0.5 rounded-full border border-success-border">
                       <AppIcon name="check-circle-linear" className="w-3 h-3" />
                       <span>In Studio</span>
                     </span>
@@ -75,12 +75,12 @@ export function SuggestionCards({
                   {sugg.title}
                 </h4>
 
-                <p className="text-xs text-ink-secondary mt-1 leading-relaxed">
+                <p className="text-sm text-ink-secondary mt-1 leading-relaxed">
                   {sugg.pitch}
                 </p>
 
                 {sugg.whyForYou && (
-                  <p className="text-xs text-ink-secondary bg-surface-subtle rounded-lg px-2.5 py-1.5 mt-2 font-medium leading-normal flex items-center gap-1.5 border border-surface-border/60">
+                  <p className="text-sm text-ink-secondary bg-surface-subtle rounded-lg px-2.5 py-1.5 mt-2 font-medium leading-normal flex items-center gap-1.5 border border-surface-border/60">
                     <AppIcon name="lightbulb-minimalistic-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
                     <span>{sugg.whyForYou}</span>
                   </p>
@@ -88,7 +88,7 @@ export function SuggestionCards({
               </div>
 
               <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between">
-                <span className="text-xs font-mono text-ink-muted">
+                <span className="text-xs text-ink-muted">
                   4-step practice plan
                 </span>
                 <Button
@@ -96,9 +96,9 @@ export function SuggestionCards({
                   variant="secondary"
                   disabled={disabled}
                   onClick={() => onSelectSkill(sugg)}
-                  className="gap-1.5 font-mono text-xs hover:border-accent-vermilion/50 hover:text-accent-vermilion transition"
+                  className="gap-1.5 hover:border-accent-vermilion/50 hover:text-accent-vermilion transition"
                 >
-                  <span>Build roadmap</span>
+                  <span>See draft plan</span>
                   <AppIcon
                     name="arrow-right-linear"
                     className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition"

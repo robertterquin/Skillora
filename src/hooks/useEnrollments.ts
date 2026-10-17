@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Skill } from "@/types/database";
 import { normalizeSkillId } from "@/lib/catalog-data";
 import { getSupabase } from "@/lib/supabase";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
@@ -74,5 +75,37 @@ export function useEnrollments(userId: string | null, authReady: boolean) {
     [userId]
   );
 
-  return { enrolledSkillIds, isLoaded, removeSkill };
+  /** Adds a skill (catalog or AI-built) and syncs it to the cloud. */
+  const addSkill = useCallback(
+    async (skill: Skill) => {
+      const id = normalizeSkillId(skill.id);
+      setEnrolledSkillIds((prev) => {
+        const next = Array.from(new Set([...prev.map(normalizeSkillId), id]));
+        writeJSON(STORAGE_KEYS.enrolledSkills, next);
+        return next;
+      });
+
+      try {
+        const res = await fetch("/api/skills/enroll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill: { ...skill, id }, userId }),
+        });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          console.warn("Enrollment sync note:", errorData.error);
+        }
+      } catch (err) {
+        console.warn("Enrollment network sync error:", err);
+      }
+    },
+    [userId]
+  );
+
+  const isEnrolled = useCallback(
+    (skillId: string) => enrolledSkillIds.some((id) => normalizeSkillId(id) === normalizeSkillId(skillId)),
+    [enrolledSkillIds]
+  );
+
+  return { enrolledSkillIds, isLoaded, addSkill, removeSkill, isEnrolled };
 }
