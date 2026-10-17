@@ -17,7 +17,6 @@ interface MasteryPassportModalProps {
   user: User | null;
   enrolledSkills: Skill[];
   completedStepIds: string[];
-  userStreak?: number;
   certifiedSkillIds?: string[];
   onOpenExam?: (skill: Skill) => void;
 }
@@ -28,7 +27,6 @@ export function MasteryPassportModal({
   user,
   enrolledSkills,
   completedStepIds,
-  userStreak = 0,
   certifiedSkillIds = [],
   onOpenExam,
 }: MasteryPassportModalProps) {

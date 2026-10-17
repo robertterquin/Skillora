@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import { motion } from "motion/react";
 import { Skill, SkillStep } from "@/types/database";
-import { playChime, playMechanicalClick, playStampThud, playWoodenThud } from "@/lib/workbench-audio";
+import { playWoodenThud } from "@/lib/workbench-audio";
+import { useJustCompleted } from "@/hooks/useJustCompleted";
 import { cn } from "@/lib/cn";
 import { AppIcon } from "../ui/AppIcon";
 import { Button } from "../ui/Button";
@@ -31,11 +33,13 @@ export function StepCard({
   onSpeak,
   onWatch,
 }: StepCardProps) {
+  const celebrate = useJustCompleted(isDone, 1400);
+
   return (
     <article
       className={cn(
-        "w-full max-w-xl min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border bg-surface flex flex-col shadow-card transition-colors",
-        showNotes ? "border-ink/40" : "border-surface-border"
+        "w-full max-w-xl min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border bg-surface flex flex-col shadow-card transition-colors duration-500",
+        celebrate ? "border-success" : showNotes ? "border-ink/40" : "border-surface-border"
       )}
     >
       <div className="flex items-center justify-between gap-3 border-b border-surface-border pb-3 mb-2">
@@ -97,23 +101,29 @@ export function StepCard({
         )}
       </div>
 
-      <div className="pt-3 border-t border-surface-border flex justify-end">
-        <Button
-          size="sm"
-          variant={isDone ? "secondary" : "primary"}
-          onClick={() => {
-            if (isDone) {
-              playMechanicalClick();
-            } else {
-              playStampThud();
-              playChime();
-            }
-            onToggleDone();
-          }}
+      <div className="pt-3 border-t border-surface-border flex items-center justify-end gap-3">
+        {celebrate && (
+          <motion.span
+            role="status"
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-sm font-semibold text-success"
+          >
+            Step {step.step_number} done
+          </motion.span>
+        )}
+        <motion.div
+          animate={celebrate ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <AppIcon name={isDone ? "check-circle-bold" : "check-circle-linear"} className={cn("w-3.5 h-3.5", isDone && "text-success")} />
-          <span>{isDone ? "Done" : "Mark as done"}</span>
-        </Button>
+          <Button size="sm" variant={isDone ? "secondary" : "primary"} onClick={onToggleDone} aria-pressed={isDone}>
+            <AppIcon
+              name={isDone ? "check-circle-bold" : "check-circle-linear"}
+              className={cn("w-3.5 h-3.5", isDone && "text-success")}
+            />
+            <span>{isDone ? "Done" : "Mark as done"}</span>
+          </Button>
+        </motion.div>
       </div>
     </article>
   );

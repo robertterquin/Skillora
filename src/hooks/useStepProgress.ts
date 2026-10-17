@@ -70,7 +70,8 @@ export function useStepProgress(
       const wasDone = isStepCompleted(stepId, current);
 
       const next = wasDone
-        ? current.filter((id) => id !== stepId && id !== normId)
+        ? // Compare normalised ids so a legacy id (e.g. "step-g1") is removed along with its UUID.
+          current.filter((id) => normalizeStepId(id) !== normId)
         : Array.from(new Set([...current, stepId, normId]));
 
       completedRef.current = next;

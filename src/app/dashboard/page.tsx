@@ -15,8 +15,16 @@ import {
   SkillPracticeModal,
   SkillSyllabusModal,
   buttonClasses,
+  useToast,
 } from "@/components";
-import { ContinueCard, SkillList, StatsStrip, StudioSkeleton, type StudioView } from "@/components/studio";
+import {
+  ContinueCard,
+  SkillCompleteModal,
+  SkillList,
+  StatsStrip,
+  StudioSkeleton,
+  type StudioView,
+} from "@/components/studio";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioCatalog } from "@/hooks/useStudioCatalog";
 import { useEnrollments } from "@/hooks/useEnrollments";
@@ -49,7 +57,8 @@ function Studio() {
   const authReady = !authLoading;
 
   const { allSkills, isLoaded: catalogLoaded } = useStudioCatalog();
-  const { enrolledSkillIds, isLoaded: enrollmentsLoaded, removeSkill } = useEnrollments(userId, authReady);
+  const { enrolledSkillIds, isLoaded: enrollmentsLoaded, addSkill, removeSkill } = useEnrollments(userId, authReady);
+  const toast = useToast();
   const practice = usePracticeStats(userId, authReady);
   const { completedStepIds, isLoaded: progressLoaded, toggleStep } = useStepProgress(userId, authReady, {
     onStepCompleted: practice.recordPracticeDay,
@@ -65,6 +74,7 @@ function Studio() {
   const [stepsSkill, setStepsSkill] = useState<Skill | null>(null);
   const [examSkill, setExamSkill] = useState<Skill | null>(null);
   const [isCertificatesOpen, setIsCertificatesOpen] = useState(false);
+  const [completedSkill, setCompletedSkill] = useState<Skill | null>(null);
 
   useEffect(() => {
     const saved = readString(STORAGE_KEYS.studioView);
@@ -109,9 +119,51 @@ function Studio() {
     setExamSkill(skill);
   };
   const handleToggleStep = (stepId: string) => {
-    if (isStepCompleted(stepId, completedStepIds)) playMechanicalClick();
-    else playChime();
+    if (isStepCompleted(stepId, completedStepIds)) {
+      playMechanicalClick();
+      toggleStep(stepId);
+      return;
+    }
+
+    playStampThud();
+    playChime();
     toggleStep(stepId);
+
+    // Was this the last step of its skill? Let the step animation play, then celebrate.
+    const skill = studioSkills.find((s) => s.steps?.some((st) => st.id === stepId));
+    const others = skill?.steps?.filter((st) => st.id !== stepId) ?? [];
+    if (skill && others.every((st) => isStepCompleted(st.id, completedStepIds))) {
+      window.setTimeout(() => {
+        setPracticeSkill(null);
+        setStepsSkill(null);
+        practice.refresh();
+        setCompletedSkill(skill);
+      }, 900);
+    }
+  };
+  const handleRemove = (skill: Skill) => {
+    removeSkill(skill.id);
+    toast({
+      message: `Removed ${skill.title} from your Studio`,
+      tone: "info",
+      action: {
+        label: "Undo",
+        onClick: () => {
+          addSkill(skill);
+          toast({ message: `${skill.title} is back in your Studio` });
+        },
+      },
+    });
+  };
+  const handlePass = (skillId: string) => {
+    const wasCertified = isCertified(skillId);
+    markCertified(skillId);
+    if (!wasCertified) {
+      toast({
+        message: "Certificate saved",
+        action: { label: "View", onClick: () => setIsCertificatesOpen(true) },
+      });
+    }
   };
   const changeView = (next: StudioView) => {
     playMechanicalClick();
@@ -188,7 +240,7 @@ function Studio() {
             )}
 
             <StatsStrip
-              streak={practice.streak}
+              week={practice.week}
               activeCount={studioSkills.length - masteredCount}
               stepsDone={completedStepIds.length}
               masteredCount={masteredCount}
@@ -250,7 +302,7 @@ function Studio() {
                   onPractice={openPractice}
                   onViewSteps={openSteps}
                   onAssessment={openAssessment}
-                  onRemove={(skill) => removeSkill(skill.id)}
+                  onRemove={handleRemove}
                 />
               )}
             </section>
@@ -301,7 +353,21 @@ function Studio() {
               setIsCertificatesOpen(false);
               setExamSkill(skill);
             }}
-            userStreak={practice.streak}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {completedSkill && (
+          <SkillCompleteModal
+            skill={completedSkill}
+            isCertified={isCertified(completedSkill.id)}
+            onClose={() => setCompletedSkill(null)}
+            onTakeAssessment={() => {
+              const skill = completedSkill;
+              setCompletedSkill(null);
+              openAssessment(skill);
+            }}
           />
         )}
       </AnimatePresence>
@@ -312,7 +378,7 @@ function Studio() {
             isOpen
             onClose={() => setExamSkill(null)}
             skill={examSkill}
-            onPass={markCertified}
+            onPass={handlePass}
             isAlreadyCertified={isCertified(examSkill.id)}
             userName={user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Learner"}
           />

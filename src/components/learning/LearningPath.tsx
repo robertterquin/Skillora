@@ -6,6 +6,7 @@ import { Skill, SkillStep } from "@/types/database";
 import { isStepCompleted } from "@/lib/catalog-data";
 import { CategoryStyle, getCategoryStyle, getSkillProgress } from "@/lib/skill-progress";
 import { cn } from "@/lib/cn";
+import { useJustCompleted } from "@/hooks/useJustCompleted";
 import { AppIcon } from "../ui/AppIcon";
 import { Button } from "../ui/Button";
 import { StepResources, WatchRequest } from "./StepResources";
@@ -44,12 +45,25 @@ function NodeMarker({
   label: React.ReactNode;
   icon?: string;
 }) {
+  const celebrate = useJustCompleted(state === "done");
+
   return (
     <span className="relative flex w-8 h-8 shrink-0 items-center justify-center">
       {state === "current" && (
         <span className={cn("absolute -inset-1 rounded-full", category.soft)} aria-hidden="true" />
       )}
-      <span
+      {celebrate && (
+        <motion.span
+          aria-hidden="true"
+          className={cn("absolute inset-0 rounded-full border-2", category.border)}
+          initial={{ scale: 1, opacity: 0.7 }}
+          animate={{ scale: 1.9, opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+      )}
+      <motion.span
+        animate={celebrate ? { scale: [0.7, 1.15, 1] } : { scale: 1 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
         className={cn(
           "relative flex w-8 h-8 items-center justify-center rounded-full text-xs font-semibold tabular-nums transition-colors",
           state === "done" && cn(category.fill, "text-white"),
@@ -67,7 +81,7 @@ function NodeMarker({
         ) : (
           label
         )}
-      </span>
+      </motion.span>
     </span>
   );
 }
@@ -77,10 +91,17 @@ function Rail({ filled, category }: { filled: boolean; category: CategoryStyle }
     <span
       aria-hidden="true"
       className={cn(
-        "absolute left-[15px] top-9 -bottom-1 w-0.5 rounded-full",
-        filled ? category.fill : "bg-surface-border"
+        "absolute left-[15px] top-9 -bottom-1 w-0.5 rounded-full overflow-hidden bg-surface-border"
       )}
-    />
+    >
+      <span
+        className={cn(
+          "block w-full h-full origin-top transition-transform duration-500 ease-out",
+          category.fill,
+          filled ? "scale-y-100" : "scale-y-0"
+        )}
+      />
+    </span>
   );
 }
 

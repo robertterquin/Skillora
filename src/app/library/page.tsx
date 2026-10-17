@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AppIcon,
   InteractiveOwlAvatar,
@@ -13,6 +14,7 @@ import {
   ConsultationSidebar,
   ChatWelcome,
   OwlThinking,
+  useToast,
 } from "@/components";
 import { playChime } from "@/lib/workbench-audio";
 import { Skill } from "@/types/database";
@@ -27,6 +29,8 @@ const isPhone = () => typeof window !== "undefined" && window.innerWidth < 768;
 export default function SkillLibraryPage() {
   const { user: currentUser, isLoading: authLoading } = useAuth();
   const userId = currentUser?.id ?? null;
+  const router = useRouter();
+  const toast = useToast();
 
   // Closed on first paint so phones never flash the drawer; opened on desktop below.
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -63,8 +67,12 @@ export default function SkillLibraryPage() {
       const saved = { ...skill, id: normalizeSkillId(skill.id) };
       rememberSkill(saved);
       await addSkill(saved);
+      toast({
+        message: `Added ${saved.title} to your Studio`,
+        action: { label: "Open Studio", onClick: () => router.push("/dashboard") },
+      });
     },
-    [rememberSkill, addSkill]
+    [rememberSkill, addSkill, toast, router]
   );
 
   const catalogSkillTitles = useMemo(() => INITIAL_SKILLS.map((s) => s.title), []);
@@ -154,7 +162,10 @@ export default function SkillLibraryPage() {
           onToggle={toggleSidebar}
           onSelect={handleSelectSession}
           onNew={handleNewSession}
-          onDelete={deleteConsultation}
+          onDelete={(id) => {
+            deleteConsultation(id);
+            toast({ message: "Chat deleted", tone: "info" });
+          }}
         />
 
         <main

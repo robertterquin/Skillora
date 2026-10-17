@@ -22,6 +22,7 @@ export * from "./ui/Modal";
 export * from "./ui/RouteProgressBar";
 export * from "./ui/SegmentedControl";
 export * from "./ui/SkillFilterBar";
+export * from "./ui/Toast";
 export * from "./ui/UserAvatar";
 
 export * from "./chat";

@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import {
-  getPracticeStreak,
   getSpacedRepetitionStore,
+  getWeekActivity,
   logPracticeDay,
   pushPracticeStatsToCloud,
   syncPracticeStatsWithCloud,
@@ -46,9 +46,13 @@ export function usePracticeStats(userId: string | null, authReady: boolean) {
     if (userId) pushPracticeStatsToCloud(getSupabase(), userId, store);
   }, [userId]);
 
+  // Recomputed when dates change; a missed day only affects this week, unlike a streak.
+  const week = useMemo(() => getWeekActivity(practiceDates), [practiceDates]);
+
   return {
     practiceDates,
-    streak: getPracticeStreak(practiceDates),
+    week,
+    daysThisWeek: week.filter((d) => d.practiced).length,
     recordPracticeDay,
     refresh,
   };

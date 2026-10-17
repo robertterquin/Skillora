@@ -37,21 +37,33 @@ export function StepIndicator({
       <div className="flex flex-1 items-center gap-1" aria-hidden={onSelect ? undefined : true}>
         {Array.from({ length: total }, (_, i) => {
           const segment = cn(
-            "h-1.5 flex-1 rounded-full transition-colors",
-            isDone(i) ? fillClass : "bg-surface-muted",
+            "relative h-1.5 flex-1 rounded-full overflow-hidden bg-surface-muted",
             i === current && "outline outline-2 outline-offset-1 outline-ink/30"
+          );
+          const fill = (
+            <span
+              className={cn(
+                "absolute inset-0 origin-left rounded-full transition-transform duration-500 ease-out",
+                fillClass,
+                isDone(i) ? "scale-x-100" : "scale-x-0"
+              )}
+            />
           );
           return onSelect ? (
             <button
               key={i}
               type="button"
               onClick={() => onSelect(i)}
-              aria-label={`Go to ${noun.toLowerCase()} ${i + 1}`}
+              aria-label={`Go to ${noun.toLowerCase()} ${i + 1}${isDone(i) ? " (done)" : ""}`}
               aria-current={i === current ? "step" : undefined}
               className={cn(segment, "cursor-pointer hover:opacity-80")}
-            />
+            >
+              {fill}
+            </button>
           ) : (
-            <span key={i} className={segment} />
+            <span key={i} className={segment}>
+              {fill}
+            </span>
           );
         })}
       </div>
