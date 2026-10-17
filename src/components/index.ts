@@ -1,5 +1,4 @@
 export * from "./modals/SkillPracticeModal";
-export * from "./modals/GuidedPracticeSessionModal";
 export * from "./modals/SkillAssessmentModal";
 export * from "./modals/MasteryPassportModal";
 export * from "./modals/SkillSyllabusModal";

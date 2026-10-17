@@ -23,20 +23,6 @@ export interface CoachSuggestion {
 
 export interface DisciplinePracticeProfile {
   disciplineCategory: DisciplineCategory;
-  tagLabel: string;
-  isRhythmCadenceSupported: boolean;
-  cadenceLabel?: string;
-  defaultBpm?: number;
-  metricHeading: string;
-  metricUnitNoun: string;
-  actionButtonLabel: string;
-  guidanceTip: string;
-  suggestedSprintMinutes: number;
-  recallPrompts: {
-    hard: { title: string; desc: string };
-    solid: { title: string; desc: string };
-    effortless: { title: string; desc: string };
-  };
   coachButtonLabel: string;
   coachTitle: string;
   coachInputPlaceholder: string;
@@ -310,28 +296,6 @@ export function getDisciplinePracticeProfile(
   if (isCoding) {
     return {
       disciplineCategory: "coding",
-      tagLabel: "SOFTWARE ARCHITECTURE // CODE RUNS",
-      isRhythmCadenceSupported: false,
-      metricHeading: "CODE MILESTONES & ITERATIONS",
-      metricUnitNoun: "code milestones / runs",
-      actionButtonLabel: "Log Milestone / Code Run (+1)",
-      guidanceTip:
-        "Log each function written, test suite run, bug resolved, or project component verified in your editor.",
-      suggestedSprintMinutes: 20,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Debugging Friction",
-          desc: "Encountered frequent syntax hurdles or logic bugs. Review syntax and re-test tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Clean Flow",
-          desc: "Implemented functionality cleanly with clear logic and minimal pauses. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Second Nature",
-          desc: "Architecture and patterns flowed intuitively without consulting docs. Cemented in memory.",
-        },
-      },
       coachButtonLabel: "Ask Code Coach",
       coachTitle: `Code Coach — ${skill.title ? skill.title.slice(0, 24) : "Logic"} Diagnostic`,
       coachInputPlaceholder: "Ask about syntax errors, logic patterns, edge cases, or debugging...",
@@ -350,30 +314,6 @@ export function getDisciplinePracticeProfile(
   if (isTyping) {
     return {
       disciplineCategory: "typing",
-      tagLabel: "MOTOR CADENCE // KEYSTROKE SPEED",
-      isRhythmCadenceSupported: true,
-      cadenceLabel: "Keystroke Cadence",
-      defaultBpm: 80,
-      metricHeading: "TYPING SPRINTS & DRILLS",
-      metricUnitNoun: "speed bursts completed",
-      actionButtonLabel: "Log Typing Sprint (+1)",
-      guidanceTip:
-        "Log each 1-minute speed burst or paragraph test completed without looking at your keyboard.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Stiff / Mis-hits",
-          desc: "Finger search pauses or frequent typos on ring/pinky fingers. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Steady Cadence",
-          desc: "Consistent rhythmic cadence across home row with 95%+ accuracy. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Subconscious Speed",
-          desc: "Words flow straight from mind to screen without conscious keystroke thought. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Typing Coach",
       coachTitle: "Technique Coach — Home Row Cadence & Speed Diagnostic",
       coachInputPlaceholder: "Ask about home row bumps, ring/pinky reach, or typing rhythm...",
@@ -394,28 +334,6 @@ export function getDisciplinePracticeProfile(
   if (isLanguage) {
     return {
       disciplineCategory: "language",
-      tagLabel: "LINGUISTICS // PHONETIC RECALL",
-      isRhythmCadenceSupported: false,
-      metricHeading: "GLYPH & PHRASE DRILLS",
-      metricUnitNoun: "glyphs / phrases practiced",
-      actionButtonLabel: "Log Recall Drill (+1)",
-      guidanceTip:
-        "Log each character written, flashcard recognized without hesitation, or spoken sentence articulated.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Hesitant Recall",
-          desc: "Required active conscious translation or mistook false friends. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Fluid Recognition",
-          desc: "Quick, confident phonetic recall with natural tongue and mouth shape. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Instant Cognition",
-          desc: "Glyphs and sounds read as immediately as your native alphabet. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Linguistics Coach",
       coachTitle: `Linguistics Coach — ${skill.title ? skill.title.slice(0, 24) : "Phonetic"} Diagnostic`,
       coachInputPlaceholder: "Ask about pronunciation, phonetic mouth shapes, or alphabet rules...",
@@ -433,28 +351,6 @@ export function getDisciplinePracticeProfile(
   if (isCoffee) {
     return {
       disciplineCategory: "culinary_coffee",
-      tagLabel: "COFFEE // EXTRACTION DIAL",
-      isRhythmCadenceSupported: false,
-      metricHeading: "SHOT EXTRACTIONS & TASTES",
-      metricUnitNoun: "extraction tests dialed",
-      actionButtonLabel: "Log Shot Pulled (+1)",
-      guidanceTip:
-        "Log each 1:2 extraction test, grind size distribution tweak, or sensory taste evaluation.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Channeling / Sour",
-          desc: "Flow ran unevenly or tasted astringent/sour. Recalibrate dose & grind tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Balanced Sweetness",
-          desc: "Steady 25-30s extraction with rich crema and balanced acidity. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Master Dial",
-          desc: "Perfect visual puck preparation and textbook sweet, rounded body. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Barista Coach",
       coachTitle: "Barista Coach — Extraction & Dial Diagnostic",
       coachInputPlaceholder: "Ask about puck prep, grind distribution, flow rate, or extraction...",
@@ -472,28 +368,6 @@ export function getDisciplinePracticeProfile(
   if (isKnife) {
     return {
       disciplineCategory: "culinary_knife",
-      tagLabel: "TACTILE CRAFT // EDGE GEOMETRY",
-      isRhythmCadenceSupported: false,
-      metricHeading: "WATER STONE STROKE SETS",
-      metricUnitNoun: "15° stroke sets",
-      actionButtonLabel: "Log Stroke Set (+1)",
-      guidanceTip:
-        "Log each set of 10 alternating 15° strokes across the water stone or tactile burr checks.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Inconsistent Angle",
-          desc: "Wrist wobbled or burr felt uneven along the belly. Review angle control tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Clean Burr Apex",
-          desc: "Uniform angle maintained; micro-burr formed cleanly along whole edge. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Razor Legato",
-          desc: "Effortless, steady pass geometry with paper-slicing sharpness. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Bladesmith Coach",
       coachTitle: "Bladesmith Coach — Blade Geometry & Angle Diagnostic",
       coachInputPlaceholder: "Ask about 15° water stone strokes, burr detection, or whetstone technique...",
@@ -511,28 +385,6 @@ export function getDisciplinePracticeProfile(
   if (isBaking) {
     return {
       disciplineCategory: "culinary_general",
-      tagLabel: "CULINARY CRAFT // FERMENTATION & TECHNIQUE",
-      isRhythmCadenceSupported: false,
-      metricHeading: "FOLD CYCLES & SHAPES",
-      metricUnitNoun: "technique cycles completed",
-      actionButtonLabel: "Log Technique Cycle (+1)",
-      guidanceTip:
-        "Log each stretch-and-fold interval, dough elasticity test, or loaf shaping pass.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Sticky / Weak Tension",
-          desc: "Dough lacked gluten structure or tore during shaping. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Taut Skin",
-          desc: "Strong surface tension and buoyant air pockets developed cleanly. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Baker's Intuition",
-          desc: "Subconscious feel for hydration and fermentation timing. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Culinary Coach",
       coachTitle: `Culinary Coach — ${skill.title ? skill.title.slice(0, 24) : "Kitchen"} Diagnostic`,
       coachInputPlaceholder: "Ask about fermentation timing, gluten windowpane, or dough hydration...",
@@ -550,28 +402,6 @@ export function getDisciplinePracticeProfile(
   if (isPuzzle) {
     return {
       disciplineCategory: "puzzle",
-      tagLabel: "SPATIAL MECHANIC // ALGORITHM EXECUTION",
-      isRhythmCadenceSupported: false,
-      metricHeading: "ALGORITHM DRILLS & SOLVES",
-      metricUnitNoun: "algorithm triggers / solves",
-      actionButtonLabel: "Log Solve / Algorithm (+1)",
-      guidanceTip:
-        "Log each clean execution of the finger-trick sequence or full cross/layer solve.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Pauses / Regrips",
-          desc: "Stumbled on move sequence or required active eye-tracking of steps. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Fluid Fingertricks",
-          desc: "Executed sequence with minimal regrips and smooth layer turns. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Instant Muscle Memory",
-          desc: "Fingers executed algorithm automatically upon visual pattern trigger. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Speedcube Coach",
       coachTitle: "Speedcube Coach — Fingertrick & Algorithm Diagnostic",
       coachInputPlaceholder: "Ask about fingertrick execution, algorithm notation, or cube regrips...",
@@ -592,30 +422,6 @@ export function getDisciplinePracticeProfile(
   if (isMusic) {
     return {
       disciplineCategory: "music",
-      tagLabel: "RHYTHMIC REPERTOIRE // MOTOR INDEPENDENCE",
-      isRhythmCadenceSupported: true,
-      cadenceLabel: "Metronome Pulse",
-      defaultBpm: 60,
-      metricHeading: "PATTERN REPETITIONS",
-      metricUnitNoun: "rhythmic loops completed",
-      actionButtonLabel: "Log Repetition (+1)",
-      guidanceTip:
-        "Log each clean 4-measure pattern loop or chord transition played without breaking tempo.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Stiff / Off-Beat",
-          desc: "Thumb sped up or finger transitions hesitated off the pulse. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Steady Groove",
-          desc: "Locked in with the beat with relaxed forearm and clean tone. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Autonomous Pulse",
-          desc: "Independent thumb and fingers moving without conscious thought. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Musician Coach",
       coachTitle: `Musician Coach — ${skill.title ? skill.title.slice(0, 24) : "Acoustic"} Diagnostic`,
       coachInputPlaceholder: "Ask about chord transitions, picking angle, rhythm pulse, or fretting...",
@@ -633,30 +439,6 @@ export function getDisciplinePracticeProfile(
   if (isJuggling) {
     return {
       disciplineCategory: "juggling",
-      tagLabel: "MOTOR COORDINATION // THROW CADENCE",
-      isRhythmCadenceSupported: true,
-      cadenceLabel: "Throw Tempo",
-      defaultBpm: 75,
-      metricHeading: "CLEAN CATCH CYCLES",
-      metricUnitNoun: "clean catch sequences",
-      actionButtonLabel: "Log Catch Sequence (+1)",
-      guidanceTip:
-        "Log each consecutive 3-ball cascade run caught cleanly without dropped throws.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Rushed / Drops",
-          desc: "Throws drifted forward or arms tensed up. Review throw height control tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Consistent Arc",
-          desc: "Clean scoops and peak catches with relaxed shoulders. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Sightless Flow",
-          desc: "Toss cadence felt automatic with effortless peripheral tracking. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Juggling Coach",
       coachTitle: "Juggling Coach — Throw Cadence & Arc Diagnostic",
       coachInputPlaceholder: "Ask about cascade arc, throw timing, hand scoops, or eye tracking...",
@@ -674,28 +456,6 @@ export function getDisciplinePracticeProfile(
   if (isDesign) {
     return {
       disciplineCategory: "design",
-      tagLabel: "VISUAL CRAFT // COMPOSITION & HIERARCHY",
-      isRhythmCadenceSupported: false,
-      metricHeading: "DESIGN ITERATIONS & CRITIQUES",
-      metricUnitNoun: "design iterations",
-      actionButtonLabel: "Log Design Iteration (+1)",
-      guidanceTip:
-        "Log each layout pass, color balance adjustment, or visual critique milestone completed.",
-      suggestedSprintMinutes: 20,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Cluttered / Unbalanced",
-          desc: "Visual hierarchy felt muddy or focal point was unclear. Review contrast tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Clean Composition",
-          desc: "Harmonious spacing, crisp hierarchy, and deliberate optical alignment. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Designer's Eye",
-          desc: "Subconscious instinct for proportion, white space, and visual rhythm. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Design Coach",
       coachTitle: `Design Coach — ${skill.title ? skill.title.slice(0, 24) : "Visual"} Diagnostic`,
       coachInputPlaceholder: "Ask about layout hierarchy, spacing, color contrast, or visual balance...",
@@ -713,28 +473,6 @@ export function getDisciplinePracticeProfile(
   if (isWriting) {
     return {
       disciplineCategory: "writing",
-      tagLabel: "NARRATIVE CRAFT // RHETORIC & PACING",
-      isRhythmCadenceSupported: false,
-      metricHeading: "WRITING SPRINTS & REVISIONS",
-      metricUnitNoun: "writing sprints / drafts",
-      actionButtonLabel: "Log Writing Sprint (+1)",
-      guidanceTip:
-        "Log each 15-minute focused writing sprint, hook revision, or editing pass.",
-      suggestedSprintMinutes: 20,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Fluff / Hesitant Hook",
-          desc: "Pacing lagged or opening lacked tension. Trim filler words tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Compelling Narrative",
-          desc: "Clear voice, sharp rhythm, and punchy transitions. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Seamless Voice",
-          desc: "Ideas translated into crisp, persuasive prose with effortless cadence. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Writing Coach",
       coachTitle: `Writing Coach — ${skill.title ? skill.title.slice(0, 24) : "Narrative"} Diagnostic`,
       coachInputPlaceholder: "Ask about opening hooks, narrative arc, cutting fluff, or cadence...",
@@ -752,30 +490,6 @@ export function getDisciplinePracticeProfile(
   if (isCommunication) {
     return {
       disciplineCategory: "communication",
-      tagLabel: "RHETORIC & DELIVERY // VOCAL CADENCE",
-      isRhythmCadenceSupported: true,
-      cadenceLabel: "Speaking Cadence",
-      defaultBpm: 60,
-      metricHeading: "SPEECH RUNS & REHEARSALS",
-      metricUnitNoun: "rehearsal runs completed",
-      actionButtonLabel: "Log Rehearsal Run (+1)",
-      guidanceTip:
-        "Log each timed speech pass, opening hook drill, or vocal projection rehearsal.",
-      suggestedSprintMinutes: 15,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Rushed / Filler Words",
-          desc: "Relied on verbal crutches or sped through key pauses. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Poised Delivery",
-          desc: "Deliberate pauses, grounded posture, and natural eye contact. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Magnetic Presence",
-          desc: "Commands the room with authentic conviction and effortless poise. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Speaking Coach",
       coachTitle: `Speech Coach — ${skill.title ? skill.title.slice(0, 24) : "Delivery"} Diagnostic`,
       coachInputPlaceholder: "Ask about vocal delivery, eliminating filler words, pacing, or body language...",
@@ -793,28 +507,6 @@ export function getDisciplinePracticeProfile(
   if (isBusiness) {
     return {
       disciplineCategory: "business",
-      tagLabel: "DECISION ARCHITECTURE // STRATEGY & METRICS",
-      isRhythmCadenceSupported: false,
-      metricHeading: "CASE ANALYSES & SCENARIOS",
-      metricUnitNoun: "model scenarios completed",
-      actionButtonLabel: "Log Analysis Pass (+1)",
-      guidanceTip:
-        "Log each financial model run, hypothesis test, or strategic scenario analyzed.",
-      suggestedSprintMinutes: 20,
-      recallPrompts: {
-        hard: {
-          title: "[ 1 ] Faulty Assumptions",
-          desc: "Overlooked key risk variables or miscalculated baseline metrics. Review tomorrow.",
-        },
-        solid: {
-          title: "[ 2 ] Grounded Logic",
-          desc: "Sound financial assumptions with clear downside protection. Review in 3-4 days.",
-        },
-        effortless: {
-          title: "[ 3 ] Strategic Intuition",
-          desc: "Instant clarity on leverage points, unit economics, and risk asymmetry. Cemented.",
-        },
-      },
       coachButtonLabel: "Ask Strategy Coach",
       coachTitle: `Strategy Coach — ${skill.title ? skill.title.slice(0, 24) : "Business"} Diagnostic`,
       coachInputPlaceholder: "Ask about unit economics, risk hedging, strategy frameworks, or metrics...",
@@ -837,28 +529,6 @@ function getDefaultProfile(
 
   return {
     disciplineCategory: "general",
-    tagLabel: "SKILL PRACTICE // FOCUS SPRINT",
-    isRhythmCadenceSupported: false,
-    metricHeading: "PRACTICE CYCLES & DRILLS",
-    metricUnitNoun: "practice cycles completed",
-    actionButtonLabel: "Log Practice Cycle (+1)",
-    guidanceTip:
-      "Log each focused practice drill or technique milestone completed.",
-    suggestedSprintMinutes: 15,
-    recallPrompts: {
-      hard: {
-        title: "[ 1 ] Hesitant / Review Needed",
-        desc: "Encountered friction or required active reference checking. Review tomorrow.",
-      },
-      solid: {
-        title: "[ 2 ] Confident Execution",
-        desc: "Good accuracy and steady deliberate control. Review in 3-4 days.",
-      },
-      effortless: {
-        title: "[ 3 ] Second Nature",
-        desc: "Automatic subconscious execution with zero hesitation. Cemented in memory.",
-      },
-    },
     coachButtonLabel: `Ask ${shortTitle} Coach`,
     coachTitle: `${shortTitle} Coach — Technique Diagnostic`,
     coachInputPlaceholder: `Ask about common mistakes, mental models, or drills for ${stepName}...`,
