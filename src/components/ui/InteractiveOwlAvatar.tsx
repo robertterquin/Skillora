@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import { AppIcon } from "./AppIcon";
 
 interface InteractiveOwlAvatarProps {
@@ -140,6 +140,13 @@ export function InteractiveOwlAvatar({
     if (onClick) onClick();
   }, [onClick]);
 
+  // Small owls (e.g. the inline "thinking" indicator) drop the label and halo
+  // and use padding proportional to their size so the drawing stays visible.
+  const isCompact = size < 80;
+  const clipId = useId().replace(/:/g, "");
+  const leftClip = `owl-left-eye-${clipId}`;
+  const rightClip = `owl-right-eye-${clipId}`;
+
   const effectiveOffset = isThinking
     ? { x: 2.2, y: -2.4 }
     : pupilOffset;
@@ -168,9 +175,9 @@ export function InteractiveOwlAvatar({
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative select-none flex items-center justify-center cursor-pointer group"
+      className={`relative select-none flex items-center justify-center group ${onClick ? "cursor-pointer" : ""}`}
       style={{ width: size, height: size }}
-      title="Archimedes the Learning Owl — Click to interact"
+      title={isCompact ? undefined : "Archimedes the Learning Owl — Click to interact"}
     >
       {isSpeaking && (
         <>
@@ -187,18 +194,21 @@ export function InteractiveOwlAvatar({
         </>
       )}
 
-      {!isSpeaking && !isListening && (
+      {!isSpeaking && !isListening && !isCompact && (
         <div className="absolute -inset-2.5 rounded-full border border-surface-border/80 group-hover:border-brand-500/30 transition-all duration-700 pointer-events-none" />
       )}
 
       <div
-        className={`relative w-full h-full rounded-full bg-white border-2 flex items-center justify-center p-6 shadow-xl transition-all duration-500 ${
+        style={{ padding: isCompact ? Math.round(size * 0.12) : 24 }}
+        className={`relative w-full h-full rounded-full bg-white flex items-center justify-center transition-all duration-500 ${
+          isCompact ? "border shadow-xs" : "border-2 shadow-xl"
+        } ${
           isListening
             ? "border-accent-vermilion shadow-accent-vermilion/10 scale-105"
             : isSpeaking
             ? "border-brand-600 shadow-brand-500/15 scale-105"
             : isThinking
-            ? "border-brand-400 shadow-md rotate-[-3deg]"
+            ? `border-brand-400 rotate-[-3deg] ${isCompact ? "" : "shadow-md"}`
             : isWinking
             ? "scale-98 rotate-[2deg]"
             : "border-surface-border hover:border-brand-500/50 hover:scale-[1.03]"
@@ -210,11 +220,11 @@ export function InteractiveOwlAvatar({
           fill="none"
         >
           <defs>
-            <clipPath id="owl-left-eye-clip">
+            <clipPath id={leftClip}>
               <circle cx="44" cy="46" r="10.25" />
             </clipPath>
 
-            <clipPath id="owl-right-eye-clip">
+            <clipPath id={rightClip}>
               <circle cx="76" cy="46" r="10.25" />
             </clipPath>
           </defs>
@@ -271,7 +281,7 @@ export function InteractiveOwlAvatar({
           <g>
             <circle cx="44" cy="46" r="10.5" fill="#FFFFFF" />
 
-            <g clipPath="url(#owl-left-eye-clip)">
+            <g clipPath={`url(#${leftClip})`}>
               <g
                 style={{
                   transform: `translate(${effectiveOffset.x}px, ${effectiveOffset.y}px)`,
@@ -322,7 +332,7 @@ export function InteractiveOwlAvatar({
           <g>
             <circle cx="76" cy="46" r="10.5" fill="#FFFFFF" />
 
-            <g clipPath="url(#owl-right-eye-clip)">
+            <g clipPath={`url(#${rightClip})`}>
               <g
                 style={{
                   transform: `translate(${effectiveOffset.x}px, ${effectiveOffset.y}px)`,
@@ -379,21 +389,22 @@ export function InteractiveOwlAvatar({
           />
         </svg>
 
+        {!isCompact && (
         <div className="absolute -bottom-2.5 px-3 py-1 rounded-full bg-ink text-white text-xs font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
           {isListening ? (
             <>
               <span className="w-2 h-2 rounded-full bg-accent-vermilion animate-ping" />
-              <span>Listening...</span>
+              <span>Listening…</span>
             </>
           ) : isThinking ? (
             <>
               <AppIcon name="refresh-linear" className="w-3 h-3 animate-spin text-brand-300" />
-              <span>Deconstructing...</span>
+              <span>Thinking…</span>
             </>
           ) : isSpeaking ? (
             <>
               <AppIcon name="soundwave-linear" className="w-3 h-3 text-brand-300 animate-pulse" />
-              <span>Speaking...</span>
+              <span>Speaking…</span>
             </>
           ) : (
             <>
@@ -402,6 +413,7 @@ export function InteractiveOwlAvatar({
             </>
           )}
         </div>
+        )}
       </div>
     </div>
   );
