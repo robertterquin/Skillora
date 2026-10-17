@@ -40,7 +40,7 @@ export function VideoPlayerModal({
           onClose={onClose}
           labelledBy={titleId}
           overlayClassName="bg-night/80 backdrop-blur-md"
-          className="max-w-4xl bg-night text-white border border-night-line flex flex-col"
+          className="max-w-4xl bg-night text-night-bright border border-night-line flex flex-col"
         >
           <div className="p-4 sm:p-5 bg-night-raised/90 border-b border-night-line flex items-center justify-between gap-4">
             <div className="min-w-0">
@@ -59,7 +59,7 @@ export function VideoPlayerModal({
                 href={videoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-2.5 py-1.5 rounded-xl bg-night-line hover:bg-night-hover text-xs font-medium text-night-text hover:text-white transition flex items-center gap-1.5"
+                className="px-2.5 py-1.5 rounded-xl bg-night-line hover:bg-night-hover text-xs font-medium text-night-text hover:text-night-bright transition flex items-center gap-1.5"
                 title="Open video in external tab"
               >
                 <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
@@ -70,7 +70,7 @@ export function VideoPlayerModal({
             icon="close"
             label="Close video player"
             variant="ghost"
-            className="bg-night-line hover:bg-night-hover text-night-muted hover:text-white"
+            className="bg-night-line hover:bg-night-hover text-night-muted hover:text-night-bright"
             onClick={onClose}
           />
             </div>
@@ -94,7 +94,7 @@ export function VideoPlayerModal({
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-night-line hover:bg-night-hover text-xs font-semibold text-white transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-night-line hover:bg-night-hover text-xs font-semibold text-night-bright transition"
                 >
                   <span>Search Tutorials on YouTube</span>
                   <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
@@ -111,7 +111,7 @@ export function VideoPlayerModal({
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-brand-300 hover:text-white underline underline-offset-4 flex items-center gap-1 transition"
+                className="text-xs text-brand-300 hover:text-night-bright underline underline-offset-4 flex items-center gap-1 transition"
                 title="Search curated YouTube tutorials for this step"
               >
                 <span>Video not working? Search YouTube</span>
@@ -122,7 +122,7 @@ export function VideoPlayerModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 rounded-xl bg-white text-ink font-semibold text-xs hover:bg-night-text transition cursor-pointer shadow-xs shrink-0"
+              className="px-3.5 py-1.5 rounded-xl bg-night-bright text-night font-semibold text-xs hover:bg-night-text transition cursor-pointer shadow-xs shrink-0"
             >
               Close
             </button>

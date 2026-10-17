@@ -106,7 +106,7 @@ export function Modal({ onClose, children, className, overlayClassName, labelled
       }}
       className={cn(
         "fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto",
-        overlayClassName ?? "bg-ink/70 backdrop-blur-sm"
+        overlayClassName ?? "bg-night/70 backdrop-blur-sm"
       )}
     >
       <motion.div

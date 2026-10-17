@@ -84,7 +84,7 @@ export function ConsultationSidebar({
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-ink/20 backdrop-blur-xs md:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-night/30 backdrop-blur-xs md:hidden transition-opacity"
           onClick={onToggle}
           aria-hidden="true"
         />

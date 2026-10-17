@@ -9,6 +9,8 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/hooks/useAuth";
 import { isSoundEnabled, setSoundEnabled, playMechanicalClick } from "@/lib/workbench-audio";
+import { useTheme } from "@/hooks/useTheme";
+import type { ThemePreference } from "@/lib/theme";
 import { AppIcon } from "./AppIcon";
 import { buttonClasses } from "./Button";
 import { IconButton } from "./IconButton";
@@ -36,6 +38,12 @@ const ACCOUNT_LINKS = [
 
 const HIDDEN_ON = ["/signin", "/signup"];
 
+const THEME_CYCLE: Record<ThemePreference, { next: ThemePreference; icon: string; label: string }> = {
+  system: { next: "light", icon: "monitor-linear", label: "System" },
+  light: { next: "dark", icon: "sun-linear", label: "Light" },
+  dark: { next: "system", icon: "moon-linear", label: "Dark" },
+};
+
 export function Header({ activePath }: HeaderProps = {}) {
   // All hooks run before any early return (Rules of Hooks).
   const router = useRouter();
@@ -44,6 +52,7 @@ export function Header({ activePath }: HeaderProps = {}) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const { preference: theme, setTheme } = useTheme();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -150,6 +159,12 @@ export function Header({ activePath }: HeaderProps = {}) {
         )}
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <IconButton
+            icon={THEME_CYCLE[theme].icon}
+            label={`Theme: ${THEME_CYCLE[theme].label}. Switch to ${THEME_CYCLE[THEME_CYCLE[theme].next].label}`}
+            title={`Theme: ${THEME_CYCLE[theme].label}`}
+            onClick={() => setTheme(THEME_CYCLE[theme].next)}
+          />
           <IconButton
             icon={soundOn ? "volume-loud-linear" : "volume-cross-linear"}
             label={soundOn ? "Mute interface sounds" : "Turn on interface sounds"}

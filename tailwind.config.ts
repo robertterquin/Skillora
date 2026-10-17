@@ -1,6 +1,18 @@
 import type { Config } from "tailwindcss";
 
+/** A colour backed by a CSS variable holding "R G B" channels. */
+const v = (name: string) => `rgb(var(--c-${name}) / <alpha-value>)`;
+const states = (name: string) => ({
+  DEFAULT: v(name),
+  hover: v(`${name}-hover`),
+  strong: v(`${name}-strong`),
+  light: v(`${name}-light`),
+  soft: v(`${name}-soft`),
+  border: v(`${name}-border`),
+});
+
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,94 +21,70 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#F7F5F0",
-        // Text colours. All pass WCAG AA (4.5:1) on canvas and white.
+        // Every colour reads a CSS variable (see globals.css) so dark mode can
+        // swap the palette. Values are "R G B" so opacity modifiers still work.
+        white: v("white"),
+        canvas: v("canvas"),
+        // Text colours. All pass WCAG AA (4.5:1) on canvas and surface, in both themes.
         ink: {
-          DEFAULT: "#1A1917",
-          secondary: "#4A4640", // 8.9:1 on canvas
-          muted: "#625D55", // 6.0:1 on canvas
-          subtle: "#736E66", // 4.6:1 on canvas — smallest allowed text colour
+          DEFAULT: v("ink"),
+          secondary: v("ink-secondary"),
+          muted: v("ink-muted"),
+          subtle: v("ink-subtle"), // smallest allowed text colour
         },
         brand: {
-          50: "#F7F5F0",
-          100: "#F0ECE3",
-          200: "#E2DDD4",
-          300: "#C5BFB4",
-          400: "#9E988F",
-          500: "#5A564F",
-          600: "#2E2C29",
-          700: "#1A1917",
-          800: "#121110",
-          900: "#0A0A09",
+          50: v("brand-50"),
+          100: v("brand-100"),
+          200: v("brand-200"),
+          300: v("brand-300"),
+          400: v("brand-400"),
+          500: v("brand-500"),
+          600: v("brand-600"),
+          700: v("brand-700"),
+          800: v("brand-800"),
+          900: v("brand-900"),
         },
         surface: {
-          DEFAULT: "#FFFFFF",
-          subtle: "#EFECE4",
-          muted: "#E8E4DA",
-          border: "#E2DDD4",
+          DEFAULT: v("surface"),
+          subtle: v("surface-subtle"),
+          muted: v("surface-muted"),
+          border: v("surface-border"),
         },
         paper: {
-          DEFAULT: "#FAF8F4",
-          warm: "#F1EDE4",
-          deep: "#E8E4DA",
+          DEFAULT: v("paper"),
+          warm: v("paper-warm"),
+          deep: v("paper-deep"),
         },
         deck: {
-          music: "#8C4A28",
-          languages: "#1E3A8A",
-          life: "#2E2C29",
-          tech: "#1F4E4A",
+          music: v("deck-music"),
+          languages: v("deck-languages"),
+          life: v("deck-life"),
+          tech: v("deck-tech"),
         },
         accent: {
-          vermilion: "#B4420F", // 5.2:1 on canvas
-          "vermilion-hover": "#9E390C",
-          "vermilion-light": "#FBF2ED",
-          "vermilion-border": "#F3D2C4",
-          emerald: "#2D5A43",  
-          "emerald-light": "#EBF2EE",
-          "emerald-border": "#C9DEC7",
-          amber: "#7A6129",
-          "amber-light": "#F7F2E7",
+          vermilion: v("accent-vermilion"),
+          "vermilion-hover": v("accent-vermilion-hover"),
+          "vermilion-light": v("accent-vermilion-light"),
+          "vermilion-border": v("accent-vermilion-border"),
+          emerald: v("accent-emerald"),
+          "emerald-light": v("accent-emerald-light"),
+          "emerald-border": v("accent-emerald-border"),
+          amber: v("accent-amber"),
+          "amber-light": v("accent-amber-light"),
         },
         // Semantic states — use these instead of Tailwind's rose/emerald/amber/indigo.
-        success: {
-          DEFAULT: "#2D5A43",
-          hover: "#234A36",
-          strong: "#1D3B2C",
-          light: "#EBF2EE",
-          soft: "#DCE9E1",
-          border: "#C9DEC7",
-        },
-        warning: {
-          DEFAULT: "#7A6129",
-          hover: "#654F20",
-          strong: "#4F3F1A",
-          light: "#F7F2E7",
-          soft: "#EFE3C6",
-          border: "#E6D8B5",
-        },
-        danger: {
-          DEFAULT: "#A63826",
-          hover: "#8E2F20",
-          strong: "#6E2418",
-          light: "#FDF0ED",
-          soft: "#F9E1DA",
-          border: "#F5D0C7",
-        },
-        info: {
-          DEFAULT: "#1E3A8A",
-          hover: "#182F70",
-          strong: "#142659",
-          light: "#EEF1F8",
-          soft: "#DDE3F1",
-          border: "#C7D0E6",
-        },
-        // Dark surfaces (video player, code terminal).
+        success: states("success"),
+        warning: states("warning"),
+        danger: states("danger"),
+        info: states("info"),
+        // Dark surfaces (video player, code terminal). The same in both themes.
         night: {
           DEFAULT: "#121110",
           raised: "#1A1917",
           line: "#2E2C29",
           hover: "#3A3733",
           text: "#F0ECE3",
+          bright: "#FFFFFF",
           muted: "#B5AFA5",
           subtle: "#8F897F",
           green: "#8FCFA6",

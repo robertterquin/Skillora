@@ -178,7 +178,7 @@ function Studio() {
 
   return (
     <div className="flex-1 flex flex-col bg-canvas text-ink">
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+      <main id="main" className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
         {authReady && !user && (
           <div className="p-4 rounded-2xl bg-white border border-surface-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-ink-secondary">
             <div className="flex items-center gap-2">

@@ -169,6 +169,7 @@ export default function SkillLibraryPage() {
         />
 
         <main
+          id="main"
           className={`flex-1 flex flex-col h-full min-h-0 overflow-hidden relative transition-[margin] duration-300 ease-in-out ${
             isSidebarOpen ? "md:ml-64" : "md:ml-0"
           }`}

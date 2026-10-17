@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,20 +6,143 @@
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --color-canvas: #F7F5F0;
-  --color-ink: #1A1917;
-  --color-surface: #FFFFFF;
-  --color-surface-subtle: #EFECE4;
-  --color-border: #E2DDD4;
-  --color-accent-vermilion: #B4420F;
-  --color-accent-pine: #2D5A43;
+  color-scheme: light;
 }
 
+/* Colour tokens as "R G B" channels; tailwind.config.ts reads them. */
+:root {
+  --c-white: 255 255 255;
+  --c-canvas: 247 245 240;
+  --c-ink: 26 25 23;
+  --c-ink-secondary: 74 70 64;
+  --c-ink-muted: 98 93 85;
+  --c-ink-subtle: 115 110 102;
+  --c-brand-50: 247 245 240;
+  --c-brand-100: 240 236 227;
+  --c-brand-200: 226 221 212;
+  --c-brand-300: 197 191 180;
+  --c-brand-400: 158 152 143;
+  --c-brand-500: 90 86 79;
+  --c-brand-600: 46 44 41;
+  --c-brand-700: 26 25 23;
+  --c-brand-800: 18 17 16;
+  --c-brand-900: 10 10 9;
+  --c-surface: 255 255 255;
+  --c-surface-subtle: 239 236 228;
+  --c-surface-muted: 232 228 218;
+  --c-surface-border: 226 221 212;
+  --c-paper: 250 248 244;
+  --c-paper-warm: 241 237 228;
+  --c-paper-deep: 232 228 218;
+  --c-deck-music: 140 74 40;
+  --c-deck-languages: 30 58 138;
+  --c-deck-life: 46 44 41;
+  --c-deck-tech: 31 78 74;
+  --c-accent-vermilion: 180 66 15;
+  --c-accent-vermilion-hover: 158 57 12;
+  --c-accent-vermilion-light: 251 242 237;
+  --c-accent-vermilion-border: 243 210 196;
+  --c-accent-emerald: 45 90 67;
+  --c-accent-emerald-light: 235 242 238;
+  --c-accent-emerald-border: 201 222 199;
+  --c-accent-amber: 122 97 41;
+  --c-accent-amber-light: 247 242 231;
+  --c-success: 45 90 67;
+  --c-success-hover: 35 74 54;
+  --c-success-strong: 29 59 44;
+  --c-success-light: 235 242 238;
+  --c-success-soft: 220 233 225;
+  --c-success-border: 201 222 199;
+  --c-warning: 122 97 41;
+  --c-warning-hover: 101 79 32;
+  --c-warning-strong: 79 63 26;
+  --c-warning-light: 247 242 231;
+  --c-warning-soft: 239 227 198;
+  --c-warning-border: 230 216 181;
+  --c-danger: 166 56 38;
+  --c-danger-hover: 142 47 32;
+  --c-danger-strong: 110 36 24;
+  --c-danger-light: 253 240 237;
+  --c-danger-soft: 249 225 218;
+  --c-danger-border: 245 208 199;
+  --c-info: 30 58 138;
+  --c-info-hover: 24 47 112;
+  --c-info-strong: 20 38 89;
+  --c-info-light: 238 241 248;
+  --c-info-soft: 221 227 241;
+  --c-info-border: 199 208 230;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --c-white: 31 30 28;
+  --c-canvas: 21 20 19;
+  --c-ink: 240 236 227;
+  --c-ink-secondary: 211 205 194;
+  --c-ink-muted: 179 172 161;
+  --c-ink-subtle: 154 147 136;
+  --c-brand-50: 26 25 23;
+  --c-brand-100: 35 34 31;
+  --c-brand-200: 58 55 51;
+  --c-brand-300: 78 74 68;
+  --c-brand-400: 115 110 102;
+  --c-brand-500: 158 152 143;
+  --c-brand-600: 217 212 203;
+  --c-brand-700: 240 236 227;
+  --c-brand-800: 247 245 240;
+  --c-brand-900: 255 255 255;
+  --c-surface: 31 30 28;
+  --c-surface-subtle: 39 38 35;
+  --c-surface-muted: 45 43 40;
+  --c-surface-border: 58 55 51;
+  --c-paper: 28 27 25;
+  --c-paper-warm: 35 33 30;
+  --c-paper-deep: 42 40 37;
+  --c-deck-music: 208 138 98;
+  --c-deck-languages: 143 168 232;
+  --c-deck-life: 207 201 190;
+  --c-deck-tech: 111 179 168;
+  --c-accent-vermilion: 232 135 92;
+  --c-accent-vermilion-hover: 239 156 119;
+  --c-accent-vermilion-light: 43 28 21;
+  --c-accent-vermilion-border: 90 52 36;
+  --c-accent-emerald: 125 196 154;
+  --c-accent-emerald-light: 23 37 29;
+  --c-accent-emerald-border: 47 74 58;
+  --c-accent-amber: 217 178 102;
+  --c-accent-amber-light: 38 32 18;
+  --c-success: 125 196 154;
+  --c-success-hover: 147 210 172;
+  --c-success-strong: 181 227 198;
+  --c-success-light: 22 36 28;
+  --c-success-soft: 29 51 38;
+  --c-success-border: 47 74 58;
+  --c-warning: 217 178 102;
+  --c-warning-hover: 227 194 127;
+  --c-warning-strong: 240 217 166;
+  --c-warning-light: 38 32 18;
+  --c-warning-soft: 58 48 24;
+  --c-warning-border: 77 64 32;
+  --c-danger: 235 138 117;
+  --c-danger-hover: 240 160 143;
+  --c-danger-strong: 245 191 178;
+  --c-danger-light: 42 22 18;
+  --c-danger-soft: 61 31 25;
+  --c-danger-border: 90 44 35;
+  --c-info: 143 168 232;
+  --c-info-hover: 167 187 238;
+  --c-info-strong: 198 211 245;
+  --c-info-light: 22 28 43;
+  --c-info-soft: 30 39 64;
+  --c-info-border: 46 58 92;
+}
+
+
 body {
-  background-color: #F7F5F0;
-  color: #1A1917;
+  background-color: rgb(var(--c-canvas));
+  color: rgb(var(--c-ink));
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -29,7 +150,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #1A1917;
+  outline: 2px solid rgb(var(--c-ink));
   outline-offset: 2px;
 }
 
@@ -69,11 +190,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E5E0D8;
+  background: rgb(var(--c-surface-border));
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C7C2B8;
+  background: rgb(var(--c-brand-300));
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -86,25 +207,6 @@ body {
   scrollbar-width: none;
 }
 
-.workbench-grid {
-  background-color: #F7F5F0;
-}
-
-.workbench-dots {
-  background-color: #F7F5F0;
-}
-
-.bento-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E0D8;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgba(26, 25, 23, 0.03);
-  transition: all 180ms ease;
-}
-.bento-card:hover {
-  border-color: rgba(26, 25, 23, 0.16);
-  box-shadow: 0 4px 12px 0 rgba(26, 25, 23, 0.05);
-}
 
 .spec-tag {
   font-family: var(--font-mono);

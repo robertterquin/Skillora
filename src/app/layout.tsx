@@ -3,6 +3,11 @@ import "./globals.css";
 import { Header } from "@/components/ui/Header";
 import { RouteProgressBar } from "@/components/ui/RouteProgressBar";
 import { Providers } from "@/components/ui/Providers";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
+
+// Loaded from <head> (not a CSS @import) so the browser can fetch it in parallel.
+const FONTS_URL =
+  "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap";
 
 export const metadata: Metadata = {
   title: "Skillora — Master Any Skill, Large or Small",
@@ -21,8 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // The init script sets the "dark" class before React hydrates.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={FONTS_URL} />
+      </head>
       <body className="min-h-screen flex flex-col bg-canvas text-ink antialiased">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-ink focus:text-white focus:text-sm focus:font-semibold"
+        >
+          Skip to content
+        </a>
         <Providers>
           <RouteProgressBar />
           <Header />

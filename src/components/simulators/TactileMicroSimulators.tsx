@@ -223,17 +223,17 @@ export function KnifeAngleGauge() {
 
         <div className="relative w-full h-16 flex items-end justify-center">
           <svg className="w-64 h-20 overflow-visible" viewBox="0 0 200 60">
-            <line x1="10" y1="50" x2="190" y2="50" stroke="#9E988F" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="10" y1="50" x2="190" y2="50" stroke="rgb(var(--c-brand-400))" strokeWidth="2" strokeDasharray="3 3" />
 
             <g transform={`rotate(-${angle}, 100, 50)`}>
               <polygon
                 points="100,50 170,44 175,36 100,48"
-                fill="#E2DDD4"
-                stroke="#4A4640"
+                fill="rgb(var(--c-surface-border))"
+                stroke="rgb(var(--c-ink-secondary))"
                 strokeWidth="1.5"
               />
-              <line x1="98" y1="50" x2="102" y2="50" stroke="#1E3A8A" strokeWidth="3" />
-              <rect x="155" y="44" width="12" height="6" fill="#B98A2E" rx="1" />
+              <line x1="98" y1="50" x2="102" y2="50" stroke="rgb(var(--c-info))" strokeWidth="3" />
+              <rect x="155" y="44" width="12" height="6" fill="rgb(var(--c-accent-amber))" rx="1" />
             </g>
 
             <path
@@ -241,7 +241,7 @@ export function KnifeAngleGauge() {
                 50 + 30 * Math.sin((-angle * Math.PI) / 180)
               }`}
               fill="none"
-              stroke={isOptimal ? "#2D5A43" : "#B98A2E"}
+              stroke={isOptimal ? "rgb(var(--c-success))" : "rgb(var(--c-accent-amber))"}
               strokeWidth="2"
             />
           </svg>
@@ -725,7 +725,7 @@ export function CodeMilestoneTerminalSimulator({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full my-3 p-4 bg-ink text-night-text border-2 border-night-hover rounded-2xl corner-ticks shadow-2xs select-none font-mono"
+      className="w-full my-3 p-4 bg-night text-night-text border-2 border-night-hover rounded-2xl corner-ticks shadow-2xs select-none font-mono"
     >
       <div className="flex items-center justify-between text-xs tracking-wider text-night-muted uppercase mb-2 pb-1.5 border-b border-night-line">
         <span className="flex items-center gap-1.5">

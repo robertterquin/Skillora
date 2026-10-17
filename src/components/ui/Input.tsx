@@ -67,7 +67,7 @@ export function Field({ label, htmlFor, action, hint, children, className }: Fie
         {action}
       </div>
       {children}
-      {hint && <p className="mt-1.5 text-xs text-ink-muted">{hint}</p>}
+      {hint && <p id={`${htmlFor}-hint`} className="mt-1.5 text-xs text-ink-muted">{hint}</p>}
     </div>
   );
 }
