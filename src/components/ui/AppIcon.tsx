@@ -188,6 +188,4 @@ export function AppIcon({
   );
 }
 
-export const SolarIcon = AppIcon;
-export const IconifyIcon = AppIcon;
 

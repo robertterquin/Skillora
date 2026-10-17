@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useId } from "react";
 import { motion } from "motion/react";
 import { Skill, SkillStep } from "@/types/database";
-import { SolarIcon } from "../ui/SolarIcon";
+import { AppIcon } from "../ui/AppIcon";
+import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
@@ -30,7 +31,6 @@ export interface SkillPracticeModalProps {
   onOpenGuildExam?: (skill: Skill) => void;
 }
 
-export type FlashcardLearningModalProps = SkillPracticeModalProps;
 
 function StepMicroSimulatorAid({
   step,
@@ -314,7 +314,7 @@ export function SkillPracticeModal({
       <div className="p-5 sm:p-6 bg-canvas border-b border-surface-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
-            <SolarIcon name="book-bookmark-linear" className="w-5 h-5" />
+            <AppIcon name="book-bookmark-linear" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-0.5 font-medium">
@@ -370,14 +370,12 @@ export function SkillPracticeModal({
             </button>
           </div>
 
-          <button
-            type="button"
+          <IconButton
+            icon="close"
+            label="Close"
+            variant="ghost"
             onClick={onClose}
-            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition"
-            aria-label="Close"
-          >
-            <SolarIcon name="close-circle-linear" className="w-5 h-5" />
-          </button>
+          />
         </div>
       </div>
 
@@ -401,7 +399,7 @@ export function SkillPracticeModal({
                     }`}
                     title="Listen to native voice pronunciation"
                   >
-                    <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
+                    <AppIcon name="volume-loud-linear" className="w-4 h-4" />
                     <span>{isSpeaking ? "Speaking…" : "Pronounce"}</span>
                   </button>
 
@@ -410,12 +408,12 @@ export function SkillPracticeModal({
                     onClick={handleStartRecording}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition ${
                       isRecording
-                        ? "bg-rose-600 text-white border-rose-600 animate-ping"
+                        ? "bg-accent-vermilion text-white border-accent-vermilion animate-pulse"
                         : "bg-white text-ink border-surface-border hover:border-brand-500 hover:text-brand-600"
                     }`}
                     title="Speak into microphone and get an AI pronunciation grade"
                   >
-                    <SolarIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
+                    <AppIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
                     <span>{isRecording ? "Listening…" : "Test Pronunciation"}</span>
                   </button>
                 </div>
@@ -431,7 +429,7 @@ export function SkillPracticeModal({
                 }`}
               >
                 <div className="flex items-center justify-between border-b border-surface-border pb-3 mb-2">
-                  <div className="flex items-center gap-2 text-3xs font-mono text-ink-muted uppercase tracking-widest font-semibold">
+                  <div className="flex items-center gap-2 text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">
                     <span>Step {currentStep.step_number < 10 ? `0${currentStep.step_number}` : currentStep.step_number}</span>
                     <span className="text-surface-border">|</span>
                     <span>~{currentStep.estimated_minutes} mins</span>
@@ -439,8 +437,8 @@ export function SkillPracticeModal({
 
                   <div className="flex items-center gap-2">
                     {isCurrentStepDone && (
-                      <span className="inline-flex items-center gap-1.5 text-3xs font-mono text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                        <SolarIcon name="check-circle-bold" className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="inline-flex items-center gap-1.5 text-xs font-mono text-success font-bold bg-success-light px-2.5 py-0.5 rounded-full border border-success-border">
+                        <AppIcon name="check-circle-bold" className="w-3.5 h-3.5 text-success" />
                         <span>COMPLETED</span>
                       </span>
                     )}
@@ -450,10 +448,10 @@ export function SkillPracticeModal({
                         playWoodenThud();
                         setIsFlipped(!isFlipped);
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-surface-muted border border-surface-border text-3xs text-ink font-mono tracking-wider uppercase flex items-center gap-1 transition cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-surface-muted border border-surface-border text-xs text-ink font-mono tracking-wider uppercase flex items-center gap-1 transition cursor-pointer"
                     >
                       <span>{isFlipped ? "Back to Practice" : "Step Notes"}</span>
-                      <SolarIcon name="refresh-linear" className="w-3 h-3 text-ink-muted" />
+                      <AppIcon name="refresh-linear" className="w-3 h-3 text-ink-muted" />
                     </button>
                   </div>
                 </div>
@@ -474,7 +472,7 @@ export function SkillPracticeModal({
                     </div>
                   ) : (
                     <div className="text-left animate-fade-in">
-                      <h4 className="text-3xs font-mono font-bold text-ink-muted uppercase tracking-widest mb-2">
+                      <h4 className="text-xs font-mono font-bold text-ink-muted uppercase tracking-wider mb-2">
                         Technique Notes:
                       </h4>
                       <p className="text-sm text-ink leading-relaxed">
@@ -483,7 +481,7 @@ export function SkillPracticeModal({
 
                       {currentStep.resources && currentStep.resources.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-surface-border">
-                          <span className="text-2xs font-semibold text-ink-muted block mb-2">
+                          <span className="text-xs font-semibold text-ink-muted block mb-2">
                             Resources:
                           </span>
                           <div className="flex flex-wrap gap-2">
@@ -493,7 +491,7 @@ export function SkillPracticeModal({
                                 return (
                                   <div
                                     key={res.id}
-                                    className="inline-flex items-center rounded-lg overflow-hidden border border-rose-200 bg-rose-50 hover:bg-rose-100/80 transition shadow-2xs group"
+                                    className="inline-flex items-center rounded-lg overflow-hidden border border-accent-vermilion-border bg-accent-vermilion-light hover:bg-accent-vermilion-border/80 transition shadow-2xs group"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     <button
@@ -506,12 +504,12 @@ export function SkillPracticeModal({
                                           stepTitle: currentStep.title,
                                         });
                                       }}
-                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-rose-950 transition cursor-pointer"
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ink transition cursor-pointer"
                                       title="Watch tutorial inside workbench player"
                                     >
-                                      <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                      <AppIcon name="play-linear" className="w-3.5 h-3.5 text-accent-vermilion group-hover:scale-110 transition" />
                                       <span>{res.platform_name}</span>
-                                      <span className="text-3xs px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                      <span className="text-xs px-1.5 py-0.5 rounded bg-white text-accent-vermilion font-semibold font-mono">
                                         Watch
                                       </span>
                                     </button>
@@ -521,10 +519,10 @@ export function SkillPracticeModal({
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       onClick={(e) => e.stopPropagation()}
-                                      className="px-2 py-1 text-rose-700 hover:text-rose-950 hover:bg-rose-200/60 border-l border-rose-200 transition flex items-center"
+                                      className="px-2 py-1 text-accent-vermilion hover:text-ink hover:bg-accent-vermilion-border/60 border-l border-accent-vermilion-border transition flex items-center"
                                       title="Open directly on YouTube (external link)"
                                     >
-                                      <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                                      <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
                                     </a>
                                   </div>
                                 );
@@ -540,7 +538,7 @@ export function SkillPracticeModal({
                                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface hover:bg-surface-subtle border border-surface-border text-xs font-medium text-ink hover:text-accent-vermilion transition"
                                 >
                                   <span>{res.platform_name}</span>
-                                  <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-muted" />
+                                  <AppIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-muted" />
                                 </a>
                               );
                             })}
@@ -552,7 +550,7 @@ export function SkillPracticeModal({
                 </div>
 
                 <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs">
-                  <span className="text-ink-muted text-3xs font-mono tracking-wider uppercase">
+                  <span className="text-ink-muted text-xs font-mono tracking-wider uppercase">
                     Step {currentStep.step_number} of {steps.length}
                   </span>
                   <button
@@ -567,20 +565,20 @@ export function SkillPracticeModal({
                       }
                       onToggleStep(currentStep.id);
                     }}
-                    className={`px-4 py-2 rounded-xl font-mono text-2xs font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
+                    className={`px-4 py-2 rounded-xl font-mono text-xs font-semibold tracking-wide transition flex items-center gap-2 cursor-pointer ${
                       isCurrentStepDone
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs hover:bg-emerald-100/80"
+                        ? "bg-success-light text-success border border-success-border shadow-xs hover:bg-success-soft/80"
                         : "bg-ink text-white hover:bg-accent-vermilion shadow-xs"
                     }`}
                   >
                     {isCurrentStepDone ? (
                       <>
-                        <SolarIcon name="check-circle-bold" className="w-3.5 h-3.5 text-emerald-600" />
+                        <AppIcon name="check-circle-bold" className="w-3.5 h-3.5 text-success" />
                         <span>Completed</span>
                       </>
                     ) : (
                       <>
-                        <SolarIcon name="check-circle-linear" className="w-3.5 h-3.5" />
+                        <AppIcon name="check-circle-linear" className="w-3.5 h-3.5" />
                         <span>Mark as complete</span>
                       </>
                     )}
@@ -599,7 +597,7 @@ export function SkillPracticeModal({
                 }}
                 className="px-4 py-2 rounded-full border border-surface-border bg-white text-xs font-semibold text-ink hover:bg-canvas disabled:opacity-40 transition flex items-center gap-1 cursor-pointer"
               >
-                <SolarIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
+                <AppIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
                 <span>Previous</span>
               </button>
 
@@ -624,7 +622,7 @@ export function SkillPracticeModal({
                 className={buttonClasses({ size: "sm" })}
               >
                 <span>Next</span>
-                <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
+                <AppIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -634,16 +632,16 @@ export function SkillPracticeModal({
                 onClick={() => setCoachOpen(!coachOpen)}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-surface-border hover:border-brand-500 text-xs font-semibold text-ink hover:text-brand-600 transition shadow-2xs cursor-pointer"
               >
-                <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600" />
+                <AppIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600" />
                 <span>{profile.coachButtonLabel}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleGenerateMnemonic}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-surface-border hover:border-indigo-500 text-xs font-semibold text-ink hover:text-indigo-600 transition shadow-2xs"
+                className={buttonClasses({ variant: "secondary", size: "sm" })}
               >
-                <SolarIcon name="lightbulb-linear" className="w-4 h-4 text-indigo-600" />
+                <AppIcon name="lightbulb-linear" className="w-4 h-4 text-info" />
                 <span>Generate Mnemonic</span>
               </button>
             </div>
@@ -652,7 +650,7 @@ export function SkillPracticeModal({
               <div className="w-full max-w-lg mt-4 p-4 rounded-2xl bg-white border-2 border-brand-500/40 shadow-sm animate-fade-in text-left">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <SolarIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
+                    <AppIcon name="microphone-3-linear" className="w-4 h-4 text-brand-600" />
                     <span className="text-xs font-bold text-ink">Voice Pronunciation Evaluation</span>
                   </div>
                   <button
@@ -666,7 +664,7 @@ export function SkillPracticeModal({
 
                 {voiceGrading ? (
                   <div className="py-3 text-center text-xs text-brand-600 font-semibold animate-pulse flex items-center justify-center gap-2">
-                    <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
+                    <AppIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
                     <span>Transcribing and grading…</span>
                   </div>
                 ) : voiceScoreResult ? (
@@ -678,7 +676,7 @@ export function SkillPracticeModal({
                       <span className="text-xs font-bold text-ink">{voiceScoreResult.verdict}</span>
                     </div>
                     <p className="text-xs text-ink-secondary mb-2">{voiceScoreResult.feedback}</p>
-                    <div className="p-2.5 rounded-xl bg-canvas border border-surface-border text-2xs text-ink">
+                    <div className="p-2.5 rounded-xl bg-canvas border border-surface-border text-xs text-ink">
                       <strong>Phonetic Tip:</strong> {voiceScoreResult.phoneticTip}
                     </div>
                   </div>
@@ -691,7 +689,7 @@ export function SkillPracticeModal({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
-                      <SolarIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
+                      <AppIcon name="stars-minimalistic-linear" className="w-3.5 h-3.5" />
                     </div>
                     <h4 className="font-display font-bold text-xs text-ink">
                       {profile.coachTitle}
@@ -712,7 +710,7 @@ export function SkillPracticeModal({
                       key={i}
                       type="button"
                       onClick={() => handleAskCoach(sug.question)}
-                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-2xs text-ink-muted hover:text-brand-700 transition cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-canvas hover:bg-brand-50 border border-surface-border text-xs text-ink-muted hover:text-brand-700 transition cursor-pointer"
                     >
                       {sug.label}
                     </button>
@@ -740,7 +738,7 @@ export function SkillPracticeModal({
 
                 {coachLoading && (
                   <div className="p-3 text-center text-xs text-brand-600 font-semibold animate-pulse flex items-center justify-center gap-2">
-                    <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
+                    <AppIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
                     <span>{profile.coachDiagnosingLabel}</span>
                   </div>
                 )}
@@ -748,19 +746,19 @@ export function SkillPracticeModal({
                 {coachAdvice && !coachLoading && (
                   <div className="space-y-2.5 p-3.5 rounded-xl bg-canvas border border-surface-border text-xs">
                     <div>
-                      <strong className="text-ink font-semibold block text-2xs uppercase tracking-wider text-brand-700">
+                      <strong className="text-ink font-semibold block text-xs uppercase tracking-wider text-brand-700">
                         Diagnosis:
                       </strong>
                       <p className="text-ink-secondary mt-0.5">{coachAdvice.diagnosis}</p>
                     </div>
                     <div>
-                      <strong className="text-ink font-semibold block text-2xs uppercase tracking-wider text-amber-700">
+                      <strong className="text-ink font-semibold block text-xs uppercase tracking-wider text-warning">
                         {profile.coachSecondCardLabel}
                       </strong>
                       <p className="text-ink-secondary mt-0.5">{coachAdvice.muscleMemoryCue}</p>
                     </div>
                     <div>
-                      <strong className="text-ink font-semibold block text-2xs uppercase tracking-wider text-accent-emerald">
+                      <strong className="text-ink font-semibold block text-xs uppercase tracking-wider text-accent-emerald">
                         Actionable Drill:
                       </strong>
                       <p className="text-ink-secondary mt-0.5">{coachAdvice.actionableDrill}</p>
@@ -771,10 +769,10 @@ export function SkillPracticeModal({
             )}
 
             {mnemonicOpen && (
-              <div className="w-full max-w-lg mt-4 p-5 rounded-2xl bg-white border border-indigo-300 shadow-sm text-left animate-fade-in">
+              <div className="w-full max-w-lg mt-4 p-5 rounded-2xl bg-white border border-info-border shadow-sm text-left animate-fade-in">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <SolarIcon name="lightbulb-linear" className="w-4 h-4 text-indigo-600" />
+                    <AppIcon name="lightbulb-linear" className="w-4 h-4 text-info" />
                     <h4 className="font-display font-bold text-xs text-ink">
                       Memory Mnemonic & Mental Anchor
                     </h4>
@@ -790,24 +788,24 @@ export function SkillPracticeModal({
 
                 {mnemonicLoading ? (
                   <div className="p-3 text-center text-xs text-ink-muted font-semibold animate-pulse flex items-center justify-center gap-2">
-                    <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
+                    <AppIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
                     <span>Synthesizing mnemonic...</span>
                   </div>
                 ) : mnemonicData ? (
                   <div className="space-y-2 text-xs">
                     <div className="p-3 rounded-xl bg-surface border border-surface-border">
-                      <strong className="text-ink block text-2xs uppercase tracking-wider mb-1">
+                      <strong className="text-ink block text-xs uppercase tracking-wider mb-1">
                         Mental Model:
                       </strong>
                       <p className="text-ink-secondary">{mnemonicData.visualMnemonic}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-canvas border border-surface-border">
-                      <strong className="text-ink block text-2xs uppercase tracking-wider mb-1">
+                      <strong className="text-ink block text-xs uppercase tracking-wider mb-1">
                         {profile.mnemonicAnchorLabel}
                       </strong>
                       <p className="text-ink-secondary">{mnemonicData.physicalAnchor}</p>
                     </div>
-                    <div className="text-center font-bold text-ink pt-1 text-2xs">
+                    <div className="text-center font-bold text-ink pt-1 text-xs">
                       &ldquo;{mnemonicData.ruleOfThumb}&rdquo;
                     </div>
                   </div>
@@ -837,13 +835,13 @@ export function SkillPracticeModal({
                         aria-label={isDone ? "Mark step incomplete" : "Mark step complete"}
                       >
                         {isDone ? (
-                          <SolarIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
+                          <AppIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
                         ) : (
                           <div className="w-5 h-5 rounded-full border border-surface-border hover:border-ink bg-white transition shadow-2xs" />
                         )}
                       </button>
                       <div>
-                        <span className="text-2xs font-mono text-ink-subtle mb-0.5 block">
+                        <span className="text-xs font-mono text-ink-subtle mb-0.5 block">
                           Step {step.step_number} · ~{step.estimated_minutes} mins
                         </span>
                         <h4 className={`font-display font-semibold text-base ${isDone ? "line-through text-ink-muted" : "text-ink"}`}>
@@ -860,7 +858,7 @@ export function SkillPracticeModal({
                           className="p-1.5 rounded-lg border border-surface-border text-brand-600 hover:bg-brand-50"
                           title="Pronounce step title"
                         >
-                          <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
+                          <AppIcon name="volume-loud-linear" className="w-4 h-4" />
                         </button>
                       )}
 
@@ -889,7 +887,7 @@ export function SkillPracticeModal({
                           return (
                             <div
                               key={res.id}
-                              className="inline-flex items-center rounded-lg overflow-hidden border border-rose-200 bg-rose-50 hover:bg-rose-100/80 transition shadow-2xs group"
+                              className="inline-flex items-center rounded-lg overflow-hidden border border-accent-vermilion-border bg-accent-vermilion-light hover:bg-accent-vermilion-border/80 transition shadow-2xs group"
                             >
                               <button
                                 type="button"
@@ -900,12 +898,12 @@ export function SkillPracticeModal({
                                     stepTitle: step.title,
                                   })
                                 }
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-rose-950 transition cursor-pointer"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ink transition cursor-pointer"
                                 title="Watch tutorial inside workbench player"
                               >
-                                <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                <AppIcon name="play-linear" className="w-3.5 h-3.5 text-accent-vermilion group-hover:scale-110 transition" />
                                 <span>{res.platform_name}</span>
-                                <span className="text-3xs px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-white text-accent-vermilion font-semibold font-mono">
                                   Watch
                                 </span>
                               </button>
@@ -914,10 +912,10 @@ export function SkillPracticeModal({
                                 href={res.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2 py-1 text-rose-700 hover:text-rose-950 hover:bg-rose-200/60 border-l border-rose-200 transition flex items-center"
+                                className="px-2 py-1 text-accent-vermilion hover:text-ink hover:bg-accent-vermilion-border/60 border-l border-accent-vermilion-border transition flex items-center"
                                 title="Open directly on YouTube (external link)"
                               >
-                                <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                                <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
                               </a>
                             </div>
                           );
@@ -932,7 +930,7 @@ export function SkillPracticeModal({
                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-muted text-xs font-medium text-ink hover:text-brand-700"
                           >
                             <span>{res.platform_name}</span>
-                            <SolarIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
+                            <AppIcon name="square-arrow-right-up-linear" className="w-3 h-3 text-ink-subtle" />
                           </a>
                         );
                       })}
@@ -959,9 +957,9 @@ export function SkillPracticeModal({
                 onClose();
                 onOpenGuildExam(skill);
               }}
-              className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-warning to-warning-hover hover:from-warning-hover hover:to-warning-strong text-white text-xs font-bold font-mono transition shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-3.5 h-3.5" />
+              <AppIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-3.5 h-3.5" />
               <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
             </button>
           )}
@@ -989,5 +987,4 @@ export function SkillPracticeModal({
   );
 }
 
-export const FlashcardLearningModal = SkillPracticeModal;
 

@@ -3,7 +3,8 @@
 import React, { useState, useId } from "react";
 import Link from "next/link";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "../ui/SolarIcon";
+import { AppIcon } from "../ui/AppIcon";
+import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
 import { VideoPlayerModal, extractYouTubeId } from "./VideoPlayerModal";
@@ -44,7 +45,7 @@ export function SkillSyllabusModal({
       <div className="p-6 sm:p-8 bg-canvas border-b border-surface-border">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2 font-mono text-3xs uppercase tracking-wider text-ink-subtle">
+            <div className="flex items-center gap-2 mb-2 font-mono text-xs uppercase tracking-wider text-ink-subtle">
               <span>{isViewOnly ? "PREVIEW" : "ACTIVE TRACK"}</span>
               <span>·</span>
               <span className="text-ink-muted">{skill.difficulty}</span>
@@ -53,14 +54,12 @@ export function SkillSyllabusModal({
               {skill.title}
             </h2>
           </div>
-          <button
-            type="button"
+          <IconButton
+            icon="close"
+            label="Close modal"
+            variant="ghost"
             onClick={onClose}
-            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition"
-            aria-label="Close modal"
-          >
-            <SolarIcon name="close-circle-linear" className="w-5 h-5" />
-          </button>
+          />
         </div>
 
         <p className="mt-3 text-sm text-ink-secondary leading-relaxed max-w-2xl">
@@ -79,7 +78,7 @@ export function SkillSyllabusModal({
             <>
               <span className="text-ink-subtle">·</span>
               <span className="text-accent-emerald font-semibold inline-flex items-center gap-1">
-                <SolarIcon name="cup-first-linear" className="w-3.5 h-3.5" />
+                <AppIcon name="cup-first-linear" className="w-3.5 h-3.5" />
                 <span>Mastered</span>
               </span>
             </>
@@ -89,8 +88,8 @@ export function SkillSyllabusModal({
         {!isViewOnly && (
           <div className="mt-5 space-y-1.5">
             <div className="flex justify-between text-xs text-ink-muted">
-              <span className="text-2xs font-mono uppercase tracking-wider text-ink-subtle">Path Progress</span>
-              <span className="tabular-nums font-mono text-2xs font-semibold text-ink">
+              <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">Path Progress</span>
+              <span className="tabular-nums font-mono text-xs font-semibold text-ink">
                 {completedCount}/{totalSteps} ({progressPercent}%)
               </span>
             </div>
@@ -109,10 +108,10 @@ export function SkillSyllabusModal({
           <div className="mt-5 p-4 rounded-2xl bg-surface border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink flex-shrink-0 shadow-2xs">
-                <SolarIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-4 h-4" />
+                <AppIcon name={isGuildCertified ? "diploma-verified-linear" : "cup-first-linear"} className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-3xs font-mono font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                <div className="text-xs font-mono font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
                   <span>{isGuildCertified ? "SKILL CERTIFIED" : "100% COMPLETE · ASSESSMENT UNLOCKED"}</span>
                 </div>
                 <div className="text-xs text-ink-secondary mt-0.5">
@@ -129,7 +128,7 @@ export function SkillSyllabusModal({
                 className="px-4 py-2 rounded-xl bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
               >
                 <span>{isGuildCertified ? "View Certificate" : "Take Assessment"}</span>
-                <SolarIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
+                <AppIcon name="arrow-right-linear" className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -164,18 +163,18 @@ export function SkillSyllabusModal({
                         aria-label={isStepDone ? "Mark step incomplete" : "Mark step completed"}
                       >
                         {isStepDone ? (
-                          <SolarIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
+                          <AppIcon name="check-circle-linear" className="w-5 h-5 text-accent-emerald" />
                         ) : (
                           <div className="w-5 h-5 rounded-full border border-surface-border hover:border-ink bg-white transition shadow-2xs" />
                         )}
                       </button>
                     ) : (
-                      <div className="w-5 h-5 rounded-md bg-canvas border border-surface-border flex items-center justify-center font-mono text-3xs font-semibold text-ink mt-0.5">
+                      <div className="w-5 h-5 rounded-md bg-canvas border border-surface-border flex items-center justify-center font-mono text-xs font-semibold text-ink mt-0.5">
                         {step.step_number}
                       </div>
                     )}
                     <div>
-                      <div className="text-2xs font-mono text-ink-subtle mb-0.5">
+                      <div className="text-xs font-mono text-ink-subtle mb-0.5">
                         Step {step.step_number} · ~{step.estimated_minutes} mins
                       </div>
                       <h4 className={`font-serif italic font-normal text-lg sm:text-xl leading-snug ${isStepDone ? "line-through text-ink-muted" : "text-ink"}`}>
@@ -185,7 +184,7 @@ export function SkillSyllabusModal({
                   </div>
 
                   {!isViewOnly ? (
-                    <span className={`text-2xs font-mono font-medium px-2 py-0.5 rounded-full transition ${
+                    <span className={`text-xs font-mono font-medium px-2 py-0.5 rounded-full transition ${
                       isStepDone
                         ? "bg-accent-emerald/10 text-accent-emerald"
                         : "text-ink-subtle bg-surface-muted"
@@ -193,7 +192,7 @@ export function SkillSyllabusModal({
                       {isStepDone ? "Done" : `${step.estimated_minutes}m`}
                     </span>
                   ) : (
-                    <span className="text-2xs font-mono text-ink-subtle">
+                    <span className="text-xs font-mono text-ink-subtle">
                       ~{step.estimated_minutes}m
                     </span>
                   )}
@@ -216,7 +215,7 @@ export function SkillSyllabusModal({
                           return (
                             <div
                               key={res.id}
-                              className="inline-flex items-center rounded-xl overflow-hidden border border-rose-200 bg-rose-50 hover:bg-rose-100/80 transition shadow-2xs group"
+                              className="inline-flex items-center rounded-xl overflow-hidden border border-accent-vermilion-border bg-accent-vermilion-light hover:bg-accent-vermilion-border/80 transition shadow-2xs group"
                             >
                               <button
                                 type="button"
@@ -227,12 +226,12 @@ export function SkillSyllabusModal({
                                     stepTitle: step.title,
                                   })
                                 }
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-rose-950 transition cursor-pointer"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-ink transition cursor-pointer"
                                 title="Watch tutorial inside workbench player"
                               >
-                                <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition" />
+                                <AppIcon name="play-linear" className="w-3.5 h-3.5 text-accent-vermilion group-hover:scale-110 transition" />
                                 <span>{res.platform_name}</span>
-                                <span className="text-3xs px-1.5 py-0.5 rounded bg-white text-rose-600 font-semibold font-mono">
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-white text-accent-vermilion font-semibold font-mono">
                                   Watch
                                 </span>
                               </button>
@@ -241,10 +240,10 @@ export function SkillSyllabusModal({
                                 href={res.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2 py-1.5 text-rose-700 hover:text-rose-950 hover:bg-rose-200/60 border-l border-rose-200 transition flex items-center"
+                                className="px-2 py-1.5 text-accent-vermilion hover:text-ink hover:bg-accent-vermilion-border/60 border-l border-accent-vermilion-border transition flex items-center"
                                 title="Open directly on YouTube (external link)"
                               >
-                                <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
+                                <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5" />
                               </a>
                             </div>
                           );
@@ -259,10 +258,10 @@ export function SkillSyllabusModal({
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-muted hover:bg-brand-50 border border-surface-border hover:border-brand-500/30 text-xs font-medium text-ink hover:text-brand-700 transition"
                           >
                             <span>{res.platform_name}</span>
-                            <span className="text-2xs px-1 py-px rounded bg-white text-ink-muted font-normal">
+                            <span className="text-xs px-1 py-px rounded bg-white text-ink-muted font-normal">
                               {res.is_free ? "Free" : "Course"}
                             </span>
-                            <SolarIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5 text-ink-subtle" />
+                            <AppIcon name="square-arrow-right-up-linear" className="w-3.5 h-3.5 text-ink-subtle" />
                           </a>
                         );
                       })}
@@ -293,7 +292,7 @@ export function SkillSyllabusModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-full border border-surface-border bg-white text-ink text-xs font-semibold hover:bg-surface-muted transition"
+            className={buttonClasses({ variant: "secondary", size: "sm" })}
           >
             Close
           </button>

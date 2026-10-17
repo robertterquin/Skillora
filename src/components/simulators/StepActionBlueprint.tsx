@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Skill, SkillStep, LearningResource } from "@/types/database";
-import { SolarIcon } from "../ui/SolarIcon";
+import { AppIcon } from "../ui/AppIcon";
 import { playMechanicalClick, playChime } from "@/lib/workbench-audio";
 
 export interface BlueprintCheckpoint {
@@ -643,9 +643,9 @@ export function StepActionBlueprint({
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 sm:p-5 bg-surface border border-surface-border rounded-2xl corner-ticks text-ink shadow-xs select-none transition-all"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-muted uppercase mb-3 pb-2.5 border-b border-surface-border">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-muted uppercase mb-3 pb-2.5 border-b border-surface-border">
         <span className="flex items-center gap-1.5 font-bold">
-          <SolarIcon name="clipboard-check-linear" className="w-3.5 h-3.5 text-accent-vermilion" />
+          <AppIcon name="clipboard-check-linear" className="w-3.5 h-3.5 text-accent-vermilion" />
           <span>{blueprint.domainTag}</span>
         </span>
         <span
@@ -658,8 +658,8 @@ export function StepActionBlueprint({
       </div>
 
       <div className="p-3 bg-surface-subtle border border-surface-border/80 rounded-xl text-left mb-3">
-        <div className="flex items-center gap-1.5 text-3xs font-mono font-bold text-ink-muted uppercase mb-1">
-          <SolarIcon name="target-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
+        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-ink-muted uppercase mb-1">
+          <AppIcon name="target-linear" className="w-3 h-3 text-accent-vermilion shrink-0" />
           <span>Core Drill Objective</span>
         </div>
         <p className="text-xs text-ink leading-relaxed font-medium">
@@ -687,12 +687,12 @@ export function StepActionBlueprint({
                     : "border-surface-border bg-surface hover:border-accent-vermilion"
                 }`}
               >
-                {isChecked && <SolarIcon name="check-linear" className="w-3 h-3 stroke-[3]" />}
+                {isChecked && <AppIcon name="check-linear" className="w-3 h-3 stroke-[3]" />}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-2xs font-bold font-mono tracking-wide ${
+                    className={`text-xs font-bold font-mono tracking-wide ${
                       isChecked ? "text-accent-emerald" : "text-ink"
                     }`}
                   >
@@ -700,7 +700,7 @@ export function StepActionBlueprint({
                   </span>
                 </div>
                 <p
-                  className={`text-2xs leading-snug mt-0.5 ${
+                  className={`text-xs leading-snug mt-0.5 ${
                     isChecked ? "text-accent-emerald/90 line-through opacity-80" : "text-ink-secondary"
                   }`}
                 >
@@ -714,13 +714,13 @@ export function StepActionBlueprint({
 
       <div className="space-y-2 pt-1 border-t border-surface-border/60">
         <div
-          className={`p-2.5 rounded-xl border text-left flex items-start gap-2 text-2xs transition ${
+          className={`p-2.5 rounded-xl border text-left flex items-start gap-2 text-xs transition ${
             isAllComplete
               ? "bg-accent-emerald-light/60 border-accent-emerald/50 text-accent-emerald font-semibold"
               : "bg-surface-subtle border-surface-border text-ink-secondary"
           }`}
         >
-          <SolarIcon
+          <AppIcon
             name={isAllComplete ? "check-circle-bold" : "flag-2-linear"}
             className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
               isAllComplete ? "text-accent-emerald" : "text-accent-vermilion"
@@ -742,14 +742,14 @@ export function StepActionBlueprint({
                   stepTitle: step.title,
                 })
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-subtle border border-surface-border text-ink text-2xs font-medium transition cursor-pointer shadow-2xs group"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-subtle border border-surface-border text-ink text-xs font-medium transition cursor-pointer shadow-2xs group"
             >
-              <SolarIcon name="play-linear" className="w-3 h-3 text-accent-vermilion group-hover:scale-110 transition" />
+              <AppIcon name="play-linear" className="w-3 h-3 text-accent-vermilion group-hover:scale-110 transition" />
               <span>Watch Video Drill: {videoResource.platform_name}</span>
-              <SolarIcon name="square-arrow-right-up-linear" className="w-2.5 h-2.5 text-ink-muted" />
+              <AppIcon name="square-arrow-right-up-linear" className="w-2.5 h-2.5 text-ink-muted" />
             </button>
 
-            <span className="text-3xs font-mono text-ink-muted">
+            <span className="text-xs font-mono text-ink-muted">
               ~{step.estimated_minutes} min sprint
             </span>
           </div>

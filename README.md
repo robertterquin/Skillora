@@ -13,10 +13,10 @@
 **Skillora** breaks down music, languages, tactile crafts, everyday hobbies, and digital workflows into structured, manageable steps with realistic time horizons, vetted external platforms, and interactive AI-powered deliberate practice.
 
 ### Key Pillars
-- **Minimalist Aesthetic**: High-signal, typography-driven Swiss design with zero unicode emojis, unified Solar Linear iconography, and warm linen canvas (`#FAFAFA`).
+- **Minimalist Aesthetic**: High-signal, typography-driven editorial design with zero unicode emojis, one icon set (Lucide via `AppIcon`), and a warm linen canvas (`#F7F5F0`).
 - **Strict Information Architecture**:
-  - **The Learning Owl Oracle (`/library`)**: The Skill Library is anchored by a large, interactive Learning Owl character. Speak via microphone or chat to summon any skill in the universe; the Owl deconstructs it and dispatches it straight to My Studio.
-  - **My Studio Workshop (`/dashboard`)**: Your personal repertoire housing all your summoned skills, complete with real-time Category (Music, Languages, Crafts, Tech), Duration, and Search filters, streak tracking, daily 15-minute workouts, and 3D flashcards.
+  - **Ask Archimedes (`/library`)**: A chat with Archimedes, the interactive learning owl. Speak via microphone or chat to summon any skill in the universe; the Owl deconstructs it and dispatches it straight to My Studio.
+  - **Studio (`/dashboard`)**: Your personal repertoire housing all your summoned skills, complete with real-time Category (Music, Languages, Crafts, Tech), Duration, and Search filters, streak tracking, daily 15-minute workouts, and 3D flashcards.
 - **Interactive 3D Flashcard Hub**:
   - Tactile 3D card flips with custom visual diagram aids (Cyrillic alphabet tiles, Guitar P-I-M-A finger anchor guide, 15° knife sharpening coin gauge, tactile home row keycaps, 1:2 espresso extraction dial).
   - Native Web Speech audio pronunciation (Russian `ru-RU`, English `en-US`).
@@ -34,10 +34,30 @@
 
 - **Framework**: [Next.js 14](https://nextjs.org/) (App Router, React 18, TypeScript)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Iconography**: [Solar Linear Icons](https://icon-sets.iconify.design/?query=solar) via `@iconify/react`
-- **Avatars**: [DiceBear Big Smile](https://www.dicebear.com/) via `@dicebear/core` & `@dicebear/collection`
+- **Iconography**: [Lucide](https://lucide.dev/) via the `AppIcon` wrapper (`src/components/ui/AppIcon.tsx`)
+- **Avatars**: [DiceBear Notionists](https://www.dicebear.com/) via `@dicebear/core` & `@dicebear/collection`
 - **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security and triggers)
 - **AI Engine**: [OpenAI](https://openai.com/) (GPT-4o-mini & Whisper-1)
+
+---
+
+## Design System
+
+Tokens live in `tailwind.config.ts`. Use them instead of raw Tailwind colours (`stone-*`, `rose-*`, etc.) or hex values.
+
+| Purpose | Tokens |
+|---|---|
+| Page & surfaces | `canvas`, `surface`, `surface-subtle`, `surface-muted`, `surface-border`, `paper` |
+| Text | `ink`, `ink-secondary`, `ink-muted`, `ink-subtle` (all pass WCAG AA on canvas and white) |
+| Brand accent | `accent-vermilion` (+ `-hover`, `-light`, `-border`) |
+| States | `success`, `warning`, `danger`, `info` — each with `hover`, `strong`, `light`, `soft`, `border` |
+| Dark surfaces | `night` (+ `raised`, `line`, `hover`, `text`, `muted`, `subtle`) |
+| Categories | `deck-music`, `deck-languages`, `deck-life`, `deck-tech` |
+
+Rules of thumb:
+- Smallest text is `text-xs` (12px). Don't add smaller sizes.
+- Use the shared components in `src/components/ui`: `Button` / `buttonClasses`, `IconButton`, `SegmentedControl`, `Input` + `Field`, `EmptyState`, `Badge`, `Card`, `Modal`.
+- Naming: **Studio** (dashboard), **Ask Archimedes** (AI chat), **Certificates** (earned credentials), **Assessment** (the final exam).
 
 ---
 

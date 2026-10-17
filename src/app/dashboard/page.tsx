@@ -12,7 +12,10 @@ import {
   SkillSyllabusModal,
   SkillFilterBar,
   DurationFilter,
-  SolarIcon,
+  AppIcon,
+  EmptyState,
+  IconButton,
+  SegmentedControl,
   MasteryPassportModal,
   SkillAssessmentModal,
 } from "@/components";
@@ -419,7 +422,7 @@ function Dashboard() {
         {!loadingAuth && !currentUser && (
           <div className="mb-6 p-4 rounded-2xl bg-brand-50 border border-brand-200 text-brand-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
-              <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
+              <AppIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-600 flex-shrink-0" />
               <span>You&apos;re browsing as a guest. Progress is saved in this browser only.</span>
             </div>
             <Link
@@ -432,28 +435,16 @@ function Dashboard() {
         )}
 
         <header className="mb-10">
-          <div className="flex items-center justify-between text-3xs font-mono uppercase tracking-widest text-ink-muted pb-3.5 mb-5 border-b border-surface-border">
-            <span>
-              {isClient
-                ? new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })
-                : "STUDIO RECORD"}
-              {" "}· WORKSPACE RECORD
-            </span>
-            <span className="hidden sm:inline">AUTONOMOUS CRAFTSMANSHIP</span>
-          </div>
-
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
             <div className="space-y-1.5 min-w-0 flex-1">
               <h1 className="font-display font-bold text-3xl sm:text-4xl text-ink tracking-tight">
-                Personal <span className="font-serif italic font-normal text-brand-600">Atelier</span>
+                Your <span className="font-serif italic font-normal text-brand-600">Studio</span>
               </h1>
 
               {currentFocusSkill ? (
-                <div className="flex items-center gap-2 text-xs text-ink-muted">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse shrink-0" />
-                  <span className="font-mono text-3xs uppercase tracking-wider text-ink-subtle">
-                    Current focus:
-                  </span>
+                <div className="flex items-center gap-2 text-sm text-ink-muted">
+                  <span className="w-1.5 h-1.5 rounded-full bg-success shrink-0" aria-hidden="true" />
+                  <span className="shrink-0">Continue</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -466,10 +457,10 @@ function Dashboard() {
                     <span className="truncate group-hover:underline underline-offset-2">
                       {currentFocusSkill.title}
                     </span>
-                    <span className="text-ink-muted font-mono text-3xs shrink-0">
+                    <span className="text-ink-muted font-mono text-xs shrink-0">
                       (Step {currentFocusStepNumber})
                     </span>
-                    <SolarIcon
+                    <AppIcon
                       name="arrow-right-linear"
                       className="w-3 h-3 text-accent-vermilion group-hover:translate-x-0.5 transition shrink-0"
                     />
@@ -477,7 +468,7 @@ function Dashboard() {
                 </div>
               ) : (
                 <p className="text-xs text-ink-muted">
-                  Explore disciplines in the library to begin your first track.
+                  Ask Archimedes what you want to learn to start your first skill.
                 </p>
               )}
             </div>
@@ -491,14 +482,14 @@ function Dashboard() {
               }}
               className="self-start sm:self-auto shrink-0"
             >
-              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
-              <span>Mastery Passport ({isClient ? masteredSkills.length : 0})</span>
+              <AppIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Certificates</span>
             </Button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white border border-surface-border shadow-2xs">
             <div>
-              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+              <span className="text-xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
                 Streak
               </span>
               <div className="flex items-baseline gap-1.5">
@@ -510,7 +501,7 @@ function Dashboard() {
             </div>
 
             <div>
-              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+              <span className="text-xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
                 Active Skills
               </span>
               <div className="flex items-baseline gap-1.5">
@@ -522,7 +513,7 @@ function Dashboard() {
             </div>
 
             <div>
-              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+              <span className="text-xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
                 Steps Finished
               </span>
               <div className="flex items-baseline gap-1.5">
@@ -534,14 +525,14 @@ function Dashboard() {
             </div>
 
             <div>
-              <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
+              <span className="text-xs font-mono uppercase tracking-wider text-ink-muted block mb-1">
                 Mastered
               </span>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-serif italic text-2xl sm:text-3xl text-ink font-normal tabular-nums">
                   {isClient ? masteredSkills.length : 0}
                 </span>
-                <span className="text-xs text-ink-muted font-mono">certified</span>
+                <span className="text-xs text-ink-muted font-mono">skills</span>
               </div>
             </div>
           </div>
@@ -560,51 +551,30 @@ function Dashboard() {
 
             <div className="flex items-center gap-2.5">
               {myStudioSkills.length > 0 && (
-                <div className="inline-flex items-center p-0.5 rounded-lg bg-surface-muted border border-surface-border text-xs font-mono">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playMechanicalClick();
-                      setRepertoireView("ledger");
-                      localStorage.setItem("skillora_repertoire_view", "ledger");
-                    }}
-                    className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer text-xs ${
-                      repertoireView === "ledger"
-                        ? "bg-white text-ink shadow-2xs font-semibold"
-                        : "text-ink-muted hover:text-ink"
-                    }`}
-                    title="Ledger (Strip List) view"
-                    aria-pressed={repertoireView === "ledger"}
-                  >
-                    <SolarIcon name="list-linear" className="w-3.5 h-3.5" />
-                    <span>Ledger</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playMechanicalClick();
-                      setRepertoireView("grid");
-                      localStorage.setItem("skillora_repertoire_view", "grid");
-                    }}
-                    className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer text-xs ${
-                      repertoireView === "grid"
-                        ? "bg-white text-ink shadow-2xs font-semibold"
-                        : "text-ink-muted hover:text-ink"
-                    }`}
-                    title="Bookplate Grid view"
-                    aria-pressed={repertoireView === "grid"}
-                  >
-                    <SolarIcon name="grid-linear" className="w-3.5 h-3.5" />
-                    <span>Grid</span>
-                  </button>
-                </div>
+                <SegmentedControl
+                  label="Skill layout"
+                  layoutId="studioViewToggle"
+                  size="sm"
+                  value={repertoireView}
+                  onChange={(view) => {
+                    playMechanicalClick();
+                    setRepertoireView(view);
+                    try {
+                      localStorage.setItem("skillora_repertoire_view", view);
+                    } catch {}
+                  }}
+                  options={[
+                    { value: "ledger", label: "List", icon: "list-linear" },
+                    { value: "grid", label: "Grid", icon: "grid-linear" },
+                  ]}
+                />
               )}
 
               <Link
                 href="/library"
                 className={buttonClasses({ variant: "secondary", size: "sm", className: "self-start sm:self-auto" })}
               >
-                <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
+                <AppIcon name="stars-minimalistic-linear" className="w-4 h-4 text-ink-muted" />
                 <span>Add a skill</span>
               </Link>
             </div>
@@ -625,42 +595,34 @@ function Dashboard() {
           )}
 
           {filteredStudioSkills.length === 0 ? (
-            <div className="p-10 sm:p-16 text-center bg-white rounded-3xl border border-dashed border-surface-border max-w-2xl mx-auto">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-canvas border border-surface-border flex items-center justify-center text-ink">
-                <SolarIcon name="book-bookmark-linear" className="w-7 h-7" />
-              </div>
-              <h3 className="font-display font-bold text-lg text-ink mb-1.5">
-                {myStudioSkills.length === 0 ? "No skills yet" : "No skills match these filters"}
-              </h3>
-              <p className="text-sm text-ink-muted mb-6 max-w-md mx-auto">
-                {myStudioSkills.length === 0
+            <EmptyState
+              title={myStudioSkills.length === 0 ? "No skills yet" : "No skills match these filters"}
+              description={
+                myStudioSkills.length === 0
                   ? "Tell Archimedes what you want to learn and it will appear here."
-                  : "Try a different search, category, or length."}
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                {myStudioSkills.length > 0 && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setSelectedCategory("cat-all");
-                      setSelectedDuration("all");
-                      setSearchQuery("");
-                    }}
-                  >
-                    Clear filters
-                  </Button>
-                )}
-
-                <Link
-                  href="/library"
-                  className={buttonClasses()}
-                >
-                  <span>Open Skill Library</span>
-                  <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+                  : "Try a different search, category, or length."
+              }
+              action={
+                <>
+                  {myStudioSkills.length > 0 && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setSelectedCategory("cat-all");
+                        setSelectedDuration("all");
+                        setSearchQuery("");
+                      }}
+                    >
+                      Clear filters
+                    </Button>
+                  )}
+                  <Link href="/library" className={buttonClasses()}>
+                    <span>Ask Archimedes</span>
+                    <AppIcon name="arrow-right-linear" className="w-4 h-4" />
+                  </Link>
+                </>
+              }
+            />
           ) : repertoireView === "ledger" ? (
             <div className="bg-white rounded-2xl border border-surface-border shadow-2xs divide-y divide-surface-border/70 px-5 sm:px-6">
               {filteredStudioSkills.map((skill, idx) => {
@@ -695,20 +657,20 @@ function Dashboard() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           {isCustomAi && <Badge>AI</Badge>}
-                          <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted font-medium">
+                          <span className="text-xs font-mono uppercase tracking-wider text-ink-muted font-medium">
                             {categoryName}
                           </span>
                           <span className="text-surface-border text-xs">·</span>
-                          <span className="text-3xs font-mono uppercase tracking-wider text-ink-muted capitalize">
+                          <span className="text-xs font-mono uppercase tracking-wider text-ink-muted capitalize">
                             {skill.difficulty}
                           </span>
                           <span className="text-surface-border text-xs">·</span>
-                          <span className="text-3xs font-mono text-ink-muted">{skill.estimated_hours}h</span>
+                          <span className="text-xs font-mono text-ink-muted">{skill.estimated_hours}h</span>
                           {isCertified && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-3xs font-mono font-semibold">
-                              <SolarIcon name="diploma-verified-linear" className="w-3 h-3 text-ink-muted" />
-                              <span>CERTIFIED</span>
-                            </span>
+                            <Badge tone="success">
+                              <AppIcon name="diploma-verified-linear" className="w-3 h-3" />
+                              <span>Certified</span>
+                            </Badge>
                           )}
                         </div>
 
@@ -734,7 +696,7 @@ function Dashboard() {
 
                     <div className="flex items-center gap-5 self-stretch md:self-auto justify-between md:justify-end shrink-0 pl-10 md:pl-0">
                       <div className="w-28 sm:w-36 space-y-1">
-                        <div className="flex items-center justify-between text-3xs font-mono text-ink-muted">
+                        <div className="flex items-center justify-between text-xs font-mono text-ink-muted">
                           <span>{isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}</span>
                           <span className="font-semibold text-ink tabular-nums">{percent}% ({doneCount}/{totalCount})</span>
                         </div>
@@ -748,75 +710,65 @@ function Dashboard() {
 
                       <div className="flex items-center gap-2">
                         {isCompleted && (
-                          <button
-                            type="button"
+                          <Button
+                            size="sm"
+                            variant={isCertified ? "secondary" : "accent"}
                             onClick={() => {
                               if (isCertified) playStampThud();
                               else playMechanicalClick();
                               setActiveExamSkill(skill);
                             }}
-                            className={`py-1.5 px-3 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 cursor-pointer shadow-2xs ${
-                              isCertified
-                                ? "bg-white border border-surface-border hover:border-ink/40 text-ink"
-                                : "bg-ink hover:bg-ink/90 text-white"
-                            }`}
                           >
-                            <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
-                            <span>{isCertified ? "Certificate" : "Assessment"}</span>
-                          </button>
+                            <AppIcon name="diploma-verified-linear" className="w-3.5 h-3.5" />
+                            <span>{isCertified ? "View certificate" : "Take assessment"}</span>
+                          </Button>
                         )}
 
                         <Button
                           size="sm"
                           onClick={openPractice}
                         >
-                          <SolarIcon name="play-linear" className="w-3.5 h-3.5 text-white/80" />
+                          <AppIcon name="play-linear" className="w-3.5 h-3.5 text-white/80" />
                           <span>{isCompleted ? "Review" : "Practice"}</span>
                         </Button>
 
-                        <button
-                          type="button"
+                        <IconButton
+                          icon="layers-minimalistic-linear"
+                          size="sm"
+                          label={`View steps for ${skill.title}`}
+                          title="View steps"
                           onClick={() => {
                             playMechanicalClick();
                             setActiveSyllabusSkill(skill);
                           }}
-                          className="p-2 rounded-lg border border-surface-border hover:border-ink/30 bg-white hover:bg-surface-subtle text-ink-muted hover:text-ink transition flex items-center justify-center cursor-pointer shadow-2xs"
-                          title="View syllabus steps"
-                          aria-label={`View syllabus steps for ${skill.title}`}
-                        >
-                          <SolarIcon name="layers-minimalistic-linear" className="w-3.5 h-3.5" />
-                        </button>
+                        />
 
                         {isConfirmingRemove ? (
                           <div className="flex items-center gap-1">
-                            <button
-                              type="button"
+                            <Button
+                              size="sm"
+                              variant="danger"
                               onClick={() => {
                                 setConfirmingRemoveId(null);
                                 handleRemoveFromStudio(skill.id);
                               }}
-                              className="px-2 py-1 rounded bg-rose-600 text-white text-3xs font-mono font-bold hover:bg-rose-700 transition cursor-pointer"
                             >
-                              Confirm
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setConfirmingRemoveId(null)}
-                              className="text-3xs font-mono text-ink-muted hover:text-ink px-1 cursor-pointer"
-                            >
+                              Remove
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setConfirmingRemoveId(null)}>
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         ) : (
-                          <button
-                            type="button"
-                            onClick={() => setConfirmingRemoveId(skill.id)}
-                            className="text-3xs font-mono text-ink-subtle hover:text-accent-vermilion p-1 transition cursor-pointer"
+                          <IconButton
+                            icon="trash-bin-trash-linear"
+                            variant="ghost"
+                            size="sm"
+                            label={`Remove ${skill.title} from Studio`}
                             title="Remove from Studio"
-                            aria-label={`Remove ${skill.title} from Studio`}
-                          >
-                            <SolarIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
-                          </button>
+                            className="hover:text-danger hover:bg-danger-light"
+                            onClick={() => setConfirmingRemoveId(skill.id)}
+                          />
                         )}
                       </div>
                     </div>
@@ -852,7 +804,7 @@ function Dashboard() {
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between text-3xs font-mono text-ink-muted uppercase tracking-widest mb-3 pb-2.5 border-b border-surface-border">
+                        <div className="flex items-center justify-between text-xs font-mono text-ink-muted uppercase tracking-wider mb-3 pb-2.5 border-b border-surface-border">
                           <div className="flex items-center gap-1.5 font-medium">
                             {isCustomAi && (
                               <Badge>AI</Badge>
@@ -865,34 +817,37 @@ function Dashboard() {
                           </div>
 
                           {isConfirmingRemove ? (
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                type="button"
+                            <div className="flex items-center gap-1 normal-case tracking-normal font-sans">
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                className="h-7 px-2.5"
                                 onClick={() => {
                                   setConfirmingRemoveId(null);
                                   handleRemoveFromStudio(skill.id);
                                 }}
-                                className="px-1.5 py-0.5 rounded bg-rose-600 text-white text-3xs font-mono font-bold hover:bg-rose-700 transition cursor-pointer"
                               >
-                                Confirm
-                              </button>
-                              <button
-                                type="button"
+                                Remove
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2.5"
                                 onClick={() => setConfirmingRemoveId(null)}
-                                className="text-3xs font-mono text-ink-muted hover:text-ink transition cursor-pointer"
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </div>
                           ) : (
-                            <button
-                              type="button"
+                            <IconButton
+                              icon="trash-bin-trash-linear"
+                              variant="ghost"
+                              size="sm"
+                              label={`Remove ${skill.title} from Studio`}
+                              title="Remove from Studio"
+                              className="w-7 h-7 hover:text-danger hover:bg-danger-light"
                               onClick={() => setConfirmingRemoveId(skill.id)}
-                              className="text-3xs font-mono text-ink-subtle hover:text-accent-vermilion transition cursor-pointer"
-                              aria-label={`Remove ${skill.title} from My Studio`}
-                            >
-                              Remove
-                            </button>
+                            />
                           )}
                         </div>
 
@@ -901,10 +856,10 @@ function Dashboard() {
                             {skill.title}
                           </h3>
                           {isCertified && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-muted border border-surface-border text-ink text-3xs font-mono font-semibold flex-shrink-0">
-                              <SolarIcon name="diploma-verified-linear" className="w-3.5 h-3.5 text-ink-muted" />
-                              <span>CERTIFIED</span>
-                            </span>
+                            <Badge tone="success" className="flex-shrink-0">
+                              <AppIcon name="diploma-verified-linear" className="w-3 h-3" />
+                              <span>Certified</span>
+                            </Badge>
                           )}
                         </div>
                         <p className="text-xs text-ink-secondary line-clamp-2 mb-4 leading-relaxed">
@@ -913,10 +868,10 @@ function Dashboard() {
 
                         <div className="mb-5 space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-2xs font-mono uppercase tracking-wider text-ink-muted">
+                            <span className="text-xs font-mono uppercase tracking-wider text-ink-muted">
                               {isCertified ? "Certified" : isCompleted ? "Complete" : "Progress"}
                             </span>
-                            <span className="text-ink font-mono text-2xs font-semibold tabular-nums">
+                            <span className="text-ink font-mono text-xs font-semibold tabular-nums">
                               {doneCount}/{totalCount} ({percent}%)
                             </span>
                           </div>
@@ -931,8 +886,9 @@ function Dashboard() {
 
                       <div className="space-y-2 pt-2 border-t border-surface-border">
                         {isCompleted && (
-                          <button
-                            type="button"
+                          <Button
+                            block
+                            variant={isCertified ? "secondary" : "accent"}
                             onClick={() => {
                               if (isCertified) {
                                 playStampThud();
@@ -941,15 +897,10 @@ function Dashboard() {
                               }
                               setActiveExamSkill(skill);
                             }}
-                            className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs ${
-                              isCertified
-                                ? "bg-surface hover:bg-surface-muted border border-surface-border text-ink"
-                                : "bg-ink hover:bg-ink/90 text-white"
-                            }`}
                           >
-                            <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
-                            <span>{isCertified ? "Certificate" : "Assessment"}</span>
-                          </button>
+                            <AppIcon name="diploma-verified-linear" className="w-4 h-4" />
+                            <span>{isCertified ? "View certificate" : "Take assessment"}</span>
+                          </Button>
                         )}
 
                         <div className="flex items-center gap-2">
@@ -960,22 +911,20 @@ function Dashboard() {
                               setActiveLearningSkill(skill);
                             }}
                           >
-                            <SolarIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
+                            <AppIcon name="stars-minimalistic-linear" className="w-4 h-4 text-brand-300" />
                             <span>{isCompleted ? "Review" : "Practice"}</span>
                           </Button>
 
-                          <button
-                            type="button"
+                          <IconButton
+                            icon="layers-minimalistic-linear"
+                            size="lg"
+                            label={`View steps for ${skill.title}`}
+                            title="View steps & resources"
                             onClick={() => {
                               playMechanicalClick();
                               setActiveSyllabusSkill(skill);
                             }}
-                            className="p-2.5 rounded-xl border border-surface-border hover:border-brand-400 bg-white hover:bg-surface-subtle text-ink-muted hover:text-ink transition flex items-center justify-center cursor-pointer shadow-2xs"
-                            title="View steps & resources"
-                            aria-label={`View syllabus steps for ${skill.title}`}
-                          >
-                            <SolarIcon name="layers-minimalistic-linear" className="w-4 h-4" />
-                          </button>
+                          />
                         </div>
                       </div>
                     </motion.div>
@@ -989,19 +938,19 @@ function Dashboard() {
         <section className="p-6 sm:p-7 rounded-2xl bg-white border border-surface-border shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-canvas border border-surface-border flex items-center justify-center text-ink flex-shrink-0">
-              <SolarIcon name="compass-linear" className="w-5 h-5 text-ink-muted" />
+              <AppIcon name="compass-linear" className="w-5 h-5 text-ink-muted" />
             </div>
             <div>
               <h4 className="font-display font-bold text-sm text-ink">
                 Explore more skills
               </h4>
               <p className="text-xs text-ink-muted">
-                Ask Archimedes to build a custom curriculum or browse the library.
+                Ask Archimedes to build a practice plan for anything you want to learn.
               </p>
             </div>
           </div>
           <Link href="/library" className={buttonClasses({ variant: "secondary" })}>
-            Open Library
+            Ask Archimedes
           </Link>
         </section>
       </main>

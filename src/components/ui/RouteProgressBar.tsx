@@ -26,7 +26,7 @@ function RouteProgressBarInner() {
           animate={{ scaleX: 1, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed top-0 left-0 right-0 h-[2.5px] bg-brand-500 z-50 pointer-events-none shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+          className="fixed top-0 left-0 right-0 h-[2.5px] bg-accent-vermilion z-50 pointer-events-none"
         />
       )}
     </AnimatePresence>

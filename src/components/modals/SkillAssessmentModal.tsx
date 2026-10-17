@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useId } from "react";
 import { motion } from "motion/react";
 import { Skill } from "@/types/database";
-import { SolarIcon } from "../ui/SolarIcon";
+import { AppIcon } from "../ui/AppIcon";
+import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
 import { buttonClasses } from "../ui/Button";
 import { playMechanicalClick, playChime, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
@@ -19,7 +20,6 @@ export interface SkillAssessmentModalProps {
   userName?: string;
 }
 
-export type GuildExamModalProps = SkillAssessmentModalProps;
 
 export function SkillAssessmentModal({
   isOpen,
@@ -156,7 +156,7 @@ export function SkillAssessmentModal({
       <div className="p-4 sm:p-5 bg-canvas border-b border-surface-border flex items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-2xs">
-            <SolarIcon name="diploma-verified-linear" className="w-5 h-5" />
+            <AppIcon name="diploma-verified-linear" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -174,14 +174,12 @@ export function SkillAssessmentModal({
               Question {currentQuestionIdx + 1} / {questions.length}
             </span>
           )}
-          <button
-            type="button"
+          <IconButton
+            icon="close"
+            label="Close assessment"
+            variant="ghost"
             onClick={onClose}
-            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-surface-muted transition"
-            aria-label="Close assessment"
-          >
-            <SolarIcon name="close-circle-linear" className="w-5 h-5" />
-          </button>
+          />
         </div>
       </div>
 
@@ -192,32 +190,32 @@ export function SkillAssessmentModal({
               <h3 className="font-display font-bold text-2xl text-ink">
                 {skill.title}
               </h3>
-              <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+              <p className="text-xs sm:text-sm text-ink-secondary mt-2 leading-relaxed">
                 You have completed all practice steps in this skill. To earn your verified Certificate of Mastery, answer at least 2 of the 3 practical scenario questions correctly.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border border-stone-300 text-left space-y-2.5 text-xs font-mono shadow-2xs">
-              <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">FORMAT:</span>
+            <div className="p-4 rounded-2xl bg-white border border-brand-300 text-left space-y-2.5 text-xs font-mono shadow-2xs">
+              <div className="flex justify-between border-b border-surface-border pb-1.5">
+                <span className="text-ink-muted">FORMAT:</span>
                 <span className="font-bold text-ink">3 Practical Scenarios</span>
               </div>
-              <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">PASSING CRITERIA:</span>
+              <div className="flex justify-between border-b border-surface-border pb-1.5">
+                <span className="text-ink-muted">PASSING CRITERIA:</span>
                 <span className="font-bold text-ink">2 of 3 Correct</span>
               </div>
-              <div className="flex justify-between border-b border-stone-200 pb-1.5">
-                <span className="text-stone-500">EVALUATOR:</span>
+              <div className="flex justify-between border-b border-surface-border pb-1.5">
+                <span className="text-ink-muted">EVALUATOR:</span>
                 <span className="font-bold text-ink">Archimedes (Skillora AI)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-500">REWARD:</span>
-                <span className="font-bold text-amber-700">Certificate of Mastery</span>
+                <span className="text-ink-muted">REWARD:</span>
+                <span className="font-bold text-warning">Certificate of Mastery</span>
               </div>
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs text-left">
+              <div className="p-3 rounded-xl bg-danger-light border border-danger-border text-danger-strong text-xs text-left">
                 <strong>Notice:</strong> {error}
               </div>
             )}
@@ -231,13 +229,13 @@ export function SkillAssessmentModal({
               >
                 {loading ? (
                   <>
-                    <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
+                    <AppIcon name="refresh-linear" className="w-4 h-4 animate-spin" />
                     <span>Preparing Assessment...</span>
                   </>
                 ) : (
                   <>
                     <span>Start Assessment</span>
-                    <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                    <AppIcon name="arrow-right-linear" className="w-4 h-4" />
                   </>
                 )}
               </button>
@@ -245,7 +243,7 @@ export function SkillAssessmentModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
+                className={buttonClasses({ variant: "secondary", className: "w-full sm:w-auto" })}
               >
                 Return to Studio
               </button>
@@ -256,13 +254,13 @@ export function SkillAssessmentModal({
         {stage === "exam" && currentQuestion && (
           <div className="space-y-6">
             <div>
-              <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-stone-500 uppercase mb-1.5">
-                <span className="text-amber-800 font-bold">
+              <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-muted uppercase mb-1.5">
+                <span className="text-warning-strong font-bold">
                   DIAGNOSTIC CASE {currentQuestionIdx + 1} OF {questions.length}
                 </span>
                 <span>PASS BENCHMARK: 2/3</span>
               </div>
-              <div className="inline-block px-2.5 py-0.5 rounded-md bg-stone-200 text-stone-700 text-3xs font-mono font-semibold tracking-wider uppercase mb-3">
+              <div className="inline-block px-2.5 py-0.5 rounded-md bg-surface-border text-ink-secondary text-xs font-mono font-semibold tracking-wider uppercase mb-3">
                 {currentQuestion.practicalCue}
               </div>
               <h3 className="font-display font-semibold text-base sm:text-lg text-ink leading-relaxed">
@@ -273,18 +271,18 @@ export function SkillAssessmentModal({
             <div className="space-y-3">
               {currentQuestion.options.map((opt) => {
                 const isSelected = userAnswers[currentQuestionIdx] === opt.id;
-                let cardStyle = "bg-white border-stone-300 hover:border-ink hover:bg-stone-50/50 cursor-pointer";
-                let badgeStyle = "bg-stone-100 text-stone-700 border-stone-300";
+                let cardStyle = "bg-white border-brand-300 hover:border-ink hover:bg-paper/50 cursor-pointer";
+                let badgeStyle = "bg-surface-subtle text-ink-secondary border-brand-300";
 
                 if (isAnswerRevealed) {
                   if (opt.isCorrect) {
-                    cardStyle = "bg-emerald-50/80 border-emerald-500 text-emerald-950 shadow-xs";
-                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                    cardStyle = "bg-success-light/80 border-success text-success-strong shadow-xs";
+                    badgeStyle = "bg-success text-white border-success";
                   } else if (isSelected && !opt.isCorrect) {
-                    cardStyle = "bg-rose-50/80 border-rose-400 text-rose-950";
-                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                    cardStyle = "bg-danger-light/80 border-danger text-danger-strong";
+                    badgeStyle = "bg-danger text-white border-danger";
                   } else {
-                    cardStyle = "bg-white/50 border-stone-200 opacity-60";
+                    cardStyle = "bg-white/50 border-surface-border opacity-60";
                   }
                 }
 
@@ -311,11 +309,11 @@ export function SkillAssessmentModal({
                             animate={{ opacity: 1, height: "auto" }}
                             className={`mt-2.5 pt-2 border-t text-xs ${
                               opt.isCorrect
-                                ? "border-emerald-300/80 text-emerald-900"
-                                : "border-rose-300/80 text-rose-900"
+                                ? "border-success-border/80 text-success-strong"
+                                : "border-danger-border/80 text-danger-strong"
                             }`}
                           >
-                            <strong className="font-mono text-3xs uppercase tracking-wider block mb-0.5">
+                            <strong className="font-mono text-xs uppercase tracking-wider block mb-0.5">
                               {opt.isCorrect ? "✓ Master Diagnostic Rationale:" : "✗ Mechanical Flaw:"}
                             </strong>
                             <span>{opt.rationale}</span>
@@ -340,7 +338,7 @@ export function SkillAssessmentModal({
                       ? "Next Question"
                       : "View Results"}
                   </span>
-                  <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                  <AppIcon name="arrow-right-linear" className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -353,18 +351,18 @@ export function SkillAssessmentModal({
               <>
                 <div className="flex justify-center">
                   <div className="w-20 h-20 rounded-2xl bg-surface-muted border border-surface-border flex items-center justify-center text-ink shadow-sm">
-                    <SolarIcon name="diploma-verified-linear" className="w-10 h-10 text-ink" />
+                    <AppIcon name="diploma-verified-linear" className="w-10 h-10 text-ink" />
                   </div>
                 </div>
 
                 <div>
-                  <span className="spec-tag text-ink bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full text-3xs font-bold">
+                  <span className="spec-tag text-ink bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full text-xs font-bold">
                     ASSESSMENT PASSED · CERTIFICATE UNLOCKED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
                     Mastery Certified: {honorific}
                   </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-ink-secondary mt-2 leading-relaxed">
                     You scored <strong className="text-ink font-bold">{score} of {questions.length}</strong> on your assessment and demonstrated practical competence in this discipline.
                   </p>
                 </div>
@@ -378,14 +376,14 @@ export function SkillAssessmentModal({
                     }}
                     className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <SolarIcon name="diploma-verified-linear" className="w-4 h-4" />
+                    <AppIcon name="diploma-verified-linear" className="w-4 h-4" />
                     <span>View Certificate</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
+                    className={buttonClasses({ variant: "secondary", className: "w-full sm:w-auto" })}
                   >
                     Return to Studio
                   </button>
@@ -394,24 +392,24 @@ export function SkillAssessmentModal({
             ) : (
               <>
                 <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-2xl bg-stone-100 border-2 border-stone-300 flex items-center justify-center text-stone-600">
-                    <SolarIcon name="restart-linear" className="w-8 h-8" />
+                  <div className="w-16 h-16 rounded-2xl bg-surface-subtle border-2 border-brand-300 flex items-center justify-center text-ink-secondary">
+                    <AppIcon name="restart-linear" className="w-8 h-8" />
                   </div>
                 </div>
 
                 <div>
-                  <span className="spec-tag text-stone-600 bg-stone-100 border border-stone-300 px-2 py-0.5 rounded-full text-3xs">
+                  <span className="spec-tag text-ink-secondary bg-surface-subtle border border-brand-300 px-2 py-0.5 rounded-full text-xs">
                     ASSESSMENT NOT PASSED
                   </span>
                   <h3 className="font-display font-bold text-2xl text-ink mt-3">
                     Review Steps &amp; Try Again
                   </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-ink-secondary mt-2 leading-relaxed">
                     You answered <strong className="text-ink font-bold">{score} of {questions.length}</strong> correctly. Passing requires answering at least 2 of 3 scenarios correctly.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white border border-stone-300 text-xs text-stone-600 text-left font-mono">
+                <div className="p-4 rounded-2xl bg-white border border-brand-300 text-xs text-ink-secondary text-left font-mono">
                   <p>
                     TIP: Review the explanations above and practice the steps before taking the assessment again.
                   </p>
@@ -423,14 +421,14 @@ export function SkillAssessmentModal({
                     onClick={startExam}
                     className={buttonClasses({ className: "w-full sm:w-auto font-mono" })}
                   >
-                    <SolarIcon name="refresh-linear" className="w-4 h-4" />
+                    <AppIcon name="refresh-linear" className="w-4 h-4" />
                     <span>Retake Assessment</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
+                    className={buttonClasses({ variant: "secondary", className: "w-full sm:w-auto" })}
                   >
                     Return to Studio
                   </button>
@@ -444,15 +442,15 @@ export function SkillAssessmentModal({
           <div className="space-y-6">
             <div
               id="guild-diploma-print-area"
-              className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-amber-800/40 shadow-inner relative overflow-hidden text-center print:p-8 print:border-amber-900"
+              className="p-8 sm:p-12 rounded-3xl bg-paper border-4 border-double border-warning-strong/40 shadow-inner relative overflow-hidden text-center print:p-8 print:border-warning-strong"
             >
-              <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-amber-900/70 uppercase pb-4 border-b border-amber-900/20">
+              <div className="flex items-center justify-between text-xs font-mono tracking-wider text-warning-strong/70 uppercase pb-4 border-b border-warning-strong/20">
                 <span>SKILLORA CERTIFICATION</span>
                 <span>CREDENTIAL ID · SK-{skill.id.slice(0, 6).toUpperCase()}</span>
               </div>
 
               <div className="mt-8">
-                <span className="text-2xs font-mono tracking-[0.25em] text-amber-900 uppercase font-bold block mb-2">
+                <span className="text-xs font-mono tracking-[0.25em] text-warning-strong uppercase font-bold block mb-2">
                   OFFICIAL CREDENTIAL
                 </span>
                 <h1 className="font-serif font-black text-2xl sm:text-3xl text-ink tracking-tight">
@@ -461,19 +459,19 @@ export function SkillAssessmentModal({
               </div>
 
               <div className="my-8 space-y-4 max-w-lg mx-auto">
-                <p className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                <p className="text-xs font-mono uppercase tracking-wider text-ink-muted">
                   THIS IS TO CERTIFY THAT
                 </p>
-                <div className="font-serif font-bold text-2xl sm:text-3xl text-ink border-b-2 border-stone-400 pb-2 inline-block px-8">
+                <div className="font-serif font-bold text-2xl sm:text-3xl text-ink border-b-2 border-brand-400 pb-2 inline-block px-8">
                   {userName}
                 </div>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-serif italic pt-1">
+                <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed font-serif italic pt-1">
                   has successfully completed the structured curriculum steps and demonstrated practical proficiency in
                 </p>
                 <h2 className="font-display font-bold text-xl sm:text-2xl text-ink uppercase tracking-wide">
                   {skill.title}
                 </h2>
-                <p className="text-xs font-mono uppercase tracking-widest text-stone-500 pt-2">
+                <p className="text-xs font-mono uppercase tracking-wider text-ink-muted pt-2">
                   AND HAS EARNED THE DESIGNATION OF
                 </p>
                 <div className="text-base sm:text-lg font-mono font-bold text-ink tracking-wider uppercase bg-surface-muted border border-surface-border py-1.5 px-4 rounded-xl inline-block">
@@ -481,24 +479,24 @@ export function SkillAssessmentModal({
                 </div>
               </div>
 
-              <div className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="mt-12 pt-6 border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="text-left font-mono">
                   <div className="font-serif italic text-base text-ink mb-1">
                     Archimedes of Syracuse
                   </div>
-                  <div className="text-3xs uppercase tracking-wider text-stone-500 border-t border-stone-300 pt-1">
+                  <div className="text-xs uppercase tracking-wider text-ink-muted border-t border-brand-300 pt-1">
                     Master Instructor · Skillora
                   </div>
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full border border-surface-border bg-white flex flex-col items-center justify-center shadow-xs">
-                    <SolarIcon name="diploma-verified-linear" className="w-7 h-7 text-ink mb-0.5" />
-                    <span className="text-[7px] font-mono font-bold tracking-widest uppercase text-ink">
+                  <div aria-hidden="true" className="w-16 h-16 rounded-full border border-surface-border bg-white flex flex-col items-center justify-center shadow-xs">
+                    <AppIcon name="diploma-verified-linear" className="w-7 h-7 text-ink mb-0.5" />
+                    <span className="text-[7px] font-mono font-bold tracking-wider uppercase text-ink">
                       VERIFIED
                     </span>
                   </div>
-                  <span className="text-3xs font-mono tracking-widest uppercase text-ink-muted mt-1 font-bold">
+                  <span className="text-xs font-mono tracking-wider uppercase text-ink-muted mt-1 font-bold">
                     OFFICIAL SEAL
                   </span>
                 </div>
@@ -507,7 +505,7 @@ export function SkillAssessmentModal({
                   <div className="text-xs font-bold text-ink mb-1">
                     {certifiedDate || "OCTOBER 11, 2026"}
                   </div>
-                  <div className="text-3xs uppercase tracking-wider text-stone-500 border-t border-stone-300 pt-1">
+                  <div className="text-xs uppercase tracking-wider text-ink-muted border-t border-brand-300 pt-1">
                     Date Issued
                   </div>
                 </div>
@@ -521,7 +519,7 @@ export function SkillAssessmentModal({
                   playMechanicalClick();
                   setStage("intro");
                 }}
-                className="px-4 py-2 rounded-full border border-stone-300 bg-white text-stone-700 font-mono text-xs hover:bg-stone-100 transition"
+                className="px-4 py-2 rounded-full border border-brand-300 bg-white text-ink-secondary font-mono text-xs hover:bg-surface-subtle transition"
               >
                 &larr; Back
               </button>
@@ -530,9 +528,9 @@ export function SkillAssessmentModal({
                 <button
                   type="button"
                   onClick={handlePrintDiploma}
-                  className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-mono text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer"
+                  className={buttonClasses({ variant: "primary" })}
                 >
-                  <SolarIcon name="printer-linear" className="w-4 h-4" />
+                  <AppIcon name="printer-linear" className="w-4 h-4" />
                   <span>Print Certificate</span>
                 </button>
 
@@ -552,5 +550,4 @@ export function SkillAssessmentModal({
   );
 }
 
-export const GuildExamModal = SkillAssessmentModal;
 

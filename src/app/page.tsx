@@ -9,7 +9,7 @@ import {
   Card,
   HeroFanDeck,
   SkillSyllabusModal,
-  SolarIcon,
+  AppIcon,
   buttonClasses,
 } from "@/components";
 import { INITIAL_SKILLS } from "@/lib/catalog-data";
@@ -62,7 +62,7 @@ export default function LandingPage() {
               href="/library"
               className={buttonClasses({ variant: "ghost", size: "lg", className: "w-full sm:w-auto" })}
             >
-              Browse library &rarr;
+              Ask Archimedes &rarr;
             </Link>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function LandingPage() {
                 <span className="font-mono text-xs font-semibold text-brand-600">
                   01
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">Bite-sized</span>
+                <span className="text-xs font-mono text-ink-muted">Bite-sized</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Short, ordered steps
@@ -100,7 +100,7 @@ export default function LandingPage() {
                 <span className="font-mono text-xs font-semibold text-brand-600">
                   02
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">Curated</span>
+                <span className="text-xs font-mono text-ink-muted">Curated</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Hand-picked resources
@@ -115,7 +115,7 @@ export default function LandingPage() {
                 <span className="font-mono text-xs font-semibold text-brand-600">
                   03
                 </span>
-                <span className="text-3xs font-mono text-ink-muted">Realistic</span>
+                <span className="text-xs font-mono text-ink-muted">Realistic</span>
               </div>
               <h3 className="font-serif italic font-normal text-xl sm:text-2xl text-ink mb-2">
                 Honest time estimates

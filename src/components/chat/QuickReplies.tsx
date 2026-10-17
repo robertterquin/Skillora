@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { SolarIcon } from "@/components/ui/SolarIcon";
+import { AppIcon } from "@/components/ui/AppIcon";
 
 interface QuickRepliesProps {
   replies?: string[];
@@ -20,9 +20,9 @@ export function QuickReplies({ replies, disabled, onSelect }: QuickRepliesProps)
           type="button"
           disabled={disabled}
           onClick={() => onSelect(reply)}
-          className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-brand-50 border border-surface-border hover:border-brand-300 text-2xs sm:text-xs font-medium text-ink-secondary hover:text-brand-700 transition-all shadow-2xs disabled:opacity-40 cursor-pointer text-left"
+          className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-brand-50 border border-surface-border hover:border-brand-300 text-xs sm:text-xs font-medium text-ink-secondary hover:text-brand-700 transition-all shadow-2xs disabled:opacity-40 cursor-pointer text-left"
         >
-          <SolarIcon
+          <AppIcon
             name="stars-minimalistic-linear"
             className="w-3 h-3 text-ink-subtle group-hover:text-brand-500 transition"
           />

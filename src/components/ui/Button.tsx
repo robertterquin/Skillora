@@ -3,7 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "accent" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonStyleOptions {
@@ -14,15 +14,17 @@ interface ButtonStyleOptions {
 }
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-ink text-white hover:bg-accent-vermilion shadow-xs transition-colors",
-  secondary: "bg-surface text-ink border border-surface-border hover:border-brand-300 hover:bg-surface-subtle shadow-2xs transition-colors",
-  ghost: "text-ink-secondary hover:text-ink hover:bg-surface-subtle transition-colors",
-  danger: "text-rose-600 hover:bg-rose-50 transition-colors",
+  primary: "bg-ink text-white hover:bg-brand-600 shadow-xs",
+  accent: "bg-accent-vermilion text-white hover:bg-accent-vermilion-hover shadow-xs",
+  secondary:
+    "bg-surface text-ink border border-surface-border hover:border-brand-300 hover:bg-surface-subtle shadow-2xs",
+  ghost: "text-ink-secondary hover:text-ink hover:bg-surface-subtle",
+  danger: "bg-danger text-white hover:bg-danger-hover shadow-xs",
 };
 
 const SIZES: Record<ButtonSize, string> = {
   sm: "h-8 px-3.5 text-xs gap-1.5",
-  md: "h-10 px-5 text-xs gap-2",
+  md: "h-10 px-5 text-sm gap-2",
   lg: "h-12 px-7 text-sm gap-2",
 };
 

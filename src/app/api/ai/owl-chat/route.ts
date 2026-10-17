@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { createChatCompletion } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/catalog-data";
 import { createAdminClient, invokeEdgeFunction } from "@/lib/supabase";
-import { enrichStepsWithYouTube } from "@/lib/youtube-service";
+import { enrichStepsWithYouTube } from "@/services/youtubeService";
 import {
   sanitizeOwlRequest,
   buildOwlMessages,

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Button, Card, SolarIcon } from "@/components";
+import { Button, Card, AppIcon, Field, IconButton, Input } from "@/components";
 
 const INTEREST_AREAS = [
   { id: "music", label: "Music & Audio", desc: "Guitar, Piano, Beatbox" },
@@ -53,7 +53,7 @@ export default function SignUpPage() {
       }
 
       if (data.session) {
-        setSuccessMsg("Account created! Redirecting to your learning studio...");
+        setSuccessMsg("Account created! Taking you to your Studio…");
         setTimeout(() => {
           router.push("/dashboard");
           router.refresh();
@@ -91,7 +91,7 @@ export default function SignUpPage() {
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink transition"
         >
-          <SolarIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
+          <AppIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
           <span>Back to overview</span>
         </Link>
       </header>
@@ -109,13 +109,13 @@ export default function SignUpPage() {
             </div>
 
             {errorMsg && (
-              <div className="mb-6 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium text-center">
+              <div className="mb-6 p-3 rounded-xl bg-danger-light border border-danger-border text-danger text-xs font-medium text-center">
                 {errorMsg}
               </div>
             )}
 
             {successMsg && (
-              <div className="mb-6 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-accent-emerald text-xs font-medium text-center leading-relaxed">
+              <div className="mb-6 p-3.5 rounded-xl bg-success-light border border-success-border text-accent-emerald text-xs font-medium text-center leading-relaxed">
                 {successMsg}
               </div>
             )}
@@ -132,14 +132,14 @@ export default function SignUpPage() {
                       type="button"
                       onClick={() => setSelectedInterest(item.id)}
                       aria-pressed={selectedInterest === item.id}
-                      className={`p-3.5 rounded-2xl border text-left transition ${
+                      className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
                         selectedInterest === item.id
-                          ? "border-brand-600 bg-brand-50/50 text-brand-900 ring-1 ring-brand-600"
+                          ? "border-ink bg-white text-ink ring-1 ring-ink"
                           : "border-surface-border bg-canvas hover:bg-white text-ink"
                       }`}
                     >
                       <div className="text-xs font-semibold">{item.label}</div>
-                      <div className="text-2xs text-ink-muted mt-0.5 truncate">
+                      <div className="text-xs text-ink-muted mt-0.5 truncate">
                         {item.desc}
                       </div>
                     </button>
@@ -147,82 +147,62 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="signup-name" className="block text-xs font-semibold text-ink mb-1.5">
-                  Your name
-                </label>
-                <div className="relative">
-                  <SolarIcon name="user-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
-                  <input
-                    id="signup-name"
-                    type="text"
-                    autoComplete="name"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Alex Rivera"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
-                  />
-                </div>
-              </div>
+              <Field label="Your name" htmlFor="signup-name">
+                <Input
+                  id="signup-name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Alex Rivera"
+                  leadingIcon="user-linear"
+                />
+              </Field>
 
-              <div>
-                <label htmlFor="signup-email" className="block text-xs font-semibold text-ink mb-1.5">
-                  Email address
-                </label>
-                <div className="relative">
-                  <SolarIcon name="letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
-                  <input
-                    id="signup-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="alex@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
-                  />
-                </div>
-              </div>
+              <Field label="Email address" htmlFor="signup-email">
+                <Input
+                  id="signup-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="alex@example.com"
+                  leadingIcon="letter-linear"
+                />
+              </Field>
 
-              <div>
-                <label htmlFor="signup-password" className="block text-xs font-semibold text-ink mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <SolarIcon name="lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
-                  <input
-                    id="signup-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="At least 6 characters"
-                    className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-subtle hover:text-ink transition"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    <SolarIcon
-                      name={showPassword ? "eye-closed-linear" : "eye-linear"}
-                      className="w-4 h-4"
+              <Field label="Password" htmlFor="signup-password">
+                <Input
+                  id="signup-password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="At least 6 characters"
+                  leadingIcon="lock-keyhole-linear"
+                  trailing={
+                    <IconButton
+                      icon={showPassword ? "eye-closed-linear" : "eye-linear"}
+                      label={showPassword ? "Hide password" : "Show password"}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPassword(!showPassword)}
                     />
-                  </button>
-                </div>
-              </div>
+                  }
+                />
+              </Field>
 
-              <div className="text-2xs text-ink-muted leading-relaxed">
+              <div className="text-xs text-ink-muted leading-relaxed">
                 By creating an account, you agree to Skillora&apos;s Terms of Service and Privacy Policy.
               </div>
 
               <Button type="submit" size="lg" disabled={loading} className="w-full">
                 <span>{loading ? "Creating your account..." : "Create account"}</span>
-                <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                <AppIcon name="arrow-right-linear" className="w-4 h-4" />
               </Button>
             </form>
 

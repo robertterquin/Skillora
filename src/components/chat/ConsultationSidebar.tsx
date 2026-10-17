@@ -2,7 +2,8 @@
 
 import React, { useMemo } from "react";
 import { OwlConsultation } from "@/types/owl";
-import { SolarIcon } from "@/components/ui/SolarIcon";
+import { IconButton } from "@/components/ui/IconButton";
+import { AppIcon } from "@/components/ui/AppIcon";
 
 export interface ConsultationSidebarProps {
   consultations: OwlConsultation[];
@@ -86,23 +87,22 @@ export function ConsultationSidebar({
               : "-translate-x-full opacity-0 pointer-events-none"
           }
         `}
-        aria-label="Consultation History"
+        aria-label="Past chats"
       >
         <div className="w-full h-full flex flex-col bg-canvas">
           <div className="h-12 px-3.5 border-b border-surface-border/70 flex items-center justify-between gap-2 shrink-0 bg-canvas">
             <span className="text-xs font-semibold text-ink tracking-tight">
-              Consultations
+              Past chats
             </span>
 
-            <button
-              type="button"
+            <IconButton
+              icon="sidebar-minimalistic-linear"
+              label="Hide past chats"
+              title="Hide past chats (⌘B)"
+              variant="ghost"
+              size="sm"
               onClick={onToggle}
-              className="w-7 h-7 rounded-lg hover:bg-surface-muted text-ink-muted hover:text-ink transition cursor-pointer shrink-0 flex items-center justify-center"
-              aria-label="Collapse sidebar (⌘B)"
-              title="Collapse sidebar (⌘B)"
-            >
-              <SolarIcon name="sidebar-minimalistic-linear" className="w-3.5 h-3.5" />
-            </button>
+            />
           </div>
 
           <div className="p-2.5 pb-1 shrink-0">
@@ -112,13 +112,13 @@ export function ConsultationSidebar({
               className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-surface hover:bg-white border border-surface-border hover:border-ink/20 text-xs font-medium text-ink shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-2">
-                <SolarIcon
+                <AppIcon
                   name="pen-new-square-linear"
                   className="w-3.5 h-3.5 text-ink-muted group-hover:text-ink transition"
                 />
-                <span>New consultation</span>
+                <span>New chat</span>
               </div>
-              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-muted text-ink-muted border border-surface-border/60">
+              <kbd className="text-xs font-mono px-1.5 py-0.5 rounded bg-surface-muted text-ink-muted border border-surface-border/60">
                 ⌘N
               </kbd>
             </button>
@@ -127,12 +127,12 @@ export function ConsultationSidebar({
           <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1 space-y-3 no-scrollbar">
             {groups.length === 0 ? (
               <div className="text-center py-8 text-xs text-ink-muted font-serif italic">
-                No previous consultations yet.
+                No past chats yet.
               </div>
             ) : (
               groups.map((group) => (
                 <div key={group.label} className="space-y-0.5">
-                  <div className="px-2.5 pt-2 pb-1 text-[11px] font-medium text-ink-subtle">
+                  <div className="px-2.5 pt-2 pb-1 text-xs font-medium text-ink-subtle">
                     {group.label}
                   </div>
 
@@ -158,7 +158,7 @@ export function ConsultationSidebar({
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-1.5">
-                            <SolarIcon
+                            <AppIcon
                               name="chat-round-dots-linear"
                               className={`w-3.5 h-3.5 shrink-0 ${
                                 isActive
@@ -167,7 +167,7 @@ export function ConsultationSidebar({
                               }`}
                             />
                             <span className="text-xs truncate flex-1 leading-snug">
-                              {c.title || "New Inquiry"}
+                              {!c.title || c.title === "New Inquiry" ? "New chat" : c.title}
                             </span>
                           </div>
 
@@ -177,11 +177,11 @@ export function ConsultationSidebar({
                               e.stopPropagation();
                               onDelete(c.id);
                             }}
-                            className="opacity-70 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 hover:text-accent-vermilion p-1 rounded-md text-ink-muted hover:bg-surface-muted transition cursor-pointer shrink-0"
-                            aria-label={`Delete consultation "${c.title}"`}
-                            title="Delete consultation"
+                            className="opacity-70 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 hover:text-danger p-1 rounded-md text-ink-muted hover:bg-danger-light transition cursor-pointer shrink-0"
+                            aria-label={`Delete chat "${c.title}"`}
+                            title="Delete chat"
                           >
-                            <SolarIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
+                            <AppIcon name="trash-bin-trash-linear" className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       );
@@ -192,7 +192,7 @@ export function ConsultationSidebar({
             )}
           </div>
 
-          <div className="h-9 px-3.5 border-t border-surface-border/70 bg-canvas/40 shrink-0 flex items-center justify-between text-3xs font-mono text-ink-muted">
+          <div className="h-9 px-3.5 border-t border-surface-border/70 bg-canvas/40 shrink-0 flex items-center justify-between text-xs font-mono text-ink-muted">
             <div className="flex items-center gap-1.5 min-w-0">
               <span
                 className={`w-1.5 h-1.5 rounded-full shrink-0 ${
@@ -207,7 +207,7 @@ export function ConsultationSidebar({
                   : "Local storage"}
               </span>
             </div>
-            <span className="text-ink-subtle/70 text-[10px]">⌘B</span>
+            <span className="text-ink-subtle text-xs">⌘B</span>
           </div>
         </div>
       </aside>

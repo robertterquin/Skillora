@@ -5,9 +5,10 @@ import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import {
   Badge,
-  SolarIcon,
+  AppIcon,
   InteractiveOwlAvatar,
   buttonClasses,
+  IconButton,
   QuickReplies,
   SuggestionCards,
   CurriculumCard,
@@ -258,21 +259,21 @@ export default function SkillLibraryPage() {
           <div className="shrink-0 sticky top-0 px-4 sm:px-6 py-3 border-b border-surface-border bg-canvas/95 backdrop-blur-md z-20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
               {!isSidebarOpen && (
-                <button
-                  type="button"
+                <IconButton
+                  icon="sidebar-minimalistic-linear"
+                  label="Show past chats"
+                  title="Show past chats (⌘B)"
+                  size="sm"
                   onClick={() => setIsSidebarOpen(true)}
-                  className="w-8 h-8 rounded-lg border border-surface-border bg-white hover:bg-surface-subtle text-ink-secondary hover:text-ink transition shadow-2xs cursor-pointer flex items-center justify-center shrink-0"
-                  aria-label="Open past inquiries (⌘B)"
-                  title="Open past inquiries (⌘B)"
-                >
-                  <SolarIcon name="sidebar-minimalistic-linear" className="w-4 h-4" />
-                </button>
+                />
               )}
 
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-surface-border text-2xs text-ink-secondary truncate max-w-[180px] sm:max-w-xs shadow-2xs">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-surface-border text-xs text-ink-secondary truncate max-w-[180px] sm:max-w-xs shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald shrink-0" />
                 <span className="truncate font-sans font-medium text-ink">
-                  {currentConsultation?.title || "New Inquiry"}
+                  {!currentConsultation?.title || currentConsultation.title === "New Inquiry"
+                    ? "New chat"
+                    : currentConsultation.title}
                 </span>
               </div>
             </div>
@@ -308,7 +309,7 @@ export default function SkillLibraryPage() {
                     What would you like to master?
                   </h1>
                   <p className="text-xs sm:text-sm text-ink-muted mt-2 max-w-md leading-relaxed">
-                    Explore curated disciplines or design a custom practice plan.
+                    Tell Archimedes what you want to learn and get a step-by-step practice plan.
                   </p>
 
                   <div className="mt-4 flex items-center gap-2">
@@ -322,7 +323,7 @@ export default function SkillLibraryPage() {
                         className: voiceEnabled ? "" : "text-ink-muted",
                       })}
                     >
-                      <SolarIcon
+                      <AppIcon
                         name={voiceEnabled ? "volume-loud-linear" : "volume-cross-linear"}
                         className="w-3.5 h-3.5"
                       />
@@ -349,9 +350,9 @@ export default function SkillLibraryPage() {
 
                     return (
                       <div key={msg.id} className="space-y-3.5 my-6">
-                        <div className="flex items-center justify-between text-2xs font-mono text-ink-muted uppercase tracking-wider pb-1.5 border-b border-surface-border/50">
+                        <div className="flex items-center justify-between text-xs font-mono text-ink-muted uppercase tracking-wider pb-1.5 border-b border-surface-border/50">
                           <div className="flex items-center gap-2">
-                            <SolarIcon
+                            <AppIcon
                               name="stars-minimalistic-linear"
                               className="w-3.5 h-3.5 text-brand-600"
                             />
@@ -361,10 +362,10 @@ export default function SkillLibraryPage() {
                             <button
                               type="button"
                               onClick={() => speakOwlVoice(msg.text)}
-                              className="text-3xs font-mono text-ink-muted hover:text-ink transition flex items-center gap-1 cursor-pointer"
+                              className="text-xs font-mono text-ink-muted hover:text-ink transition flex items-center gap-1 cursor-pointer"
                               title="Replay spoken response"
                             >
-                              <SolarIcon name="volume-loud-linear" className="w-3 h-3" />
+                              <AppIcon name="volume-loud-linear" className="w-3 h-3" />
                               <span>Replay</span>
                             </button>
                           )}
@@ -413,7 +414,7 @@ export default function SkillLibraryPage() {
 
                   {isThinking && (
                     <div className="flex items-center gap-2.5 py-4 text-xs font-mono text-ink-muted animate-pulse">
-                      <SolarIcon name="refresh-linear" className="w-4 h-4 animate-spin text-brand-600" />
+                      <AppIcon name="refresh-linear" className="w-4 h-4 animate-spin text-brand-600" />
                       <span>Archimedes is thinking…</span>
                     </div>
                   )}
@@ -427,7 +428,7 @@ export default function SkillLibraryPage() {
           <div className="shrink-0 sticky bottom-0 px-4 sm:px-6 py-3 border-t border-surface-border bg-canvas/95 backdrop-blur-md z-20">
             <div className="max-w-3xl w-full mx-auto">
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 no-scrollbar">
-                <span className="text-2xs text-ink-muted font-mono whitespace-nowrap pl-0.5">
+                <span className="text-xs text-ink-muted font-mono whitespace-nowrap pl-0.5">
                   Inspiration:
                 </span>
                 {samplePrompts.map((item) => (
@@ -435,7 +436,7 @@ export default function SkillLibraryPage() {
                     key={item.label}
                     type="button"
                     onClick={() => sendMessage(item.prompt)}
-                    className="px-2.5 py-1 rounded-full bg-white hover:bg-surface-subtle border border-surface-border text-2xs font-medium text-ink-secondary hover:text-ink transition whitespace-nowrap shadow-2xs cursor-pointer"
+                    className="px-2.5 py-1 rounded-full bg-white hover:bg-surface-subtle border border-surface-border text-xs font-medium text-ink-secondary hover:text-ink transition whitespace-nowrap shadow-2xs cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -443,22 +444,15 @@ export default function SkillLibraryPage() {
               </div>
 
               <div className="p-1.5 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all">
-                <button
-                  type="button"
-                  onClick={toggleVoiceListening}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
-                    isListening
-                      ? "bg-accent-vermilion text-white animate-pulse shadow-md"
-                      : "bg-surface-subtle hover:bg-surface-muted text-ink-muted hover:text-ink border border-surface-border"
-                  }`}
-                  aria-label={isListening ? "Stop listening" : "Speak your request"}
+                <IconButton
+                  icon="microphone-3-linear"
+                  label={isListening ? "Stop listening" : "Speak your request"}
+                  size="lg"
+                  variant={isListening ? "accent" : "secondary"}
                   aria-pressed={isListening}
-                >
-                  <SolarIcon
-                    name="microphone-3-linear"
-                    className={`w-4 h-4 ${isListening ? "text-white" : ""}`}
-                  />
-                </button>
+                  className={isListening ? "animate-pulse" : "shadow-none"}
+                  onClick={toggleVoiceListening}
+                />
 
                 <input
                   type="text"
@@ -474,15 +468,14 @@ export default function SkillLibraryPage() {
                   className="flex-1 bg-transparent px-2 text-xs sm:text-sm text-ink placeholder:text-ink-subtle focus:outline-none font-medium"
                 />
 
-                <button
-                  type="button"
+                <IconButton
+                  icon="arrow-right-linear"
+                  label="Send message"
+                  size="lg"
+                  variant="primary"
                   disabled={isThinking || !inputText.trim()}
                   onClick={() => sendMessage()}
-                  className="w-10 h-10 rounded-xl bg-ink hover:bg-accent-vermilion disabled:opacity-30 text-white flex items-center justify-center transition shadow-2xs flex-shrink-0 cursor-pointer"
-                  aria-label="Send message to Owl"
-                >
-                  <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
-                </button>
+                />
               </div>
             </div>
           </div>

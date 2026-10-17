@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Button, Card, SolarIcon } from "@/components";
+import { Button, Card, AppIcon, Field, IconButton, Input } from "@/components";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function SignInPage() {
       }
 
       if (data.session) {
-        setSuccessMsg("Signed in successfully. Redirecting to your learning studio...");
+        setSuccessMsg("Signed in. Taking you to your Studio…");
         setTimeout(() => {
           router.push("/dashboard");
           router.refresh();
@@ -70,7 +70,7 @@ export default function SignInPage() {
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink transition"
         >
-          <SolarIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
+          <AppIcon name="arrow-left-linear" className="w-3.5 h-3.5" />
           <span>Back to home</span>
         </Link>
       </header>
@@ -83,47 +83,40 @@ export default function SignInPage() {
                 Welcome back.
               </h1>
               <p className="mt-2 text-xs sm:text-sm text-ink-muted">
-                Log in to resume your active skill pathways.
+                Sign in to pick up where you left off.
               </p>
             </div>
 
             {errorMsg && (
-              <div className="mb-6 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium text-center">
+              <div className="mb-6 p-3 rounded-xl bg-danger-light border border-danger-border text-danger text-xs font-medium text-center">
                 {errorMsg}
               </div>
             )}
 
             {successMsg && (
-              <div className="mb-6 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-accent-emerald text-xs font-medium text-center">
+              <div className="mb-6 p-3 rounded-xl bg-success-light border border-success-border text-accent-emerald text-xs font-medium text-center">
                 {successMsg}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="signin-email" className="block text-xs font-semibold text-ink mb-1.5">
-                  Email address
-                </label>
-                <div className="relative">
-                  <SolarIcon name="letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
-                  <input
-                    id="signin-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="alex@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
-                  />
-                </div>
-              </div>
+              <Field label="Email address" htmlFor="signin-email">
+                <Input
+                  id="signin-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="alex@example.com"
+                  leadingIcon="letter-linear"
+                />
+              </Field>
 
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label htmlFor="signin-password" className="block text-xs font-semibold text-ink">
-                    Password
-                  </label>
+              <Field
+                label="Password"
+                htmlFor="signin-password"
+                action={
                   <button
                     type="button"
                     onClick={async () => {
@@ -135,40 +128,36 @@ export default function SignInPage() {
                       if (error) setErrorMsg(error.message);
                       else setSuccessMsg("Password reset email sent! Check your inbox.");
                     }}
-                    className="text-2xs font-medium text-brand-600 hover:underline"
+                    className="text-xs font-medium text-ink-secondary hover:text-ink underline-offset-2 hover:underline cursor-pointer"
                   >
                     Forgot password?
                   </button>
-                </div>
-                <div className="relative">
-                  <SolarIcon name="lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-subtle" />
-                  <input
-                    id="signin-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-surface-border bg-canvas text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 focus:bg-white transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-subtle hover:text-ink transition"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    <SolarIcon
-                      name={showPassword ? "eye-closed-linear" : "eye-linear"}
-                      className="w-4 h-4"
+                }
+              >
+                <Input
+                  id="signin-password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Your password"
+                  leadingIcon="lock-keyhole-linear"
+                  trailing={
+                    <IconButton
+                      icon={showPassword ? "eye-closed-linear" : "eye-linear"}
+                      label={showPassword ? "Hide password" : "Show password"}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPassword(!showPassword)}
                     />
-                  </button>
-                </div>
-              </div>
+                  }
+                />
+              </Field>
 
               <Button type="submit" size="lg" disabled={loading} className="w-full mt-2">
                 <span>{loading ? "Signing in..." : "Sign in"}</span>
-                <SolarIcon name="arrow-right-linear" className="w-4 h-4" />
+                <AppIcon name="arrow-right-linear" className="w-4 h-4" />
               </Button>
             </form>
 

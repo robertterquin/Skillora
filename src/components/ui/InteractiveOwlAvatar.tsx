@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { SolarIcon } from "./SolarIcon";
+import { AppIcon } from "./AppIcon";
 
 interface InteractiveOwlAvatarProps {
   isListening?: boolean;
@@ -182,8 +182,8 @@ export function InteractiveOwlAvatar({
 
       {isListening && (
         <>
-          <div className="absolute inset-0 rounded-full bg-rose-500/20 animate-ping duration-700 scale-125 pointer-events-none" />
-          <div className="absolute -inset-3 rounded-full border-2 border-rose-500/50 animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 rounded-full bg-accent-vermilion/20 animate-ping duration-700 scale-125 pointer-events-none" />
+          <div className="absolute -inset-3 rounded-full border-2 border-accent-vermilion/50 animate-pulse pointer-events-none" />
         </>
       )}
 
@@ -194,7 +194,7 @@ export function InteractiveOwlAvatar({
       <div
         className={`relative w-full h-full rounded-full bg-white border-2 flex items-center justify-center p-6 shadow-xl transition-all duration-500 ${
           isListening
-            ? "border-rose-500 shadow-rose-500/10 scale-105"
+            ? "border-accent-vermilion shadow-accent-vermilion/10 scale-105"
             : isSpeaking
             ? "border-brand-600 shadow-brand-500/15 scale-105"
             : isThinking
@@ -379,25 +379,25 @@ export function InteractiveOwlAvatar({
           />
         </svg>
 
-        <div className="absolute -bottom-2.5 px-3 py-1 rounded-full bg-ink text-white text-3xs font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
+        <div className="absolute -bottom-2.5 px-3 py-1 rounded-full bg-ink text-white text-xs font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
           {isListening ? (
             <>
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-accent-vermilion animate-ping" />
               <span>Listening...</span>
             </>
           ) : isThinking ? (
             <>
-              <SolarIcon name="refresh-linear" className="w-3 h-3 animate-spin text-brand-300" />
+              <AppIcon name="refresh-linear" className="w-3 h-3 animate-spin text-brand-300" />
               <span>Deconstructing...</span>
             </>
           ) : isSpeaking ? (
             <>
-              <SolarIcon name="soundwave-linear" className="w-3 h-3 text-brand-300 animate-pulse" />
+              <AppIcon name="soundwave-linear" className="w-3 h-3 text-brand-300 animate-pulse" />
               <span>Speaking...</span>
             </>
           ) : (
             <>
-              <SolarIcon name="stars-minimalistic-linear" className="w-3 h-3 text-brand-300" />
+              <AppIcon name="stars-minimalistic-linear" className="w-3 h-3 text-brand-300" />
               <span>Archimedes</span>
             </>
           )}

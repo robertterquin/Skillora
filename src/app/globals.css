@@ -15,7 +15,7 @@
   --color-surface: #FFFFFF;
   --color-surface-subtle: #EFECE4;
   --color-border: #E2DDD4;
-  --color-accent-vermilion: #C84B15;
+  --color-accent-vermilion: #B4420F;
   --color-accent-pine: #2D5A43;
 }
 
@@ -108,8 +108,8 @@ body {
 
 .spec-tag {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 500;
 }

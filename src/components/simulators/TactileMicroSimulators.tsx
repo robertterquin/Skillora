@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { SolarIcon } from "../ui/SolarIcon";
+import { AppIcon } from "../ui/AppIcon";
 import {
   playMechanicalClick,
   playChime,
@@ -50,9 +50,9 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-3 pb-1.5 border-b border-surface-border/60">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-subtle uppercase mb-3 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="soundwave-linear" className="w-3.5 h-3.5 text-brand-600" />
+          <AppIcon name="soundwave-linear" className="w-3.5 h-3.5 text-brand-600" />
           <span>MICRO-SIMULATOR // AUDITORY METRONOME</span>
         </span>
         <span className="text-brand-600 font-bold">4/4 TIME</span>
@@ -67,11 +67,11 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
             isPlaying
-              ? "bg-rose-500 hover:bg-rose-600 text-white"
+              ? "bg-accent-vermilion hover:bg-accent-vermilion text-white"
               : "bg-brand-600 hover:bg-brand-700 text-white"
           }`}
         >
-          <SolarIcon
+          <AppIcon
             name={isPlaying ? "pause-linear" : "play-linear"}
             className="w-4 h-4"
           />
@@ -100,10 +100,10 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
             <span className="font-mono font-extrabold text-base text-ink block leading-none">
               {bpm}
             </span>
-            <span className="text-3xs text-ink-muted uppercase font-bold tracking-wider font-mono">
+            <span className="text-xs text-ink-muted uppercase font-bold tracking-wider font-mono">
               BPM
             </span>
-            <span className="text-2xs font-serif italic text-ink-secondary block -mt-0.5">
+            <span className="text-xs font-serif italic text-ink-secondary block -mt-0.5">
               {bpm < 60 ? "Largo" : bpm < 76 ? "Adagio" : bpm < 108 ? "Andante" : bpm < 120 ? "Moderato" : bpm < 168 ? "Allegro" : "Presto"}
             </span>
           </div>
@@ -140,7 +140,7 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
                 }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-3xs font-mono font-bold transition-all ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
                     isActive
                       ? isDownbeat
                         ? "bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-110"
@@ -150,7 +150,7 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
                 >
                   {b + 1}
                 </div>
-                <span className="text-3xs font-mono text-ink-subtle">
+                <span className="text-xs font-mono text-ink-subtle">
                   {isDownbeat ? "BEAT 1" : `&`}
                 </span>
               </div>
@@ -171,7 +171,7 @@ export function PracticeMetronome({ initialBpm = 75 }: { initialBpm?: number }) 
                 playMechanicalClick();
                 setBpm(preset.val);
               }}
-              className={`px-2 py-1 rounded-md text-3xs font-mono font-semibold transition ${
+              className={`px-2 py-1 rounded-md text-xs font-mono font-semibold transition ${
                 bpm === preset.val
                   ? "bg-brand-50 text-brand-700 border border-brand-300"
                   : "bg-white border border-surface-border text-ink-muted hover:text-ink"
@@ -205,35 +205,35 @@ export function KnifeAngleGauge() {
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="tuning-2-linear" className="w-3.5 h-3.5 text-brand-600" />
+          <AppIcon name="tuning-2-linear" className="w-3.5 h-3.5 text-brand-600" />
           <span>MICRO-SIMULATOR // 15° APEX CALIPER</span>
         </span>
-        <span className={isOptimal ? "text-accent-emerald font-bold" : "text-amber-600 font-bold"}>
+        <span className={isOptimal ? "text-accent-emerald font-bold" : "text-warning font-bold"}>
           {isOptimal ? "OPTIMAL 15° BEVEL" : "ADJUST SPINE"}
         </span>
       </div>
 
       <div className="relative h-28 bg-white border border-surface-border rounded-xl p-3 flex flex-col justify-between overflow-hidden">
-        <div className="absolute bottom-0 inset-x-0 h-7 bg-neutral-200 border-t border-neutral-300 flex items-center justify-between px-3 text-3xs font-mono text-neutral-600 uppercase">
+        <div className="absolute bottom-0 inset-x-0 h-7 bg-surface-muted border-t border-surface-border flex items-center justify-between px-3 text-xs font-mono text-ink-secondary uppercase">
           <span>#1000 GRIT WATERSTONE SURFACE</span>
           <span>FLAT HORIZONTAL PLANE (0°)</span>
         </div>
 
         <div className="relative w-full h-16 flex items-end justify-center">
           <svg className="w-64 h-20 overflow-visible" viewBox="0 0 200 60">
-            <line x1="10" y1="50" x2="190" y2="50" stroke="#94A3B8" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="10" y1="50" x2="190" y2="50" stroke="#9E988F" strokeWidth="2" strokeDasharray="3 3" />
 
             <g transform={`rotate(-${angle}, 100, 50)`}>
               <polygon
                 points="100,50 170,44 175,36 100,48"
-                fill="#CBD5E1"
-                stroke="#334155"
+                fill="#E2DDD4"
+                stroke="#4A4640"
                 strokeWidth="1.5"
               />
-              <line x1="98" y1="50" x2="102" y2="50" stroke="#2563EB" strokeWidth="3" />
-              <rect x="155" y="44" width="12" height="6" fill="#F59E0B" rx="1" />
+              <line x1="98" y1="50" x2="102" y2="50" stroke="#1E3A8A" strokeWidth="3" />
+              <rect x="155" y="44" width="12" height="6" fill="#B98A2E" rx="1" />
             </g>
 
             <path
@@ -241,7 +241,7 @@ export function KnifeAngleGauge() {
                 50 + 30 * Math.sin((-angle * Math.PI) / 180)
               }`}
               fill="none"
-              stroke={isOptimal ? "#10B981" : "#F59E0B"}
+              stroke={isOptimal ? "#2D5A43" : "#B98A2E"}
               strokeWidth="2"
             />
           </svg>
@@ -253,8 +253,8 @@ export function KnifeAngleGauge() {
               isOptimal
                 ? "bg-accent-emerald/10 border-accent-emerald/40 text-accent-emerald"
                 : isClose
-                ? "bg-amber-50 border-amber-300 text-amber-700"
-                : "bg-rose-50 border-rose-300 text-rose-700"
+                ? "bg-warning-light border-warning-border text-warning"
+                : "bg-danger-light border-danger-border text-danger"
             }`}
           >
             {angle.toFixed(1)}° APEX
@@ -264,10 +264,10 @@ export function KnifeAngleGauge() {
 
       <div className="mt-3 space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-2xs text-ink-muted">
+          <span className="text-xs text-ink-muted">
             Tilt Blade Spine: <strong>{angle}°</strong> (Target: 15.0°)
           </span>
-          <span className="text-2xs text-ink-subtle font-mono">
+          <span className="text-xs text-ink-subtle font-mono">
             Spine Clearance: ~{(angle * 0.23).toFixed(1)}mm
           </span>
         </div>
@@ -298,7 +298,7 @@ export function KnifeAngleGauge() {
                 playChime();
                 setAngle(15);
               }}
-              className="px-2 py-0.5 rounded bg-brand-50 border border-brand-200 text-brand-700 text-2xs font-bold hover:bg-brand-100 transition"
+              className="px-2 py-0.5 rounded bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold hover:bg-brand-100 transition"
             >
               Snap to 15.0° (2 Coins)
             </button>
@@ -308,7 +308,7 @@ export function KnifeAngleGauge() {
                 playMechanicalClick();
                 setAngle(20);
               }}
-              className="px-2 py-0.5 rounded bg-white border border-surface-border text-ink-muted text-2xs hover:text-ink transition"
+              className="px-2 py-0.5 rounded bg-white border border-surface-border text-ink-muted text-xs hover:text-ink transition"
             >
               20.0° (Chef Knife)
             </button>
@@ -317,14 +317,14 @@ export function KnifeAngleGauge() {
           <button
             type="button"
             onClick={handleStroke}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-ink hover:bg-brand-500 text-white text-2xs font-semibold transition active:scale-95 shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-ink hover:bg-brand-500 text-white text-xs font-semibold transition active:scale-95 shadow-xs cursor-pointer"
           >
-            <SolarIcon name="soundwave-linear" className="w-3.5 h-3.5 text-brand-300" />
+            <AppIcon name="soundwave-linear" className="w-3.5 h-3.5 text-brand-300" />
             <span>Simulate Stroke ({strokesCompleted})</span>
           </button>
         </div>
 
-        <p className="text-2xs text-ink-muted leading-tight pt-1">
+        <p className="text-xs text-ink-muted leading-tight pt-1">
           {angle < 13
             ? "Too flat: The blade face scratches against the stone without creating a sharp cutting bevel."
             : angle > 17
@@ -397,17 +397,17 @@ export function EspressoExtractionSimulator() {
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="cup-hot-linear" className="w-3.5 h-3.5 text-amber-600" />
+          <AppIcon name="cup-hot-linear" className="w-3.5 h-3.5 text-warning" />
           <span>MICRO-SIMULATOR // 1:2 EXTRACTION DIAL</span>
         </span>
-        <span className="text-amber-700 font-bold">DOSE: 18.0G &rarr; YIELD: 36.0G</span>
+        <span className="text-warning font-bold">DOSE: 18.0G &rarr; YIELD: 36.0G</span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 my-2">
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-center">
-          <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
+          <span className="text-xs font-mono font-bold text-ink-muted uppercase">
             SHOT ELAPSED TIME
           </span>
           <span
@@ -415,13 +415,13 @@ export function EspressoExtractionSimulator() {
               isTargetWindow
                 ? "text-accent-emerald"
                 : seconds > 32
-                ? "text-rose-600"
+                ? "text-danger"
                 : "text-ink"
             }`}
           >
             {seconds.toFixed(1)}s
           </span>
-          <span className="text-3xs text-ink-subtle font-mono">
+          <span className="text-xs text-ink-subtle font-mono">
             {seconds < 6
               ? "Pre-infusion phase"
               : seconds <= 25
@@ -433,13 +433,13 @@ export function EspressoExtractionSimulator() {
         </div>
 
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-center">
-          <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
+          <span className="text-xs font-mono font-bold text-ink-muted uppercase">
             SCALE WEIGHT (LIQUID)
           </span>
-          <span className="font-mono font-extrabold text-3xl text-amber-900 leading-tight my-0.5">
+          <span className="font-mono font-extrabold text-3xl text-warning-strong leading-tight my-0.5">
             {currentYield.toFixed(1)}g
           </span>
-          <span className="text-3xs text-amber-700 font-mono font-semibold">
+          <span className="text-xs text-warning font-mono font-semibold">
             Ratio 1:{(currentYield / 18).toFixed(1)} (Target: 1:2.0)
           </span>
         </div>
@@ -448,11 +448,11 @@ export function EspressoExtractionSimulator() {
       <div className="space-y-1 mb-3">
         <div className="h-2 w-full bg-surface-muted rounded-full overflow-hidden flex">
           <div
-            className="h-full bg-amber-300 transition-all duration-100"
+            className="h-full bg-warning-soft transition-all duration-100"
             style={{ width: `${Math.min(100, (seconds / 32) * 100)}%` }}
           />
         </div>
-        <div className="flex justify-between text-3xs font-mono text-ink-subtle">
+        <div className="flex justify-between text-xs font-mono text-ink-subtle">
           <span>0s (Pump On)</span>
           <span>6s (Drip)</span>
           <span className="text-brand-600 font-bold">28s–30s (Cutoff)</span>
@@ -467,11 +467,11 @@ export function EspressoExtractionSimulator() {
             onClick={handleToggle}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
               isRunning
-                ? "bg-amber-600 hover:bg-amber-700 text-white"
+                ? "bg-warning hover:bg-warning-hover text-white"
                 : "bg-ink hover:bg-brand-500 text-white"
             }`}
           >
-            <SolarIcon name={isRunning ? "pause-linear" : "play-linear"} className="w-4 h-4" />
+            <AppIcon name={isRunning ? "pause-linear" : "play-linear"} className="w-4 h-4" />
             <span>{isRunning ? "CUT OFF SHOT" : "PUMP START"}</span>
           </button>
 
@@ -486,10 +486,10 @@ export function EspressoExtractionSimulator() {
 
         {seconds > 0 && !isRunning && (
           <div
-            className={`text-2xs font-mono font-bold px-2.5 py-1 rounded-lg ${
+            className={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${
               isTargetWindow
                 ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/30"
-                : "bg-amber-50 text-amber-800 border border-amber-200"
+                : "bg-warning-light text-warning-strong border border-warning-border"
             }`}
           >
             {isTargetWindow ? "PERFECT EXTRACTION" : "ADJUST GRIND FINER/COARSER"}
@@ -562,9 +562,9 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 bg-canvas/90 border border-surface-border rounded-2xl text-ink shadow-2xs select-none"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="volume-loud-linear" className="w-3.5 h-3.5 text-brand-600" />
+          <AppIcon name="volume-loud-linear" className="w-3.5 h-3.5 text-brand-600" />
           <span>PHONETIC SOUNDBOARD</span>
         </span>
         <span className="text-brand-600 font-bold">CLICK TILE TO HEAR</span>
@@ -573,9 +573,9 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
       <div className="space-y-3">
         {categories.map((cat) => (
           <div key={cat.name}>
-            <div className="flex items-center justify-between text-2xs mb-1 font-semibold text-ink-muted">
+            <div className="flex items-center justify-between text-xs mb-1 font-semibold text-ink-muted">
               <span>{cat.name}</span>
-              <span className="text-ink-subtle text-3xs">{cat.note}</span>
+              <span className="text-ink-subtle text-xs">{cat.note}</span>
             </div>
             <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
               {cat.letters.map((l) => {
@@ -595,7 +595,7 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
                       {l.char}
                     </span>
                     <span
-                      className={`text-3xs font-mono mt-0.5 ${
+                      className={`text-xs font-mono mt-0.5 ${
                         isSelected ? "text-brand-100 font-bold" : "text-ink-muted"
                       }`}
                     >
@@ -620,7 +620,7 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
                 Sound: /{selectedLetter.sound}/
               </span>
             </div>
-            <p className="text-2xs text-ink-secondary mt-0.5">
+            <p className="text-xs text-ink-secondary mt-0.5">
               {selectedLetter.anchor} • Example: <strong>{selectedLetter.word}</strong>
             </p>
           </div>
@@ -633,7 +633,7 @@ export function PhoneticSoundboard({ onSpeak }: { onSpeak: (text: string, lang?:
             className="p-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer"
             title="Hear native pronunciation"
           >
-            <SolarIcon name="volume-loud-linear" className="w-4 h-4" />
+            <AppIcon name="volume-loud-linear" className="w-4 h-4" />
             <span>Replay</span>
           </button>
         </div>
@@ -725,60 +725,60 @@ export function CodeMilestoneTerminalSimulator({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full my-3 p-4 bg-ink text-stone-200 border-2 border-stone-700 rounded-2xl corner-ticks shadow-2xs select-none font-mono"
+      className="w-full my-3 p-4 bg-ink text-night-text border-2 border-night-hover rounded-2xl corner-ticks shadow-2xs select-none font-mono"
     >
-      <div className="flex items-center justify-between text-3xs tracking-widest text-stone-400 uppercase mb-2 pb-1.5 border-b border-stone-800">
+      <div className="flex items-center justify-between text-xs tracking-wider text-night-muted uppercase mb-2 pb-1.5 border-b border-night-line">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="code-linear" className="w-3.5 h-3.5 text-emerald-400" />
+          <AppIcon name="code-linear" className="w-3.5 h-3.5 text-night-green" />
           <span>MICRO-SIMULATOR // CODE TEST RUNNER</span>
         </span>
-        <span className="text-emerald-400 font-bold">
+        <span className="text-night-green font-bold">
           TARGET: {targetMilestones} MILESTONES
         </span>
       </div>
 
-      <div className="p-3 bg-black/70 rounded-xl border border-stone-800 text-2xs leading-relaxed mb-3 space-y-1 overflow-x-auto text-stone-300">
+      <div className="p-3 bg-night/70 rounded-xl border border-night-line text-xs leading-relaxed mb-3 space-y-1 overflow-x-auto text-night-text">
         {terminalLogs.map((log, i) => (
           <div
             key={i}
             className={
               log.startsWith("✓")
-                ? "text-emerald-400 font-bold"
+                ? "text-night-green font-bold"
                 : log.startsWith("$")
-                ? "text-sky-400 font-semibold"
-                : "text-stone-400"
+                ? "text-night-blue font-semibold"
+                : "text-night-muted"
             }
           >
             {log}
           </div>
         ))}
         {isTestRunning && (
-          <div className="text-amber-400 animate-pulse">
+          <div className="text-night-amber animate-pulse">
             &gt; Executing test runner... [••••]
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-3 my-2">
-        <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
-          <span className="text-3xs font-mono font-bold text-stone-400 uppercase">
+        <div className="p-3 bg-night-raised/90 border border-night-line rounded-xl text-center flex flex-col justify-between">
+          <span className="text-xs font-mono font-bold text-night-muted uppercase">
             CODE MILESTONES
           </span>
           <div className="flex items-center justify-center gap-2.5 my-1">
             <button
               type="button"
               onClick={handleManualMinus}
-              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold transition text-xs cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-night-line hover:bg-night-hover text-night-text font-bold transition text-xs cursor-pointer"
             >
               -
             </button>
-            <span className="font-mono font-extrabold text-2xl text-stone-100 tabular-nums">
+            <span className="font-mono font-extrabold text-2xl text-night-text tabular-nums">
               {milestones} / {targetMilestones}
             </span>
             <button
               type="button"
               onClick={handleManualPlus}
-              className="w-7 h-7 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-400 font-bold transition text-xs cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-night-green/80 hover:bg-night-green/25 border border-night-green/80 text-night-green font-bold transition text-xs cursor-pointer"
             >
               +
             </button>
@@ -787,18 +787,18 @@ export function CodeMilestoneTerminalSimulator({
             type="button"
             onClick={handleRunVerification}
             disabled={isTestRunning}
-            className="w-full mt-1 py-1.5 px-2 rounded-lg bg-ink hover:bg-ink/90 text-white font-mono text-2xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="w-full mt-1 py-1.5 px-2 rounded-lg bg-ink hover:bg-ink/90 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
-            <SolarIcon name="play-linear" className="w-3 h-3" />
+            <AppIcon name="play-linear" className="w-3 h-3" />
             <span>Run Test Suite (+1)</span>
           </button>
         </div>
 
-        <div className="p-3 bg-stone-900/90 border border-stone-800 rounded-xl text-center flex flex-col justify-between">
-          <span className="text-3xs font-mono font-bold text-stone-400 uppercase">
+        <div className="p-3 bg-night-raised/90 border border-night-line rounded-xl text-center flex flex-col justify-between">
+          <span className="text-xs font-mono font-bold text-night-muted uppercase">
             20M FOCUS SPRINT
           </span>
-          <span className="font-mono font-extrabold text-2xl text-amber-400 my-1 tabular-nums">
+          <span className="font-mono font-extrabold text-2xl text-night-amber my-1 tabular-nums">
             {formatMinSec(timerSeconds)}
           </span>
           <button
@@ -808,10 +808,10 @@ export function CodeMilestoneTerminalSimulator({
               if (timerSeconds === 0) setTimerSeconds(1200);
               setTimerActive(!timerActive);
             }}
-            className={`w-full mt-1 py-1.5 px-2 rounded-lg font-mono text-2xs font-bold transition cursor-pointer ${
+            className={`w-full mt-1 py-1.5 px-2 rounded-lg font-mono text-xs font-bold transition cursor-pointer ${
               timerActive
-                ? "bg-rose-950/70 border border-rose-800 text-rose-300 hover:bg-rose-900"
-                : "bg-stone-800 text-stone-200 hover:bg-stone-700"
+                ? "bg-night-red/70 border border-night-red/40 text-night-red hover:bg-night-red/25"
+                : "bg-night-line text-night-text hover:bg-night-hover"
             }`}
           >
             {timerActive ? "Pause Sprint" : timerSeconds === 0 ? "Reset (20m)" : "Start Sprint"}
@@ -885,9 +885,9 @@ export function FocusRepetitionDrill({
       onClick={(e) => e.stopPropagation()}
       className="w-full my-3 p-4 bg-canvas/90 border-2 border-surface-border rounded-2xl corner-ticks text-ink shadow-2xs select-none"
     >
-      <div className="flex items-center justify-between text-3xs font-mono tracking-widest text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-ink-subtle uppercase mb-2 pb-1.5 border-b border-surface-border/60">
         <span className="flex items-center gap-1.5">
-          <SolarIcon name="stopwatch-linear" className="w-3.5 h-3.5 text-brand-600" />
+          <AppIcon name="stopwatch-linear" className="w-3.5 h-3.5 text-brand-600" />
           <span>MICRO-SIMULATOR // {metricHeading}</span>
         </span>
         <span className="text-brand-600 font-bold">
@@ -897,7 +897,7 @@ export function FocusRepetitionDrill({
 
       <div className="grid grid-cols-2 gap-3 my-2">
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-between">
-          <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
+          <span className="text-xs font-mono font-bold text-ink-muted uppercase">
             {metricHeading}
           </span>
           <div className="flex items-center justify-center gap-3 my-1">
@@ -919,13 +919,13 @@ export function FocusRepetitionDrill({
               +
             </button>
           </div>
-          <span className="text-3xs text-ink-subtle font-mono">
+          <span className="text-xs text-ink-subtle font-mono">
             {reps >= targetReps ? "TARGET REACHED" : actionLabel}
           </span>
         </div>
 
         <div className="p-3 bg-white border border-surface-border rounded-xl text-center flex flex-col justify-between">
-          <span className="text-3xs font-mono font-bold text-ink-muted uppercase">
+          <span className="text-xs font-mono font-bold text-ink-muted uppercase">
             60-SEC DRILL CLOCK
           </span>
           <span className="font-mono font-extrabold text-3xl text-brand-700 my-1">
@@ -940,7 +940,7 @@ export function FocusRepetitionDrill({
             }}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
               timerActive
-                ? "bg-rose-50 text-rose-700 border border-rose-200"
+                ? "bg-danger-light text-danger border border-danger-border"
                 : "bg-brand-600 text-white hover:bg-brand-700"
             }`}
           >
@@ -950,7 +950,7 @@ export function FocusRepetitionDrill({
       </div>
 
       {guidanceTip && (
-        <div className="mt-2 text-2xs font-mono text-ink-muted bg-surface-muted/40 px-2.5 py-1 rounded-lg border border-surface-border/50 text-left">
+        <div className="mt-2 text-xs font-mono text-ink-muted bg-surface-muted/40 px-2.5 py-1 rounded-lg border border-surface-border/50 text-left">
           {guidanceTip}
         </div>
       )}
