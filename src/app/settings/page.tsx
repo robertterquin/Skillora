@@ -13,7 +13,8 @@ import { cn } from "@/lib/cn";
 /**
  * Email reminders stay hidden until a sending domain is verified in Resend:
  * until then Resend only delivers to the account owner. Set
- * NEXT_PUBLIC_EMAIL_REMINDERS=on (in Vercel and .env) to show them.
+ * NEXT_PUBLIC_EMAIL_REMINDERS=on (in Vercel and .env) to show them to everyone.
+ * Accounts that already have reminder settings (the owner's) keep seeing them.
  */
 const EMAIL_REMINDERS_ON = process.env.NEXT_PUBLIC_EMAIL_REMINDERS === "on";
 
@@ -167,6 +168,7 @@ export default function SettingsPage() {
   const toast = useToast();
   const [prefs, setPrefs] = useState<ReminderPrefs>(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
+  const [hasSavedPrefs, setHasSavedPrefs] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const timeZone = browserTimeZone();
@@ -184,6 +186,7 @@ export default function SettingsPage() {
       if (cancelled) return;
       if (error) console.warn("Could not load reminder settings", error.message);
       if (data) {
+        setHasSavedPrefs(true);
         setPrefs({
           reminders_enabled: data.reminders_enabled,
           remind_at: String(data.remind_at).slice(0, 5),
@@ -197,6 +200,8 @@ export default function SettingsPage() {
       cancelled = true;
     };
   }, [user]);
+
+  const showEmail = EMAIL_REMINDERS_ON || hasSavedPrefs;
 
   const update = (patch: Partial<ReminderPrefs>) => {
     setPrefs((p) => ({ ...p, ...patch }));
@@ -248,7 +253,7 @@ export default function SettingsPage() {
           </section>
         ) : (
           <>
-            {EMAIL_REMINDERS_ON && (
+            {showEmail && (
               <section aria-labelledby="email-heading" className="mt-8 p-6 sm:p-7 rounded-2xl bg-white border border-surface-border">
                 <h2 id="email-heading" className="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-5">
                   Email · {user.email}
@@ -339,7 +344,7 @@ export default function SettingsPage() {
 
             <section
               aria-labelledby="install-heading"
-              className={cn("p-6 sm:p-7 rounded-2xl bg-white border border-surface-border", EMAIL_REMINDERS_ON ? "mt-6" : "mt-8")}
+              className={cn("p-6 sm:p-7 rounded-2xl bg-white border border-surface-border", showEmail ? "mt-6" : "mt-8")}
             >
               <h2 id="install-heading" className="text-base font-semibold text-ink flex items-center gap-2">
                 <AppIcon name="layout-grid-linear" className="w-4 h-4 text-ink-muted" />
