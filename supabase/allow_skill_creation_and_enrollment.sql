@@ -1,21 +1,10 @@
 alter table public.skills enable row level security;
+-- Skill, step and resource writes used to be open to everyone here
+-- ("with check (true)"). They are now owner-only: see secure_skills.sql.
 drop policy if exists "Users can insert skills" on public.skills;
-create policy "Users can insert skills" on public.skills
-  for insert with check (true);
-
 drop policy if exists "Users can update skills" on public.skills;
-create policy "Users can update skills" on public.skills
-  for update using (true);
-
-alter table public.skill_steps enable row level security;
 drop policy if exists "Users can insert skill_steps" on public.skill_steps;
-create policy "Users can insert skill_steps" on public.skill_steps
-  for insert with check (true);
-
-alter table public.learning_resources enable row level security;
 drop policy if exists "Users can insert learning_resources" on public.learning_resources;
-create policy "Users can insert learning_resources" on public.learning_resources
-  for insert with check (true);
 
 alter table public.user_enrollments enable row level security;
 drop policy if exists "Users can insert own enrollments" on public.user_enrollments;

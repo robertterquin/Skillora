@@ -82,20 +82,19 @@ create policy "Public can view categories" on public.categories for select using
 drop policy if exists "Public can view skills" on public.skills;
 create policy "Public can view skills" on public.skills for select using (true);
 
+-- No open insert policy: catalog skills are written by the server and learners
+-- can only write their own copies. secure_skills.sql adds the owner-only rules.
 drop policy if exists "Users can insert skills" on public.skills;
-create policy "Users can insert skills" on public.skills for insert with check (true);
 
 drop policy if exists "Public can view skill_steps" on public.skill_steps;
 create policy "Public can view skill_steps" on public.skill_steps for select using (true);
 
 drop policy if exists "Users can insert skill_steps" on public.skill_steps;
-create policy "Users can insert skill_steps" on public.skill_steps for insert with check (true);
 
 drop policy if exists "Public can view learning_resources" on public.learning_resources;
 create policy "Public can view learning_resources" on public.learning_resources for select using (true);
 
 drop policy if exists "Users can insert learning_resources" on public.learning_resources;
-create policy "Users can insert learning_resources" on public.learning_resources for insert with check (true);
 
 drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
@@ -136,7 +135,10 @@ begin
   );
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
+
+-- Only the trigger should run this, never a direct API call.
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created

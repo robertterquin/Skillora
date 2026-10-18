@@ -87,11 +87,19 @@ OPENAI_API_KEY=your_openai_api_key
 ```
 
 ### 4. Database Setup
-Run the SQL migration in your **Supabase Dashboard $\rightarrow$ SQL Editor**:
-1. Execute [`supabase/schema.sql`](supabase/schema.sql) (creates tables, RLS policies, and user profile sync trigger).
-2. Execute [`supabase/seed.sql`](supabase/seed.sql) (seeds initial disciplines, sequential steps, and vetted platform links).
-3. Execute [`supabase/create_user_step_notes.sql`](supabase/create_user_step_notes.sql) (learners' notes on steps).
-4. Execute [`supabase/create_reminder_preferences.sql`](supabase/create_reminder_preferences.sql) (reminder and weekly recap settings).
+Run these in your **Supabase Dashboard → SQL Editor**, in this order (each is safe to re-run):
+1. [`schema.sql`](supabase/schema.sql): core tables, profile trigger, read access
+2. [`seed.sql`](supabase/seed.sql): categories and the built-in skill catalog
+3. [`allow_skill_creation_and_enrollment.sql`](supabase/allow_skill_creation_and_enrollment.sql): enrollment rules
+4. [`create_user_certifications.sql`](supabase/create_user_certifications.sql), [`create_user_practice_stats.sql`](supabase/create_user_practice_stats.sql), [`create_owl_consultations.sql`](supabase/create_owl_consultations.sql)
+5. [`secure_skills.sql`](supabase/secure_skills.sql): skill owners and owner-only writes (**required** after `schema.sql`)
+6. [`harden_functions.sql`](supabase/harden_functions.sql): locks down the sign-up trigger function
+7. [`create_user_step_notes.sql`](supabase/create_user_step_notes.sql), [`create_reminder_preferences.sql`](supabase/create_reminder_preferences.sql), [`create_resource_feedback.sql`](supabase/create_resource_feedback.sql)
+8. [`share_certificates.sql`](supabase/share_certificates.sql): shareable certificate links
+9. [`create_progress_photos.sql`](supabase/create_progress_photos.sql): private photo storage bucket and table
+
+With the Supabase CLI linked to the project you can run any of them with
+`supabase db query --linked -f supabase/<file>.sql`.
 
 ### Email reminders and weekly recap (optional)
 Learners turn these on in **Settings**. A Supabase edge function sends them through [Resend](https://resend.com) every 15 minutes:

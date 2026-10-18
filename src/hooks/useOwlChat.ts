@@ -127,11 +127,20 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     consultationsRef.current = consultations;
   }, [consultations]);
 
+  // Signed-in learners keep Archimedes' notes about them (interests, time, goal)
+  // on their account, so they follow them across devices.
+  useEffect(() => {
+    const fromAccount = currentUser?.user_metadata?.owl_profile as OwlProfile | undefined;
+    if (fromAccount && typeof fromAccount === "object") {
+      setUserProfile((prev) => ({ ...prev, ...fromAccount }));
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       const savedProfile = localStorage.getItem("skillora_owl_profile");
-      if (savedProfile) setUserProfile(JSON.parse(savedProfile));
+      if (savedProfile) setUserProfile((prev) => ({ ...JSON.parse(savedProfile), ...prev }));
 
       const raw = localStorage.getItem(STORAGE_CONSULTATIONS_KEY);
       const savedId = localStorage.getItem(STORAGE_ACTIVE_ID_KEY);
@@ -548,6 +557,11 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
             try {
               localStorage.setItem("skillora_owl_profile", JSON.stringify(next));
             } catch {
+            }
+            if (userRef.current) {
+              supabase.auth.updateUser({ data: { owl_profile: next } }).then(({ error }) => {
+                if (error) console.warn("Could not save Archimedes profile to account", error.message);
+              });
             }
             return next;
           });
