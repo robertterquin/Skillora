@@ -3,6 +3,7 @@
 import React, { useId } from "react";
 import { Skill } from "@/types/database";
 import type { CertificateShare } from "@/hooks/useCertificates";
+import { credentialId } from "@/lib/credential";
 import { AppIcon } from "../ui/AppIcon";
 import { Button } from "../ui/Button";
 import { Switch } from "../ui/Switch";
@@ -23,7 +24,7 @@ function linkedInUrl(skill: Skill, share: CertificateShare): string {
     issueYear: String(issued.getFullYear()),
     issueMonth: String(issued.getMonth() + 1),
     certUrl: certificateUrl(share.token),
-    certId: `SK-${share.token.slice(0, 8).toUpperCase()}`,
+    certId: credentialId(share.token),
   });
   return `https://www.linkedin.com/profile/add?${params.toString()}`;
 }

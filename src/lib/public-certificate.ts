@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase";
 import { isValidUuid } from "@/lib/catalog-data";
+import { credentialId } from "@/lib/credential";
 import { Skill } from "@/types/database";
 
 export interface PublicCertificate {
@@ -39,6 +40,6 @@ export async function getPublicCertificate(token: string): Promise<PublicCertifi
     name: (profile?.full_name || "").trim() || "A Skillora learner",
     skill: skill as Skill,
     certifiedAt: cert.certified_at,
-    credentialId: `SK-${token.slice(0, 8).toUpperCase()}`,
+    credentialId: credentialId(token),
   };
 }

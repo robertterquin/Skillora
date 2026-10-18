@@ -44,6 +44,7 @@ export default async function PublicCertificatePage({ params }: Props) {
           <span aria-hidden="true">✓</span> Verified by Skillora · {cert.credentialId}
         </p>
         <CertificateDocument
+          credentialId={cert.credentialId}
           skill={cert.skill}
           category={category}
           userName={cert.name}

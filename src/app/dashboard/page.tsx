@@ -33,6 +33,7 @@ import { useStudioCatalog } from "@/hooks/useStudioCatalog";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import { useCertificates } from "@/hooks/useCertificates";
+import { credentialId } from "@/lib/credential";
 import { usePracticeStats } from "@/hooks/usePracticeStats";
 import { useInterest } from "@/hooks/useInterest";
 import { useStepNotes } from "@/hooks/useStepNotes";
@@ -541,6 +542,7 @@ function Studio() {
               onPass={handlePass}
               isAlreadyCertified={isCertified(examSkill.id)}
               userName={user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Learner"}
+              credentialId={credentialId(userId ? getShare(examSkill.id)?.token : undefined)}
             />
           )}
         </AnimatePresence>

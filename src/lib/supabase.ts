@@ -38,6 +38,9 @@ export function createAdminClient(): SupabaseClient {
       persistSession: false,
       autoRefreshToken: false,
     },
+    // Next caches server-side fetches by default. Database reads must always be
+    // live (e.g. switching certificate sharing off has to take effect at once).
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
   });
 }
 

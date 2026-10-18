@@ -18,6 +18,8 @@ export interface SkillAssessmentModalProps {
   onPass: (skillId: string) => void;
   isAlreadyCertified?: boolean;
   userName?: string;
+  /** Shown on the certificate; matches the shared certificate link. */
+  credentialId?: string;
 }
 
 export function SkillAssessmentModal({
@@ -27,6 +29,7 @@ export function SkillAssessmentModal({
   onPass,
   isAlreadyCertified = false,
   userName = "Scholar",
+  credentialId,
 }: SkillAssessmentModalProps) {
   const titleId = useId();
   const [stage, setStage] = useState<"intro" | "exam" | "result" | "diploma">("intro");
@@ -258,6 +261,7 @@ export function SkillAssessmentModal({
           userName={userName}
           honorific={honorific}
           issuedOn={certifiedDate}
+          credentialId={credentialId}
         />
       )}
     </PracticeShell>

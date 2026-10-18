@@ -1,5 +1,4 @@
-"use client";
-
+// No "use client": buttonClasses is also used by server-rendered pages (e.g. /c/[token]).
 import React from "react";
 import { cn } from "@/lib/cn";
 

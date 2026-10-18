@@ -12,6 +12,8 @@ interface CertificateDocumentProps {
   userName: string;
   honorific: string;
   issuedOn: string;
+  /** The certificate's own credential number, when it has one (signed-in learners). */
+  credentialId?: string;
 }
 
 function Signature({ value, label, align }: { value: React.ReactNode; label: string; align: "left" | "right" }) {
@@ -24,7 +26,7 @@ function Signature({ value, label, align }: { value: React.ReactNode; label: str
 }
 
 /** The printable certificate of mastery. */
-export function CertificateDocument({ skill, category, userName, honorific, issuedOn }: CertificateDocumentProps) {
+export function CertificateDocument({ skill, category, userName, honorific, issuedOn, credentialId }: CertificateDocumentProps) {
   return (
     <div
       id="guild-diploma-print-area"
@@ -32,7 +34,7 @@ export function CertificateDocument({ skill, category, userName, honorific, issu
     >
       <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-surface-border text-xs text-ink-muted">
         <span className="font-semibold">Skillora</span>
-        <span className="tabular-nums">Credential SK-{skill.id.slice(0, 6).toUpperCase()}</span>
+        <span className="tabular-nums">Credential {credentialId ?? `SK-${skill.id.slice(0, 6).toUpperCase()}`}</span>
       </div>
 
       <p className={cn("mt-8 text-xs font-semibold", category.text)}>{category.label}</p>
