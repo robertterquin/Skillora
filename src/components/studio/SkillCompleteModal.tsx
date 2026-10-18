@@ -15,10 +15,12 @@ interface SkillCompleteModalProps {
   isCertified: boolean;
   onTakeAssessment: () => void;
   onClose: () => void;
+  /** Signed-in learners: open the skill's Before & after photos. */
+  onAddPhoto?: () => void;
 }
 
 /** The moment every step of a skill is done; points the learner at the certificate. */
-export function SkillCompleteModal({ skill, isCertified, onTakeAssessment, onClose }: SkillCompleteModalProps) {
+export function SkillCompleteModal({ skill, isCertified, onTakeAssessment, onClose, onAddPhoto }: SkillCompleteModalProps) {
   const titleId = useId();
   const category = getCategoryStyle(skill);
   const steps = skill.steps || [];
@@ -62,6 +64,12 @@ export function SkillCompleteModal({ skill, isCertified, onTakeAssessment, onClo
             <AppIcon name="diploma-verified-linear" className="w-4 h-4" />
             <span>{isCertified ? "View certificate" : "Take the assessment"}</span>
           </Button>
+          {onAddPhoto && (
+            <Button size="lg" block variant="secondary" onClick={onAddPhoto}>
+              <AppIcon name="camera-linear" className="w-4 h-4" />
+              <span>Add your after photo</span>
+            </Button>
+          )}
           <Button size="lg" block variant="ghost" onClick={onClose}>
             {isCertified ? "Close" : "Later"}
           </Button>

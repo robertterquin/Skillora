@@ -9,7 +9,8 @@ import { IconButton } from "../ui/IconButton";
 import { Modal } from "../ui/Modal";
 import { Button, buttonClasses } from "../ui/Button";
 import { AppIcon } from "../ui/AppIcon";
-import { LearningPath, PlanEditor, ReworkDirection, WatchRequest, formatMinutes } from "../learning";
+import { LearningPath, PlanEditor, ProgressPhotos, ReworkDirection, WatchRequest, formatMinutes } from "../learning";
+import type { ProgressPhotosApi } from "@/hooks/useProgressPhotos";
 import { VideoPlayerModal } from "./VideoPlayerModal";
 
 interface SkillSyllabusModalProps {
@@ -33,6 +34,8 @@ interface SkillSyllabusModalProps {
   onReworkStep?: (skill: Skill, step: SkillStep, direction: ReworkDirection) => Promise<SkillStep | null>;
   /** Open straight into edit mode (right after customising). */
   startEditing?: boolean;
+  /** Before/after photos; null shows a sign-in prompt, undefined hides the section. */
+  photos?: ProgressPhotosApi | null;
 }
 
 export function SkillSyllabusModal({
@@ -50,6 +53,7 @@ export function SkillSyllabusModal({
   onSaveEdits,
   onReworkStep,
   startEditing = false,
+  photos,
 }: SkillSyllabusModalProps) {
   const titleId = useId();
   const [activeVideo, setActiveVideo] = useState<WatchRequest | null>(null);
@@ -194,6 +198,7 @@ export function SkillSyllabusModal({
           getNote={getNote}
         />
         )}
+        {!isViewOnly && mode === "view" && photos !== undefined && <ProgressPhotos skill={skill} api={photos} />}
       </div>
 
       {mode === "edit" && (

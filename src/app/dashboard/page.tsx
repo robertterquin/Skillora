@@ -38,6 +38,7 @@ import { useInterest } from "@/hooks/useInterest";
 import { useStepNotes } from "@/hooks/useStepNotes";
 import { useResourceFeedback } from "@/hooks/useResourceFeedback";
 import { useRefreshers } from "@/hooks/useRefreshers";
+import { useProgressPhotos } from "@/hooks/useProgressPhotos";
 import { getDueRefreshers, REFRESHER_INTERVALS } from "@/lib/refreshers";
 import { ResourceFeedbackContext } from "@/components/learning";
 import { BundleList } from "@/components/bundles";
@@ -81,6 +82,7 @@ function Studio() {
   const { interest, setInterest } = useInterest(user, authReady);
   const { getNote, saveNote, copyNotes } = useStepNotes(userId, authReady);
   const resourceFeedback = useResourceFeedback(userId);
+  const progressPhotos = useProgressPhotos(userId);
   const { refreshers, markDone: markRefresherDone } = useRefreshers(userId, authReady, practice.practiceDates);
   // "Later" hides a refresher until tomorrow (per skill, in this browser).
   const [refresherLater, setRefresherLater] = useState<string | null>(null);
@@ -461,6 +463,7 @@ function Studio() {
               onSaveEdits={handleSaveEdits}
               onReworkStep={userId ? handleReworkStep : undefined}
               startEditing={editOnOpen}
+              photos={progressPhotos}
               completedStepIds={completedStepIds}
               onToggleStep={handleToggleStep}
               onClose={() => {
@@ -511,7 +514,16 @@ function Studio() {
               skill={completedSkill}
               isCertified={isCertified(completedSkill.id)}
               onClose={() => setCompletedSkill(null)}
-              onTakeAssessment={() => {
+              onAddPhoto={
+              userId
+                ? () => {
+                    const skill = completedSkill;
+                    setCompletedSkill(null);
+                    setStepsSkill(skill);
+                  }
+                : undefined
+            }
+            onTakeAssessment={() => {
                 const skill = completedSkill;
                 setCompletedSkill(null);
                 openAssessment(skill);
