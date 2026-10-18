@@ -24,7 +24,12 @@ export interface SpacedRepetitionStore {
   lastActiveDate: string;
   totalPracticeSecondsToday: number;
   practiceDates: string[];
+  /** "Keep it sharp" refreshers: skill id -> dates (YYYY-MM-DD) a refresher was done. */
+  refreshers?: Record<string, string[]>;
 }
+
+// Refreshers ride along in the sm2_records cloud column under this reserved key.
+const REFRESHERS_KEY = "__refreshers";
 
 export interface WeekDayActivity {
   date: string;
@@ -108,6 +113,19 @@ export function logPracticeDay(): void {
   saveSpacedRepetitionStore(store);
 }
 
+/** Records a finished refresher for a skill (and counts today as practised). */
+export function logRefresher(skillId: string): SpacedRepetitionStore {
+  const store = getSpacedRepetitionStore();
+  const today = getTodayString();
+  const done = store.refreshers?.[skillId] ?? [];
+  if (!done.includes(today)) {
+    store.refreshers = { ...(store.refreshers || {}), [skillId]: [...done, today].sort() };
+  }
+  addPracticeDate(store, today);
+  saveSpacedRepetitionStore(store);
+  return store;
+}
+
 export function getWeekActivity(practiceDates: string[]): WeekDayActivity[] {
   const practiced = new Set(practiceDates);
   const today = new Date();
@@ -141,10 +159,21 @@ export function saveSpacedRepetitionStore(store: SpacedRepetitionStore): void {
 export function mergeSpacedRepetitionStores(
   local: SpacedRepetitionStore,
   remoteDates: string[] = [],
-  remoteRecords: Record<string, DrillRepetitionRecord> = {},
+  remoteRecordsWithExtras: Record<string, unknown> = {},
   remoteTotalSeconds: number = 0
 ): SpacedRepetitionStore {
   const mergedDates = Array.from(new Set([...(local.practiceDates || []), ...remoteDates])).sort();
+
+  const { [REFRESHERS_KEY]: remoteRefreshersRaw, ...remoteRest } = remoteRecordsWithExtras;
+  const remoteRecords = remoteRest as Record<string, DrillRepetitionRecord>;
+  const remoteRefreshers = (remoteRefreshersRaw && typeof remoteRefreshersRaw === "object"
+    ? remoteRefreshersRaw
+    : {}) as Record<string, string[]>;
+  const mergedRefreshers: Record<string, string[]> = { ...(local.refreshers || {}) };
+  for (const [skillId, dates] of Object.entries(remoteRefreshers)) {
+    if (!Array.isArray(dates)) continue;
+    mergedRefreshers[skillId] = Array.from(new Set([...(mergedRefreshers[skillId] || []), ...dates])).sort();
+  }
 
   const mergedRecords: Record<string, DrillRepetitionRecord> = { ...(local.records || {}) };
   for (const [key, remRec] of Object.entries(remoteRecords)) {
@@ -164,6 +193,7 @@ export function mergeSpacedRepetitionStores(
     ...local,
     practiceDates: mergedDates,
     records: mergedRecords,
+    refreshers: mergedRefreshers,
     totalPracticeSecondsToday: Math.max(local.totalPracticeSecondsToday || 0, remoteTotalSeconds || 0),
   };
 }
@@ -196,7 +226,9 @@ export async function syncPracticeStatsWithCloud(
       saveSpacedRepetitionStore(mergedStore);
 
       const hasNewDates = (localStore.practiceDates || []).some((d) => !remoteDates.includes(d));
-      if (hasNewDates) {
+      const hasNewRefreshers =
+        JSON.stringify(mergedStore.refreshers || {}) !== JSON.stringify(remoteRecords[REFRESHERS_KEY] || {});
+      if (hasNewDates || hasNewRefreshers) {
         await pushPracticeStatsToCloud(supabase, userId, mergedStore);
       }
 
@@ -229,7 +261,7 @@ export async function pushPracticeStatsToCloud(
       {
         user_id: userId,
         practice_dates: currentStore.practiceDates || [],
-        sm2_records: currentStore.records || {},
+        sm2_records: { ...(currentStore.records || {}), [REFRESHERS_KEY]: currentStore.refreshers || {} },
         total_practice_seconds: currentStore.totalPracticeSecondsToday || 0,
         last_active_date: currentStore.lastActiveDate,
         updated_at: new Date().toISOString(),

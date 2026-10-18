@@ -7,6 +7,7 @@ import { EmptyState } from "../ui/EmptyState";
 import { SegmentedControl } from "../ui/SegmentedControl";
 import { PracticeShell } from "../practice/PracticeShell";
 import { CertificateCard, CredentialOverview } from "../certificates";
+import type { CertificateShare } from "@/hooks/useCertificates";
 import { playMechanicalClick, playWoodenThud, playStampThud } from "@/lib/workbench-audio";
 import { isStepCompleted, normalizeSkillId } from "@/lib/catalog-data";
 
@@ -18,6 +19,8 @@ interface MasteryPassportModalProps {
   completedStepIds: string[];
   certifiedSkillIds?: string[];
   onOpenExam?: (skill: Skill) => void;
+  getShare?: (skillId: string) => CertificateShare | undefined;
+  onToggleShare?: (skill: Skill, isPublic: boolean) => Promise<boolean>;
 }
 
 type PassportTab = "credential" | "visas";
@@ -30,6 +33,8 @@ export function MasteryPassportModal({
   completedStepIds,
   certifiedSkillIds = [],
   onOpenExam,
+  getShare,
+  onToggleShare,
 }: MasteryPassportModalProps) {
   const titleId = useId();
   const [activeTab, setActiveTab] = useState<PassportTab>("credential");
@@ -140,6 +145,8 @@ export function MasteryPassportModal({
                   totalCount={steps.length}
                   isCertified={certifiedSkillIds.includes(normalizeSkillId(skill.id))}
                   onOpenExam={onOpenExam}
+                  share={getShare?.(skill.id)}
+                  onToggleShare={onToggleShare}
                 />
               );
             })}

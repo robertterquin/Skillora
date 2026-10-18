@@ -21,6 +21,7 @@ import {
   ContinueCard,
   SkillCompleteModal,
   SkillList,
+  RefresherCard,
   StarterSkills,
   StatsStrip,
   StudioSkeleton,
@@ -36,6 +37,8 @@ import { usePracticeStats } from "@/hooks/usePracticeStats";
 import { useInterest } from "@/hooks/useInterest";
 import { useStepNotes } from "@/hooks/useStepNotes";
 import { useResourceFeedback } from "@/hooks/useResourceFeedback";
+import { useRefreshers } from "@/hooks/useRefreshers";
+import { getDueRefreshers, REFRESHER_INTERVALS } from "@/lib/refreshers";
 import { ResourceFeedbackContext } from "@/components/learning";
 import { GUEST_OWNER, isOwnSkill, makePersonalCopy } from "@/lib/personal-copy";
 import { aiService } from "@/services/aiService";
@@ -72,10 +75,14 @@ function Studio() {
   const { completedStepIds, completedAt, isLoaded: progressLoaded, toggleStep, carryOverSteps } = useStepProgress(userId, authReady, {
     onStepCompleted: practice.recordPracticeDay,
   });
-  const { certifiedSkillIds, isCertified, markCertified } = useCertificates(userId, authReady);
+  const { certifiedSkillIds, isCertified, markCertified, getShare, setShared } = useCertificates(userId, authReady);
   const { interest, setInterest } = useInterest(user, authReady);
   const { getNote, saveNote, copyNotes } = useStepNotes(userId, authReady);
   const resourceFeedback = useResourceFeedback(userId);
+  const { refreshers, markDone: markRefresherDone } = useRefreshers(userId, authReady, practice.practiceDates);
+  // "Later" hides a refresher until tomorrow (per skill, in this browser).
+  const [refresherLater, setRefresherLater] = useState<string | null>(null);
+  useEffect(() => setRefresherLater(readString(STORAGE_KEYS.refresherLater)), []);
 
   const [view, setView] = useState<StudioView>("ledger");
   const [categoryId, setCategoryId] = useState("cat-all");
@@ -83,6 +90,7 @@ function Studio() {
   const [query, setQuery] = useState("");
 
   const [practiceSkill, setPracticeSkill] = useState<Skill | null>(null);
+  const [practiceStepId, setPracticeStepId] = useState<string | undefined>();
   const [stepsSkill, setStepsSkill] = useState<Skill | null>(null);
   const [previewSkill, setPreviewSkill] = useState<Skill | null>(null);
   // Opens the steps modal in edit mode right after making a personal copy.
@@ -117,13 +125,38 @@ function Studio() {
 
   const starterSkills = useMemo(() => onlyCatalogSkills(allSkills), [allSkills]);
 
+  const todayKey = new Date().toLocaleDateString("en-CA");
+  const refresher = useMemo(
+    () =>
+      getDueRefreshers(studioSkills, completedStepIds, completedAt, refreshers, getNote).find(
+        (r) => refresherLater !== `${r.skill.id}:${todayKey}`
+      ),
+    [studioSkills, completedStepIds, completedAt, refreshers, getNote, refresherLater, todayKey]
+  );
+  const finishRefresher = (skill: Skill, stage: number) => {
+    markRefresherDone(skill.id);
+    practice.refresh();
+    const next = REFRESHER_INTERVALS[stage + 1];
+    toast({
+      message: next
+        ? `Nice. Next refresher for ${skill.title} in ${next} days.`
+        : `That was the last refresher for ${skill.title}. It's yours now.`,
+    });
+  };
+  const postponeRefresher = (skill: Skill) => {
+    const value = `${skill.id}:${todayKey}`;
+    writeString(STORAGE_KEYS.refresherLater, value);
+    setRefresherLater(value);
+  };
+
   const masteredCount = studioSkills.filter((s) => getSkillProgress(s, completedStepIds).isComplete).length;
   const focusSkill = pickFocusSkill(studioSkills, completedStepIds);
   const showFilters = studioSkills.length >= FILTERS_MIN_SKILLS;
   const firstName = (user?.user_metadata?.full_name || user?.email?.split("@")[0] || "").split(" ")[0];
 
-  const openPractice = (skill: Skill) => {
+  const openPractice = (skill: Skill, stepId?: string) => {
     playWoodenThud();
+    setPracticeStepId(stepId);
     setPracticeSkill(skill);
   };
   const openSteps = (skill: Skill) => {
@@ -302,6 +335,15 @@ function Studio() {
                 />
               )}
 
+              {refresher && (
+                <RefresherCard
+                  refresher={refresher}
+                  onPractise={() => openPractice(refresher.skill, refresher.step.id)}
+                  onDone={() => finishRefresher(refresher.skill, refresher.stage)}
+                  onLater={() => postponeRefresher(refresher.skill)}
+                />
+              )}
+
               <StatsStrip
                 week={practice.week}
                 stepsDone={completedStepIds.length}
@@ -375,7 +417,9 @@ function Studio() {
         <AnimatePresence>
           {practiceSkill && (
             <SkillPracticeModal
+              key={`${practiceSkill.id}:${practiceStepId ?? ""}`}
               skill={practiceSkill}
+              initialStepId={practiceStepId}
               completedStepIds={completedStepIds}
               onToggleStep={handleToggleStep}
               onClose={() => {
@@ -424,6 +468,8 @@ function Studio() {
               enrolledSkills={studioSkills}
               completedStepIds={completedStepIds}
               certifiedSkillIds={certifiedSkillIds}
+              getShare={userId ? getShare : undefined}
+              onToggleShare={(skill, on) => setShared(skill.id, on)}
               onOpenExam={(skill) => {
                 setIsCertificatesOpen(false);
                 setExamSkill(skill);

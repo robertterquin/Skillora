@@ -13,6 +13,7 @@ export const STORAGE_KEYS = {
   stepNotes: "skillora_step_notes",
   stepCompletedAt: "skillora_step_completed_at",
   recapDismissed: "skillora_recap_dismissed",
+  refresherLater: "skillora_refresher_later",
 } as const;
 
 export function readJSON<T>(key: string, fallback: T): T {

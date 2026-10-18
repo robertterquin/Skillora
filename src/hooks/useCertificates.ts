@@ -9,8 +9,16 @@ import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
  * Skills the learner has earned a certificate for (passed the assessment).
  * Local certificates earned while signed out are uploaded once the user signs in.
  */
+export interface CertificateShare {
+  token: string;
+  isPublic: boolean;
+  certifiedAt: string;
+}
+
 export function useCertificates(userId: string | null, authReady: boolean) {
   const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
+  // Share settings per skill (signed-in only; empty until share_certificates.sql is applied).
+  const [shares, setShares] = useState<Record<string, CertificateShare>>({});
 
   useEffect(() => {
     if (!authReady) return;
@@ -22,12 +30,23 @@ export function useCertificates(userId: string | null, authReady: boolean) {
     if (!userId) return;
 
     const supabase = getSupabase();
-    supabase
-      .from("user_certifications")
-      .select("skill_id")
-      .eq("user_id", userId)
+    const table = () => supabase.from("user_certifications");
+    Promise.resolve(table().select("skill_id, share_token, is_public, certified_at").eq("user_id", userId))
+      .then((res) => (res.error ? table().select("skill_id").eq("user_id", userId) : res))
       .then(({ data, error }) => {
         if (cancelled || error || !data) return;
+
+        const nextShares: Record<string, CertificateShare> = {};
+        for (const row of data as { skill_id: string; share_token?: string; is_public?: boolean; certified_at?: string }[]) {
+          if (row.share_token) {
+            nextShares[normalizeSkillId(row.skill_id)] = {
+              token: row.share_token,
+              isPublic: !!row.is_public,
+              certifiedAt: row.certified_at || "",
+            };
+          }
+        }
+        setShares(nextShares);
 
         const remoteIds = data.map((row: { skill_id: string }) => normalizeSkillId(row.skill_id));
         const merged = Array.from(new Set([...remoteIds, ...localIds]));
@@ -61,12 +80,25 @@ export function useCertificates(userId: string | null, authReady: boolean) {
       });
 
       if (userId && isValidUuid(target)) {
-        getSupabase()
-          .from("user_certifications")
-          .upsert({ user_id: userId, skill_id: target }, { onConflict: "user_id,skill_id" })
-          .then(({ error }) => {
-            if (error) console.warn("Note: user_certifications sync:", error.message);
-          });
+        Promise.resolve(
+          getSupabase()
+            .from("user_certifications")
+            .upsert({ user_id: userId, skill_id: target }, { onConflict: "user_id,skill_id" })
+            .select("share_token, is_public, certified_at")
+            .maybeSingle()
+        ).then(({ data, error }) => {
+          if (error) {
+            console.warn("Note: user_certifications sync:", error.message);
+            return;
+          }
+          // New certificates get their share code straight away (sharing stays off).
+          if (data?.share_token) {
+            setShares((prev) => ({
+              ...prev,
+              [target]: { token: data.share_token, isPublic: !!data.is_public, certifiedAt: data.certified_at || "" },
+            }));
+          }
+        });
       }
     },
     [userId]
@@ -77,5 +109,28 @@ export function useCertificates(userId: string | null, authReady: boolean) {
     [certifiedSkillIds]
   );
 
-  return { certifiedSkillIds, isCertified, markCertified };
+  const getShare = useCallback((skillId: string) => shares[normalizeSkillId(skillId)], [shares]);
+
+  /** Turns the public link on or off. Resolves false if it couldn't be saved. */
+  const setShared = useCallback(
+    async (skillId: string, isPublic: boolean): Promise<boolean> => {
+      const target = normalizeSkillId(skillId);
+      if (!userId || !shares[target]) return false;
+      const previous = shares[target];
+      setShares((prev) => ({ ...prev, [target]: { ...previous, isPublic } }));
+      const { error } = await getSupabase()
+        .from("user_certifications")
+        .update({ is_public: isPublic })
+        .eq("user_id", userId)
+        .eq("skill_id", target);
+      if (error) {
+        setShares((prev) => ({ ...prev, [target]: previous }));
+        return false;
+      }
+      return true;
+    },
+    [userId, shares]
+  );
+
+  return { certifiedSkillIds, isCertified, markCertified, getShare, setShared };
 }

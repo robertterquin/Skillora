@@ -7,6 +7,8 @@ import { cn } from "@/lib/cn";
 import { AppIcon } from "../ui/AppIcon";
 import { Button } from "../ui/Button";
 import { formatMinutes } from "../learning/LearningPath";
+import type { CertificateShare } from "@/hooks/useCertificates";
+import { ShareCertificate } from "./ShareCertificate";
 
 interface CertificateCardProps {
   skill: Skill;
@@ -14,10 +16,21 @@ interface CertificateCardProps {
   totalCount: number;
   isCertified: boolean;
   onOpenExam?: (skill: Skill) => void;
+  /** Share settings; present only for signed-in learners' certificates. */
+  share?: CertificateShare;
+  onToggleShare?: (skill: Skill, isPublic: boolean) => Promise<boolean>;
 }
 
 /** One skill in the certificates list: certified, ready for the assessment, or still in progress. */
-export function CertificateCard({ skill, doneCount, totalCount, isCertified, onOpenExam }: CertificateCardProps) {
+export function CertificateCard({
+  skill,
+  doneCount,
+  totalCount,
+  isCertified,
+  onOpenExam,
+  share,
+  onToggleShare,
+}: CertificateCardProps) {
   const category = getCategoryStyle(skill);
   const isDone = totalCount > 0 && doneCount === totalCount;
   const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -100,6 +113,9 @@ export function CertificateCard({ skill, doneCount, totalCount, isCertified, onO
           </div>
         )}
       </div>
+      {isCertified && share && onToggleShare && (
+        <ShareCertificate skill={skill} share={share} onToggle={(on) => onToggleShare(skill, on)} />
+      )}
     </article>
   );
 }

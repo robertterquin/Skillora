@@ -31,6 +31,8 @@ export interface SkillPracticeModalProps {
   onSaveNote?: (stepId: string, text: string) => void;
   /** A focus timer ran to the end; counts as a practice day. */
   onFocusComplete?: () => void;
+  /** Open on this step (e.g. a refresher) instead of the first unfinished one. */
+  initialStepId?: string;
 }
 
 type PracticeView = "practice" | "path";
@@ -60,12 +62,15 @@ export function SkillPracticeModal({
   getNote,
   onSaveNote,
   onFocusComplete,
+  initialStepId,
 }: SkillPracticeModalProps) {
   const titleId = useId();
   const [view, setView] = useState<PracticeView>("practice");
-  // Open on the first unfinished step.
+  // Open on the requested step, else the first unfinished one.
   const [index, setIndex] = useState(() => {
     const steps = skill?.steps || [];
+    const requested = initialStepId ? steps.findIndex((s) => s.id === initialStepId) : -1;
+    if (requested !== -1) return requested;
     const next = steps.findIndex((s) => !isStepCompleted(s.id, completedStepIds));
     return next === -1 ? 0 : next;
   });
