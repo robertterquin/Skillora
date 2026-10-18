@@ -241,7 +241,7 @@ export function LearningPath({
                             </p>
                           </div>
                         )}
-                        <StepResources resources={step.resources || []} stepTitle={step.title} onWatch={onWatch} />
+                        <StepResources resources={step.resources || []} stepTitle={step.title} stepId={step.id} onWatch={onWatch} />
                         {!isPreview && (onPractiseStep || onToggleStep) && (
                           <div className="flex flex-wrap items-center gap-2 pt-1">
                             {onPractiseStep && (

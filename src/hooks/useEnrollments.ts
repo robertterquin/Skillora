@@ -5,6 +5,7 @@ import { Skill } from "@/types/database";
 import { normalizeSkillId } from "@/lib/catalog-data";
 import { getSupabase } from "@/lib/supabase";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
+import { authedFetch } from "@/lib/authed-fetch";
 
 /**
  * Which skills are in the learner's Studio. Signed-in users merge cloud and
@@ -62,10 +63,10 @@ export function useEnrollments(userId: string | null, authReady: boolean) {
 
       if (userId) {
         try {
-          await fetch("/api/skills/enroll", {
+          await authedFetch("/api/skills/enroll", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ skillId: target, userId }),
+            body: JSON.stringify({ skillId: target }),
           });
         } catch (err) {
           console.error("Failed to remove enrollment from Supabase", err);
@@ -75,28 +76,36 @@ export function useEnrollments(userId: string | null, authReady: boolean) {
     [userId]
   );
 
-  /** Adds a skill (catalog or AI-built) and syncs it to the cloud. */
+  /**
+   * Adds a skill (catalog, AI-built or a personal copy) and syncs it to the
+   * cloud. Resolves false if the cloud save failed (always true for guests).
+   */
   const addSkill = useCallback(
-    async (skill: Skill) => {
+    async (skill: Skill): Promise<boolean> => {
       const id = normalizeSkillId(skill.id);
       setEnrolledSkillIds((prev) => {
         const next = Array.from(new Set([...prev.map(normalizeSkillId), id]));
         writeJSON(STORAGE_KEYS.enrolledSkills, next);
         return next;
       });
+      // Guests' Studios live in this browser only.
+      if (!userId) return true;
 
       try {
-        const res = await fetch("/api/skills/enroll", {
+        const res = await authedFetch("/api/skills/enroll", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ skill: { ...skill, id }, userId }),
+          body: JSON.stringify({ skill: { ...skill, id } }),
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
           console.warn("Enrollment sync note:", errorData.error);
+          return false;
         }
+        return true;
       } catch (err) {
         console.warn("Enrollment network sync error:", err);
+        return false;
       }
     },
     [userId]

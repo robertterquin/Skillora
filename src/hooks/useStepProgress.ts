@@ -109,5 +109,41 @@ export function useStepProgress(
     [userId]
   );
 
-  return { completedStepIds, completedAt, isLoaded, toggleStep };
+  /**
+   * Marks the new steps of a personal copy done wherever the original step was
+   * done (old -> new id map), keeping the completion dates. No celebration or
+   * practice-day logging: nothing was practised just now.
+   */
+  const carryOverSteps = useCallback(
+    (stepIdMap: Record<string, string>) => {
+      const current = completedRef.current;
+      const additions = Object.entries(stepIdMap)
+        .filter(([oldId]) => isStepCompleted(oldId, current))
+        .map(([, newId]) => newId);
+      if (additions.length === 0) return;
+
+      const next = Array.from(new Set([...current, ...additions]));
+      completedRef.current = next;
+      setCompletedStepIds(next);
+      writeJSON(STORAGE_KEYS.completedSteps, next);
+      setCompletedAt((prev) => {
+        const dates = { ...prev };
+        for (const [oldId, newId] of Object.entries(stepIdMap)) {
+          if (additions.includes(newId)) dates[newId] = prev[oldId] ?? new Date().toISOString();
+        }
+        writeJSON(STORAGE_KEYS.stepCompletedAt, dates);
+        return dates;
+      });
+
+      if (userId) {
+        const rows = additions.filter(isValidUuid).map((step_id) => ({ user_id: userId, step_id }));
+        Promise.resolve(getSupabase().from("user_step_completions").insert(rows)).then(({ error }) => {
+          if (error) console.warn("Could not carry over step progress", error.message);
+        });
+      }
+    },
+    [userId]
+  );
+
+  return { completedStepIds, completedAt, isLoaded, toggleStep, carryOverSteps };
 }

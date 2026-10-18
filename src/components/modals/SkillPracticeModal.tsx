@@ -29,6 +29,8 @@ export interface SkillPracticeModalProps {
   onOpenGuildExam?: (skill: Skill) => void;
   getNote?: (stepId: string) => string;
   onSaveNote?: (stepId: string, text: string) => void;
+  /** A focus timer ran to the end; counts as a practice day. */
+  onFocusComplete?: () => void;
 }
 
 type PracticeView = "practice" | "path";
@@ -57,6 +59,7 @@ export function SkillPracticeModal({
   onOpenGuildExam,
   getNote,
   onSaveNote,
+  onFocusComplete,
 }: SkillPracticeModalProps) {
   const titleId = useId();
   const [view, setView] = useState<PracticeView>("practice");
@@ -173,6 +176,7 @@ export function SkillPracticeModal({
             onSpeak={speak}
             onWatch={setActiveVideo}
             note={note}
+            onFocusComplete={onFocusComplete}
           />
 
           {onSaveNote && (isDone || note) && (

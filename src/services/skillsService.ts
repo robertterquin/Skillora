@@ -31,14 +31,11 @@ interface DbSkill {
   estimated_hours: number;
   time_commitment_label: string;
   is_featured: boolean;
+  owner_id?: string | null;
   skill_steps?: DbStep[];
 }
 
-export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]> {
-  try {
-    const { data, error } = await supabase
-      .from("skills")
-      .select(`
+const SKILL_COLUMNS = `
         id,
         category_id,
         title,
@@ -64,8 +61,21 @@ export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]
             is_free
           )
         )
-      `)
-      .order("created_at", { ascending: true });
+      `;
+
+/** Runs the skills query; retries without owner_id if secure_skills.sql hasn't been applied yet. */
+async function querySkills(supabase: SupabaseClient) {
+  const withOwner = await supabase
+    .from("skills")
+    .select(SKILL_COLUMNS.replace("is_featured,", "is_featured,\n        owner_id,"))
+    .order("created_at", { ascending: true });
+  if (!withOwner.error) return withOwner;
+  return supabase.from("skills").select(SKILL_COLUMNS).order("created_at", { ascending: true });
+}
+
+export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]> {
+  try {
+    const { data, error } = await querySkills(supabase);
 
     if (error || !data || data.length === 0) {
       return INITIAL_SKILLS;
@@ -90,7 +100,7 @@ export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]
             step_number: st.step_number,
             title: st.title,
             instructions: st.instructions,
-            estimated_minutes: Math.min(25, Math.max(10, Number(st.estimated_minutes) || 20)),
+            estimated_minutes: Math.min(60, Math.max(5, Number(st.estimated_minutes) || 20)),
             resources,
           };
         });
@@ -105,6 +115,7 @@ export async function fetchLiveSkills(supabase: SupabaseClient): Promise<Skill[]
         estimated_hours: s.estimated_hours,
         time_commitment_label: s.time_commitment_label,
         is_featured: s.is_featured,
+        owner_id: s.owner_id ?? null,
         steps_count: steps.length,
         steps,
       };

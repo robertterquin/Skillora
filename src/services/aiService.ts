@@ -107,6 +107,34 @@ export const aiService = {
     return await res.json();
   },
 
+  /** Rewrites one step to be easier or harder (keeps the same skill). */
+  async reworkStep(params: {
+    skillTitle: string;
+    stepTitle: string;
+    stepInstructions: string;
+    estimatedMinutes: number;
+    direction: "easier" | "harder";
+  }): Promise<{ title: string; instructions: string; estimated_minutes: number }> {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai", {
+        body: { action: "rework-step", ...params },
+      });
+      if (!error && data && data.title) return data;
+    } catch {
+    }
+
+    const res = await fetch("/api/ai/rework-step", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to rewrite the step");
+    }
+    return await res.json();
+  },
+
   async getMnemonic(params: {
     skillTitle: string;
     stepTitle: string;

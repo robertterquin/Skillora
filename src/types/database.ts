@@ -41,5 +41,7 @@ export interface Skill {
   is_featured: boolean;
   steps_count?: number;
   steps?: SkillStep[];
+  /** Set on a learner's personal copy; null/absent for catalog and AI-generated skills. */
+  owner_id?: string | null;
 }
 

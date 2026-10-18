@@ -81,5 +81,16 @@ export function useStepNotes(userId: string | null, authReady: boolean) {
     [userId]
   );
 
-  return { getNote, saveNote };
+  /** Copies notes to a personal copy's new step ids (old -> new id map). */
+  const copyNotes = useCallback(
+    (stepIdMap: Record<string, string>) => {
+      for (const [oldId, newId] of Object.entries(stepIdMap)) {
+        const note = notes[oldId];
+        if (note) saveNote(newId, note);
+      }
+    },
+    [notes, saveNote]
+  );
+
+  return { getNote, saveNote, copyNotes };
 }

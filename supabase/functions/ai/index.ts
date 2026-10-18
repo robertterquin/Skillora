@@ -1,6 +1,7 @@
 import OpenAI from "npm:openai@^4.68.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.45.6";
 import { sanitizeOwlRequest, buildOwlMessages, parseOwlReply, toOwlReply } from "../_shared/owl.ts";
+import { sanitizeReworkRequest, buildReworkMessages, parseReworkReply } from "../_shared/rework.ts";
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -559,6 +560,19 @@ Format response as STRICT JSON:
   return jsonResponse(JSON.parse(content));
 }
 
+async function handleReworkStep(body: Record<string, any>): Promise<Response> {
+  const request = sanitizeReworkRequest(body);
+  if (!request) return errorResponse("stepTitle and direction (easier|harder) are required", 400);
+  const response = await createChatCompletionWithFallback(getOpenAI(), {
+    messages: buildReworkMessages(request),
+    response_format: { type: "json_object" },
+    temperature: 0.6,
+  });
+  const content = response.choices[0]?.message?.content;
+  if (!content) return errorResponse("Rework generation failed", 500);
+  return jsonResponse(parseReworkReply(content, request));
+}
+
 async function handleMnemonic(body: Record<string, any>): Promise<Response> {
   const { skillTitle, stepTitle, stepInstructions } = body;
   const openai = getOpenAI();
@@ -787,6 +801,8 @@ Deno.serve(async (req: Request) => {
         return await handleCoach(body);
       case "mnemonic":
         return await handleMnemonic(body);
+      case "rework-step":
+        return await handleReworkStep(body);
       case "guild-exam":
         return await handleGuildExam(body);
       case "tts":
