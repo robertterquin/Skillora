@@ -125,7 +125,7 @@ export function Header({ activePath }: HeaderProps = {}) {
           <div className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-surface border border-surface-border transition-all group-hover:scale-105 group-hover:border-brand-400">
             <Image src="/logo.svg" alt="" width={26} height={26} className="w-6 h-6 object-contain" priority />
           </div>
-          <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-ink">Skillora</span>
+          <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-ink truncate">Skillora</span>
         </Link>
 
         {!loadingUser && (
@@ -159,18 +159,21 @@ export function Header({ activePath }: HeaderProps = {}) {
           </nav>
         )}
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          {/* On phones these two move into the menu, so the header never overlaps the logo. */}
           <IconButton
             icon={THEME_CYCLE[theme].icon}
             label={`Theme: ${THEME_CYCLE[theme].label}. Switch to ${THEME_CYCLE[THEME_CYCLE[theme].next].label}`}
             title={`Theme: ${THEME_CYCLE[theme].label}`}
             onClick={() => setTheme(THEME_CYCLE[theme].next)}
+            className="hidden sm:inline-flex"
           />
           <IconButton
             icon={soundOn ? "volume-loud-linear" : "volume-cross-linear"}
             label={soundOn ? "Mute interface sounds" : "Turn on interface sounds"}
             pressed={soundOn}
             onClick={toggleSound}
+            className="hidden sm:inline-flex"
           />
 
           {loadingUser ? (
@@ -299,6 +302,26 @@ export function Header({ activePath }: HeaderProps = {}) {
                         Sign in
                       </Link>
                     )}
+
+                    <div className="sm:hidden mt-1 pt-3 border-t border-surface-border grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setTheme(THEME_CYCLE[theme].next)}
+                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-border text-sm text-ink-secondary hover:bg-canvas transition cursor-pointer"
+                      >
+                        <AppIcon name={THEME_CYCLE[theme].icon} className="w-4 h-4" />
+                        <span>Theme: {THEME_CYCLE[theme].label}</span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={soundOn}
+                        onClick={toggleSound}
+                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-border text-sm text-ink-secondary hover:bg-canvas transition cursor-pointer"
+                      >
+                        <AppIcon name={soundOn ? "volume-loud-linear" : "volume-cross-linear"} className="w-4 h-4" />
+                        <span>Sound {soundOn ? "on" : "off"}</span>
+                      </button>
+                    </div>
                   </div>
                 </nav>
               )}

@@ -206,10 +206,17 @@ export function LearningPath({
                         {STATE_LABEL[state]}
                       </span>
                     )}
+                    {/* Phones: the time sits under the title so the title keeps the full width. */}
+                    {step.estimated_minutes > 0 && (
+                      <span className="sm:hidden mt-1 inline-flex items-center gap-1 text-xs text-ink-muted tabular-nums">
+                        <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
+                        {formatMinutes(step.estimated_minutes)}
+                      </span>
+                    )}
                   </span>
                   <span className="flex items-center gap-2 shrink-0 pt-0.5">
                     {step.estimated_minutes > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs text-ink-muted tabular-nums">
+                      <span className="hidden sm:inline-flex items-center gap-1 text-xs text-ink-muted tabular-nums">
                         <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />
                         {formatMinutes(step.estimated_minutes)}
                       </span>

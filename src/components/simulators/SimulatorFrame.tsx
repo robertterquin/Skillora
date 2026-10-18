@@ -32,8 +32,8 @@ export function SimulatorFrame({
         className
       )}
     >
-      <header className="flex items-center justify-between gap-3 pb-3 mb-4 border-b border-surface-border">
-        <h4 className="flex items-center gap-2 min-w-0 text-xs font-semibold text-ink-muted">
+      <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-3 mb-4 border-b border-surface-border">
+        <h4 className="flex items-center gap-2 min-w-0 flex-1 basis-32 text-xs font-semibold text-ink-muted">
           <AppIcon name={icon} className={cn("w-4 h-4 shrink-0", accentClass)} />
           <span className="truncate">{title}</span>
         </h4>

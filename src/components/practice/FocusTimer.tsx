@@ -77,7 +77,7 @@ export function FocusTimer({ minutes, isDone, onFinish, onMarkDone }: FocusTimer
       <button
         type="button"
         onClick={start}
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-surface-border text-xs font-medium text-ink-secondary hover:border-ink/40 hover:text-ink transition cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-surface-border text-xs font-medium text-ink-secondary whitespace-nowrap hover:border-ink/40 hover:text-ink transition cursor-pointer"
         title="Start a focus timer for this step"
       >
         <AppIcon name="stopwatch-linear" className="w-3.5 h-3.5" />

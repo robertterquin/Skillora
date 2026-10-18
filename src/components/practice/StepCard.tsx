@@ -45,7 +45,7 @@ export function StepCard({
   return (
     <article
       className={cn(
-        "w-full max-w-xl min-h-[380px] sm:min-h-[420px] p-6 sm:p-7 rounded-2xl border bg-surface flex flex-col shadow-card transition-colors duration-500",
+        "w-full max-w-xl min-h-[380px] sm:min-h-[420px] p-5 sm:p-7 rounded-2xl border bg-surface flex flex-col shadow-card transition-colors duration-500",
         celebrate ? "border-success" : showNotes ? "border-ink/40" : "border-surface-border"
       )}
     >

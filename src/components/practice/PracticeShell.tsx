@@ -107,27 +107,31 @@ export function PracticeShell({
       className={cn("max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh]", className)}
     >
       <header className="px-5 sm:px-6 pt-5 pb-4 bg-canvas border-b border-surface-border space-y-4 print:hidden">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* Phones: title and close on one row, header actions on their own row below. */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-10 h-10 shrink-0 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink">
               <AppIcon name={icon} className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-ink-muted font-medium">{eyebrow}</div>
-              <h2 id={titleId} className="font-display font-bold text-lg sm:text-xl text-ink leading-tight truncate">
+              <h2
+                id={titleId}
+                className="font-display font-bold text-lg sm:text-xl text-ink leading-tight line-clamp-2 sm:line-clamp-none sm:truncate"
+              >
                 {title}
               </h2>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {headerActions}
-            <IconButton icon="close" label="Close" variant="ghost" onClick={onClose} />
-          </div>
+          {headerActions && (
+            <div className="order-last sm:order-none w-full sm:w-auto flex items-center gap-2 sm:shrink-0">{headerActions}</div>
+          )}
+          <IconButton icon="close" label="Close" variant="ghost" onClick={onClose} className="shrink-0" />
         </div>
         {indicator}
       </header>
 
-      <div className="p-6 sm:p-8 flex-1 overflow-y-auto">{children}</div>
+      <div className="p-4 sm:p-8 flex-1 overflow-y-auto">{children}</div>
 
       {footer && (
         <footer className="px-5 sm:px-6 py-4 bg-canvas border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-muted print:hidden">
