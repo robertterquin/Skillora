@@ -40,7 +40,7 @@ import { ResourceFeedbackContext } from "@/components/learning";
 import { GUEST_OWNER, isOwnSkill, makePersonalCopy } from "@/lib/personal-copy";
 import { aiService } from "@/services/aiService";
 import type { ReworkDirection } from "@/components/learning";
-import { CATEGORIES, INITIAL_SKILLS, isStepCompleted, normalizeSkillId } from "@/lib/catalog-data";
+import { CATEGORIES, isStepCompleted, normalizeSkillId, onlyCatalogSkills } from "@/lib/catalog-data";
 import { filterSkills, getSkillProgress, pickFocusSkill, type DurationFilter } from "@/lib/skill-progress";
 import { readString, writeString, STORAGE_KEYS } from "@/lib/storage";
 import { playChime, playMechanicalClick, playStampThud, playWoodenThud } from "@/lib/workbench-audio";
@@ -115,11 +115,7 @@ function Studio() {
     [studioSkills, categoryId, duration, query]
   );
 
-  // Hand-made catalog skills only (the live table also holds AI-built plans), in their live versions.
-  const starterSkills = useMemo(() => {
-    const catalogIds = new Set(INITIAL_SKILLS.map((s) => normalizeSkillId(s.id)));
-    return allSkills.filter((s) => catalogIds.has(normalizeSkillId(s.id)));
-  }, [allSkills]);
+  const starterSkills = useMemo(() => onlyCatalogSkills(allSkills), [allSkills]);
 
   const masteredCount = studioSkills.filter((s) => getSkillProgress(s, completedStepIds).isComplete).length;
   const focusSkill = pickFocusSkill(studioSkills, completedStepIds);

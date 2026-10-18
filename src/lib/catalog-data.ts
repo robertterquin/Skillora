@@ -934,3 +934,14 @@ export const INITIAL_SKILLS: Skill[] = [
   },
 ];
 
+
+const CATALOG_SKILL_IDS = new Set(INITIAL_SKILLS.map((s) => normalizeSkillId(s.id)));
+
+/**
+ * Only the hand-made catalog skills (in their live versions). The live skills
+ * table also holds plans Archimedes built for individual learners, which
+ * shouldn't appear in public lists.
+ */
+export function onlyCatalogSkills(skills: Skill[]): Skill[] {
+  return skills.filter((s) => CATALOG_SKILL_IDS.has(normalizeSkillId(s.id)));
+}

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import { HeroFanDeck, SkillSyllabusModal, AppIcon, buttonClasses } from "@/components";
 import { ProductPreview } from "@/components/landing";
-import { INITIAL_SKILLS } from "@/lib/catalog-data";
+import { INITIAL_SKILLS, onlyCatalogSkills } from "@/lib/catalog-data";
 import { Skill } from "@/types/database";
 import { createClient } from "@/lib/supabase";
 import { fetchLiveSkills } from "@/services/skillsService";
@@ -39,7 +39,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchLiveSkills(createClient()).then((data) => {
-      if (data && data.length > 0) setSkills(data);
+      // Public page: hand-made catalog only, never learners' own Archimedes plans.
+      const catalog = onlyCatalogSkills(data || []);
+      if (catalog.length > 0) setSkills(catalog);
     });
   }, []);
 
