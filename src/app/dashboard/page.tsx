@@ -40,6 +40,8 @@ import { useResourceFeedback } from "@/hooks/useResourceFeedback";
 import { useRefreshers } from "@/hooks/useRefreshers";
 import { getDueRefreshers, REFRESHER_INTERVALS } from "@/lib/refreshers";
 import { ResourceFeedbackContext } from "@/components/learning";
+import { BundleList } from "@/components/bundles";
+import type { SkillBundle } from "@/lib/bundles";
 import { GUEST_OWNER, isOwnSkill, makePersonalCopy } from "@/lib/personal-copy";
 import { aiService } from "@/services/aiService";
 import type { ReworkDirection } from "@/components/learning";
@@ -240,6 +242,11 @@ function Studio() {
       return null;
     }
   };
+  const handleAddBundle = async (bundle: SkillBundle, skills: Skill[]) => {
+    playWoodenThud();
+    for (const skill of skills) await addSkill(skill);
+    toast({ message: `Added ${skills.length} ${skills.length === 1 ? "skill" : "skills"} from ${bundle.title}` });
+  };
   const handleRemove = (skill: Skill) => {
     removeSkill(skill.id);
     toast({
@@ -315,13 +322,22 @@ function Studio() {
           {!isLoaded ? (
             <StudioSkeleton />
           ) : studioSkills.length === 0 ? (
-            <StarterSkills
-              skills={starterSkills}
-              interest={interest}
-              onChooseInterest={setInterest}
-              onPreview={setPreviewSkill}
-              onAdd={handleAdd}
-            />
+            <div className="space-y-8">
+              <StarterSkills
+                skills={starterSkills}
+                interest={interest}
+                onChooseInterest={setInterest}
+                onPreview={setPreviewSkill}
+                onAdd={handleAdd}
+              />
+              <BundleList
+                title="Or start with a bundle"
+                skills={starterSkills}
+                isEnrolled={(id) => enrolledSkillIds.some((e) => normalizeSkillId(e) === normalizeSkillId(id))}
+                onAddAll={handleAddBundle}
+                onPreview={setPreviewSkill}
+              />
+            </div>
           ) : (
             <>
               <WeeklyRecapCard practiceDates={practice.practiceDates} completedAt={completedAt} />

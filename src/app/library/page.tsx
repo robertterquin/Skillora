@@ -16,6 +16,7 @@ import {
   ChatWelcome,
   OwlThinking,
   SkillSyllabusModal,
+  BundleList,
   useToast,
 } from "@/components";
 import { playChime } from "@/lib/workbench-audio";
@@ -26,6 +27,7 @@ import { useOwlChat } from "@/hooks/useOwlChat";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useStudioCatalog } from "@/hooks/useStudioCatalog";
 import { findInterest } from "@/lib/interests";
+import type { SkillBundle } from "@/lib/bundles";
 
 const isPhone = () => typeof window !== "undefined" && window.innerWidth < 768;
 
@@ -72,6 +74,21 @@ export default function SkillLibraryPage() {
       await addSkill(saved);
       toast({
         message: `Added ${saved.title} to your Studio`,
+        action: { label: "Open Studio", onClick: () => router.push("/dashboard") },
+      });
+    },
+    [rememberSkill, addSkill, toast, router]
+  );
+
+  const handleAddBundle = useCallback(
+    async (bundle: SkillBundle, skills: Skill[]) => {
+      for (const skill of skills) {
+        const saved = { ...skill, id: normalizeSkillId(skill.id) };
+        rememberSkill(saved);
+        await addSkill(saved);
+      }
+      toast({
+        message: `Added ${skills.length} ${skills.length === 1 ? "skill" : "skills"} from ${bundle.title}`,
         action: { label: "Open Studio", onClick: () => router.push("/dashboard") },
       });
     },
@@ -265,6 +282,14 @@ export default function SkillLibraryPage() {
                         showStarters={!isGuest}
                         onStarter={(prompt) => sendMessage(prompt)}
                         onExample={(skill) => (isGuest ? setPreviewSkill(skill) : buildCurriculum(skill.title))}
+                        extra={
+                          <BundleList
+                            skills={allSkills}
+                            isEnrolled={isEnrolled}
+                            onAddAll={handleAddBundle}
+                            onPreview={setPreviewSkill}
+                          />
+                        }
                       />
                     )}
                   </div>

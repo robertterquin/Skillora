@@ -25,5 +25,6 @@ export * from "./ui/Toast";
 export * from "./ui/UserAvatar";
 
 export * from "./chat";
+export * from "./bundles";
 export * from "./learning";
 export * from "./practice";

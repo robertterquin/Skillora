@@ -37,10 +37,12 @@ interface ChatWelcomeProps {
   showStarters?: boolean;
   onStarter: (prompt: string) => void;
   onExample: (skill: Skill) => void;
+  /** Rendered under the example plans (e.g. the skill bundles). */
+  extra?: React.ReactNode;
 }
 
 /** First screen of a new chat: conversation starters and example plans. */
-export function ChatWelcome({ examples, disabled, showStarters = true, onStarter, onExample }: ChatWelcomeProps) {
+export function ChatWelcome({ examples, disabled, showStarters = true, onStarter, onExample, extra }: ChatWelcomeProps) {
   return (
     <div className="w-full space-y-10">
       {showStarters && (
@@ -102,6 +104,8 @@ export function ChatWelcome({ examples, disabled, showStarters = true, onStarter
           </ul>
         </section>
       )}
+
+      {extra}
     </div>
   );
 }
