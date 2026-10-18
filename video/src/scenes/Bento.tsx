@@ -6,23 +6,41 @@ import { BellIcon, CameraIcon, ClockIcon, MailIcon, RefreshIcon } from "../compo
 import { Eyebrow, RiseText } from "../components/Kinetic";
 import { cubeFace } from "../components/cube";
 import { CUBE, SCENES } from "../timeline";
+import { useLayout } from "../layout";
 
 const COVER = 17; // frame at which the stripe wipe fully covers the previous scene
-const LEFT = 84;
-const TOP = 268;
 const GAP = 22;
-const COL = (1920 - LEFT * 2 - GAP * 3) / 4;
-const ROWH = (1080 - TOP - 96 - GAP) / 2;
+const GRID = {
+  landscape: { left: 84, top: 268, bottom: 96, cols: 4, rows: 2 },
+  portrait: { left: 60, top: 420, bottom: 150, cols: 2, rows: 4 },
+};
+type Area = [col: number, row: number, cols?: number, rows?: number];
+/** Where each tile sits in each orientation. */
+const AREAS: Record<"focus" | "recap" | "reminder" | "sharp" | "photos", { landscape: Area; portrait: Area }> = {
+  focus: { landscape: [0, 0, 1, 2], portrait: [0, 1, 1, 2] },
+  recap: { landscape: [1, 0, 2, 1], portrait: [0, 0, 2, 1] },
+  reminder: { landscape: [3, 0], portrait: [1, 1] },
+  sharp: { landscape: [1, 1], portrait: [1, 2] },
+  photos: { landscape: [2, 1, 2, 1], portrait: [0, 3, 2, 1] },
+};
 
-const cell = (col: number, row: number, cols = 1, rows = 1): React.CSSProperties => ({
-  position: "absolute",
-  left: LEFT + col * (COL + GAP),
-  top: TOP + row * (ROWH + GAP),
-  width: COL * cols + GAP * (cols - 1),
-  height: ROWH * rows + GAP * (rows - 1),
-  borderRadius: 32,
-  overflow: "hidden",
-});
+function makeCell(W: number, H: number, portrait: boolean) {
+  const g = portrait ? GRID.portrait : GRID.landscape;
+  const colW = (W - g.left * 2 - GAP * (g.cols - 1)) / g.cols;
+  const rowH = (H - g.top - g.bottom - GAP * (g.rows - 1)) / g.rows;
+  return (name: keyof typeof AREAS): React.CSSProperties => {
+    const [col, row, cols = 1, rows = 1] = AREAS[name][portrait ? "portrait" : "landscape"];
+    return {
+      position: "absolute",
+      left: g.left + col * (colW + GAP),
+      top: g.top + row * (rowH + GAP),
+      width: colW * cols + GAP * (cols - 1),
+      height: rowH * rows + GAP * (rows - 1),
+      borderRadius: 32,
+      overflow: "hidden",
+    };
+  };
+}
 
 const Tile: React.FC<{ frame: number; order: number; style: React.CSSProperties; children: React.ReactNode }> = ({
   frame,
@@ -54,6 +72,8 @@ const label: React.CSSProperties = {
 /** Everything that keeps a learner going, as a bento grid of live micro-interactions. */
 export const Bento: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, H, portrait } = useLayout();
+  const cell = makeCell(W, H, portrait);
   const f = frame - COVER;
   const cube = tween(SCENES.bento.from + frame, CUBE.from, CUBE.dur, inOut);
 
@@ -74,20 +94,20 @@ export const Bento: React.FC = () => {
   return (
     <AbsoluteFill style={{ perspective: 2400 }}>
       {frame >= COVER && (
-        <AbsoluteFill style={{ ...cubeFace(cube, "out"), background: C.canvas, overflow: "hidden" }}>
-          <div style={{ position: "absolute", left: LEFT + 6, top: 116 }}>
+        <AbsoluteFill style={{ ...cubeFace(cube, "out", W / 2), background: C.canvas, overflow: "hidden" }}>
+          <div style={{ position: "absolute", left: (portrait ? GRID.portrait : GRID.landscape).left + 6, top: portrait ? 150 : 116 }}>
             <Eyebrow color={C.muted} style={{ opacity: tween(f, 0, 8) }}>
               Between sessions
             </Eyebrow>
             <div style={{ marginTop: 10, fontFamily: FONT.sans, fontWeight: 800, fontSize: 84, letterSpacing: "-0.045em", color: C.ink, lineHeight: 1.05 }}>
               <RiseText text="Built to keep you" frame={f} delay={1} stagger={0.5} />
-              <span style={{ display: "inline-block", width: 22 }} />
+              {portrait ? <br /> : <span style={{ display: "inline-block", width: 22 }} />}
               <RiseText text="going." frame={f} delay={8} stagger={1} style={{ fontFamily: FONT.serif, fontStyle: "italic", fontWeight: 400, fontSize: 96, color: C.vermilion }} />
             </div>
           </div>
 
           {/* Focus timer */}
-          <Tile frame={frame} order={0} style={{ ...cell(0, 0, 1, 2), background: C.ink, color: "#fff", padding: 36 }}>
+          <Tile frame={frame} order={0} style={{ ...cell("focus"), background: C.ink, color: "#fff", padding: 36 }}>
             <div style={{ ...label, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 10 }}>
               <ClockIcon size={20} color="rgba(255,255,255,0.6)" /> Focus timer
             </div>
@@ -128,7 +148,7 @@ export const Bento: React.FC = () => {
           </Tile>
 
           {/* Weekly recap */}
-          <Tile frame={frame} order={1} style={{ ...cell(1, 0, 2, 1), background: "#fff", border: `2px solid ${C.border}`, padding: 34 }}>
+          <Tile frame={frame} order={1} style={{ ...cell("recap"), background: "#fff", border: `2px solid ${C.border}`, padding: 34 }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>
                 <div style={{ ...label, color: C.muted }}>Weekly recap</div>
@@ -161,7 +181,7 @@ export const Bento: React.FC = () => {
           </Tile>
 
           {/* Email reminder */}
-          <Tile frame={frame} order={2} style={{ ...cell(3, 0), background: C.vermilion, color: "#fff", padding: 32 }}>
+          <Tile frame={frame} order={2} style={{ ...cell("reminder"), background: C.vermilion, color: "#fff", padding: 32 }}>
             <div style={{ ...label, color: "rgba(255,255,255,0.75)", display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ display: "inline-flex", transform: `rotate(${ring}deg)`, transformOrigin: "50% 10%" }}>
                 <BellIcon size={22} color="#fff" />
@@ -196,7 +216,7 @@ export const Bento: React.FC = () => {
           </Tile>
 
           {/* Keep it sharp */}
-          <Tile frame={frame} order={3} style={{ ...cell(1, 1), background: C.paperWarm, padding: 32 }}>
+          <Tile frame={frame} order={3} style={{ ...cell("sharp"), background: C.paperWarm, padding: 32 }}>
             <div style={{ ...label, color: C.muted, display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ display: "inline-flex", transform: `rotate(${f * 9}deg)` }}>
                 <RefreshIcon size={20} color={C.muted} />
@@ -234,7 +254,7 @@ export const Bento: React.FC = () => {
           </Tile>
 
           {/* Before & after */}
-          <Tile frame={frame} order={4} style={{ ...cell(2, 1, 2, 1), background: C.night }}>
+          <Tile frame={frame} order={4} style={{ ...cell("photos"), background: C.night }}>
             <BeforeAfter slider={slider} />
             <div style={{ position: "absolute", left: 22, top: 20, ...label, color: "#fff", display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 999, background: "rgba(21,20,19,0.7)" }}>
               <CameraIcon size={20} color="#fff" /> Before & after
@@ -254,10 +274,10 @@ export const Bento: React.FC = () => {
             key={k}
             style={{
               position: "absolute",
-              left: (1920 / DECK.length) * k - 1,
+              left: (W / DECK.length) * k - 1,
               top: 0,
-              width: 1920 / DECK.length + 2,
-              height: 1080,
+              width: W / DECK.length + 2,
+              height: H,
               background: color,
               transform: `translateY(${y}%)`,
             }}

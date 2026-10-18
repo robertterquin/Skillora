@@ -5,7 +5,8 @@ import { expoOut, inOut, map, pop, tween } from "../motion";
 import { Owl } from "../components/Owl";
 import { RiseText } from "../components/Kinetic";
 import { DotGrid } from "./AskOwl";
-import { SEAL } from "./Certificate";
+import { sealAt } from "./Certificate";
+import { useLayout } from "../layout";
 
 const CHIPS = [
   { label: "Music", bg: C.music },
@@ -17,6 +18,8 @@ const CHIPS = [
 /** Logo resolve: the owl lands, the wordmark rises, the tagline settles. */
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
+  const { portrait, pick } = useLayout();
+  const SEAL = sealAt(portrait);
   const iris = tween(frame, 0, 15, inOut) * 1520;
   const owl = pop(frame, 4, { damping: 9, stiffness: 140 });
   const wink = frame >= 34 && frame <= 40 ? Math.sin(((frame - 34) / 6) * Math.PI) : 0;
@@ -33,7 +36,7 @@ export const Outro: React.FC = () => {
           opacity: tween(frame, 6, 20),
         }}
       />
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", transform: `scale(${push})` }}>
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", transform: `scale(${push * pick(1, 1.18)})` }}>
         <div
           style={{
             width: 230,

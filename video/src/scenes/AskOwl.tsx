@@ -5,6 +5,7 @@ import { expoIn, expoOut, inOut, lerp, map, pop, tween } from "../motion";
 import { Owl } from "../components/Owl";
 import { Eyebrow, RiseText } from "../components/Kinetic";
 import { PlayIcon } from "../components/Icons";
+import { useLayout } from "../layout";
 
 const REPLY = "Try espresso. Four short steps, about 45 minutes.";
 
@@ -22,6 +23,8 @@ export const DotGrid: React.FC<{ color: string; drift?: number; opacity?: number
 /** Archimedes draws himself on, wakes up and answers a learner. */
 export const AskOwl: React.FC = () => {
   const frame = useCurrentFrame();
+  const { pick } = useLayout();
+  const owlAt = pick({ x: 600, y: 540 }, { x: 540, y: 600 });
 
   const iris = tween(frame, 4, 14, expoOut) * 1250;
   const exit = tween(frame, 52, 10, expoIn);
@@ -62,7 +65,7 @@ export const AskOwl: React.FC = () => {
         <DotGrid color="rgba(26,25,23,0.09)" drift={frame * 0.6} />
 
         {/* Archimedes */}
-        <div style={{ position: "absolute", left: 600 - 270, top: 540 - 270, width: 540, height: 540 }}>
+        <div style={{ position: "absolute", left: owlAt.x - 270, top: owlAt.y - 270, width: 540, height: 540 }}>
           {[16, 22, 28].map((at) => {
             const p = tween(frame, at, 22, expoOut);
             return (
@@ -123,7 +126,7 @@ export const AskOwl: React.FC = () => {
         </div>
 
         {/* Conversation */}
-        <div style={{ position: "absolute", left: 1010, top: 250, width: 800 }}>
+        <div style={{ position: "absolute", ...pick({ left: 1010, top: 250, width: 800 }, { left: 90, top: 1060, width: 900 }) }}>
           <Eyebrow color={C.muted} style={{ opacity: tween(frame, 6, 10) }}>
             <RiseText text="Ask Archimedes" frame={frame} delay={6} stagger={0.6} dur={10} />
           </Eyebrow>

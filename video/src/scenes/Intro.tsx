@@ -3,6 +3,7 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { C, FONT } from "../theme";
 import { backOut, expoIn, expoOut, inOut, map, tween } from "../motion";
 import { RiseText } from "../components/Kinetic";
+import { useLayout } from "../layout";
 
 const FLASHES = [
   { word: "Guitar", tag: "Music", bg: C.vermilion },
@@ -19,6 +20,7 @@ const TITLE_AT = FLASH_START + FLASHES.length * FLASH_LEN; // 36
 /** Cold open: a line becomes a strobe of skills, which resolves into "Master anything." */
 export const Intro: React.FC = () => {
   const frame = useCurrentFrame();
+  const { H, portrait, pick } = useLayout();
 
   // 0–12: a vermilion hairline stretches across the dark frame, then opens to fill it.
   const lineW = tween(frame, 1, 8, inOut);
@@ -40,14 +42,14 @@ export const Intro: React.FC = () => {
           <div
             style={{
               width: `${lineW * 100}%`,
-              height: 6 + lineH * 1080,
+              height: 6 + lineH * H,
               background: C.vermilion,
             }}
           />
           <div
             style={{
               position: "absolute",
-              top: 540 + 28,
+              top: H / 2 + 28,
               fontFamily: FONT.mono,
               fontSize: 18,
               letterSpacing: "0.3em",
@@ -66,7 +68,7 @@ export const Intro: React.FC = () => {
             style={{
               fontFamily: FONT.serif,
               fontStyle: "italic",
-              fontSize: 330,
+              fontSize: pick(330, 200),
               lineHeight: 1,
               color: "#fff",
               letterSpacing: "-0.02em",
@@ -80,7 +82,7 @@ export const Intro: React.FC = () => {
             style={{
               position: "absolute",
               left: 84,
-              top: 470,
+              top: pick(470, 760),
               fontFamily: FONT.mono,
               fontSize: 22,
               letterSpacing: "0.2em",
@@ -94,7 +96,7 @@ export const Intro: React.FC = () => {
             style={{
               position: "absolute",
               right: 84,
-              bottom: 470,
+              bottom: pick(470, 760),
               fontFamily: FONT.mono,
               fontSize: 22,
               color: "rgba(255,255,255,0.75)",
@@ -120,15 +122,16 @@ export const Intro: React.FC = () => {
             >
               <RiseText text="LEARN ONE STEP AT A TIME" frame={frame} delay={TITLE_AT + 2} stagger={0.35} dur={10} />
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", whiteSpace: "nowrap" }}>
+            <div style={{ display: "flex", flexDirection: portrait ? "column" : "row", alignItems: portrait ? "center" : "baseline", whiteSpace: "nowrap" }}>
               <RiseText
                 text="Master"
                 frame={frame}
                 delay={TITLE_AT}
                 stagger={1}
-                style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: 210, letterSpacing: "-0.05em", color: C.ink }}
+                style={{ fontFamily: FONT.sans, fontWeight: 800, fontSize: pick(210, 220), letterSpacing: "-0.05em", color: C.ink }}
               />
               <span style={{ width: 46 }} />
+              <span style={{ display: "flex", alignItems: "baseline", marginTop: portrait ? -40 : 0 }}>
               <RiseText
                 text="anything"
                 frame={frame}
@@ -137,7 +140,7 @@ export const Intro: React.FC = () => {
                 style={{
                   fontFamily: FONT.serif,
                   fontStyle: "italic",
-                  fontSize: 236,
+                  fontSize: pick(236, 250),
                   letterSpacing: "-0.02em",
                   color: C.vermilion,
                 }}
@@ -150,9 +153,10 @@ export const Intro: React.FC = () => {
                   borderRadius: 17,
                   background: C.vermilion,
                   marginLeft: 10,
-                  transform: `scale(${dot * (1 + dotGrow * 130)})`,
+                  transform: `scale(${dot * (1 + dotGrow * pick(130, 160))})`,
                 }}
               />
+              </span>
             </div>
           </div>
         </AbsoluteFill>
@@ -167,7 +171,7 @@ export const Intro: React.FC = () => {
               style={{
                 position: "absolute",
                 top: `${y * 100}%`,
-                left: (i % 2 ? -1 : 1) * map(flashAge, [0, 2], [0, 600], expoOut) + (i % 2 ? 1200 : 0),
+                left: (i % 2 ? -1 : 1) * map(flashAge, [0, 2], [0, 600], expoOut) + (i % 2 ? pick(1200, 500) : 0),
                 width: 700,
                 height: 3,
                 background: "rgba(255,255,255,0.35)",

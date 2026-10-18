@@ -4,6 +4,7 @@ import { C, FONT } from "../theme";
 import { backOut, expoOut, inOut, map, pop, tween } from "../motion";
 import { CheckDraw, ClockIcon } from "../components/Icons";
 import { Eyebrow, RiseText } from "../components/Kinetic";
+import { useLayout } from "../layout";
 
 const STEPS = [
   { title: "The golden recipe: 18g in, 36g out", min: 8 },
@@ -13,14 +14,17 @@ const STEPS = [
 ];
 const TICK_AT = 30;
 const TICK_GAP = 8;
-const PANEL = 780;
-const ROW = 150;
+const PANEL = 780; // landscape: width of the dark skill column
+const PANEL_TOP = 860; // portrait: where the plan sheet stops
 
 /** The picked card becomes a plan: four steps tick off while the progress ring fills. */
 export const Path: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, H, portrait, pick } = useLayout();
+  const ROW = pick(150, 172);
   const open = tween(frame, 0, 15, inOut);
-  const panelX = 1920 - (1920 - PANEL) * open;
+  const panelX = W - (W - PANEL) * open;
+  const panelY = H - (H - PANEL_TOP) * open;
 
   const ticks = STEPS.map((_, i) => tween(frame, TICK_AT + i * TICK_GAP, 7, expoOut));
   const progress = ticks.reduce((a, b) => a + b, 0) / STEPS.length;
@@ -36,7 +40,7 @@ export const Path: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.life, overflow: "hidden" }}>
       {/* Left: the skill */}
-      <div style={{ position: "absolute", left: 120, top: 210, width: PANEL - 200, color: "#fff" }}>
+      <div style={{ position: "absolute", color: "#fff", ...pick({ left: 120, top: 210, width: PANEL - 200 }, { left: 90, top: 190, width: W - 180 }) }}>
         <Eyebrow color="rgba(255,255,255,0.65)" style={{ opacity: tween(frame, 0, 8) }}>
           Crafts & life · 4 steps · 45 min
         </Eyebrow>
@@ -108,14 +112,11 @@ export const Path: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          left: panelX,
-          top: 0,
-          width: 1920 - PANEL,
-          height: 1080,
+          ...(portrait
+            ? { left: 0, top: panelY, width: W, height: H - PANEL_TOP, borderRadius: "48px 48px 0 0", padding: "80px 80px 0 80px" }
+            : { left: panelX, top: 0, width: W - PANEL, height: H, borderTopLeftRadius: 48 * (1 - open), padding: "200px 120px 0 110px" }),
           background: C.paper,
-          borderTopLeftRadius: 48 * (1 - open) + 0,
-          boxShadow: "-40px 0 80px rgba(0,0,0,0.25)",
-          padding: "200px 120px 0 110px",
+          boxShadow: portrait ? "0 -40px 80px rgba(0,0,0,0.25)" : "-40px 0 80px rgba(0,0,0,0.25)",
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
@@ -212,7 +213,7 @@ export const Path: React.FC = () => {
                         marginTop: 6,
                         fontFamily: FONT.sans,
                         fontWeight: 600,
-                        fontSize: 38,
+                        fontSize: pick(38, 34),
                         letterSpacing: "-0.02em",
                         color: C.ink,
                         opacity: map(tick, [0, 1], [1, 0.55]),

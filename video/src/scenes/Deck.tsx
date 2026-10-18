@@ -6,6 +6,7 @@ import { ClockIcon, PlayIcon } from "../components/Icons";
 import { RiseText } from "../components/Kinetic";
 import { DotGrid } from "./AskOwl";
 import { Cursor } from "../components/Cursor";
+import { useLayout } from "../layout";
 
 const CARDS = [
   { label: "Tech", title: "Solve the 3x3 Rubik's Cube", time: "45 mins/day · 4 days", bg: C.tech },
@@ -23,6 +24,8 @@ const ZOOM_AT = 54;
 /** The fan of skill cards from the landing page; the espresso card is picked and zooms to fill the frame. */
 export const Deck: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W: FW, H: FH, pick } = useLayout();
+  const baseY = pick(600, 1100);
   const push = tween(frame, 0, 12, expoOut);
   const spread = tween(frame, 30, 12, inOut);
   const scatter = tween(frame, CLICK_AT + 2, 12, expoIn);
@@ -32,7 +35,7 @@ export const Deck: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        transform: `translateX(${(1 - push) * 1920}px)`,
+        transform: `translateX(${(1 - push) * FW}px)`,
         background: C.canvas,
         boxShadow: "-60px 0 120px rgba(0,0,0,0.25)",
         overflow: "hidden",
@@ -43,7 +46,7 @@ export const Deck: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 150,
+          top: pick(150, 470),
           width: "100%",
           textAlign: "center",
           transform: `translateY(${-scatter * 260}px)`,
@@ -67,16 +70,28 @@ export const Deck: React.FC = () => {
         />
       </div>
 
-      <div style={{ position: "absolute", left: 0, top: 0, width: 1920, height: 1080, perspective: 2200 }}>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: FW,
+          height: FH,
+          perspective: 2200,
+          // Portrait: bigger cards, letting the outer ones bleed off the edges.
+          transform: `scale(${pick(1, 1.2)})`,
+          transformOrigin: `${FW / 2}px ${baseY}px`,
+        }}
+      >
         {CARDS.map((card, i) => {
           const t = (i - mid) / mid;
           const enter = pop(frame, 1 + Math.abs(i - mid) * 2.5, { damping: 15, stiffness: 140 });
-          const gap = lerp(250, 290, spread);
+          const gap = lerp(pick(250, 165), pick(290, 185), spread);
           const picked = i === PICKED;
           const hover = picked ? spread : 0;
 
-          let x = 960 + (i - mid) * gap - W / 2;
-          let y = 600 - H / 2 + t * t * 34 - hover * 46;
+          let x = FW / 2 + (i - mid) * gap - W / 2;
+          let y = baseY - H / 2 + t * t * 34 - hover * 46;
           let rot = t * 12 * (1 - hover);
           let scale = 1 + hover * 0.08;
           let opacity = 1;
@@ -97,9 +112,9 @@ export const Deck: React.FC = () => {
           } else {
             // Grow to cover the whole frame.
             const z = zoom;
-            const cover = 1920 / W + 0.2;
-            x = lerp(x, 960 - W / 2, Math.min(1, z * 1.6));
-            y = lerp(y, 540 - H / 2, Math.min(1, z * 1.6));
+            const cover = Math.max(FW / W, FH / H) + 0.2;
+            x = lerp(x, FW / 2 - W / 2, Math.min(1, z * 1.6));
+            y = lerp(y, FH / 2 - H / 2, Math.min(1, z * 1.6));
             rot = lerp(rot, 0, Math.min(1, z * 2));
             scale = lerp(scale, cover, z);
             radius = lerp(28, 0, z);
@@ -195,8 +210,8 @@ export const Deck: React.FC = () => {
 
       <Cursor
         frame={frame}
-        from={{ x: 1500, y: 1020 }}
-        to={{ x: 1000, y: 430 }}
+        from={pick({ x: 1500, y: 1020 }, { x: 900, y: 1820 })}
+        to={pick({ x: 1000, y: 430 }, { x: 590, y: 900 })}
         moveAt={30}
         moveDur={13}
         clickAt={CLICK_AT}

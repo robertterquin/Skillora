@@ -8,16 +8,22 @@ import { Eyebrow } from "../components/Kinetic";
 import { Cursor } from "../components/Cursor";
 import { cubeFace } from "../components/cube";
 import { CUBE, SCENES } from "../timeline";
+import { useLayout } from "../layout";
 
 const STAMP_AT = 24;
-const CARD_W = 1180;
-const CARD_H = 640;
-const CARD_Y = 530; // card centre on screen
-export const SEAL = { x: 1290, y: 580 }; // seal centre on screen
+const CARDS = {
+  landscape: { w: 1180, h: 640, y: 530 }, // y: card centre on screen
+  portrait: { w: 940, h: 1160, y: 880 },
+};
+/** Seal centre on screen; the outro's iris opens from the same point. */
+export const sealAt = (portrait: boolean) => (portrait ? { x: 770, y: 1160 } : { x: 1290, y: 580 });
 
 /** The certificate lands, gets stamped, and is shared. */
 export const Certificate: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, portrait, pick } = useLayout();
+  const { w: CARD_W, h: CARD_H, y: CARD_Y } = portrait ? CARDS.portrait : CARDS.landscape;
+  const SEAL = sealAt(portrait);
   const cube = tween(SCENES.cert.from + frame, CUBE.from, CUBE.dur, inOut);
 
   const impact = frame - STAMP_AT;
@@ -38,7 +44,7 @@ export const Certificate: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ perspective: 2400 }}>
-      <AbsoluteFill style={{ ...cubeFace(cube, "in"), background: C.night, overflow: "hidden" }}>
+      <AbsoluteFill style={{ ...cubeFace(cube, "in", W / 2), background: C.night, overflow: "hidden" }}>
         <AbsoluteFill style={{ transform: `scale(${1 + out * 2.2})`, transformOrigin: `${SEAL.x}px ${SEAL.y}px` }}>
         <AbsoluteFill
           style={{
@@ -52,14 +58,14 @@ export const Certificate: React.FC = () => {
           }}
         />
 
-        <Eyebrow color="rgba(255,255,255,0.6)" style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", opacity: tween(frame, 6, 10) }}>
+        <Eyebrow color="rgba(255,255,255,0.6)" style={{ position: "absolute", left: 0, right: 0, textAlign: "center", top: pick(120, 200), opacity: tween(frame, 6, 10) }}>
           Finish the steps · pass the assessment
         </Eyebrow>
 
         <div
           style={{
             position: "absolute",
-            left: 960 - CARD_W / 2 + shake.x,
+            left: W / 2 - CARD_W / 2 + shake.x,
             top: CARD_Y - CARD_H / 2 + shake.y,
             width: CARD_W,
             height: CARD_H,
@@ -95,11 +101,12 @@ export const Certificate: React.FC = () => {
                   marginTop: 18,
                   fontFamily: FONT.sans,
                   fontWeight: 800,
-                  fontSize: 76,
+                  fontSize: pick(76, 88),
+                  lineHeight: 1.02,
                   letterSpacing: "-0.04em",
                   color: C.ink,
                   clipPath: `inset(-20px ${(1 - name) * 100}% -20px 0)`,
-                  whiteSpace: "nowrap",
+                  whiteSpace: portrait ? "normal" : "nowrap",
                 }}
               >
                 Robert Terquin Laqui
@@ -196,7 +203,7 @@ export const Certificate: React.FC = () => {
           style={{
             position: "absolute",
             left: "50%",
-            top: 940,
+            top: pick(940, 1640),
             transform: `translate(-50%, -50%) scale(${shareIn * (frame >= CLICK && frame < CLICK + 4 ? 0.94 : 1)})`,
             display: "flex",
             alignItems: "center",
@@ -221,7 +228,7 @@ export const Certificate: React.FC = () => {
             </>
           )}
         </div>
-        <Cursor frame={frame} from={{ x: 1500, y: 1120 }} to={{ x: 1040, y: 934 }} moveAt={36} moveDur={11} clickAt={CLICK} hideAt={58} color={C.ink} />
+        <Cursor frame={frame} from={pick({ x: 1500, y: 1120 }, { x: 960, y: 1960 })} to={pick({ x: 1040, y: 934 }, { x: 620, y: 1634 })} moveAt={36} moveDur={11} clickAt={CLICK} hideAt={58} color={C.ink} />
         </AbsoluteFill>
       </AbsoluteFill>
     </AbsoluteFill>
