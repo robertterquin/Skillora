@@ -106,6 +106,9 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
   );
 }
 
+/** Shortest password allowed at sign-up and when resetting. */
+export const MIN_PASSWORD = 6;
+
 /** Error or success line for auth forms, announced to screen readers. */
 export function AuthMessage({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {
   return (

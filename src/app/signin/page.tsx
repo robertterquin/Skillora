@@ -56,7 +56,9 @@ export default function SignInPage() {
       setErrorMsg("Enter your email above and we'll send you a reset link.");
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
     if (error) setErrorMsg(error.message);
     else setSuccessMsg("Reset link sent. Check your inbox.");
   };

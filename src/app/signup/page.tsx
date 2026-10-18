@@ -8,10 +8,9 @@ import { cn } from "@/lib/cn";
 import { INTERESTS } from "@/lib/interests";
 import { getCategoryStyleById } from "@/lib/skill-progress";
 import { Button, AppIcon, Field, Input } from "@/components";
-import { AuthMessage, AuthShell, PasswordInput } from "@/components/auth";
+import { AuthMessage, AuthShell, MIN_PASSWORD, PasswordInput } from "@/components/auth";
 
 
-const MIN_PASSWORD = 6;
 
 export default function SignUpPage() {
   const router = useRouter();
