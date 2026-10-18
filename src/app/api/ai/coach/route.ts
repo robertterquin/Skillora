@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired("Sign in to ask the coach.");
     const { skillTitle, stepTitle, stepInstructions, userQuestion, learnerNote } = await req.json();
     const note = typeof learnerNote === "string" ? learnerNote.trim().slice(0, 2000) : "";
 
@@ -17,7 +20,7 @@ export async function POST(req: NextRequest) {
       stepInstructions,
       userQuestion,
       learnerNote: note || undefined,
-    });
+    }, auth.token);
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
     }

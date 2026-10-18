@@ -1,3 +1,4 @@
+import { authedFetch } from "@/lib/authed-fetch";
 
 export const UNIFORM_MALE_VOICE_NAMES = [
   "Daniel",
@@ -231,14 +232,9 @@ export function speakWithUniformMaleVoice(
     window.speechSynthesis.speak(utterance);
   };
 
-  try {
-    const cacheKey = `${speed}:${cleanText}`;
-    let audioUrl = ttsAudioUrlCache.get(cacheKey);
-    if (!audioUrl) {
-      audioUrl = `/api/ai/tts?text=${encodeURIComponent(cleanText)}&voice=onyx&speed=${speed}`;
-      ttsAudioUrlCache.set(cacheKey, audioUrl);
-    }
-
+  // Archimedes' voice needs an account (it's an OpenAI call), so the audio is
+  // fetched with the login token; guests and any failure use the browser voice.
+  const play = (audioUrl: string) => {
     const audio = new Audio(audioUrl);
     activeAudioElement = audio;
     options?.onStart?.();
@@ -261,8 +257,22 @@ export function speakWithUniformMaleVoice(
       if (activeAudioElement === audio) activeAudioElement = null;
       runBrowserFallback();
     });
-  } catch {
-    runBrowserFallback();
+  };
+
+  const cacheKey = `${speed}:${cleanText}`;
+  const cached = ttsAudioUrlCache.get(cacheKey);
+  if (cached) {
+    play(cached);
+    return;
   }
+
+  authedFetch(`/api/ai/tts?text=${encodeURIComponent(cleanText)}&voice=onyx&speed=${speed}`)
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`TTS ${res.status}`);
+      const url = URL.createObjectURL(await res.blob());
+      ttsAudioUrlCache.set(cacheKey, url);
+      play(url);
+    })
+    .catch(() => runBrowserFallback());
 }
 

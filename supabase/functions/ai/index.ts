@@ -599,7 +599,7 @@ Format JSON:
   return jsonResponse(JSON.parse(content));
 }
 
-async function handleGuildExam(body: Record<string, any>): Promise<Response> {
+async function handleGuildExam(body: Record<string, any>, signedIn: boolean): Promise<Response> {
   const { skillTitle, skillSummary, steps, skillSlug } = body;
   const cleanSlug = (skillSlug || (skillTitle || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase();
 
@@ -608,6 +608,9 @@ async function handleGuildExam(body: Record<string, any>): Promise<Response> {
       return jsonResponse({ exam });
     }
   }
+
+  // Hand-written exams above are free; generating one costs an OpenAI call.
+  if (!signedIn) return errorResponse("Sign in to take the assessment for this skill.", 401);
 
   const openai = getOpenAI();
   const prompt = `You are Archimedes, Master Polymath and Grand Proctor of the Skillora Craftsman's Guild.
@@ -764,6 +767,25 @@ Return JSON:
   return jsonResponse(JSON.parse(content));
 }
 
+/**
+ * True when the request carries a signed-in user's access token. The public
+ * anon key is not a user token, so anonymous visitors can't run up AI costs.
+ */
+async function isSignedInUser(req: Request): Promise<boolean> {
+  const header = req.headers.get("authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+  if (!token) return false;
+  try {
+    const auth = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      auth: { persistSession: false },
+    });
+    const { data, error } = await auth.auth.getUser(token);
+    return !error && !!data.user;
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -781,8 +803,11 @@ Deno.serve(async (req: Request) => {
       action = lastPart;
     }
 
+    const signedIn = await isSignedInUser(req);
+
     let body: Record<string, any> = {};
     if (contentType.includes("multipart/form-data")) {
+      if (!signedIn) return errorResponse("Sign in to use Archimedes.", 401);
       return await handleGradeVoice(req);
     } else if (contentType.includes("application/json")) {
       try {
@@ -792,6 +817,10 @@ Deno.serve(async (req: Request) => {
         }
       } catch {
       }
+    }
+
+    if (action !== "guild-exam" && !signedIn) {
+      return errorResponse("Sign in to use Archimedes.", 401);
     }
 
     switch (action) {
@@ -804,7 +833,7 @@ Deno.serve(async (req: Request) => {
       case "rework-step":
         return await handleReworkStep(body);
       case "guild-exam":
-        return await handleGuildExam(body);
+        return await handleGuildExam(body, signedIn);
       case "tts":
         return await handleTts(body);
       case "grade-voice":

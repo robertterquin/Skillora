@@ -33,14 +33,17 @@ const STARTERS: { icon: string; label: string; prompt: string }[] = [
 interface ChatWelcomeProps {
   examples: Skill[];
   disabled?: boolean;
+  /** Conversation starters need Archimedes, so they're hidden for guests. */
+  showStarters?: boolean;
   onStarter: (prompt: string) => void;
-  onExample: (title: string) => void;
+  onExample: (skill: Skill) => void;
 }
 
 /** First screen of a new chat: conversation starters and example plans. */
-export function ChatWelcome({ examples, disabled, onStarter, onExample }: ChatWelcomeProps) {
+export function ChatWelcome({ examples, disabled, showStarters = true, onStarter, onExample }: ChatWelcomeProps) {
   return (
     <div className="w-full space-y-10">
+      {showStarters && (
       <section aria-labelledby="starters-heading">
         <h2 id="starters-heading" className="sr-only">
           Conversation starters
@@ -61,6 +64,7 @@ export function ChatWelcome({ examples, disabled, onStarter, onExample }: ChatWe
           ))}
         </ul>
       </section>
+      )}
 
       {examples.length > 0 && (
         <section aria-labelledby="examples-heading">
@@ -80,7 +84,7 @@ export function ChatWelcome({ examples, disabled, onStarter, onExample }: ChatWe
                   <button
                     type="button"
                     disabled={disabled}
-                    onClick={() => onExample(skill.title)}
+                    onClick={() => onExample(skill)}
                     className="group relative w-full h-full flex flex-col p-4 pl-5 rounded-2xl bg-white border border-surface-border hover:border-ink/30 hover:shadow-card text-left transition cursor-pointer overflow-hidden disabled:opacity-50"
                   >
                     <span className={cn("absolute inset-y-0 left-0 w-1", category.fill)} aria-hidden="true" />

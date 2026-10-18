@@ -1,3 +1,4 @@
+import { authedFetch } from "@/lib/authed-fetch";
 import { createClient } from "@/lib/supabase";
 import { GuildExamPayload } from "@/app/api/ai/guild-exam/route";
 import { Skill } from "@/types/database";
@@ -52,7 +53,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/owl-chat", {
+    const res = await authedFetch("/api/ai/owl-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -93,7 +94,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/coach", {
+    const res = await authedFetch("/api/ai/coach", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
@@ -123,7 +124,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/rework-step", {
+    const res = await authedFetch("/api/ai/rework-step", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
@@ -151,7 +152,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/mnemonic", {
+    const res = await authedFetch("/api/ai/mnemonic", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
@@ -182,7 +183,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/guild-exam", {
+    const res = await authedFetch("/api/ai/guild-exam", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
@@ -218,7 +219,7 @@ export const aiService = {
     } catch {
     }
 
-    const res = await fetch("/api/ai/grade-voice", {
+    const res = await authedFetch("/api/ai/grade-voice", {
       method: "POST",
       body: formData,
     });

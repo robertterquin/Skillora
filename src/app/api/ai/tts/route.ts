@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { openai } from "@/lib/openai";
 
 const ttsMemoryCache = new Map<string, Buffer>();
@@ -70,6 +71,7 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
 
 export async function GET(req: NextRequest) {
   try {
+    if (!(await getRequestAuth(req))) return authRequired("Sign in to use Archimedes' voice.");
     const searchParams = req.nextUrl.searchParams;
     const text = searchParams.get("text") || "";
     const voice = searchParams.get("voice") || searchParams.get("v") || "onyx";
@@ -84,6 +86,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await getRequestAuth(req))) return authRequired("Sign in to use Archimedes' voice.");
     const { text, voice = "onyx", speed = 1.0 } = await req.json();
     return await handleTTS(text, voice, speed);
   } catch (err: unknown) {

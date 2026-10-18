@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
 import {
   AppIcon,
@@ -14,6 +15,7 @@ import {
   ConsultationSidebar,
   ChatWelcome,
   OwlThinking,
+  SkillSyllabusModal,
   useToast,
 } from "@/components";
 import { playChime } from "@/lib/workbench-audio";
@@ -111,6 +113,9 @@ export default function SkillLibraryPage() {
   });
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  // Guests can browse and add example plans, but chatting with Archimedes needs an account.
+  const isGuest = !authLoading && !currentUser;
+  const [previewSkill, setPreviewSkill] = useState<Skill | null>(null);
 
   // Coming from the Studio's "Ask Archimedes" with an interest: pre-fill (don't send) a starter prompt.
   useEffect(() => {
@@ -257,8 +262,9 @@ export default function SkillLibraryPage() {
                       <ChatWelcome
                         examples={exampleSkills}
                         disabled={isThinking}
+                        showStarters={!isGuest}
                         onStarter={(prompt) => sendMessage(prompt)}
-                        onExample={(title) => buildCurriculum(title)}
+                        onExample={(skill) => (isGuest ? setPreviewSkill(skill) : buildCurriculum(skill.title))}
                       />
                     )}
                   </div>
@@ -345,42 +351,71 @@ export default function SkillLibraryPage() {
           </div>
 
           <div className="shrink-0 px-4 sm:px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-surface-border bg-canvas/95 backdrop-blur-md z-20">
-            <form
-              className="max-w-3xl w-full mx-auto p-1.5 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all"
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage();
-              }}
-            >
-              <IconButton
-                icon="microphone-3-linear"
-                label={isListening ? "Stop listening" : "Speak your request"}
-                size="lg"
-                variant={isListening ? "accent" : "ghost"}
-                aria-pressed={isListening}
-                className={isListening ? "animate-pulse" : undefined}
-                onClick={toggleVoiceListening}
-              />
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                aria-label="Message Archimedes"
-                placeholder={isListening ? "Listening…" : "What do you want to learn?"}
-                className="flex-1 min-w-0 bg-transparent px-1 text-base text-ink placeholder:text-ink-subtle focus:outline-none"
-              />
-              <IconButton
-                type="submit"
-                icon="arrow-right-linear"
-                label="Send message"
-                size="lg"
-                variant="primary"
-                disabled={isThinking || !inputText.trim()}
-              />
-            </form>
+            {isGuest ? (
+              <div className="max-w-3xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-white border border-surface-border">
+                <p className="text-sm text-ink-secondary text-center sm:text-left">
+                  Create a free account to chat with Archimedes. You can still add the example plans above.
+                </p>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link href="/signin" className={buttonClasses({ variant: "ghost", size: "sm" })}>
+                    Sign in
+                  </Link>
+                  <Link href="/signup" className={buttonClasses({ size: "sm" })}>
+                    Create account
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <form
+                className="max-w-3xl w-full mx-auto p-1.5 bg-white rounded-2xl border border-surface-border focus-within:border-ink shadow-elevated flex items-center gap-2 transition-all"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendMessage();
+                }}
+              >
+                <IconButton
+                  icon="microphone-3-linear"
+                  label={isListening ? "Stop listening" : "Speak your request"}
+                  size="lg"
+                  variant={isListening ? "accent" : "ghost"}
+                  aria-pressed={isListening}
+                  className={isListening ? "animate-pulse" : undefined}
+                  onClick={toggleVoiceListening}
+                />
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  aria-label="Message Archimedes"
+                  placeholder={isListening ? "Listening…" : "What do you want to learn?"}
+                  className="flex-1 min-w-0 bg-transparent px-1 text-base text-ink placeholder:text-ink-subtle focus:outline-none"
+                />
+                <IconButton
+                  type="submit"
+                  icon="arrow-right-linear"
+                  label="Send message"
+                  size="lg"
+                  variant="primary"
+                  disabled={isThinking || !inputText.trim()}
+                />
+              </form>
+            )}
           </div>
         </main>
       </div>
+      <AnimatePresence>
+        {previewSkill && (
+          <SkillSyllabusModal
+            skill={previewSkill}
+            isViewOnly
+            onAdd={(skill) => {
+              setPreviewSkill(null);
+              handleEnrollSkill(skill);
+            }}
+            onClose={() => setPreviewSkill(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

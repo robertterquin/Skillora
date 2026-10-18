@@ -399,7 +399,7 @@ function Studio() {
               canEdit={isOwnSkill(stepsSkill, userId)}
               onCustomise={handleCustomise}
               onSaveEdits={handleSaveEdits}
-              onReworkStep={handleReworkStep}
+              onReworkStep={userId ? handleReworkStep : undefined}
               startEditing={editOnOpen}
               completedStepIds={completedStepIds}
               onToggleStep={handleToggleStep}

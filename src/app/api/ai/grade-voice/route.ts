@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired();
     const formData = await req.formData();
     const audioFile = formData.get("audio") as File | null;
     const expectedText = (formData.get("expectedText") as string) || "";

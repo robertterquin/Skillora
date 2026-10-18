@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 import {
@@ -11,12 +12,14 @@ import {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired();
     const request = sanitizeReworkRequest(body);
     if (!request) {
       return NextResponse.json({ error: "stepTitle and direction (easier|harder) are required" }, { status: 400 });
     }
 
-    const edgeRes = await invokeEdgeFunction("rework-step", body);
+    const edgeRes = await invokeEdgeFunction("rework-step", body, auth.token);
     if (edgeRes.fromEdgeFunction && edgeRes.data?.title) {
       return NextResponse.json(edgeRes.data);
     }

@@ -221,9 +221,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const greeting = "I'm listening. Tell me what interests you or ask for suggestions.";
-    const url = `/api/ai/tts?text=${encodeURIComponent(greeting)}&voice=onyx&speed=1.0`;
-    fetch(url).catch(() => {});
 
     if ("speechSynthesis" in window) {
       window.speechSynthesis.getVoices();

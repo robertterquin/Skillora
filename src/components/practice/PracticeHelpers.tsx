@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Skill, SkillStep } from "@/types/database";
 import { getDisciplinePracticeProfile } from "@/lib/discipline-practice";
 import { aiService } from "@/services/aiService";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 import { AppIcon } from "../ui/AppIcon";
 import { IconButton } from "../ui/IconButton";
 import { buttonClasses } from "../ui/Button";
@@ -105,6 +107,7 @@ interface PracticeHelpersProps {
  * so answers reset when the step changes.
  */
 export function PracticeHelpers({ skill, step, learnerNote }: PracticeHelpersProps) {
+  const { user } = useAuth();
   const profile = getDisciplinePracticeProfile(skill, step);
 
   const [coachOpen, setCoachOpen] = useState(false);
@@ -157,6 +160,17 @@ export function PracticeHelpers({ skill, step, learnerNote }: PracticeHelpersPro
       setMnemonicLoading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <p className="w-full max-w-lg mt-5 pt-4 border-t border-surface-border text-center text-sm text-ink-muted">
+        <Link href="/signin" className="font-semibold text-ink underline underline-offset-2">
+          Sign in
+        </Link>{" "}
+        to ask the coach or get a memory aid for this step.
+      </p>
+    );
+  }
 
   return (
     <>

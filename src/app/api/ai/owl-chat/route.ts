@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import crypto from "crypto";
 import { createChatCompletion } from "@/lib/openai";
 import { INITIAL_SKILLS, normalizeCategoryId } from "@/lib/catalog-data";
@@ -29,12 +30,14 @@ interface RawStep {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired();
     const request = sanitizeOwlRequest(body);
     if (!request) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
-    const edgeRes = await invokeEdgeFunction("owl-chat", body);
+    const edgeRes = await invokeEdgeFunction("owl-chat", body, auth.token);
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
     }

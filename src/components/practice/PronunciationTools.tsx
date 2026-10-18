@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { aiService } from "@/services/aiService";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/cn";
 import { AppIcon } from "../ui/AppIcon";
 import { IconButton } from "../ui/IconButton";
@@ -31,6 +32,8 @@ const pill =
  * `key={step.id}` so the last grade clears when the step changes.
  */
 export function PronunciationTools({ sample, language, isSpeaking, onSpeak }: PronunciationToolsProps) {
+  // Grading a recording is an AI call, so it needs an account; listening works for everyone.
+  const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [isGrading, setIsGrading] = useState(false);
   const [result, setResult] = useState<VoiceGrade | null>(null);
@@ -108,6 +111,7 @@ export function PronunciationTools({ sample, language, isSpeaking, onSpeak }: Pr
           <AppIcon name="volume-loud-linear" className="w-4 h-4" />
           <span>{isSpeaking ? "Speaking…" : "Listen"}</span>
         </button>
+        {user && (
         <button
           type="button"
           onClick={toggleRecording}
@@ -122,6 +126,7 @@ export function PronunciationTools({ sample, language, isSpeaking, onSpeak }: Pr
           <AppIcon name="microphone-3-linear" className="w-4 h-4" />
           <span>{isRecording ? "Listening…" : "Try saying it"}</span>
         </button>
+        )}
       </div>
 
       {showResult && (isGrading || result) && (

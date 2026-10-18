@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
@@ -355,12 +356,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Hand-written exams above are free for everyone; generating one needs an account.
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired("Sign in to take the assessment for this skill.");
+
     const edgeRes = await invokeEdgeFunction("guild-exam", {
       skillTitle,
       skillSummary,
       steps,
       skillSlug,
-    });
+    }, auth.token);
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
     }

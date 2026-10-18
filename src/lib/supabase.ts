@@ -60,15 +60,23 @@ export interface EdgeFunctionResult<T = any> {
   fromEdgeFunction: boolean;
 }
 
+/**
+ * Calls the "ai" edge function on behalf of a signed-in user. The edge
+ * function only serves signed-in users, so without a token it's skipped and
+ * the caller falls back to its own OpenAI call.
+ */
 export async function invokeEdgeFunction<T = any>(
   action: string,
-  payload: Record<string, any>
+  payload: Record<string, any>,
+  accessToken?: string
 ): Promise<EdgeFunctionResult<T>> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
 
-  if (!supabaseUrl || !serviceKey) {
+  if (!accessToken) {
+    return { data: null, error: new Error("No user session"), fromEdgeFunction: false };
+  }
+  if (!supabaseUrl || !anonKey) {
     return {
       data: null,
       error: new Error("Supabase credentials not configured"),
@@ -81,8 +89,8 @@ export async function invokeEdgeFunction<T = any>(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${serviceKey}`,
-        apikey: serviceKey,
+        Authorization: `Bearer ${accessToken}`,
+        apikey: anonKey,
       },
       body: JSON.stringify({ action, ...payload }),
     });

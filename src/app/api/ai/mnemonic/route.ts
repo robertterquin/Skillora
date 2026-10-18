@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authRequired, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired("Sign in to get a memory aid.");
     const { skillTitle, stepTitle, stepInstructions } = await req.json();
 
     if (!stepTitle || typeof stepTitle !== "string") {
@@ -14,7 +17,7 @@ export async function POST(req: NextRequest) {
       skillTitle,
       stepTitle,
       stepInstructions,
-    });
+    }, auth.token);
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
     }
