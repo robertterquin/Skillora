@@ -97,6 +97,7 @@ Run these in your **Supabase Dashboard → SQL Editor**, in this order (each is 
 7. [`create_user_step_notes.sql`](supabase/create_user_step_notes.sql), [`create_reminder_preferences.sql`](supabase/create_reminder_preferences.sql), [`create_resource_feedback.sql`](supabase/create_resource_feedback.sql)
 8. [`share_certificates.sql`](supabase/share_certificates.sql): shareable certificate links
 9. [`create_progress_photos.sql`](supabase/create_progress_photos.sql): private photo storage bucket and table
+10. [`optimize_rls_policies.sql`](supabase/optimize_rls_policies.sql): faster row-level-security checks (`(select auth.uid())`)
 
 With the Supabase CLI linked to the project you can run any of them with
 `supabase db query --linked -f supabase/<file>.sql`.

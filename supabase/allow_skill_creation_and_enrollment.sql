@@ -9,11 +9,11 @@ drop policy if exists "Users can insert learning_resources" on public.learning_r
 alter table public.user_enrollments enable row level security;
 drop policy if exists "Users can insert own enrollments" on public.user_enrollments;
 create policy "Users can insert own enrollments" on public.user_enrollments
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own enrollments" on public.user_enrollments;
 create policy "Users can update own enrollments" on public.user_enrollments
-  for update using (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id);
 
 insert into public.skills (id, category_id, title, slug, summary, difficulty, estimated_hours, time_commitment_label, is_featured)
 values

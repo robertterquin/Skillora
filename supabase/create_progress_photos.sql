@@ -44,16 +44,16 @@ alter table public.progress_photos enable row level security;
 
 drop policy if exists "Users can view own progress photos" on public.progress_photos;
 create policy "Users can view own progress photos" on public.progress_photos
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can add own progress photos" on public.progress_photos;
 create policy "Users can add own progress photos" on public.progress_photos
-  for insert with check (auth.uid() = user_id and storage_path like auth.uid()::text || '/%');
+  for insert with check ((select auth.uid()) = user_id and storage_path like (select auth.uid())::text || '/%');
 
 drop policy if exists "Users can update own progress photos" on public.progress_photos;
 create policy "Users can update own progress photos" on public.progress_photos
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id and storage_path like auth.uid()::text || '/%');
+  for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id and storage_path like (select auth.uid())::text || '/%');
 
 drop policy if exists "Users can delete own progress photos" on public.progress_photos;
 create policy "Users can delete own progress photos" on public.progress_photos
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);

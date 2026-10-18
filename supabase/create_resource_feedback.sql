@@ -18,15 +18,15 @@ alter table public.resource_feedback enable row level security;
 
 drop policy if exists "Users can view own resource feedback" on public.resource_feedback;
 create policy "Users can view own resource feedback" on public.resource_feedback
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can add own resource feedback" on public.resource_feedback;
 create policy "Users can add own resource feedback" on public.resource_feedback
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can remove own resource feedback" on public.resource_feedback;
 create policy "Users can remove own resource feedback" on public.resource_feedback
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);
 
 -- For reviewing links in the SQL editor: most-reported first.
 -- security_invoker keeps RLS in force, so app users only ever see their own rows.

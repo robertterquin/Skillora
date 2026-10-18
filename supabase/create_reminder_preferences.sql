@@ -22,12 +22,12 @@ alter table public.reminder_preferences enable row level security;
 
 drop policy if exists "Users can view own reminder preferences" on public.reminder_preferences;
 create policy "Users can view own reminder preferences" on public.reminder_preferences
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own reminder preferences" on public.reminder_preferences;
 create policy "Users can insert own reminder preferences" on public.reminder_preferences
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own reminder preferences" on public.reminder_preferences;
 create policy "Users can update own reminder preferences" on public.reminder_preferences
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);

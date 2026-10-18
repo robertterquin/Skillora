@@ -11,4 +11,4 @@ create unique index if not exists idx_user_certifications_share_token
 
 drop policy if exists "Users can update own certifications" on public.user_certifications;
 create policy "Users can update own certifications" on public.user_certifications
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);

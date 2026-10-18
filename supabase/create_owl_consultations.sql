@@ -15,16 +15,16 @@ alter table public.owl_consultations enable row level security;
 
 drop policy if exists "Users can view own consultations" on public.owl_consultations;
 create policy "Users can view own consultations" on public.owl_consultations
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own consultations" on public.owl_consultations;
 create policy "Users can insert own consultations" on public.owl_consultations
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own consultations" on public.owl_consultations;
 create policy "Users can update own consultations" on public.owl_consultations
-  for update using (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own consultations" on public.owl_consultations;
 create policy "Users can delete own consultations" on public.owl_consultations
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);

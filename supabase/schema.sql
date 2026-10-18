@@ -97,31 +97,31 @@ create policy "Public can view learning_resources" on public.learning_resources 
 drop policy if exists "Users can insert learning_resources" on public.learning_resources;
 
 drop policy if exists "Users can view own profile" on public.profiles;
-create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
+create policy "Users can view own profile" on public.profiles for select using ((select auth.uid()) = id);
 
 drop policy if exists "Users can update own profile" on public.profiles;
-create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
+create policy "Users can update own profile" on public.profiles for update using ((select auth.uid()) = id);
 
 drop policy if exists "Users can view own enrollments" on public.user_enrollments;
-create policy "Users can view own enrollments" on public.user_enrollments for select using (auth.uid() = user_id);
+create policy "Users can view own enrollments" on public.user_enrollments for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own enrollments" on public.user_enrollments;
-create policy "Users can insert own enrollments" on public.user_enrollments for insert with check (auth.uid() = user_id);
+create policy "Users can insert own enrollments" on public.user_enrollments for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own enrollments" on public.user_enrollments;
-create policy "Users can update own enrollments" on public.user_enrollments for update using (auth.uid() = user_id);
+create policy "Users can update own enrollments" on public.user_enrollments for update using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own enrollments" on public.user_enrollments;
-create policy "Users can delete own enrollments" on public.user_enrollments for delete using (auth.uid() = user_id);
+create policy "Users can delete own enrollments" on public.user_enrollments for delete using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can view own step completions" on public.user_step_completions;
-create policy "Users can view own step completions" on public.user_step_completions for select using (auth.uid() = user_id);
+create policy "Users can view own step completions" on public.user_step_completions for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can toggle own step completions" on public.user_step_completions;
-create policy "Users can toggle own step completions" on public.user_step_completions for insert with check (auth.uid() = user_id);
+create policy "Users can toggle own step completions" on public.user_step_completions for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own step completions" on public.user_step_completions;
-create policy "Users can delete own step completions" on public.user_step_completions for delete using (auth.uid() = user_id);
+create policy "Users can delete own step completions" on public.user_step_completions for delete using ((select auth.uid()) = user_id);
 
 create or replace function public.handle_new_user()
 returns trigger as $$
@@ -169,19 +169,19 @@ alter table public.owl_consultations enable row level security;
 
 drop policy if exists "Users can view own consultations" on public.owl_consultations;
 create policy "Users can view own consultations" on public.owl_consultations
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own consultations" on public.owl_consultations;
 create policy "Users can insert own consultations" on public.owl_consultations
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own consultations" on public.owl_consultations;
 create policy "Users can update own consultations" on public.owl_consultations
-  for update using (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own consultations" on public.owl_consultations;
 create policy "Users can delete own consultations" on public.owl_consultations
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);
 
 create table if not exists public.user_certifications (
   id uuid default gen_random_uuid() primary key,
@@ -198,15 +198,15 @@ alter table public.user_certifications enable row level security;
 
 drop policy if exists "Users can view own certifications" on public.user_certifications;
 create policy "Users can view own certifications" on public.user_certifications
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own certifications" on public.user_certifications;
 create policy "Users can insert own certifications" on public.user_certifications
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own certifications" on public.user_certifications;
 create policy "Users can delete own certifications" on public.user_certifications
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);
 
 create table if not exists public.user_practice_stats (
   user_id uuid references auth.users(id) on delete cascade primary key,
@@ -224,16 +224,16 @@ alter table public.user_practice_stats enable row level security;
 
 drop policy if exists "Users can view own practice stats" on public.user_practice_stats;
 create policy "Users can view own practice stats" on public.user_practice_stats
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own practice stats" on public.user_practice_stats;
 create policy "Users can insert own practice stats" on public.user_practice_stats
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own practice stats" on public.user_practice_stats;
 create policy "Users can update own practice stats" on public.user_practice_stats
-  for update using (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own practice stats" on public.user_practice_stats;
 create policy "Users can delete own practice stats" on public.user_practice_stats
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);

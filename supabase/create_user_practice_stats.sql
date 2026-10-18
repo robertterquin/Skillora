@@ -14,16 +14,16 @@ alter table public.user_practice_stats enable row level security;
 
 drop policy if exists "Users can view own practice stats" on public.user_practice_stats;
 create policy "Users can view own practice stats" on public.user_practice_stats
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own practice stats" on public.user_practice_stats;
 create policy "Users can insert own practice stats" on public.user_practice_stats
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can update own practice stats" on public.user_practice_stats;
 create policy "Users can update own practice stats" on public.user_practice_stats
-  for update using (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own practice stats" on public.user_practice_stats;
 create policy "Users can delete own practice stats" on public.user_practice_stats
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);
