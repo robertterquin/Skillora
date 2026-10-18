@@ -4,3 +4,4 @@ export * from "./SkillItem";
 export * from "./SkillList";
 export * from "./SkillCompleteModal";
 export * from "./StarterSkills";
+export * from "./WeeklyRecapCard";

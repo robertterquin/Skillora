@@ -2,3 +2,7 @@ project_id = "cvnzhafoxkdnadyrfpli"
 
 [functions.ai]
 verify_jwt = false
+
+# Called by pg_cron with a shared secret header, not a user JWT.
+[functions.reminders]
+verify_jwt = false

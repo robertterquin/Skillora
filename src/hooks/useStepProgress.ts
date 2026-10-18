@@ -20,6 +20,8 @@ export function useStepProgress(
   { onStepCompleted }: UseStepProgressOptions = {}
 ) {
   const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
+  // When each step was finished (normalised id -> ISO time), for the weekly recap.
+  const [completedAt, setCompletedAt] = useState<Record<string, string>>({});
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Keep the latest list in a ref so toggleStep stays stable and never reads stale state.
@@ -34,16 +36,20 @@ export function useStepProgress(
 
     const load = async () => {
       let ids = readJSON<string[]>(STORAGE_KEYS.completedSteps, []);
+      let dates = readJSON<Record<string, string>>(STORAGE_KEYS.stepCompletedAt, {});
 
       if (userId) {
         try {
           const { data } = await getSupabase()
             .from("user_step_completions")
-            .select("step_id")
+            .select("step_id, completed_at")
             .eq("user_id", userId);
           if (data && data.length > 0) {
-            ids = data.map((row: { step_id: string }) => row.step_id);
+            const rows = data as { step_id: string; completed_at: string }[];
+            ids = rows.map((row) => row.step_id);
+            dates = { ...dates, ...Object.fromEntries(rows.map((row) => [row.step_id, row.completed_at])) };
             writeJSON(STORAGE_KEYS.completedSteps, ids);
+            writeJSON(STORAGE_KEYS.stepCompletedAt, dates);
           }
         } catch (err) {
           console.error("Failed to fetch step completions", err);
@@ -52,6 +58,7 @@ export function useStepProgress(
 
       if (!cancelled) {
         setCompletedStepIds(ids);
+        setCompletedAt(dates);
         setIsLoaded(true);
       }
     };
@@ -77,6 +84,13 @@ export function useStepProgress(
       completedRef.current = next;
       setCompletedStepIds(next);
       writeJSON(STORAGE_KEYS.completedSteps, next);
+      setCompletedAt((prev) => {
+        const dates = { ...prev };
+        if (wasDone) delete dates[normId];
+        else dates[normId] = new Date().toISOString();
+        writeJSON(STORAGE_KEYS.stepCompletedAt, dates);
+        return dates;
+      });
 
       if (!wasDone) onCompletedRef.current?.();
 
@@ -95,5 +109,5 @@ export function useStepProgress(
     [userId]
   );
 
-  return { completedStepIds, isLoaded, toggleStep };
+  return { completedStepIds, completedAt, isLoaded, toggleStep };
 }

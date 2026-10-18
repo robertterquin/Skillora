@@ -34,6 +34,7 @@ const ACCOUNT_LINKS = [
   { href: "/dashboard", label: "Studio", icon: "stars-minimalistic-linear" },
   { href: "/dashboard?open=passport", label: "Certificates", icon: "diploma-verified-linear" },
   { href: "/library", label: "Ask Archimedes", icon: "chat-round-dots-linear" },
+  { href: "/settings", label: "Settings", icon: "tuning-2-linear" },
 ];
 
 const HIDDEN_ON = ["/signin", "/signup"];

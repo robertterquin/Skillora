@@ -90,6 +90,20 @@ OPENAI_API_KEY=your_openai_api_key
 Run the SQL migration in your **Supabase Dashboard $\rightarrow$ SQL Editor**:
 1. Execute [`supabase/schema.sql`](supabase/schema.sql) (creates tables, RLS policies, and user profile sync trigger).
 2. Execute [`supabase/seed.sql`](supabase/seed.sql) (seeds initial disciplines, sequential steps, and vetted platform links).
+3. Execute [`supabase/create_user_step_notes.sql`](supabase/create_user_step_notes.sql) (learners' notes on steps).
+4. Execute [`supabase/create_reminder_preferences.sql`](supabase/create_reminder_preferences.sql) (reminder and weekly recap settings).
+
+### Email reminders and weekly recap (optional)
+Learners turn these on in **Settings**. A Supabase edge function sends them through [Resend](https://resend.com) every 15 minutes:
+1. In Resend, verify your sending domain and create an API key.
+2. Deploy the function: `supabase functions deploy reminders`
+3. Set its secrets:
+   ```bash
+   supabase secrets set RESEND_API_KEY=re_... EMAIL_FROM="Skillora <hello@your-domain>" SITE_URL=https://your-site CRON_SECRET=<long random string>
+   ```
+4. Enable the `pg_cron` and `pg_net` extensions (Database → Extensions), fill in `<project-ref>` and `<cron-secret>` in [`supabase/schedule_reminders.sql`](supabase/schedule_reminders.sql), and run it.
+
+Reminders are skipped on days the learner has already practised. Every email has a one-click unsubscribe link (`/unsubscribe`), which uses `SUPABASE_SERVICE_ROLE_KEY` on the Next.js server.
 
 ### 5. Run development server
 ```bash

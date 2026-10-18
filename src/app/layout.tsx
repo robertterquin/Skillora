@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/ui/Header";
 import { RouteProgressBar } from "@/components/ui/RouteProgressBar";
@@ -16,8 +16,17 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo.svg",
     shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    apple: "/icons/apple-touch-icon.png",
   },
+  // Installed on iPhone: open full screen with Skillora's name under the icon.
+  appleWebApp: { capable: true, title: "Skillora", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F5F0" },
+    { media: "(prefers-color-scheme: dark)", color: "#151413" },
+  ],
 };
 
 export default function RootLayout({

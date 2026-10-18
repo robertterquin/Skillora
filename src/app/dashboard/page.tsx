@@ -24,6 +24,7 @@ import {
   StarterSkills,
   StatsStrip,
   StudioSkeleton,
+  WeeklyRecapCard,
   type StudioView,
 } from "@/components/studio";
 import { useAuth } from "@/hooks/useAuth";
@@ -63,7 +64,7 @@ function Studio() {
   const { enrolledSkillIds, isLoaded: enrollmentsLoaded, addSkill, removeSkill } = useEnrollments(userId, authReady);
   const toast = useToast();
   const practice = usePracticeStats(userId, authReady);
-  const { completedStepIds, isLoaded: progressLoaded, toggleStep } = useStepProgress(userId, authReady, {
+  const { completedStepIds, completedAt, isLoaded: progressLoaded, toggleStep } = useStepProgress(userId, authReady, {
     onStepCompleted: practice.recordPracticeDay,
   });
   const { certifiedSkillIds, isCertified, markCertified } = useCertificates(userId, authReady);
@@ -242,6 +243,8 @@ function Studio() {
           />
         ) : (
           <>
+            <WeeklyRecapCard practiceDates={practice.practiceDates} completedAt={completedAt} />
+
             {focusSkill && (
               <ContinueCard
                 skill={focusSkill}
