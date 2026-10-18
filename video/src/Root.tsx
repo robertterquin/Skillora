@@ -5,7 +5,7 @@ import { DURATION, FPS } from "./timeline";
 
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="Showreel" component={Showreel} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} />
-    <Composition id="ShowreelPortrait" component={Showreel} durationInFrames={DURATION} fps={FPS} width={1080} height={1920} />
+    <Composition id="Showreel" component={Showreel} defaultProps={{ grain: true }} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} />
+    <Composition id="ShowreelPortrait" component={Showreel} defaultProps={{ grain: true }} durationInFrames={DURATION} fps={FPS} width={1080} height={1920} />
   </>
 );

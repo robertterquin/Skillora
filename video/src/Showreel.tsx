@@ -18,7 +18,8 @@ const scene = (key: keyof typeof SCENES, node: React.ReactNode) => (
   </Sequence>
 );
 
-export const Showreel: React.FC = () => (
+/** `grain: false` drops the per-frame film grain, which is costly to compress (see README). */
+export const Showreel: React.FC<{ grain?: boolean }> = ({ grain = true }) => (
   <AbsoluteFill style={{ background: C.night }}>
     {scene("intro", <Intro />)}
     {scene("owl", <AskOwl />)}
@@ -28,7 +29,7 @@ export const Showreel: React.FC = () => (
     {scene("cert", <Certificate />)}
     {scene("outro", <Outro />)}
     <Vignette />
-    <Grain />
+    {grain && <Grain />}
     <Hud />
     <Audio src={staticFile("soundtrack.wav")} />
   </AbsoluteFill>
