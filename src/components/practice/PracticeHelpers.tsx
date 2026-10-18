@@ -96,13 +96,15 @@ function AdviceItem({ label, text }: { label: string; text: string }) {
 interface PracticeHelpersProps {
   skill: Skill;
   step: SkillStep;
+  /** The learner's own note on this step, so the coach can tailor its advice. */
+  learnerNote?: string;
 }
 
 /**
  * The AI coach and mnemonic helpers for one step. Remount with `key={step.id}`
  * so answers reset when the step changes.
  */
-export function PracticeHelpers({ skill, step }: PracticeHelpersProps) {
+export function PracticeHelpers({ skill, step, learnerNote }: PracticeHelpersProps) {
   const profile = getDisciplinePracticeProfile(skill, step);
 
   const [coachOpen, setCoachOpen] = useState(false);
@@ -126,6 +128,7 @@ export function PracticeHelpers({ skill, step }: PracticeHelpersProps) {
           stepTitle: step.title,
           stepInstructions: step.instructions,
           userQuestion: q,
+          learnerNote: learnerNote?.trim() || undefined,
         })
       );
     } catch (e: unknown) {

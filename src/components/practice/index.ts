@@ -4,3 +4,4 @@ export * from "./PronunciationTools";
 export * from "./StepCard";
 export * from "./StepPracticeAid";
 export * from "./useSpeech";
+export * from "./StepNote";

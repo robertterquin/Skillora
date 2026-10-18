@@ -526,6 +526,7 @@ async function handleOwlChat(body: Record<string, any>): Promise<Response> {
 async function handleCoach(body: Record<string, any>): Promise<Response> {
   const { skillTitle, stepTitle, stepInstructions, userQuestion } = body;
   if (!userQuestion) return errorResponse("Question is required", 400);
+  const learnerNote = typeof body.learnerNote === "string" ? body.learnerNote.trim().slice(0, 2000) : "";
 
   const openai = getOpenAI();
   const systemPrompt = `You are the master technique coach for Skillora.
@@ -540,7 +541,14 @@ Format response as STRICT JSON:
   const response = await createChatCompletionWithFallback(openai, {
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Discipline: ${skillTitle}\nStep: ${stepTitle}\nContext: ${stepInstructions}\nLearner Question: ${userQuestion}` },
+      {
+        role: "user",
+        content:
+          `Discipline: ${skillTitle}\nStep: ${stepTitle}\nContext: ${stepInstructions}\nLearner Question: ${userQuestion}` +
+          (learnerNote
+            ? `\nThe learner's own notes from practising this step (use them to make the advice specific): ${learnerNote}`
+            : ""),
+      },
     ],
     response_format: { type: "json_object" },
     temperature: 0.6,

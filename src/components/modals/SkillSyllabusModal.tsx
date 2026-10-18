@@ -19,6 +19,9 @@ interface SkillSyllabusModalProps {
   isViewOnly?: boolean;
   isGuildCertified?: boolean;
   onOpenGuildExam?: (skill: Skill) => void;
+  /** In previews, adds the skill instead of sending the visitor to sign up. */
+  onAdd?: (skill: Skill) => void;
+  getNote?: (stepId: string) => string;
 }
 
 export function SkillSyllabusModal({
@@ -29,6 +32,8 @@ export function SkillSyllabusModal({
   isViewOnly = false,
   isGuildCertified = false,
   onOpenGuildExam,
+  onAdd,
+  getNote,
 }: SkillSyllabusModalProps) {
   const titleId = useId();
   const [activeVideo, setActiveVideo] = useState<WatchRequest | null>(null);
@@ -104,16 +109,25 @@ export function SkillSyllabusModal({
           onWatch={setActiveVideo}
           isCertified={isGuildCertified}
           onOpenAssessment={onOpenGuildExam ? () => onOpenGuildExam(skill) : undefined}
+          getNote={getNote}
         />
       </div>
 
-      {/* Only previews need a footer: the sign-up prompt. The close button sits in the header. */}
+      {/* Only previews need a footer: start the skill. The close button sits in the header. */}
       {isViewOnly && (
         <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between gap-3">
-          <span className="text-xs text-ink-muted">Sign up to track your progress.</span>
-          <Link href="/signup" className={buttonClasses({ size: "sm" })}>
-            Start this skill
-          </Link>
+          <span className="text-xs text-ink-muted">
+            {onAdd ? "You can remove it from your Studio any time." : "Sign up to track your progress."}
+          </span>
+          {onAdd ? (
+            <button type="button" onClick={() => onAdd(skill)} className={buttonClasses({ size: "sm" })}>
+              Add to Studio
+            </button>
+          ) : (
+            <Link href="/signup" className={buttonClasses({ size: "sm" })}>
+              Start this skill
+            </Link>
+          )}
         </div>
       )}
 

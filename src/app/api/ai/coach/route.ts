@@ -4,7 +4,8 @@ import { invokeEdgeFunction } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    const { skillTitle, stepTitle, stepInstructions, userQuestion } = await req.json();
+    const { skillTitle, stepTitle, stepInstructions, userQuestion, learnerNote } = await req.json();
+    const note = typeof learnerNote === "string" ? learnerNote.trim().slice(0, 2000) : "";
 
     if (!userQuestion || typeof userQuestion !== "string") {
       return NextResponse.json({ error: "Question is required" }, { status: 400 });
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
       stepTitle,
       stepInstructions,
       userQuestion,
+      learnerNote: note || undefined,
     });
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
@@ -85,7 +87,14 @@ Current Step: ${stepTitle}
 Step Context: ${stepInstructions}
 
 Learner's Problem / Question:
-"${userQuestion}"`;
+"${userQuestion}"${
+      note
+        ? `
+
+The learner's own notes from practising this step (use them to make the advice specific):
+"${note}"`
+        : ""
+    }`;
 
     const response = await createChatCompletion({
       messages: [

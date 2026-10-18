@@ -5,15 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/cn";
+import { INTERESTS } from "@/lib/interests";
+import { getCategoryStyleById } from "@/lib/skill-progress";
 import { Button, AppIcon, Field, Input } from "@/components";
 import { AuthMessage, AuthShell, PasswordInput } from "@/components/auth";
 
-const INTEREST_AREAS = [
-  { id: "music", label: "Music", desc: "Guitar, piano, rhythm", fill: "bg-deck-music" },
-  { id: "languages", label: "Languages", desc: "Cyrillic, Italian, Hangul", fill: "bg-deck-languages" },
-  { id: "crafts", label: "Crafts & life", desc: "Knives, espresso, cooking", fill: "bg-deck-life" },
-  { id: "tech", label: "Tech", desc: "Typing, Git, terminal", fill: "bg-deck-tech" },
-];
 
 const MIN_PASSWORD = 6;
 
@@ -93,7 +89,7 @@ export default function SignUpPage() {
         <fieldset>
           <legend className="block text-xs font-semibold text-ink mb-2">What do you want to learn first?</legend>
           <div className="grid grid-cols-2 gap-2">
-            {INTEREST_AREAS.map((item) => {
+            {INTERESTS.map((item) => {
               const selected = selectedInterest === item.id;
               return (
                 <label
@@ -113,7 +109,10 @@ export default function SignUpPage() {
                     className="sr-only"
                   />
                   <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
-                    <span className={cn("w-1.5 h-1.5 rounded-full", item.fill)} aria-hidden="true" />
+                    <span
+                      className={cn("w-1.5 h-1.5 rounded-full", getCategoryStyleById(item.categoryId).fill)}
+                      aria-hidden="true"
+                    />
                     {item.label}
                   </span>
                   <span className="text-xs text-ink-muted mt-0.5 truncate">{item.desc}</span>

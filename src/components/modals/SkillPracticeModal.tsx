@@ -14,6 +14,7 @@ import {
   PracticeShell,
   PronunciationTools,
   StepCard,
+  StepNote,
   StepIndicator,
   useSpeech,
 } from "../practice";
@@ -26,6 +27,8 @@ export interface SkillPracticeModalProps {
   onClose: () => void;
   isGuildCertified?: boolean;
   onOpenGuildExam?: (skill: Skill) => void;
+  getNote?: (stepId: string) => string;
+  onSaveNote?: (stepId: string, text: string) => void;
 }
 
 type PracticeView = "practice" | "path";
@@ -52,6 +55,8 @@ export function SkillPracticeModal({
   onClose,
   isGuildCertified = false,
   onOpenGuildExam,
+  getNote,
+  onSaveNote,
 }: SkillPracticeModalProps) {
   const titleId = useId();
   const [view, setView] = useState<PracticeView>("practice");
@@ -77,6 +82,7 @@ export function SkillPracticeModal({
   const category = getCategoryStyle(skill);
   const { isComplete } = getSkillProgress(skill, completedStepIds);
   const isDone = isStepCompleted(step.id, completedStepIds);
+  const note = getNote?.(step.id) ?? "";
 
   const goTo = (next: number) => {
     playMechanicalClick();
@@ -166,7 +172,12 @@ export function SkillPracticeModal({
             onToggleDone={() => onToggleStep(step.id)}
             onSpeak={speak}
             onWatch={setActiveVideo}
+            note={note}
           />
+
+          {onSaveNote && (isDone || note) && (
+            <StepNote key={`note-${step.id}`} note={note} onSave={(text) => onSaveNote(step.id, text)} />
+          )}
 
           <div className="flex items-center gap-2">
             <Button size="sm" variant="secondary" disabled={index === 0} onClick={() => goTo(index - 1)}>
@@ -179,7 +190,7 @@ export function SkillPracticeModal({
             </Button>
           </div>
 
-          <PracticeHelpers key={`help-${step.id}`} skill={skill} step={step} />
+          <PracticeHelpers key={`help-${step.id}`} skill={skill} step={step} learnerNote={note} />
         </div>
       ) : (
         <LearningPath
@@ -193,6 +204,7 @@ export function SkillPracticeModal({
           onWatch={setActiveVideo}
           isCertified={isGuildCertified}
           onOpenAssessment={openAssessment}
+          getNote={getNote}
         />
       )}
 

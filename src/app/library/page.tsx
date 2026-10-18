@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useOwlChat } from "@/hooks/useOwlChat";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useStudioCatalog } from "@/hooks/useStudioCatalog";
+import { findInterest } from "@/lib/interests";
 
 const isPhone = () => typeof window !== "undefined" && window.innerWidth < 768;
 
@@ -110,6 +111,12 @@ export default function SkillLibraryPage() {
   });
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Coming from the Studio's "Ask Archimedes" with an interest: pre-fill (don't send) a starter prompt.
+  useEffect(() => {
+    const interest = findInterest(new URLSearchParams(window.location.search).get("interest"));
+    if (interest) setInputText((current) => current || interest.prompt);
+  }, [setInputText]);
 
   const handleNewSession = useCallback(() => {
     startNewConsultation();

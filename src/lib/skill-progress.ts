@@ -47,10 +47,14 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
 };
 
 export function getCategoryStyle(skill: Skill): CategoryStyle {
-  const id = normalizeCategoryId(skill.category_id);
+  return getCategoryStyleById(skill.category_id, skill.category?.name);
+}
+
+export function getCategoryStyleById(categoryId: string, fallbackName?: string): CategoryStyle {
+  const id = normalizeCategoryId(categoryId);
   return (
     CATEGORY_STYLES[id] ?? {
-      label: skill.category?.name || CATEGORIES.find((c) => c.id === id)?.name || "Craft",
+      label: fallbackName || CATEGORIES.find((c) => c.id === id)?.name || "Craft",
       text: "text-ink-secondary",
       fill: "bg-ink",
       soft: "bg-surface-muted",

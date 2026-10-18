@@ -9,6 +9,8 @@ export const STORAGE_KEYS = {
   certifiedSkills: "skillora_guild_certified_skills",
   customAiSkills: "skillora_custom_ai_skills",
   studioView: "skillora_repertoire_view",
+  interest: "skillora_interest",
+  stepNotes: "skillora_step_notes",
 } as const;
 
 export function readJSON<T>(key: string, fallback: T): T {

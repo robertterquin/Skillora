@@ -21,6 +21,7 @@ import {
   ContinueCard,
   SkillCompleteModal,
   SkillList,
+  StarterSkills,
   StatsStrip,
   StudioSkeleton,
   type StudioView,
@@ -31,7 +32,9 @@ import { useEnrollments } from "@/hooks/useEnrollments";
 import { useStepProgress } from "@/hooks/useStepProgress";
 import { useCertificates } from "@/hooks/useCertificates";
 import { usePracticeStats } from "@/hooks/usePracticeStats";
-import { CATEGORIES, isStepCompleted, normalizeSkillId } from "@/lib/catalog-data";
+import { useInterest } from "@/hooks/useInterest";
+import { useStepNotes } from "@/hooks/useStepNotes";
+import { CATEGORIES, INITIAL_SKILLS, isStepCompleted, normalizeSkillId } from "@/lib/catalog-data";
 import { filterSkills, getSkillProgress, pickFocusSkill, type DurationFilter } from "@/lib/skill-progress";
 import { readString, writeString, STORAGE_KEYS } from "@/lib/storage";
 import { playChime, playMechanicalClick, playStampThud, playWoodenThud } from "@/lib/workbench-audio";
@@ -64,6 +67,8 @@ function Studio() {
     onStepCompleted: practice.recordPracticeDay,
   });
   const { certifiedSkillIds, isCertified, markCertified } = useCertificates(userId, authReady);
+  const { interest, setInterest } = useInterest(user, authReady);
+  const { getNote, saveNote } = useStepNotes(userId, authReady);
 
   const [view, setView] = useState<StudioView>("ledger");
   const [categoryId, setCategoryId] = useState("cat-all");
@@ -72,6 +77,7 @@ function Studio() {
 
   const [practiceSkill, setPracticeSkill] = useState<Skill | null>(null);
   const [stepsSkill, setStepsSkill] = useState<Skill | null>(null);
+  const [previewSkill, setPreviewSkill] = useState<Skill | null>(null);
   const [examSkill, setExamSkill] = useState<Skill | null>(null);
   const [isCertificatesOpen, setIsCertificatesOpen] = useState(false);
   const [completedSkill, setCompletedSkill] = useState<Skill | null>(null);
@@ -99,6 +105,12 @@ function Studio() {
     () => filterSkills(studioSkills, { categoryId, duration, query }),
     [studioSkills, categoryId, duration, query]
   );
+
+  // Hand-made catalog skills only (the live table also holds AI-built plans), in their live versions.
+  const starterSkills = useMemo(() => {
+    const catalogIds = new Set(INITIAL_SKILLS.map((s) => normalizeSkillId(s.id)));
+    return allSkills.filter((s) => catalogIds.has(normalizeSkillId(s.id)));
+  }, [allSkills]);
 
   const masteredCount = studioSkills.filter((s) => getSkillProgress(s, completedStepIds).isComplete).length;
   const focusSkill = pickFocusSkill(studioSkills, completedStepIds);
@@ -140,6 +152,12 @@ function Studio() {
         setCompletedSkill(skill);
       }, 900);
     }
+  };
+  const handleAdd = (skill: Skill) => {
+    playWoodenThud();
+    setPreviewSkill(null);
+    addSkill(skill);
+    toast({ message: `Added ${skill.title} to your Studio` });
   };
   const handleRemove = (skill: Skill) => {
     removeSkill(skill.id);
@@ -215,16 +233,12 @@ function Studio() {
         {!isLoaded ? (
           <StudioSkeleton />
         ) : studioSkills.length === 0 ? (
-          <EmptyState
-            icon="stars-minimalistic-linear"
-            title="Your Studio is empty"
-            description="Tell Archimedes what you want to learn. It will build a step-by-step practice plan and add it here."
-            action={
-              <Link href="/library" className={buttonClasses({ size: "lg" })}>
-                <span>Ask Archimedes</span>
-                <AppIcon name="arrow-right-linear" className="w-4 h-4" />
-              </Link>
-            }
+          <StarterSkills
+            skills={starterSkills}
+            interest={interest}
+            onChooseInterest={setInterest}
+            onPreview={setPreviewSkill}
+            onAdd={handleAdd}
           />
         ) : (
           <>
@@ -318,6 +332,8 @@ function Studio() {
               practice.refresh();
             }}
             isGuildCertified={isCertified(practiceSkill.id)}
+            getNote={getNote}
+            onSaveNote={saveNote}
             onOpenGuildExam={(skill) => setExamSkill(skill)}
           />
         )}
@@ -332,6 +348,7 @@ function Studio() {
             onClose={() => setStepsSkill(null)}
             isViewOnly={false}
             isGuildCertified={isCertified(stepsSkill.id)}
+            getNote={getNote}
             onOpenGuildExam={(skill) => setExamSkill(skill)}
           />
         )}
@@ -350,6 +367,17 @@ function Studio() {
               setIsCertificatesOpen(false);
               setExamSkill(skill);
             }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {previewSkill && (
+          <SkillSyllabusModal
+            skill={previewSkill}
+            isViewOnly
+            onAdd={handleAdd}
+            onClose={() => setPreviewSkill(null)}
           />
         )}
       </AnimatePresence>

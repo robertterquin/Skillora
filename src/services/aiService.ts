@@ -79,6 +79,8 @@ export const aiService = {
     stepTitle: string;
     stepInstructions: string;
     userQuestion: string;
+    /** The learner's own note on this step, if they wrote one. */
+    learnerNote?: string;
   }): Promise<CoachAdvice> {
     try {
       const { data, error } = await supabase.functions.invoke("ai", {

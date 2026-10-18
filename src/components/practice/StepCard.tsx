@@ -20,6 +20,8 @@ interface StepCardProps {
   onToggleDone: () => void;
   onSpeak: (text: string, lang?: string) => void;
   onWatch: (video: WatchRequest) => void;
+  /** The learner's own note on this step, shown with the technique notes. */
+  note?: string;
 }
 
 /** One step: the practice aid on the front, technique notes and resources on the back. */
@@ -32,6 +34,7 @@ export function StepCard({
   onToggleDone,
   onSpeak,
   onWatch,
+  note,
 }: StepCardProps) {
   const celebrate = useJustCompleted(isDone, 1400);
 
@@ -90,6 +93,12 @@ export function StepCard({
               <h4 className="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-2">Technique notes</h4>
               <p className="text-[15px] text-ink leading-relaxed">{step.instructions}</p>
             </div>
+            {note && (
+              <div className="pt-3 border-t border-surface-border">
+                <h4 className="text-xs font-semibold text-ink-muted mb-1">Your note</h4>
+                <p className="text-[15px] text-ink-secondary leading-relaxed whitespace-pre-wrap">{note}</p>
+              </div>
+            )}
             {step.resources && step.resources.length > 0 && (
               <div className="pt-3 border-t border-surface-border">
                 <h4 className="text-xs font-semibold text-ink-muted mb-2">Resources</h4>

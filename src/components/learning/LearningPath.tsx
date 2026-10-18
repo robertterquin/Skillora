@@ -32,6 +32,8 @@ interface LearningPathProps {
   isCertified?: boolean;
   /** Opens the certificate assessment from the final node. */
   onOpenAssessment?: () => void;
+  /** The learner's note for a step, shown when the step is open. */
+  getNote?: (stepId: string) => string;
 }
 
 function NodeMarker({
@@ -125,6 +127,7 @@ export function LearningPath({
   onWatch,
   isCertified = false,
   onOpenAssessment,
+  getNote,
 }: LearningPathProps) {
   const baseId = useId();
   const category = getCategoryStyle(skill);
@@ -230,6 +233,14 @@ export function LearningPath({
                     >
                       <div className="pt-3 space-y-3">
                         <p className="text-sm text-ink-secondary leading-relaxed max-w-prose">{step.instructions}</p>
+                        {!isPreview && getNote?.(step.id) && (
+                          <div className="max-w-prose pl-3 border-l-2 border-surface-border">
+                            <p className="text-xs font-semibold text-ink-muted">Your note</p>
+                            <p className="mt-0.5 text-sm text-ink-secondary leading-relaxed whitespace-pre-wrap">
+                              {getNote(step.id)}
+                            </p>
+                          </div>
+                        )}
                         <StepResources resources={step.resources || []} stepTitle={step.title} onWatch={onWatch} />
                         {!isPreview && (onPractiseStep || onToggleStep) && (
                           <div className="flex flex-wrap items-center gap-2 pt-1">
