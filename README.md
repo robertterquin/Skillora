@@ -98,6 +98,7 @@ Run these in your **Supabase Dashboard → SQL Editor**, in this order (each is 
 8. [`share_certificates.sql`](supabase/share_certificates.sql): shareable certificate links
 9. [`create_progress_photos.sql`](supabase/create_progress_photos.sql): private photo storage bucket and table
 10. [`optimize_rls_policies.sql`](supabase/optimize_rls_policies.sql): faster row-level-security checks (`(select auth.uid())`)
+11. [`create_ai_usage.sql`](supabase/create_ai_usage.sql): daily AI request counter behind the per-learner limit (`AI_DAILY_LIMIT`, default 100)
 
 With the Supabase CLI linked to the project you can run any of them with
 `supabase db query --linked -f supabase/<file>.sql`.

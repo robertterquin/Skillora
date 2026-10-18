@@ -161,7 +161,15 @@ export default function SignUpPage() {
         </Field>
 
         <p className="text-xs text-ink-muted leading-relaxed">
-          By creating an account, you agree to Skillora&apos;s Terms of Service and Privacy Policy.
+          By creating an account, you agree to Skillora&apos;s{" "}
+          <Link href="/terms" className="underline underline-offset-2 hover:text-ink">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
+            Privacy Policy
+          </Link>
+          .
         </p>
 
         <Button type="submit" size="lg" block disabled={loading}>

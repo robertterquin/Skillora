@@ -99,7 +99,11 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
           </div>
         </main>
 
-        <footer className="px-6 sm:px-10 py-6 text-xs text-ink-subtle">&copy; {new Date().getFullYear()} Skillora</footer>
+        <footer className="px-6 sm:px-10 py-6 text-xs text-ink-subtle flex flex-wrap gap-x-4 gap-y-1">
+          <span>&copy; {new Date().getFullYear()} Skillora</span>
+          <Link href="/privacy" className="hover:text-ink">Privacy</Link>
+          <Link href="/terms" className="hover:text-ink">Terms</Link>
+        </footer>
       </div>
       <AuthAside />
     </div>

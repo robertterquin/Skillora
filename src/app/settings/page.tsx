@@ -2,11 +2,20 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { AppIcon, Button, buttonClasses, useToast } from "@/components";
+import { useRouter } from "next/navigation";
+import { AppIcon, Button, buttonClasses, Input, useToast } from "@/components";
 import { Switch } from "@/components/ui/Switch";
 import { useAuth } from "@/hooks/useAuth";
 import { getSupabase } from "@/lib/supabase";
+import { authedFetch } from "@/lib/authed-fetch";
 import { cn } from "@/lib/cn";
+
+/**
+ * Email reminders stay hidden until a sending domain is verified in Resend:
+ * until then Resend only delivers to the account owner. Set
+ * NEXT_PUBLIC_EMAIL_REMINDERS=on (in Vercel and .env) to show them.
+ */
+const EMAIL_REMINDERS_ON = process.env.NEXT_PUBLIC_EMAIL_REMINDERS === "on";
 
 const DAYS = [
   { iso: 1, short: "M", name: "Monday" },
@@ -68,6 +77,88 @@ function Row({
       </div>
       {children}
     </div>
+  );
+}
+
+/** Permanently deletes the account after the learner types DELETE. */
+function DeleteAccount({ email }: { email: string }) {
+  const router = useRouter();
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const remove = async () => {
+    setBusy(true);
+    const res = await authedFetch("/api/account/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirm: typed }),
+    }).catch(() => null);
+    if (!res?.ok) {
+      const err = res ? await res.json().catch(() => ({})) : {};
+      toast({ message: err.error || "Couldn't delete your account. Please try again.", tone: "danger" });
+      setBusy(false);
+      return;
+    }
+    // The account is gone; also clear this browser's copy of the learner's data.
+    await getSupabase().auth.signOut().catch(() => undefined);
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("skillora"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      // Storage can be unavailable; nothing else to clean up.
+    }
+    toast({ message: "Your account and its data were deleted.", tone: "info" });
+    router.push("/");
+    router.refresh();
+  };
+
+  return (
+    <section aria-labelledby="delete-heading" className="mt-6 p-6 sm:p-7 rounded-2xl bg-white border border-danger-border">
+      <h2 id="delete-heading" className="text-base font-semibold text-ink flex items-center gap-2">
+        <AppIcon name="trash-bin-trash-linear" className="w-4 h-4 text-danger" />
+        Delete account
+      </h2>
+      <p className="mt-1 text-sm text-ink-muted max-w-md">
+        Permanently removes {email || "your account"} and everything in it: skills, progress, notes, chats,
+        certificates and photos. Shared certificate links stop working. This can&rsquo;t be undone.
+      </p>
+      {!open ? (
+        <Button variant="secondary" className="mt-5 text-danger" onClick={() => setOpen(true)}>
+          Delete my account
+        </Button>
+      ) : (
+        <div className="mt-5 space-y-3">
+          <label htmlFor="delete-confirm" className="block text-sm font-medium text-ink">
+            Type <span className="font-mono font-semibold">DELETE</span> to confirm
+          </label>
+          <Input
+            id="delete-confirm"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            autoComplete="off"
+            placeholder="DELETE"
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button variant="danger" onClick={remove} disabled={typed !== "DELETE" || busy}>
+              {busy ? "Deleting…" : "Delete permanently"}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setOpen(false);
+                setTyped("");
+              }}
+              disabled={busy}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -145,9 +236,11 @@ export default function SettingsPage() {
           <div className="mt-8 h-48 rounded-2xl bg-surface-muted animate-pulse" aria-hidden="true" />
         ) : !user ? (
           <section className="mt-8 p-6 rounded-2xl bg-white border border-surface-border">
-            <h2 className="text-lg font-semibold">Reminders need an account</h2>
+            <h2 className="text-lg font-semibold">Settings need an account</h2>
             <p className="mt-1 text-[15px] text-ink-muted">
-              Sign up and Skillora can email you a gentle nudge with your next step, and a short recap each week.
+              {EMAIL_REMINDERS_ON
+                ? "Sign up and Skillora can email you a gentle nudge with your next step, and a short recap each week."
+                : "Sign up to keep your progress on every device and manage your account here."}
             </p>
             <Link href="/signup" className={buttonClasses({ className: "mt-5" })}>
               Create an account
@@ -155,94 +248,99 @@ export default function SettingsPage() {
           </section>
         ) : (
           <>
-            <section aria-labelledby="email-heading" className="mt-8 p-6 sm:p-7 rounded-2xl bg-white border border-surface-border">
-              <h2 id="email-heading" className="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-5">
-                Email · {user.email}
-              </h2>
+            {EMAIL_REMINDERS_ON && (
+              <section aria-labelledby="email-heading" className="mt-8 p-6 sm:p-7 rounded-2xl bg-white border border-surface-border">
+                <h2 id="email-heading" className="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-5">
+                  Email · {user.email}
+                </h2>
 
-              <div className={cn("divide-y divide-surface-border", !loaded && "opacity-50 pointer-events-none")}>
-                <Row
-                  id="reminder"
-                  title="Practice reminder"
-                  description="A short email with your next step. Skipped on days you've already practised."
-                  control={
-                    <Switch
-                      checked={prefs.reminders_enabled}
-                      onChange={(v) => update({ reminders_enabled: v })}
-                      labelledBy="reminder-label"
-                      describedBy="reminder-desc"
-                    />
-                  }
-                >
-                  {prefs.reminders_enabled && (
-                    <div className="mt-5 space-y-4">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <label htmlFor="remind-at" className="text-sm font-medium text-ink">
-                          Time
-                        </label>
-                        <input
-                          id="remind-at"
-                          type="time"
-                          step={900}
-                          value={prefs.remind_at}
-                          onChange={(e) => update({ remind_at: e.target.value })}
-                          className="h-10 px-3 rounded-xl bg-canvas border border-surface-border text-base text-ink focus:outline-none focus:border-ink"
-                        />
-                        <span className="text-xs text-ink-muted">{timeZone}</span>
-                      </div>
-                      <fieldset>
-                        <legend className="text-sm font-medium text-ink mb-2">Days</legend>
-                        <div className="flex flex-wrap gap-1.5">
-                          {DAYS.map((d) => {
-                            const on = prefs.remind_days.includes(d.iso);
-                            return (
-                              <button
-                                key={d.iso}
-                                type="button"
-                                aria-pressed={on}
-                                aria-label={d.name}
-                                onClick={() => toggleDay(d.iso)}
-                                className={cn(
-                                  "w-10 h-10 rounded-full text-sm font-semibold transition cursor-pointer",
-                                  on
-                                    ? "bg-ink text-white"
-                                    : "bg-canvas border border-surface-border text-ink-muted hover:text-ink"
-                                )}
-                              >
-                                {d.short}
-                              </button>
-                            );
-                          })}
+                <div className={cn("divide-y divide-surface-border", !loaded && "opacity-50 pointer-events-none")}>
+                  <Row
+                    id="reminder"
+                    title="Practice reminder"
+                    description="A short email with your next step. Skipped on days you've already practised."
+                    control={
+                      <Switch
+                        checked={prefs.reminders_enabled}
+                        onChange={(v) => update({ reminders_enabled: v })}
+                        labelledBy="reminder-label"
+                        describedBy="reminder-desc"
+                      />
+                    }
+                  >
+                    {prefs.reminders_enabled && (
+                      <div className="mt-5 space-y-4">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <label htmlFor="remind-at" className="text-sm font-medium text-ink">
+                            Time
+                          </label>
+                          <input
+                            id="remind-at"
+                            type="time"
+                            step={900}
+                            value={prefs.remind_at}
+                            onChange={(e) => update({ remind_at: e.target.value })}
+                            className="h-10 px-3 rounded-xl bg-canvas border border-surface-border text-base text-ink focus:outline-none focus:border-ink"
+                          />
+                          <span className="text-xs text-ink-muted">{timeZone}</span>
                         </div>
-                      </fieldset>
-                    </div>
-                  )}
-                </Row>
+                        <fieldset>
+                          <legend className="text-sm font-medium text-ink mb-2">Days</legend>
+                          <div className="flex flex-wrap gap-1.5">
+                            {DAYS.map((d) => {
+                              const on = prefs.remind_days.includes(d.iso);
+                              return (
+                                <button
+                                  key={d.iso}
+                                  type="button"
+                                  aria-pressed={on}
+                                  aria-label={d.name}
+                                  onClick={() => toggleDay(d.iso)}
+                                  className={cn(
+                                    "w-10 h-10 rounded-full text-sm font-semibold transition cursor-pointer",
+                                    on
+                                      ? "bg-ink text-white"
+                                      : "bg-canvas border border-surface-border text-ink-muted hover:text-ink"
+                                  )}
+                                >
+                                  {d.short}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </fieldset>
+                      </div>
+                    )}
+                  </Row>
 
-                <Row
-                  id="recap"
-                  title="Weekly recap"
-                  description="Sundays at 6 pm: days practised, steps done and what's next."
-                  control={
-                    <Switch
-                      checked={prefs.weekly_recap_enabled}
-                      onChange={(v) => update({ weekly_recap_enabled: v })}
-                      labelledBy="recap-label"
-                      describedBy="recap-desc"
-                    />
-                  }
-                />
-              </div>
+                  <Row
+                    id="recap"
+                    title="Weekly recap"
+                    description="Sundays at 6 pm: days practised, steps done and what's next."
+                    control={
+                      <Switch
+                        checked={prefs.weekly_recap_enabled}
+                        onChange={(v) => update({ weekly_recap_enabled: v })}
+                        labelledBy="recap-label"
+                        describedBy="recap-desc"
+                      />
+                    }
+                  />
+                </div>
 
-              <div className="mt-6 pt-5 border-t border-surface-border flex items-center justify-between gap-3">
-                <p className="text-xs text-ink-muted">Every email has a one-click unsubscribe link.</p>
-                <Button onClick={save} disabled={!dirty || saving || !loaded}>
-                  {saving ? "Saving…" : "Save"}
-                </Button>
-              </div>
-            </section>
+                <div className="mt-6 pt-5 border-t border-surface-border flex items-center justify-between gap-3">
+                  <p className="text-xs text-ink-muted">Every email has a one-click unsubscribe link.</p>
+                  <Button onClick={save} disabled={!dirty || saving || !loaded}>
+                    {saving ? "Saving…" : "Save"}
+                  </Button>
+                </div>
+              </section>
+            )}
 
-            <section aria-labelledby="install-heading" className="mt-6 p-6 sm:p-7 rounded-2xl bg-white border border-surface-border">
+            <section
+              aria-labelledby="install-heading"
+              className={cn("p-6 sm:p-7 rounded-2xl bg-white border border-surface-border", EMAIL_REMINDERS_ON ? "mt-6" : "mt-8")}
+            >
               <h2 id="install-heading" className="text-base font-semibold text-ink flex items-center gap-2">
                 <AppIcon name="layout-grid-linear" className="w-4 h-4 text-ink-muted" />
                 Put Skillora on your phone
@@ -253,6 +351,8 @@ export default function SettingsPage() {
                 opened stay readable offline.
               </p>
             </section>
+
+            <DeleteAccount email={user.email ?? ""} />
           </>
         )}
       </main>

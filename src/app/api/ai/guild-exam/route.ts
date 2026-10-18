@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authRequired, getRequestAuth } from "@/lib/server-auth";
+import { authRequired, chargeFallback, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 import { invokeEdgeFunction } from "@/lib/supabase";
 
@@ -369,6 +369,8 @@ export async function POST(req: NextRequest) {
     if (edgeRes.fromEdgeFunction && edgeRes.data) {
       return NextResponse.json(edgeRes.data);
     }
+    const limited = await chargeFallback(edgeRes.status, auth.user.id);
+    if (limited) return limited;
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json({

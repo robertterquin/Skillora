@@ -61,6 +61,8 @@ export interface EdgeFunctionResult<T = any> {
   data: T | null;
   error: Error | null;
   fromEdgeFunction: boolean;
+  /** HTTP status when the edge function answered with an error (429 = daily AI limit reached). */
+  status?: number;
 }
 
 /**
@@ -117,6 +119,7 @@ export async function invokeEdgeFunction<T = any>(
       data: null,
       error: new Error(`Edge Function returned ${res.status}: ${errText}`),
       fromEdgeFunction: false,
+      status: res.status,
     };
   } catch (err) {
     return {

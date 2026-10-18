@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authRequired, getRequestAuth } from "@/lib/server-auth";
+import { aiLimitReached, authRequired, consumeAiQuota, getRequestAuth } from "@/lib/server-auth";
 import { openai } from "@/lib/openai";
 
 const ttsMemoryCache = new Map<string, Buffer>();
@@ -9,7 +9,7 @@ function getCacheKey(text: string, voice: string, speed: number): string {
   return `${voice}:${speed}:${text.trim().toLowerCase()}`;
 }
 
-async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
+async function handleTTS(userId: string, text: string, voice = "onyx", speed = 1.0) {
   if (!text || typeof text !== "string" || text.trim().length === 0) {
     return NextResponse.json({ error: "Text is required" }, { status: 400 });
   }
@@ -42,6 +42,9 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
     });
   }
 
+  // Cached audio is free; only new speech counts towards the daily limit.
+  if (!(await consumeAiQuota(userId))) return aiLimitReached();
+
   const mp3 = await openai.audio.speech.create({
     model: "tts-1",
     voice: chosenVoice as "onyx" | "echo" | "fable" | "alloy" | "nova" | "shimmer",
@@ -71,12 +74,13 @@ async function handleTTS(text: string, voice = "onyx", speed = 1.0) {
 
 export async function GET(req: NextRequest) {
   try {
-    if (!(await getRequestAuth(req))) return authRequired("Sign in to use Archimedes' voice.");
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired("Sign in to use Archimedes' voice.");
     const searchParams = req.nextUrl.searchParams;
     const text = searchParams.get("text") || "";
     const voice = searchParams.get("voice") || searchParams.get("v") || "onyx";
     const speed = parseFloat(searchParams.get("speed") || "1.0") || 1.0;
-    return await handleTTS(text, voice, speed);
+    return await handleTTS(auth.user.id, text, voice, speed);
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Failed to synthesize speech";
     console.error("OpenAI TTS GET error:", errorMsg);
@@ -86,9 +90,10 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    if (!(await getRequestAuth(req))) return authRequired("Sign in to use Archimedes' voice.");
+    const auth = await getRequestAuth(req);
+    if (!auth) return authRequired("Sign in to use Archimedes' voice.");
     const { text, voice = "onyx", speed = 1.0 } = await req.json();
-    return await handleTTS(text, voice, speed);
+    return await handleTTS(auth.user.id, text, voice, speed);
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Failed to synthesize speech";
     console.error("OpenAI TTS POST error:", errorMsg);

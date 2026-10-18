@@ -152,6 +152,8 @@ export default function LandingPage() {
             <Link href="/library" className="hover:text-ink transition">Ask Archimedes</Link>
             <Link href="/signin" className="hover:text-ink transition">Sign in</Link>
             <Link href="/signup" className="hover:text-ink transition">Sign up</Link>
+            <Link href="/privacy" className="hover:text-ink transition">Privacy</Link>
+            <Link href="/terms" className="hover:text-ink transition">Terms</Link>
             <span>&copy; {new Date().getFullYear()} Skillora</span>
           </nav>
         </div>

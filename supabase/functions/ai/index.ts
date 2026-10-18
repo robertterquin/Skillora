@@ -414,6 +414,41 @@ function errorResponse(message: string, status = 500): Response {
   return jsonResponse({ error: message }, status);
 }
 
+const CHARGED_ACTIONS = new Set(["owl-chat", "coach", "mnemonic", "rework-step", "tts", "grade-voice", "daily-routine"]);
+
+/** AI requests each signed-in learner may make per day (UTC). Override with the AI_DAILY_LIMIT secret. */
+const AI_DAILY_LIMIT = Number(Deno.env.get("AI_DAILY_LIMIT")) || 100;
+
+/**
+ * Counts one AI request against the learner's daily limit. Returns a 429
+ * response once they've reached it, or null to go ahead. If the counter itself
+ * fails, the request is allowed rather than breaking Archimedes.
+ */
+async function chargeAiRequest(userId: string): Promise<Response | null> {
+  try {
+    const admin = getSupabaseAdmin();
+    if (!admin) return null;
+    const { data, error } = await admin.rpc("consume_ai_quota", { p_user: userId, p_limit: AI_DAILY_LIMIT });
+    if (error) {
+      console.error("AI quota check failed:", error.message);
+      return null;
+    }
+    if (data === false) {
+      return jsonResponse(
+        {
+          error: `You've used today's ${AI_DAILY_LIMIT} Archimedes requests. They reset tomorrow.`,
+          code: "ai_limit",
+        },
+        429
+      );
+    }
+    return null;
+  } catch (err) {
+    console.error("AI quota check failed:", err);
+    return null;
+  }
+}
+
 async function handleOwlChat(body: Record<string, any>): Promise<Response> {
   const request = sanitizeOwlRequest(body);
   if (!request) {
@@ -599,7 +634,7 @@ Format JSON:
   return jsonResponse(JSON.parse(content));
 }
 
-async function handleGuildExam(body: Record<string, any>, signedIn: boolean): Promise<Response> {
+async function handleGuildExam(body: Record<string, any>, userId: string | null): Promise<Response> {
   const { skillTitle, skillSummary, steps, skillSlug } = body;
   const cleanSlug = (skillSlug || (skillTitle || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase();
 
@@ -610,7 +645,9 @@ async function handleGuildExam(body: Record<string, any>, signedIn: boolean): Pr
   }
 
   // Hand-written exams above are free; generating one costs an OpenAI call.
-  if (!signedIn) return errorResponse("Sign in to take the assessment for this skill.", 401);
+  if (!userId) return errorResponse("Sign in to take the assessment for this skill.", 401);
+  const limited = await chargeAiRequest(userId);
+  if (limited) return limited;
 
   const openai = getOpenAI();
   const prompt = `You are Archimedes, Master Polymath and Grand Proctor of the Skillora Craftsman's Guild.
@@ -768,21 +805,22 @@ Return JSON:
 }
 
 /**
- * True when the request carries a signed-in user's access token. The public
- * anon key is not a user token, so anonymous visitors can't run up AI costs.
+ * The signed-in user's id when the request carries their access token, else
+ * null. The public anon key is not a user token, so anonymous visitors can't
+ * run up AI costs.
  */
-async function isSignedInUser(req: Request): Promise<boolean> {
+async function signedInUserId(req: Request): Promise<string | null> {
   const header = req.headers.get("authorization") || "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  if (!token) return false;
+  if (!token) return null;
   try {
     const auth = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
       auth: { persistSession: false },
     });
     const { data, error } = await auth.auth.getUser(token);
-    return !error && !!data.user;
+    return !error && data.user ? data.user.id : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -803,11 +841,13 @@ Deno.serve(async (req: Request) => {
       action = lastPart;
     }
 
-    const signedIn = await isSignedInUser(req);
+    const userId = await signedInUserId(req);
 
     let body: Record<string, any> = {};
     if (contentType.includes("multipart/form-data")) {
-      if (!signedIn) return errorResponse("Sign in to use Archimedes.", 401);
+      if (!userId) return errorResponse("Sign in to use Archimedes.", 401);
+      const limited = await chargeAiRequest(userId);
+      if (limited) return limited;
       return await handleGradeVoice(req);
     } else if (contentType.includes("application/json")) {
       try {
@@ -819,8 +859,13 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    if (action !== "guild-exam" && !signedIn) {
-      return errorResponse("Sign in to use Archimedes.", 401);
+    if (action !== "guild-exam") {
+      if (!userId) return errorResponse("Sign in to use Archimedes.", 401);
+      // Hand-written exams are free, so guild-exam is charged only when it generates one.
+      if (CHARGED_ACTIONS.has(action)) {
+        const limited = await chargeAiRequest(userId);
+        if (limited) return limited;
+      }
     }
 
     switch (action) {
@@ -833,7 +878,7 @@ Deno.serve(async (req: Request) => {
       case "rework-step":
         return await handleReworkStep(body);
       case "guild-exam":
-        return await handleGuildExam(body, signedIn);
+        return await handleGuildExam(body, userId);
       case "tts":
         return await handleTts(body);
       case "grade-voice":

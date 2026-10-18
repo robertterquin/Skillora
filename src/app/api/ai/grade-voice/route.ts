@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authRequired, getRequestAuth } from "@/lib/server-auth";
+import { authRequired, chargeFallback, getRequestAuth } from "@/lib/server-auth";
 import { openai, createChatCompletion } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
-    if (supabaseUrl && serviceKey) {
+    let edgeStatus: number | undefined;
+    if (supabaseUrl && anonKey) {
       try {
         const edgeForm = new FormData();
         if (audioFile) edgeForm.append("audio", audioFile);
@@ -28,9 +28,10 @@ export async function POST(req: NextRequest) {
 
         const edgeRes = await fetch(`${supabaseUrl}/functions/v1/ai?action=grade-voice`, {
           method: "POST",
+          // The learner's own token: the edge function only serves signed-in users.
           headers: {
-            Authorization: `Bearer ${serviceKey}`,
-            apikey: serviceKey,
+            Authorization: `Bearer ${auth.token}`,
+            apikey: anonKey,
           },
           body: edgeForm,
         });
@@ -39,9 +40,13 @@ export async function POST(req: NextRequest) {
           const edgeData = await edgeRes.json();
           return NextResponse.json(edgeData);
         }
+        edgeStatus = edgeRes.status;
       } catch (e) {
       }
     }
+
+    const limited = await chargeFallback(edgeStatus, auth.user.id);
+    if (limited) return limited;
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
