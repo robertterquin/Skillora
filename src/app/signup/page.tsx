@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 import { INTERESTS } from "@/lib/interests";
 import { getCategoryStyleById } from "@/lib/skill-progress";
 import { Button, AppIcon, Field, Input } from "@/components";
-import { AuthMessage, AuthShell, MIN_PASSWORD, PasswordInput } from "@/components/auth";
+import { AuthMessage, AuthShell, MIN_PASSWORD, PASSWORD_HINT, PasswordInput, passwordProblem } from "@/components/auth";
 
 
 
@@ -26,9 +26,14 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
+    const problem = passwordProblem(password);
+    if (problem) {
+      setErrorMsg(problem);
+      return;
+    }
+    setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -66,7 +71,7 @@ export default function SignUpPage() {
     }
   };
 
-  const passwordShort = password.length > 0 && password.length < MIN_PASSWORD;
+  const passwordWeak = password.length > 0 && passwordProblem(password) !== null;
 
   return (
     <AuthShell
@@ -147,7 +152,7 @@ export default function SignUpPage() {
           />
         </Field>
 
-        <Field label="Password" htmlFor="signup-password" hint={`At least ${MIN_PASSWORD} characters.`}>
+        <Field label="Password" htmlFor="signup-password" hint={PASSWORD_HINT}>
           <PasswordInput
             id="signup-password"
             autoComplete="new-password"
@@ -155,7 +160,7 @@ export default function SignUpPage() {
             minLength={MIN_PASSWORD}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            aria-invalid={passwordShort || undefined}
+            aria-invalid={passwordWeak || undefined}
             aria-describedby="signup-password-hint"
           />
         </Field>

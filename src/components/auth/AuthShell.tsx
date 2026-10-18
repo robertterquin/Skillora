@@ -110,8 +110,16 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
   );
 }
 
-/** Shortest password allowed at sign-up and when resetting. */
-export const MIN_PASSWORD = 6;
+/** Password rules. Keep in step with Supabase → Authentication → Email (minimum length, "Letters and digits"). */
+export const MIN_PASSWORD = 8;
+export const PASSWORD_HINT = `At least ${MIN_PASSWORD} characters, with letters and numbers.`;
+
+/** Why Supabase would reject this new password, or null if it's fine. */
+export function passwordProblem(password: string): string | null {
+  if (password.length < MIN_PASSWORD) return `Use at least ${MIN_PASSWORD} characters.`;
+  if (!/[a-z]/i.test(password) || !/\d/.test(password)) return "Use both letters and numbers.";
+  return null;
+}
 
 /** Error or success line for auth forms, announced to screen readers. */
 export function AuthMessage({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {

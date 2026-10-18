@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Button, AppIcon, Field } from "@/components";
-import { AuthMessage, AuthShell, MIN_PASSWORD, PasswordInput } from "@/components/auth";
+import { AuthMessage, AuthShell, MIN_PASSWORD, PASSWORD_HINT, PasswordInput, passwordProblem } from "@/components/auth";
 
 /** Where the "Forgot password?" email lands: the link signs the learner in, then they choose a new password. */
 export default function ResetPasswordPage() {
@@ -31,14 +31,15 @@ export default function ResetPasswordPage() {
     return () => sub.subscription.unsubscribe();
   }, [supabase]);
 
-  const tooShort = password.length > 0 && password.length < MIN_PASSWORD;
+  const weak = password.length > 0 && passwordProblem(password) !== null;
   const mismatch = confirm.length > 0 && confirm !== password;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-    if (password.length < MIN_PASSWORD) {
-      setErrorMsg(`Use at least ${MIN_PASSWORD} characters.`);
+    const problem = passwordProblem(password);
+    if (problem) {
+      setErrorMsg(problem);
       return;
     }
     if (password !== confirm) {
@@ -85,7 +86,7 @@ export default function ResetPasswordPage() {
       {successMsg && <AuthMessage tone="success">{successMsg}</AuthMessage>}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <Field label="New password" htmlFor="reset-password" hint={`At least ${MIN_PASSWORD} characters.`}>
+        <Field label="New password" htmlFor="reset-password" hint={PASSWORD_HINT}>
           <PasswordInput
             id="reset-password"
             autoComplete="new-password"
@@ -94,7 +95,7 @@ export default function ResetPasswordPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="New password"
-            aria-invalid={tooShort || undefined}
+            aria-invalid={weak || undefined}
           />
         </Field>
         <Field label="Confirm new password" htmlFor="reset-confirm" hint={mismatch ? "The passwords don't match yet." : undefined}>
