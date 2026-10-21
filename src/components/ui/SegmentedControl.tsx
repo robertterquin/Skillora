@@ -15,12 +15,9 @@ interface SegmentedControlProps<T extends string> {
   options: SegmentedOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  /** Accessible name for the group, e.g. "Skill view". */
   label: string;
-  /** Must be unique per page so the sliding highlight animates correctly. */
   layoutId: string;
   size?: "sm" | "md";
-  /** Scroll horizontally instead of wrapping (for long option lists). */
   scrollable?: boolean;
   className?: string;
 }

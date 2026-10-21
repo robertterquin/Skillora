@@ -6,10 +6,6 @@ import { Button, buttonClasses } from "@/components";
 
 type Status = "idle" | "working" | "done" | "error";
 
-/**
- * Landing page for the unsubscribe link in reminder emails. It asks for a
- * click rather than unsubscribing on load, so link scanners can't trigger it.
- */
 export default function UnsubscribePage() {
   const [token, setToken] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");

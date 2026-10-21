@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 
-/** Lets people install Skillora to their home screen. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Skillora",

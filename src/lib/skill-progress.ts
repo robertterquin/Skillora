@@ -2,19 +2,13 @@ import { Skill, SkillStep } from "@/types/database";
 import { CATEGORIES, isStepCompleted, normalizeCategoryId } from "@/lib/catalog-data";
 
 export interface CategoryStyle {
-  /** Short label for chips, e.g. "Music". */
   label: string;
-  /** Text colour class for the category name. */
   text: string;
-  /** Background class for dots and progress fills. */
   fill: string;
-  /** Soft background for tags. */
   soft: string;
-  /** Border colour for outlined nodes and rings. */
   border: string;
 }
 
-// Literal class strings so Tailwind can see them.
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   "11111111-1111-1111-1111-111111111111": {
     label: "Music",
@@ -69,7 +63,6 @@ export interface SkillProgress {
   totalCount: number;
   percent: number;
   isComplete: boolean;
-  /** First step not yet completed (undefined when the skill is complete). */
   nextStep?: SkillStep;
 }
 
@@ -87,10 +80,6 @@ export function getSkillProgress(skill: Skill, completedStepIds: string[]): Skil
   };
 }
 
-/**
- * The skill to show in the "Continue" card: the first one already in progress,
- * otherwise the first one not yet complete.
- */
 export function pickFocusSkill(skills: Skill[], completedStepIds: string[]): Skill | undefined {
   const withProgress = skills.map((skill) => ({ skill, p: getSkillProgress(skill, completedStepIds) }));
   return (

@@ -1,6 +1,3 @@
--- A learner's own note on a step ("What clicked? What was hard?").
--- step_id is text, not a foreign key, so notes also work for AI-built skills
--- that only exist in the learner's browser.
 create table if not exists public.user_step_notes (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,

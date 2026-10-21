@@ -8,17 +8,12 @@ interface StepNoteProps {
   onSave: (text: string) => void;
 }
 
-/**
- * An optional reflection after finishing a step. Saves as you type; a quiet
- * "Saved" replaces toasts so typing never triggers a stream of messages.
- */
 export function StepNote({ note, onSave }: StepNoteProps) {
   const id = useId();
   const [draft, setDraft] = useState(note);
   const [status, setStatus] = useState<"idle" | "saved">("idle");
   const savedTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  // Pick up the stored note when switching steps (the component is keyed by step, but stay safe).
   useEffect(() => setDraft(note), [note]);
   useEffect(() => () => clearTimeout(savedTimer.current), []);
 

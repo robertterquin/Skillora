@@ -12,7 +12,6 @@ interface CursorProps {
   color?: string;
 }
 
-/** A pointer that glides along a gentle arc, clicks with a ripple, then fades. */
 export const Cursor: React.FC<CursorProps> = ({ frame, from, to, moveAt, moveDur, clickAt, hideAt = 1e9, color = "#1A1917" }) => {
   const p = tween(frame, moveAt, moveDur, inOut);
   const arc = Math.sin(p * Math.PI) * -90;

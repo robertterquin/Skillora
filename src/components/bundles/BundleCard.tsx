@@ -11,15 +11,12 @@ import type { SkillBundle } from "@/lib/bundles";
 
 interface BundleCardProps {
   bundle: SkillBundle;
-  /** The bundle's skills, in order. */
   skills: Skill[];
   isEnrolled: (skillId: string) => boolean;
-  /** Adds the skills not yet in the Studio. */
   onAddAll: (skills: Skill[]) => Promise<void> | void;
   onPreview?: (skill: Skill) => void;
 }
 
-/** A themed set of catalog skills, added to the Studio in one go. */
 export function BundleCard({ bundle, skills, isEnrolled, onAddAll, onPreview }: BundleCardProps) {
   const [adding, setAdding] = useState(false);
   const missing = skills.filter((s) => !isEnrolled(s.id));

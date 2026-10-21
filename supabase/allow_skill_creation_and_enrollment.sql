@@ -1,6 +1,4 @@
 alter table public.skills enable row level security;
--- Skill, step and resource writes used to be open to everyone here
--- ("with check (true)"). They are now owner-only: see secure_skills.sql.
 drop policy if exists "Users can insert skills" on public.skills;
 drop policy if exists "Users can update skills" on public.skills;
 drop policy if exists "Users can insert skill_steps" on public.skill_steps;

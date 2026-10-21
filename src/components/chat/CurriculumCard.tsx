@@ -13,18 +13,12 @@ import { playWoodenThud } from "@/lib/workbench-audio";
 interface CurriculumCardProps {
   skill: Skill;
   isEnrolled: boolean;
-  /** False once a newer draft appears further down the chat. */
   isLatest?: boolean;
-  /** True while Archimedes is working, so the draft can't be changed mid-reply. */
   isBusy?: boolean;
   onEnroll: (skill: Skill) => Promise<boolean | void>;
   onResize?: (skill: Skill, direction: "shorter" | "longer") => void;
 }
 
-/**
- * The plan Archimedes drafts before anything is added: an outline with total
- * time, which the learner can shorten, lengthen or add to their Studio.
- */
 export function CurriculumCard({
   skill,
   isEnrolled,
@@ -37,7 +31,6 @@ export function CurriculumCard({
   const category = getCategoryStyle(skill);
   const steps = skill.steps || [];
   const totalMinutes = steps.reduce((sum, s) => sum + (Number(s.estimated_minutes) || 0), 0);
-  // Labels like "20 mins/day for 3 weeks" add a schedule; ones like "90 minutes total" repeat the total.
   const schedule = /\/day|per day|a day|daily/i.test(skill.time_commitment_label || "") ? skill.time_commitment_label : "";
 
   const handleEnroll = async () => {

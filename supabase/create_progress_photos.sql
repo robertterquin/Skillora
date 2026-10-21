@@ -1,9 +1,3 @@
--- Before/after photos per skill. Private: each learner can only see and
--- change their own. Files live in the "progress-photos" storage bucket under
--- <user id>/<skill id>/<file>; this table says which file is the before or
--- the after for a skill. Run once in the Supabase SQL editor. Safe to re-run.
-
--- Storage bucket: private, images only, 5 MB per file (the app resizes first).
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('progress-photos', 'progress-photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do update
@@ -27,7 +21,6 @@ drop policy if exists "Owners can delete progress photos" on storage.objects;
 create policy "Owners can delete progress photos" on storage.objects
   for delete using (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
--- Which photo is which.
 create table if not exists public.progress_photos (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,

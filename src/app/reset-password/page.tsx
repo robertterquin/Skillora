@@ -7,12 +7,10 @@ import { createClient } from "@/lib/supabase";
 import { Button, AppIcon, Field } from "@/components";
 import { AuthMessage, AuthShell, MIN_PASSWORD, PASSWORD_HINT, PasswordInput, passwordProblem } from "@/components/auth";
 
-/** Where the "Forgot password?" email lands: the link signs the learner in, then they choose a new password. */
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
 
-  // null while the link is being checked.
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -21,7 +19,6 @@ export default function ResetPasswordPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // The client exchanges the code in the link for a session on load.
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY" || session) setHasSession(true);
     });

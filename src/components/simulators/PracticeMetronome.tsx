@@ -29,9 +29,7 @@ export function PracticeMetronome({
   fillClass = "bg-ink",
 }: {
   initialBpm?: number;
-  /** Category text colour for the header icon. */
   accentClass?: string;
-  /** Category fill for the downbeat. */
   fillClass?: string;
 }) {
   const layoutId = useId();

@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { CONTACT_EMAIL, LEGAL_UPDATED } from "@/lib/legal";
 
-/** Shared layout for the Privacy Policy and Terms. Server-rendered, no client JS. */
 export function LegalPage({ title, intro, children }: { title: string; intro: string; children: React.ReactNode }) {
   return (
     <div className="flex-1 bg-canvas text-ink">
@@ -29,7 +28,6 @@ export function LegalPage({ title, intro, children }: { title: string; intro: st
   );
 }
 
-/** How to reach us. Until NEXT_PUBLIC_CONTACT_EMAIL is set, says so plainly rather than pointing nowhere. */
 export function ContactLine({ topic }: { topic: string }) {
   return CONTACT_EMAIL ? (
     <p>

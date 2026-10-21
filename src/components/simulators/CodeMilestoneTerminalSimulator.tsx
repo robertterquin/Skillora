@@ -14,7 +14,6 @@ const formatMinSec = (secs: number) => {
 const nightButton =
   "inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold transition cursor-pointer disabled:opacity-50";
 
-/** A dark terminal-style tracker for coding steps. Night colours stay dark in both themes. */
 export function CodeMilestoneTerminalSimulator({
   stepTitle,
   targetMilestones = 5,

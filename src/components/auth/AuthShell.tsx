@@ -16,7 +16,6 @@ const SAMPLE_PATH = [
   { title: "Slice paper cleanly", minutes: 15, done: false },
 ];
 
-/** The quiet panel beside the form on wider screens. */
 function AuthAside() {
   return (
     <aside
@@ -67,11 +66,9 @@ interface AuthShellProps {
   title: string;
   subtitle: string;
   children: React.ReactNode;
-  /** Line under the form, e.g. "Don't have an account? Sign up". */
   footer: React.ReactNode;
 }
 
-/** Shared frame for sign in and sign up. */
 export function AuthShell({ title, subtitle, children, footer }: AuthShellProps) {
   return (
     <div className="min-h-screen grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] bg-canvas text-ink">
@@ -110,18 +107,15 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
   );
 }
 
-/** Password rules. Keep in step with Supabase → Authentication → Email (minimum length, "Letters and digits"). */
 export const MIN_PASSWORD = 8;
 export const PASSWORD_HINT = `At least ${MIN_PASSWORD} characters, with letters and numbers.`;
 
-/** Why Supabase would reject this new password, or null if it's fine. */
 export function passwordProblem(password: string): string | null {
   if (password.length < MIN_PASSWORD) return `Use at least ${MIN_PASSWORD} characters.`;
   if (!/[a-z]/i.test(password) || !/\d/.test(password)) return "Use both letters and numbers.";
   return null;
 }
 
-/** Error or success line for auth forms, announced to screen readers. */
 export function AuthMessage({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {
   return (
     <div
@@ -144,7 +138,6 @@ export function AuthMessage({ tone, children }: { tone: "error" | "success"; chi
 
 type PasswordInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size">;
 
-/** Password field with a show / hide toggle. */
 export function PasswordInput(props: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
   return (

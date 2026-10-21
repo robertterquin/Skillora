@@ -20,7 +20,6 @@ export const DotGrid: React.FC<{ color: string; drift?: number; opacity?: number
   />
 );
 
-/** Archimedes draws himself on, wakes up and answers a learner. */
 export const AskOwl: React.FC = () => {
   const frame = useCurrentFrame();
   const { pick } = useLayout();
@@ -64,7 +63,6 @@ export const AskOwl: React.FC = () => {
       >
         <DotGrid color="rgba(26,25,23,0.09)" drift={frame * 0.6} />
 
-        {/* Archimedes */}
         <div style={{ position: "absolute", left: owlAt.x - 270, top: owlAt.y - 270, width: 540, height: 540 }}>
           {[16, 22, 28].map((at) => {
             const p = tween(frame, at, 22, expoOut);
@@ -125,7 +123,6 @@ export const AskOwl: React.FC = () => {
           </div>
         </div>
 
-        {/* Conversation */}
         <div style={{ position: "absolute", ...pick({ left: 1010, top: 250, width: 800 }, { left: 90, top: 1060, width: 900 }) }}>
           <Eyebrow color={C.muted} style={{ opacity: tween(frame, 6, 10) }}>
             <RiseText text="Ask Archimedes" frame={frame} delay={6} stagger={0.6} dur={10} />
@@ -240,7 +237,6 @@ export const AskOwl: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {/* Leading edge of the iris. */}
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
         <div
           style={{

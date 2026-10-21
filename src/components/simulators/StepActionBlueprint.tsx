@@ -13,7 +13,6 @@ import { deriveStepBlueprint } from "./blueprints";
 
 export * from "./blueprints";
 
-/** A short checklist for the step: the objective, three checkpoints and a "done when" line. */
 export function StepActionBlueprint({
   step,
   skill,

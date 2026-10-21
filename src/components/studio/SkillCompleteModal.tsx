@@ -15,11 +15,9 @@ interface SkillCompleteModalProps {
   isCertified: boolean;
   onTakeAssessment: () => void;
   onClose: () => void;
-  /** Signed-in learners: open the skill's Before & after photos. */
   onAddPhoto?: () => void;
 }
 
-/** The moment every step of a skill is done; points the learner at the certificate. */
 export function SkillCompleteModal({ skill, isCertified, onTakeAssessment, onClose, onAddPhoto }: SkillCompleteModalProps) {
   const titleId = useId();
   const category = getCategoryStyle(skill);

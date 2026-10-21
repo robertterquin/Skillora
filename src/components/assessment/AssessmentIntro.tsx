@@ -23,7 +23,6 @@ const FACTS = [
   { label: "You earn", value: "A certificate of mastery" },
 ];
 
-/** What the assessment is, before it starts. */
 export function AssessmentIntro({ skill, category, loading, error, onStart, onClose }: AssessmentIntroProps) {
   return (
     <div className="max-w-lg mx-auto py-2 space-y-6">

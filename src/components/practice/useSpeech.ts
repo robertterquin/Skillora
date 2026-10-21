@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { speakWithUniformMaleVoice, stopUniformVoice } from "@/lib/voice";
 
-/** Text-to-speech for practice cards. Stops when `resetKey` changes and on unmount. */
 export function useSpeech(defaultLang: string, resetKey?: unknown) {
   const [isSpeaking, setIsSpeaking] = useState(false);
 

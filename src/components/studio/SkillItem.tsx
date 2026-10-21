@@ -105,7 +105,6 @@ function AssessmentButton({ isCertified, onClick, block }: { isCertified: boolea
   );
 }
 
-/** A compact row for the list layout. */
 export function SkillRow(props: SkillItemProps) {
   const { skill, completedStepIds, isCertified } = props;
   const { doneCount, totalCount, percent, isComplete } = getSkillProgress(skill, completedStepIds);
@@ -169,7 +168,6 @@ export function SkillRow(props: SkillItemProps) {
   );
 }
 
-/** A card for the grid layout. */
 export function SkillCard(props: SkillItemProps) {
   const { skill, completedStepIds, isCertified } = props;
   const { doneCount, totalCount, percent, isComplete } = getSkillProgress(skill, completedStepIds);

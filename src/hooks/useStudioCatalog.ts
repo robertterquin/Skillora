@@ -7,10 +7,6 @@ import { getSupabase } from "@/lib/supabase";
 import { fetchLiveSkills } from "@/services/skillsService";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
 
-/**
- * Every skill the Studio can show: the live catalog (or the built-in fallback)
- * plus custom skills Archimedes generated and saved in this browser.
- */
 export function useStudioCatalog() {
   const [allSkills, setAllSkills] = useState<Skill[]>(INITIAL_SKILLS);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,7 +35,6 @@ export function useStudioCatalog() {
     };
   }, []);
 
-  /** Saves an AI-built skill in this browser so the Studio can show it. */
   const rememberSkill = useCallback((skill: Skill) => {
     const id = normalizeSkillId(skill.id);
     const saved = { ...skill, id };

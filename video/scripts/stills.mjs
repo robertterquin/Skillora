@@ -1,4 +1,3 @@
-// Renders chosen frames as PNGs for review: node scripts/stills.mjs <outDir> [compositionId] <frame> [frame...]
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import path from "node:path";

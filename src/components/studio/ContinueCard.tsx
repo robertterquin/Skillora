@@ -14,7 +14,6 @@ interface ContinueCardProps {
   onViewSteps: () => void;
 }
 
-/** The one obvious next action at the top of the Studio. */
 export function ContinueCard({ skill, completedStepIds, onResume, onViewSteps }: ContinueCardProps) {
   const category = getCategoryStyle(skill);
   const { doneCount, totalCount, percent, nextStep } = getSkillProgress(skill, completedStepIds);

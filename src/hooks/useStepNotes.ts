@@ -10,10 +10,6 @@ const CLOUD_SAVE_DELAY_MS = 800;
 
 type Notes = Record<string, string>;
 
-/**
- * The learner's notes per step, keyed by normalised step id. Saved in this
- * browser right away; signed-in users also sync to Supabase (debounced).
- */
 export function useStepNotes(userId: string | null, authReady: boolean) {
   const [notes, setNotes] = useState<Notes>({});
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -30,7 +26,6 @@ export function useStepNotes(userId: string | null, authReady: boolean) {
           if (cancelled || error || !data) return;
           const remote: Notes = {};
           for (const row of data as { step_id: string; note: string }[]) remote[row.step_id] = row.note;
-          // Cloud wins for steps it has; notes written offline in this browser are kept.
           const merged = { ...local, ...remote };
           setNotes(merged);
           writeJSON(STORAGE_KEYS.stepNotes, merged);
@@ -81,7 +76,6 @@ export function useStepNotes(userId: string | null, authReady: boolean) {
     [userId]
   );
 
-  /** Copies notes to a personal copy's new step ids (old -> new id map). */
   const copyNotes = useCallback(
     (stepIdMap: Record<string, string>) => {
       for (const [oldId, newId] of Object.entries(stepIdMap)) {

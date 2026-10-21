@@ -7,13 +7,11 @@ export type FeedbackKind = "helpful" | "broken";
 
 export interface ResourceFeedbackApi {
   has: (url: string, kind: FeedbackKind) => boolean;
-  /** Adds or removes the learner's feedback; returns true if it is now on. */
   toggle: (url: string, kind: FeedbackKind, stepId?: string) => boolean;
 }
 
 const key = (url: string, kind: FeedbackKind) => `${kind}:${url}`;
 
-/** The signed-in learner's own resource feedback. Returns null for guests. */
 export function useResourceFeedback(userId: string | null): ResourceFeedbackApi | null {
   const [given, setGiven] = useState<Set<string>>(new Set());
 

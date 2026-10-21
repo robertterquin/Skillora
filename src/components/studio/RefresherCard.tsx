@@ -14,7 +14,6 @@ interface RefresherCardProps {
   onLater: () => void;
 }
 
-/** "Keep it sharp": a short revisit of a finished skill, at 7, 21 and 60 days. */
 export function RefresherCard({ refresher, onPractise, onDone, onLater }: RefresherCardProps) {
   const { skill, step, stage, daysSinceFinished } = refresher;
   const category = getCategoryStyle(skill);

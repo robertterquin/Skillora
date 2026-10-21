@@ -5,7 +5,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Skillora certificate of mastery";
 
-/** Link-preview image for a shared certificate. */
 export default async function Image({ params }: { params: { token: string } }) {
   const cert = await getPublicCertificate(params.token);
   const name = cert?.name ?? "Skillora";
@@ -16,7 +15,6 @@ export default async function Image({ params }: { params: { token: string } }) {
 
   return new ImageResponse(
     (
-      // Two nested frames: the image renderer doesn't support `double` borders.
       <div
         style={{
           width: "100%",

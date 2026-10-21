@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { applyTheme, readThemePreference, saveThemePreference, ThemePreference } from "@/lib/theme";
 
-/** The learner's theme choice; "system" follows the OS and updates live. */
 export function useTheme() {
   const [preference, setPreference] = useState<ThemePreference>("system");
 

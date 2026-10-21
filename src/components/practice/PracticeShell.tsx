@@ -8,18 +8,13 @@ import { Modal } from "../ui/Modal";
 
 interface StepIndicatorProps {
   total: number;
-  /** Zero-based index of the step on screen. */
   current: number;
   isDone: (index: number) => boolean;
-  /** Fill class for finished segments, e.g. a category colour. */
   fillClass?: string;
-  /** Lets people jump to a step by clicking its segment. */
   onSelect?: (index: number) => void;
-  /** Noun for the label, e.g. "Step" or "Drill". */
   noun?: string;
 }
 
-/** A segmented bar, one segment per step, with a "Step 3 of 8" label. */
 export function StepIndicator({
   total,
   current,
@@ -73,21 +68,17 @@ export function StepIndicator({
 
 interface PracticeShellProps {
   titleId: string;
-  /** Small line above the title, e.g. "Music · Beginner". */
   eyebrow: React.ReactNode;
   title: React.ReactNode;
   icon: string;
   onClose: () => void;
-  /** Controls next to the close button (tabs, badges). */
   headerActions?: React.ReactNode;
-  /** Sits under the header, usually a StepIndicator. */
   indicator?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 }
 
-/** The shared frame for practice modals: header, step indicator, scrolling body, footer. */
 export function PracticeShell({
   titleId,
   eyebrow,
@@ -107,7 +98,6 @@ export function PracticeShell({
       className={cn("max-w-3xl bg-white border border-surface-border flex flex-col max-h-[92vh]", className)}
     >
       <header className="px-5 sm:px-6 pt-5 pb-4 bg-canvas border-b border-surface-border space-y-4 print:hidden">
-        {/* Phones: title and close on one row, header actions on their own row below. */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-10 h-10 shrink-0 rounded-xl bg-white border border-surface-border flex items-center justify-center text-ink">

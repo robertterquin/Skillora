@@ -6,10 +6,6 @@ import { findInterest, Interest } from "@/lib/interests";
 import { getSupabase } from "@/lib/supabase";
 import { readString, writeString, STORAGE_KEYS } from "@/lib/storage";
 
-/**
- * The learner's first interest. Signed-in users keep it on their account
- * (set at sign-up); guests keep it in this browser.
- */
 export function useInterest(user: User | null, authReady: boolean) {
   const [interest, setInterestState] = useState<Interest | undefined>();
 

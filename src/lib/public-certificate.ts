@@ -10,11 +10,6 @@ export interface PublicCertificate {
   credentialId: string;
 }
 
-/**
- * A certificate the learner has chosen to share, or null. Server only: reads
- * with the service role and returns only what the public page shows (their
- * name, the skill and the date). Nothing comes back while sharing is off.
- */
 export async function getPublicCertificate(token: string): Promise<PublicCertificate | null> {
   if (!isValidUuid(token)) return null;
   const admin = createAdminClient();

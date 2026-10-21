@@ -37,7 +37,6 @@ export default function SkillLibraryPage() {
   const router = useRouter();
   const toast = useToast();
 
-  // Closed on first paint so phones never flash the drawer; opened on desktop below.
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   useEffect(() => {
     if (!isPhone()) setIsSidebarOpen(true);
@@ -130,11 +129,9 @@ export default function SkillLibraryPage() {
   });
 
   const chatEndRef = useRef<HTMLDivElement>(null);
-  // Guests can browse and add example plans, but chatting with Archimedes needs an account.
   const isGuest = !authLoading && !currentUser;
   const [previewSkill, setPreviewSkill] = useState<Skill | null>(null);
 
-  // Coming from the Studio's "Ask Archimedes" with an interest: pre-fill (don't send) a starter prompt.
   useEffect(() => {
     const interest = findInterest(new URLSearchParams(window.location.search).get("interest"));
     if (interest) setInputText((current) => current || interest.prompt);
@@ -176,7 +173,6 @@ export default function SkillLibraryPage() {
   }, [messages, isThinking]);
 
   const hasUserEngaged = messages.some((m) => m.sender === "user");
-  // Only the newest plan in the chat can still be changed.
   const latestDraftId = useMemo(() => [...messages].reverse().find((m) => m.skill)?.id, [messages]);
 
   return (

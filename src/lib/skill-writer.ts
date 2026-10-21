@@ -5,11 +5,6 @@ import { isValidUuid, normalizeCategoryId, normalizeStepId } from "@/lib/catalog
 
 const FALLBACK_CATEGORY = "33333333-3333-3333-3333-333333333333";
 
-/**
- * Writes a learner-owned skill with its steps and resources (server only,
- * service role). When `replaceSteps` is set, steps no longer in the skill are
- * deleted, so removing a step from a personal plan sticks.
- */
 export async function writeOwnedSkill(
   admin: SupabaseClient,
   skill: Skill,

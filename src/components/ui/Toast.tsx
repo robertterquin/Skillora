@@ -11,9 +11,7 @@ export type ToastTone = "success" | "info" | "danger";
 export interface ToastOptions {
   message: string;
   tone?: ToastTone;
-  /** One optional follow-up, e.g. Undo or Open Studio. */
   action?: { label: string; onClick: () => void };
-  /** Milliseconds before it hides. Defaults to 4s, 6s when there is an action. */
   duration?: number;
 }
 
@@ -73,7 +71,6 @@ function ToastView({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: num
   );
 }
 
-/** Small confirmations at the bottom of the screen. Wrap the app once. */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -87,7 +84,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const show = useCallback((toast: ToastOptions) => {
     const id = nextId.current++;
-    // Keep at most three on screen.
     setToasts((prev) => [...prev.slice(-2), { ...toast, id }]);
   }, []);
 
@@ -113,7 +109,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Returns `toast({ message, action })`. Safe to call outside the provider (does nothing). */
 export function useToast() {
   const show = useContext(ToastContext);
   return useCallback((toast: ToastOptions) => show?.(toast), [show]);

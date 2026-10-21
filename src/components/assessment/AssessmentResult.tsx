@@ -17,7 +17,6 @@ interface AssessmentResultProps {
   onClose: () => void;
 }
 
-/** Pass or try-again screen after the last question. */
 export function AssessmentResult({
   isPassed,
   score,

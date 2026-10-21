@@ -11,7 +11,6 @@ import {
 } from "../simulators/TactileMicroSimulators";
 import { StepActionBlueprint } from "../simulators/StepActionBlueprint";
 
-/** Picks a hands-on practice aid (simulator, metronome, blueprint) for the step. */
 export function StepPracticeAid({
   step,
   skill,

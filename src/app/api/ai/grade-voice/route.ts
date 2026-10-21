@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
 
         const edgeRes = await fetch(`${supabaseUrl}/functions/v1/ai?action=grade-voice`, {
           method: "POST",
-          // The learner's own token: the edge function only serves signed-in users.
           headers: {
             Authorization: `Bearer ${auth.token}`,
             apikey: anonKey,

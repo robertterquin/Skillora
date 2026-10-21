@@ -12,7 +12,6 @@ export const FONT = {
   serif: serif.fontFamily,
 };
 
-/** Skillora's light palette (globals.css), as hex. */
 export const C = {
   canvas: "#F7F5F0",
   paper: "#FAF8F4",

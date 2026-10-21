@@ -5,9 +5,7 @@ import { cn } from "@/lib/cn";
 import { AppIcon } from "./AppIcon";
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
-  /** AppIcon name shown inside the field on the left. */
   leadingIcon?: string;
-  /** Element shown inside the field on the right (e.g. a clear or show-password button). */
   trailing?: React.ReactNode;
   size?: "sm" | "md";
   invalid?: boolean;
@@ -50,7 +48,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
 interface FieldProps {
   label: string;
   htmlFor: string;
-  /** Optional element aligned right of the label (e.g. "Forgot password?"). */
   action?: React.ReactNode;
   hint?: string;
   children: React.ReactNode;

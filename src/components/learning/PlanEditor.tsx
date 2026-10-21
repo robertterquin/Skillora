@@ -12,15 +12,12 @@ export type ReworkDirection = "easier" | "harder";
 interface PlanEditorProps {
   steps: SkillStep[];
   onChange: (steps: SkillStep[]) => void;
-  /** Asks Archimedes to rewrite one step; omit to hide the buttons. */
   onRework?: (step: SkillStep, direction: ReworkDirection) => void;
-  /** Step currently being rewritten by Archimedes. */
   busyStepId?: string | null;
 }
 
 const renumber = (steps: SkillStep[]) => steps.map((s, i) => ({ ...s, step_number: i + 1 }));
 
-/** Edit a personal plan: rename, reorder and remove steps, or have Archimedes rewrite one. */
 export function PlanEditor({ steps, onChange, onRework, busyStepId }: PlanEditorProps) {
   const move = (index: number, delta: number) => {
     const target = index + delta;

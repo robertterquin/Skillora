@@ -7,13 +7,6 @@ import { getSupabase } from "@/lib/supabase";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
 import { authedFetch } from "@/lib/authed-fetch";
 
-/**
- * Which skills are in the learner's Studio. Signed-in users merge cloud and
- * local enrollments; guests use this browser only. New users start empty.
- *
- * @param userId  Supabase user id, or null for guests.
- * @param authReady  Pass false while auth is still resolving to avoid loading guest data first.
- */
 export function useEnrollments(userId: string | null, authReady: boolean) {
   const [enrolledSkillIds, setEnrolledSkillIds] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,10 +69,6 @@ export function useEnrollments(userId: string | null, authReady: boolean) {
     [userId]
   );
 
-  /**
-   * Adds a skill (catalog, AI-built or a personal copy) and syncs it to the
-   * cloud. Resolves false if the cloud save failed (always true for guests).
-   */
   const addSkill = useCallback(
     async (skill: Skill): Promise<boolean> => {
       const id = normalizeSkillId(skill.id);
@@ -88,7 +77,6 @@ export function useEnrollments(userId: string | null, authReady: boolean) {
         writeJSON(STORAGE_KEYS.enrolledSkills, next);
         return next;
       });
-      // Guests' Studios live in this browser only.
       if (!userId) return true;
 
       try {

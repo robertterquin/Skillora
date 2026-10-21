@@ -63,7 +63,6 @@ const SKILL_COLUMNS = `
         )
       `;
 
-/** Runs the skills query; retries without owner_id if secure_skills.sql hasn't been applied yet. */
 async function querySkills(supabase: SupabaseClient) {
   const withOwner = await supabase
     .from("skills")

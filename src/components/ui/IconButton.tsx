@@ -22,13 +22,10 @@ const SIZES: Record<IconButtonSize, { box: string; icon: string }> = {
 };
 
 export interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
-  /** AppIcon name, e.g. "volume-loud-linear". */
   icon: string;
-  /** Accessible name; also used as the tooltip unless `title` is given. */
   label: string;
   variant?: IconButtonVariant;
   size?: IconButtonSize;
-  /** Toggle state; sets aria-pressed and the "on" styling. */
   pressed?: boolean;
   iconClassName?: string;
 }

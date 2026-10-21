@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase";
 import { isValidUuid } from "@/lib/catalog-data";
 
-/**
- * Turns off reminders and the weekly recap for the owner of an unsubscribe
- * token. Handles both the unsubscribe page and mail apps' one-click
- * unsubscribe (RFC 8058), which POSTs to the List-Unsubscribe URL.
- */
 export async function POST(req: NextRequest) {
   let token = req.nextUrl.searchParams.get("token");
   if (!token) {

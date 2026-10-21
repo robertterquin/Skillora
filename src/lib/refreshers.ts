@@ -1,14 +1,12 @@
 import { Skill, SkillStep } from "@/types/database";
 import { isStepCompleted, normalizeStepId } from "@/lib/catalog-data";
 
-/** Days until each refresher: 7 after finishing, then +14 (day 21), then +39 (day 60). */
 export const REFRESHER_INTERVALS = [7, 14, 39];
 const HARD_WORDS = /\b(hard|difficult|struggl\w*|tricky|trouble|drift\w*|slip\w*|can'?t|cannot|confus\w*|stuck|tense)\b/i;
 
 export interface DueRefresher {
   skill: Skill;
   step: SkillStep;
-  /** 0-based refresher number (0 = the first, at day 7). */
   stage: number;
   daysSinceFinished: number;
   dueOn: string;
@@ -29,16 +27,11 @@ function daysBetween(fromKey: string, toKey: string): number {
   return Math.round((new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime()) / 86_400_000);
 }
 
-/** The step to revisit: one the learner's note says was hard, otherwise the final step. */
 export function pickRefresherStep(skill: Skill, getNote: (stepId: string) => string): SkillStep | undefined {
   const steps = skill.steps || [];
   return steps.find((s) => HARD_WORDS.test(getNote(s.id))) ?? steps[steps.length - 1];
 }
 
-/**
- * Refreshers due today or earlier for finished skills, most overdue first.
- * A skill counts as finished on the day its last step was completed.
- */
 export function getDueRefreshers(
   skills: Skill[],
   completedStepIds: string[],
@@ -57,7 +50,7 @@ export function getDueRefreshers(
     const finishTimes = steps
       .map((s) => completedAt[normalizeStepId(s.id)] ?? completedAt[s.id])
       .filter((t): t is string => !!t);
-    if (finishTimes.length === 0) continue; // finished before dates were recorded
+    if (finishTimes.length === 0) continue;
     const finishedOn = dateKey(new Date(finishTimes.sort().at(-1)!));
 
     const done = (refreshers[skill.id] || []).filter((d) => d >= finishedOn).sort();

@@ -140,8 +140,6 @@ export function InteractiveOwlAvatar({
     if (onClick) onClick();
   }, [onClick]);
 
-  // Small owls (e.g. the inline "thinking" indicator) drop the label and halo
-  // and use padding proportional to their size so the drawing stays visible.
   const isCompact = size < 80;
   const clipId = useId().replace(/:/g, "");
   const leftClip = `owl-left-eye-${clipId}`;

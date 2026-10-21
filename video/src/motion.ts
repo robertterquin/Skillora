@@ -6,7 +6,6 @@ export const expoIn = Easing.bezier(0.7, 0, 0.84, 0);
 export const inOut = Easing.bezier(0.83, 0, 0.17, 1);
 export const backOut = Easing.bezier(0.34, 1.56, 0.64, 1);
 
-/** 0 → 1 progress of a tween that starts at `start` and lasts `dur` frames. */
 export function tween(frame: number, start: number, dur: number, easing: (t: number) => number = expoOut) {
   return interpolate(frame, [start, start + dur], [0, 1], {
     extrapolateLeft: "clamp",
@@ -15,7 +14,6 @@ export function tween(frame: number, start: number, dur: number, easing: (t: num
   });
 }
 
-/** Linear map with clamping on both ends. */
 export function map(value: number, input: number[], output: number[], easing?: (t: number) => number) {
   return interpolate(value, input, output, { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing });
 }

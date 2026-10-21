@@ -1,15 +1,7 @@
-// Sends opt-in practice reminders and the Sunday weekly recap.
-// Called every 15 minutes by pg_cron (see supabase/schedule_reminders.sql).
-//
-// Secrets: RESEND_API_KEY, EMAIL_FROM, SITE_URL, CRON_SECRET.
-// SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by the runtime.
-
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@^2.45.6";
 
-const RECAP_WEEKDAY = 7; // Sunday (ISO)
-const RECAP_MINUTES = 18 * 60; // 18:00 local
-// Cron runs every 15 minutes; a 30-minute window tolerates a late run, and
-// last_*_on stops a second send on the same local day.
+const RECAP_WEEKDAY = 7;
+const RECAP_MINUTES = 18 * 60;
 const SEND_WINDOW_MINUTES = 30;
 
 interface Prefs {
@@ -38,9 +30,9 @@ interface SkillWithSteps {
 }
 
 interface LocalNow {
-  date: string; // YYYY-MM-DD
-  isoWeekday: number; // 1 = Monday
-  minutes: number; // minutes since local midnight
+  date: string;
+  isoWeekday: number;
+  minutes: number;
 }
 
 function localNow(timeZone: string, at = new Date()): LocalNow {
@@ -77,14 +69,12 @@ function inWindow(nowMinutes: number, targetMinutes: number): boolean {
   return nowMinutes >= targetMinutes && nowMinutes < targetMinutes + SEND_WINDOW_MINUTES;
 }
 
-/** Monday of the local week containing `date` (YYYY-MM-DD). */
 function weekStart(date: string, isoWeekday: number): string {
   const d = new Date(`${date}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() - (isoWeekday - 1));
   return d.toISOString().slice(0, 10);
 }
 
-/** Same rule as the Studio's Continue card: first skill in progress, else first unfinished. */
 function pickNextStep(skills: SkillWithSteps[], done: Set<string>) {
   const withProgress = skills.map((skill) => {
     const steps = [...(skill.skill_steps || [])].sort((a, b) => a.step_number - b.step_number);
@@ -153,7 +143,6 @@ async function loadLearner(db: SupabaseClient, userId: string) {
           .in("id", skillIds)
       ).data ?? []) as SkillWithSteps[]
     : [];
-  // Keep enrollment order.
   skills.sort((a, b) => skillIds.indexOf(a.id) - skillIds.indexOf(b.id));
 
   return {
@@ -188,7 +177,6 @@ async function handleUser(db: SupabaseClient, prefs: Prefs, siteUrl: string): Pr
   const sent: string[] = [];
 
   if (reminderDue) {
-    // Quiet by design: no email if they already practised today or have nothing left to do.
     if (!learner.practiceDates.includes(now.date) && next) {
       const minutes = next.step.estimated_minutes;
       const title = `${next.step.title}`;

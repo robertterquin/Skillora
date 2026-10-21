@@ -21,13 +21,10 @@ interface StepCardProps {
   onToggleDone: () => void;
   onSpeak: (text: string, lang?: string) => void;
   onWatch: (video: WatchRequest) => void;
-  /** The learner's own note on this step, shown with the technique notes. */
   note?: string;
-  /** Called when a focus timer runs to the end (counts as practice). */
   onFocusComplete?: () => void;
 }
 
-/** One step: the practice aid on the front, technique notes and resources on the back. */
 export function StepCard({
   skill,
   step,

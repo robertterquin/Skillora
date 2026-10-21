@@ -36,7 +36,6 @@ export function ConsultationSidebar({
 }: ConsultationSidebarProps) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
-  // On phones the sidebar is an overlay drawer, so Escape should close it.
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {

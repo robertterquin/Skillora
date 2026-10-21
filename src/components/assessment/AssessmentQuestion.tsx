@@ -6,7 +6,6 @@ import type { ExamOption, ExamQuestion } from "@/app/api/ai/guild-exam/route";
 import { cn } from "@/lib/cn";
 import { AppIcon } from "../ui/AppIcon";
 
-/** Turns a shouty cue like "PHYSICAL MECHANIC // MOTOR PULSE" into "Physical mechanic · Motor pulse". */
 export function formatCue(cue: string): string {
   if (cue !== cue.toUpperCase()) return cue.replace(/\s*\/\/\s*/g, " · ");
   return cue
@@ -87,7 +86,6 @@ function OptionCard({
   );
 }
 
-/** One scenario question and its four options. */
 export function AssessmentQuestion({ question, selectedId, isRevealed, onSelect }: AssessmentQuestionProps) {
   return (
     <div className="space-y-5">

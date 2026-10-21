@@ -8,7 +8,6 @@ import {
   parseReworkReply,
 } from "../../../../../supabase/functions/_shared/rework";
 
-/** Rewrites one practice step to be easier or harder. */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

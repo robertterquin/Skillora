@@ -1,10 +1,8 @@
-/** What a learner says they want to learn first (asked at sign-up and on the empty Studio). */
 export interface Interest {
   id: string;
   label: string;
   desc: string;
   categoryId: string;
-  /** Pre-filled (not sent) in Ask Archimedes when the learner wants something else. */
   prompt: string;
 }
 

@@ -12,7 +12,6 @@ interface CertificateDocumentProps {
   userName: string;
   honorific: string;
   issuedOn: string;
-  /** The certificate's own credential number, when it has one (signed-in learners). */
   credentialId?: string;
 }
 
@@ -25,7 +24,6 @@ function Signature({ value, label, align }: { value: React.ReactNode; label: str
   );
 }
 
-/** The printable certificate of mastery. */
 export function CertificateDocument({ skill, category, userName, honorific, issuedOn, credentialId }: CertificateDocumentProps) {
   return (
     <div

@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss";
 
-/** A colour backed by a CSS variable holding "R G B" channels. */
 const v = (name: string) => `rgb(var(--c-${name}) / <alpha-value>)`;
 const states = (name: string) => ({
   DEFAULT: v(name),
@@ -21,16 +20,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Every colour reads a CSS variable (see globals.css) so dark mode can
-        // swap the palette. Values are "R G B" so opacity modifiers still work.
         white: v("white"),
         canvas: v("canvas"),
-        // Text colours. All pass WCAG AA (4.5:1) on canvas and surface, in both themes.
         ink: {
           DEFAULT: v("ink"),
           secondary: v("ink-secondary"),
           muted: v("ink-muted"),
-          subtle: v("ink-subtle"), // smallest allowed text colour
+          subtle: v("ink-subtle"),
         },
         brand: {
           50: v("brand-50"),
@@ -72,12 +68,10 @@ const config: Config = {
           amber: v("accent-amber"),
           "amber-light": v("accent-amber-light"),
         },
-        // Semantic states — use these instead of Tailwind's rose/emerald/amber/indigo.
         success: states("success"),
         warning: states("warning"),
         danger: states("danger"),
         info: states("info"),
-        // Dark surfaces (video player, code terminal). The same in both themes.
         night: {
           DEFAULT: "#121110",
           raised: "#1A1917",

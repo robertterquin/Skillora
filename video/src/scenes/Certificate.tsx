@@ -12,13 +12,11 @@ import { useLayout } from "../layout";
 
 const STAMP_AT = 24;
 const CARDS = {
-  landscape: { w: 1180, h: 640, y: 530 }, // y: card centre on screen
+  landscape: { w: 1180, h: 640, y: 530 },
   portrait: { w: 940, h: 1160, y: 880 },
 };
-/** Seal centre on screen; the outro's iris opens from the same point. */
 export const sealAt = (portrait: boolean) => (portrait ? { x: 770, y: 1160 } : { x: 1290, y: 580 });
 
-/** The certificate lands, gets stamped, and is shared. */
 export const Certificate: React.FC = () => {
   const frame = useCurrentFrame();
   const { W, portrait, pick } = useLayout();
@@ -39,7 +37,6 @@ export const Certificate: React.FC = () => {
   const shareIn = pop(frame, 34, { damping: 12 });
   const CLICK = 48;
   const copied = tween(frame, CLICK + 2, 5);
-  // Push into the seal; the outro opens out of it.
   const out = tween(frame, 53, 15, expoIn);
 
   return (
@@ -132,7 +129,6 @@ export const Certificate: React.FC = () => {
           </div>
         </div>
 
-        {/* Ink burst and confetti from the seal. */}
         {impact >= 0 && (
           <>
             {[0, 4].map((d) => {
@@ -182,7 +178,6 @@ export const Certificate: React.FC = () => {
           </>
         )}
 
-        {/* Seal */}
         <div
           style={{
             position: "absolute",
@@ -198,7 +193,6 @@ export const Certificate: React.FC = () => {
           <Seal frame={frame} />
         </div>
 
-        {/* Share */}
         <div
           style={{
             position: "absolute",
@@ -263,7 +257,6 @@ const Seal: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-/** Guilloché rosette that draws itself on. */
 const Rosette: React.FC<{ frame: number; x: number; y: number }> = ({ frame, x, y }) => {
   const p = tween(frame, 6, 26, inOut);
   const pts: string[] = [];

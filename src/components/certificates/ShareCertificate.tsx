@@ -14,7 +14,6 @@ export function certificateUrl(token: string): string {
   return `${origin}/c/${token}`;
 }
 
-/** LinkedIn's "Add to profile" form, pre-filled with this certificate. */
 function linkedInUrl(skill: Skill, share: CertificateShare): string {
   const issued = share.certifiedAt ? new Date(share.certifiedAt) : new Date();
   const params = new URLSearchParams({
@@ -35,7 +34,6 @@ interface ShareCertificateProps {
   onToggle: (isPublic: boolean) => Promise<boolean>;
 }
 
-/** Public-link switch, copy link and Add to LinkedIn for one certificate. */
 export function ShareCertificate({ skill, share, onToggle }: ShareCertificateProps) {
   const id = useId();
   const toast = useToast();

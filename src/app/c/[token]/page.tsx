@@ -6,7 +6,6 @@ import { buttonClasses } from "@/components/ui/Button";
 import { getCategoryStyleById } from "@/lib/skill-progress";
 import { getPublicCertificate } from "@/lib/public-certificate";
 
-// Always read live: turning sharing off must take effect immediately.
 export const dynamic = "force-dynamic";
 
 type Props = { params: { token: string } };
@@ -23,14 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${title} · Skillora`,
     description,
-    // Shared by link only; keep it out of search results.
     robots: { index: false, follow: false },
     openGraph: { title, description, type: "website" },
     twitter: { card: "summary_large_image", title, description },
   };
 }
 
-/** A learner's shared certificate. Only exists while they keep sharing on. */
 export default async function PublicCertificatePage({ params }: Props) {
   const cert = await getPublicCertificate(params.token);
   if (!cert) notFound();

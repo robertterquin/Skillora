@@ -6,15 +6,6 @@ import { writeOwnedSkill } from "@/lib/skill-writer";
 import { normalizeSkillId, isValidUuid } from "@/lib/catalog-data";
 import { Skill } from "@/types/database";
 
-/**
- * Adds a skill to the signed-in learner's Studio.
- *
- * The user comes from their verified session, never the request body.
- * Skills that already exist and aren't theirs (the catalog, AI-generated
- * plans, other people's copies) are enrolled as-is and never modified. A
- * skill that doesn't exist yet, or one the learner owns, is saved as theirs.
- * Guests get a no-op: their Studio lives in the browser.
- */
 export async function POST(req: NextRequest) {
   try {
     const { skill } = (await req.json()) as { skill?: Skill };
@@ -60,7 +51,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-/** Removes a skill from the signed-in learner's Studio. */
 export async function DELETE(req: NextRequest) {
   try {
     const { skillId } = (await req.json()) as { skillId?: string };

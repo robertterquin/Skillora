@@ -18,7 +18,6 @@ export interface SkillAssessmentModalProps {
   onPass: (skillId: string) => void;
   isAlreadyCertified?: boolean;
   userName?: string;
-  /** Shown on the certificate; matches the shared certificate link. */
   credentialId?: string;
 }
 

@@ -1,7 +1,3 @@
--- Shareable certificates. Each certificate gets a random share code; it is
--- only visible at /c/<code> while the learner has sharing switched on.
--- The public page reads through the server (service role), so no public
--- select policy is needed and certificates stay private by default.
 alter table public.user_certifications
   add column if not exists share_token uuid not null default gen_random_uuid(),
   add column if not exists is_public boolean not null default false;

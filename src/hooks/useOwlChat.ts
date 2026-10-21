@@ -127,8 +127,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     consultationsRef.current = consultations;
   }, [consultations]);
 
-  // Signed-in learners keep Archimedes' notes about them (interests, time, goal)
-  // on their account, so they follow them across devices.
   useEffect(() => {
     const fromAccount = currentUser?.user_metadata?.owl_profile as OwlProfile | undefined;
     if (fromAccount && typeof fromAccount === "object") {
@@ -626,7 +624,6 @@ export function useOwlChat(options: UseOwlChatOptions = {}) {
     [sendMessage]
   );
 
-  /** Asks Archimedes to rebuild a draft plan with fewer or more steps. */
   const resizeCurriculum = useCallback(
     async (skill: Skill, direction: "shorter" | "longer") => {
       const title = skill.title.replace(/\s*\((Quick|Extended) version\)$/, "");

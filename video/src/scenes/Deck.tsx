@@ -21,7 +21,6 @@ const H = 450;
 const CLICK_AT = 44;
 const ZOOM_AT = 54;
 
-/** The fan of skill cards from the landing page; the espresso card is picked and zooms to fill the frame. */
 export const Deck: React.FC = () => {
   const frame = useCurrentFrame();
   const { W: FW, H: FH, pick } = useLayout();
@@ -78,7 +77,6 @@ export const Deck: React.FC = () => {
           width: FW,
           height: FH,
           perspective: 2200,
-          // Portrait: bigger cards, letting the outer ones bleed off the edges.
           transform: `scale(${pick(1, 1.2)})`,
           transformOrigin: `${FW / 2}px ${baseY}px`,
         }}
@@ -97,7 +95,6 @@ export const Deck: React.FC = () => {
           let opacity = 1;
           let radius = 28;
 
-          // Fly in from below with a 3D tumble.
           const r = random(`card-${i}`) - 0.5;
           y += (1 - enter) * 900;
           rot += (1 - enter) * r * 70;
@@ -110,7 +107,6 @@ export const Deck: React.FC = () => {
             rot += dir * scatter * 40;
             opacity = 1 - scatter * 0.6;
           } else {
-            // Grow to cover the whole frame.
             const z = zoom;
             const cover = Math.max(FW / W, FH / H) + 0.2;
             x = lerp(x, FW / 2 - W / 2, Math.min(1, z * 1.6));

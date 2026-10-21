@@ -21,20 +21,13 @@ interface SkillSyllabusModalProps {
   isViewOnly?: boolean;
   isGuildCertified?: boolean;
   onOpenGuildExam?: (skill: Skill) => void;
-  /** In previews, adds the skill instead of sending the visitor to sign up. */
   onAdd?: (skill: Skill) => void;
   getNote?: (stepId: string) => string;
-  /** The skill is the learner's own copy, so it can be edited directly. */
   canEdit?: boolean;
-  /** Makes a personal copy of a skill the learner doesn't own. */
   onCustomise?: (skill: Skill) => void;
-  /** Saves an edited personal copy. */
   onSaveEdits?: (skill: Skill) => Promise<void> | void;
-  /** Asks Archimedes for an easier or harder version of one step. */
   onReworkStep?: (skill: Skill, step: SkillStep, direction: ReworkDirection) => Promise<SkillStep | null>;
-  /** Open straight into edit mode (right after customising). */
   startEditing?: boolean;
-  /** Before/after photos; null shows a sign-in prompt, undefined hides the section. */
   photos?: ProgressPhotosApi | null;
 }
 
@@ -217,7 +210,6 @@ export function SkillSyllabusModal({
         </div>
       )}
 
-      {/* Only previews need a footer: start the skill. The close button sits in the header. */}
       {isViewOnly && (
         <div className="p-4 sm:p-5 bg-canvas border-t border-surface-border flex items-center justify-between gap-3">
           <span className="text-xs text-ink-muted">

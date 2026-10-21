@@ -16,12 +16,10 @@ interface CertificateCardProps {
   totalCount: number;
   isCertified: boolean;
   onOpenExam?: (skill: Skill) => void;
-  /** Share settings; present only for signed-in learners' certificates. */
   share?: CertificateShare;
   onToggleShare?: (skill: Skill, isPublic: boolean) => Promise<boolean>;
 }
 
-/** One skill in the certificates list: certified, ready for the assessment, or still in progress. */
 export function CertificateCard({
   skill,
   doneCount,

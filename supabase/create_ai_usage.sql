@@ -1,6 +1,3 @@
--- Daily AI usage per learner, so one account can't run up OpenAI costs.
--- Only the server (service role) reads or writes it: RLS is on with no policies,
--- and the counter function is not callable from the browser. Safe to re-run.
 create table if not exists public.ai_usage (
   user_id uuid not null references auth.users(id) on delete cascade,
   usage_date date not null,
@@ -9,9 +6,6 @@ create table if not exists public.ai_usage (
 );
 alter table public.ai_usage enable row level security;
 
--- Counts one AI request for the user today (UTC) and returns true, or returns
--- false without counting once they have reached the limit. Atomic, so parallel
--- requests can't slip past it.
 create or replace function public.consume_ai_quota(p_user uuid, p_limit integer)
 returns boolean
 language plpgsql
@@ -34,5 +28,4 @@ $$;
 revoke execute on function public.consume_ai_quota(uuid, integer) from public, anon, authenticated;
 grant execute on function public.consume_ai_quota(uuid, integer) to service_role;
 
--- Old days are not needed once they have passed.
 delete from public.ai_usage where usage_date < (now() at time zone 'utc')::date - 7;

@@ -23,16 +23,12 @@ export function formatMinutes(minutes: number): string {
 interface LearningPathProps {
   skill: Skill;
   completedStepIds: string[];
-  /** Preview for visitors: no progress, nothing to tick off. */
   isPreview?: boolean;
   onToggleStep?: (stepId: string) => void;
-  /** Shows a "Practise this step" action on the open step. */
   onPractiseStep?: (stepIndex: number) => void;
   onWatch: (video: WatchRequest) => void;
   isCertified?: boolean;
-  /** Opens the certificate assessment from the final node. */
   onOpenAssessment?: () => void;
-  /** The learner's note for a step, shown when the step is open. */
   getNote?: (stepId: string) => string;
 }
 
@@ -114,10 +110,6 @@ const STATE_LABEL: Record<PathNodeState, string> = {
   locked: "Locked",
 };
 
-/**
- * A skill's steps as a vertical path: done, current and upcoming steps, ending
- * in the certificate assessment.
- */
 export function LearningPath({
   skill,
   completedStepIds,
@@ -195,7 +187,6 @@ export function LearningPath({
                     >
                       {step.title}
                     </span>
-                    {/* The node already shows the step number; only the state needs a label. */}
                     {STATE_LABEL[state] && (
                       <span
                         className={cn(
@@ -206,7 +197,6 @@ export function LearningPath({
                         {STATE_LABEL[state]}
                       </span>
                     )}
-                    {/* Phones: the time sits under the title so the title keeps the full width. */}
                     {step.estimated_minutes > 0 && (
                       <span className="sm:hidden mt-1 inline-flex items-center gap-1 text-xs text-ink-muted tabular-nums">
                         <AppIcon name="clock-circle-linear" className="w-3.5 h-3.5" />

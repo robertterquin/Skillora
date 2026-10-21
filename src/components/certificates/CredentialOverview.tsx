@@ -33,7 +33,6 @@ function Stat({ icon, label, value, hint }: { icon: string; label: string; value
   );
 }
 
-/** Profile card: who you are and a quiet row of totals. */
 export function CredentialOverview({
   displayName,
   email,

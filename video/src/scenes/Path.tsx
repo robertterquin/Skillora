@@ -14,10 +14,9 @@ const STEPS = [
 ];
 const TICK_AT = 30;
 const TICK_GAP = 8;
-const PANEL = 780; // landscape: width of the dark skill column
-const PANEL_TOP = 860; // portrait: where the plan sheet stops
+const PANEL = 780;
+const PANEL_TOP = 860;
 
-/** The picked card becomes a plan: four steps tick off while the progress ring fills. */
 export const Path: React.FC = () => {
   const frame = useCurrentFrame();
   const { W, H, portrait, pick } = useLayout();
@@ -39,7 +38,6 @@ export const Path: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: C.life, overflow: "hidden" }}>
-      {/* Left: the skill */}
       <div style={{ position: "absolute", color: "#fff", ...pick({ left: 120, top: 210, width: PANEL - 200 }, { left: 90, top: 190, width: W - 180 }) }}>
         <Eyebrow color="rgba(255,255,255,0.65)" style={{ opacity: tween(frame, 0, 8) }}>
           Crafts & life · 4 steps · 45 min
@@ -108,7 +106,6 @@ export const Path: React.FC = () => {
         </div>
       </div>
 
-      {/* Right: the plan */}
       <div
         style={{
           position: "absolute",

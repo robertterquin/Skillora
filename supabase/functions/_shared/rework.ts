@@ -1,6 +1,3 @@
-// Shared by the "ai" edge function and the Next.js /api/ai/rework-step route.
-// Rewrites one practice step to be easier or harder, keeping the same skill.
-
 export type ReworkDirection = "easier" | "harder";
 
 export interface ReworkRequest {
@@ -57,7 +54,6 @@ export function parseReworkReply(raw: string, req: ReworkRequest): ReworkedStep 
   try {
     parsed = JSON.parse(raw);
   } catch {
-    // fall through to defaults
   }
   return {
     title: clip(parsed.title, 200) || req.stepTitle,

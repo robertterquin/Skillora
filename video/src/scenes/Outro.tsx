@@ -15,7 +15,6 @@ const CHIPS = [
   { label: "Tech", bg: C.tech },
 ];
 
-/** Logo resolve: the owl lands, the wordmark rises, the tagline settles. */
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const { portrait, pick } = useLayout();

@@ -1,6 +1,3 @@
--- "This helped" / "Broken link" feedback on step resources.
--- Keyed by URL (not resource id) because the built-in catalog and the
--- database use different id formats for the same links.
 create table if not exists public.resource_feedback (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -28,8 +25,6 @@ drop policy if exists "Users can remove own resource feedback" on public.resourc
 create policy "Users can remove own resource feedback" on public.resource_feedback
   for delete using ((select auth.uid()) = user_id);
 
--- For reviewing links in the SQL editor: most-reported first.
--- security_invoker keeps RLS in force, so app users only ever see their own rows.
 create or replace view public.resource_feedback_summary
 with (security_invoker = true) as
 select

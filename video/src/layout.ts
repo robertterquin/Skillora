@@ -1,6 +1,5 @@
 import { useVideoConfig } from "remotion";
 
-/** Frame size plus a picker for values that differ between the landscape and portrait cuts. */
 export function useLayout() {
   const { width: W, height: H } = useVideoConfig();
   const portrait = H > W;

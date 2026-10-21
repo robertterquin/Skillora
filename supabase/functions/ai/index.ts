@@ -416,14 +416,8 @@ function errorResponse(message: string, status = 500): Response {
 
 const CHARGED_ACTIONS = new Set(["owl-chat", "coach", "mnemonic", "rework-step", "tts", "grade-voice", "daily-routine"]);
 
-/** AI requests each signed-in learner may make per day (UTC). Override with the AI_DAILY_LIMIT secret. */
 const AI_DAILY_LIMIT = Number(Deno.env.get("AI_DAILY_LIMIT")) || 100;
 
-/**
- * Counts one AI request against the learner's daily limit. Returns a 429
- * response once they've reached it, or null to go ahead. If the counter itself
- * fails, the request is allowed rather than breaking Archimedes.
- */
 async function chargeAiRequest(userId: string): Promise<Response | null> {
   try {
     const admin = getSupabaseAdmin();
@@ -644,7 +638,6 @@ async function handleGuildExam(body: Record<string, any>, userId: string | null)
     }
   }
 
-  // Hand-written exams above are free; generating one costs an OpenAI call.
   if (!userId) return errorResponse("Sign in to take the assessment for this skill.", 401);
   const limited = await chargeAiRequest(userId);
   if (limited) return limited;
@@ -804,11 +797,6 @@ Return JSON:
   return jsonResponse(JSON.parse(content));
 }
 
-/**
- * The signed-in user's id when the request carries their access token, else
- * null. The public anon key is not a user token, so anonymous visitors can't
- * run up AI costs.
- */
 async function signedInUserId(req: Request): Promise<string | null> {
   const header = req.headers.get("authorization") || "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
@@ -861,7 +849,6 @@ Deno.serve(async (req: Request) => {
 
     if (action !== "guild-exam") {
       if (!userId) return errorResponse("Sign in to use Archimedes.", 401);
-      // Hand-written exams are free, so guild-exam is charged only when it generates one.
       if (CHARGED_ACTIONS.has(action)) {
         const limited = await chargeAiRequest(userId);
         if (limited) return limited;

@@ -6,25 +6,18 @@ import { getSupabase } from "@/lib/supabase";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
 
 interface UseStepProgressOptions {
-  /** Called after a step is newly marked complete (not when it is un-marked). */
   onStepCompleted?: () => void;
 }
 
-/**
- * Completed curriculum steps. Signed-in users load from Supabase (falling back
- * to this browser); every change is saved locally and synced to the cloud.
- */
 export function useStepProgress(
   userId: string | null,
   authReady: boolean,
   { onStepCompleted }: UseStepProgressOptions = {}
 ) {
   const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
-  // When each step was finished (normalised id -> ISO time), for the weekly recap.
   const [completedAt, setCompletedAt] = useState<Record<string, string>>({});
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Keep the latest list in a ref so toggleStep stays stable and never reads stale state.
   const completedRef = useRef<string[]>([]);
   completedRef.current = completedStepIds;
   const onCompletedRef = useRef(onStepCompleted);
@@ -69,7 +62,6 @@ export function useStepProgress(
     };
   }, [userId, authReady]);
 
-  /** Toggles a step and returns true if it is now complete. */
   const toggleStep = useCallback(
     (stepId: string): boolean => {
       const normId = normalizeStepId(stepId);
@@ -77,8 +69,7 @@ export function useStepProgress(
       const wasDone = isStepCompleted(stepId, current);
 
       const next = wasDone
-        ? // Compare normalised ids so a legacy id (e.g. "step-g1") is removed along with its UUID.
-          current.filter((id) => normalizeStepId(id) !== normId)
+        ? current.filter((id) => normalizeStepId(id) !== normId)
         : Array.from(new Set([...current, stepId, normId]));
 
       completedRef.current = next;
@@ -109,11 +100,6 @@ export function useStepProgress(
     [userId]
   );
 
-  /**
-   * Marks the new steps of a personal copy done wherever the original step was
-   * done (old -> new id map), keeping the completion dates. No celebration or
-   * practice-day logging: nothing was practised just now.
-   */
   const carryOverSteps = useCallback(
     (stepIdMap: Record<string, string>) => {
       const current = completedRef.current;

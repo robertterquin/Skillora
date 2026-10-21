@@ -10,7 +10,6 @@ import {
   syncPracticeStatsWithCloud,
 } from "@/lib/spaced-repetition";
 
-/** Days the learner practised, synced with the cloud for signed-in users. */
 export function usePracticeStats(userId: string | null, authReady: boolean) {
   const [practiceDates, setPracticeDates] = useState<string[]>([]);
 
@@ -31,7 +30,6 @@ export function usePracticeStats(userId: string | null, authReady: boolean) {
     };
   }, [userId, authReady]);
 
-  /** Marks today as a practice day and syncs it. */
   const recordPracticeDay = useCallback(() => {
     logPracticeDay();
     const store = getSpacedRepetitionStore();
@@ -39,14 +37,12 @@ export function usePracticeStats(userId: string | null, authReady: boolean) {
     if (userId) pushPracticeStatsToCloud(getSupabase(), userId, store);
   }, [userId]);
 
-  /** Re-reads local stats, e.g. after a practice session modal records drills. */
   const refresh = useCallback(() => {
     const store = getSpacedRepetitionStore();
     setPracticeDates(store.practiceDates);
     if (userId) pushPracticeStatsToCloud(getSupabase(), userId, store);
   }, [userId]);
 
-  // Recomputed when dates change; a missed day only affects this week, unlike a streak.
   const week = useMemo(() => getWeekActivity(practiceDates), [practiceDates]);
 
   return {

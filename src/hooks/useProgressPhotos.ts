@@ -12,13 +12,11 @@ const URL_TTL_SECONDS = 60 * 60;
 export interface ProgressPhoto {
   path: string;
   createdAt: string;
-  /** Short-lived signed URL; undefined until fetched. */
   url?: string;
 }
 
 export interface ProgressPhotosApi {
   get: (skillId: string) => Partial<Record<PhotoKind, ProgressPhoto>>;
-  /** Fetches display URLs for a skill's photos (they're private). */
   loadUrls: (skillId: string) => void;
   upload: (skillId: string, kind: PhotoKind, file: File) => Promise<void>;
   remove: (skillId: string, kind: PhotoKind) => Promise<void>;
@@ -26,7 +24,6 @@ export interface ProgressPhotosApi {
 
 type Store = Record<string, Partial<Record<PhotoKind, ProgressPhoto>>>;
 
-/** A signed-in learner's before/after photos. Returns null for guests. */
 export function useProgressPhotos(userId: string | null): ProgressPhotosApi | null {
   const [photos, setPhotos] = useState<Store>({});
 

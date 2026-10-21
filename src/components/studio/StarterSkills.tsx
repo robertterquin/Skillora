@@ -13,7 +13,6 @@ import { formatMinutes } from "../learning";
 
 const STARTER_COUNT = 3;
 
-/** Up to three skills from the interest's category, topped up from other categories. */
 function pickStarters(skills: Skill[], interest: Interest): Skill[] {
   const target = normalizeCategoryId(interest.categoryId);
   const inCategory = skills.filter((s) => normalizeCategoryId(s.category_id) === target);
@@ -22,7 +21,6 @@ function pickStarters(skills: Skill[], interest: Interest): Skill[] {
 }
 
 interface StarterSkillsProps {
-  /** Catalog skills to suggest from. */
   skills: Skill[];
   interest?: Interest;
   onChooseInterest: (id: string) => void;
@@ -30,7 +28,6 @@ interface StarterSkillsProps {
   onAdd: (skill: Skill) => void;
 }
 
-/** The empty Studio: pick an interest, then start one of three suggested skills. */
 export function StarterSkills({ skills, interest, onChooseInterest, onPreview, onAdd }: StarterSkillsProps) {
   const starters = interest ? pickStarters(skills, interest) : [];
 

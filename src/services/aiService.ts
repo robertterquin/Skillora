@@ -80,7 +80,6 @@ export const aiService = {
     stepTitle: string;
     stepInstructions: string;
     userQuestion: string;
-    /** The learner's own note on this step, if they wrote one. */
     learnerNote?: string;
   }): Promise<CoachAdvice> {
     try {
@@ -108,7 +107,6 @@ export const aiService = {
     return await res.json();
   },
 
-  /** Rewrites one step to be easier or harder (keeps the same skill). */
   async reworkStep(params: {
     skillTitle: string;
     stepTitle: string;

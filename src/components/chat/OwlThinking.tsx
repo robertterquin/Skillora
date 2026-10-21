@@ -3,7 +3,6 @@
 import React from "react";
 import { InteractiveOwlAvatar } from "@/components/ui/InteractiveOwlAvatar";
 
-/** Shown while Archimedes is writing a reply. */
 export function OwlThinking({ label = "Archimedes is thinking" }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 py-2" role="status" aria-live="polite">

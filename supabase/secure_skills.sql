@@ -1,18 +1,7 @@
--- Skill ownership and locked-down writes.
---
--- Before this, any visitor could insert or update any skill, step or resource
--- (policies "with check (true)" / "using (true)"). Now:
---   * catalog skills and AI-generated plans have no owner (owner_id is null)
---     and can only be changed by the server (service role);
---   * a learner's personal copy has owner_id = their user id; only they can
---     see it or change it, its steps and its resources.
--- Run once in the Supabase SQL editor. Safe to re-run.
-
 alter table public.skills
   add column if not exists owner_id uuid references auth.users(id) on delete cascade;
 create index if not exists idx_skills_owner on public.skills(owner_id);
 
--- skills -------------------------------------------------------------------
 drop policy if exists "Public can view skills" on public.skills;
 drop policy if exists "Users can insert skills" on public.skills;
 drop policy if exists "Users can update skills" on public.skills;
@@ -26,7 +15,6 @@ create policy "Owners can update own skills" on public.skills
 create policy "Owners can delete own skills" on public.skills
   for delete using (owner_id = (select auth.uid()));
 
--- skill_steps ----------------------------------------------------------------
 drop policy if exists "Public can view skill_steps" on public.skill_steps;
 drop policy if exists "Users can insert skill_steps" on public.skill_steps;
 
@@ -48,7 +36,6 @@ create policy "Owners can delete steps" on public.skill_steps
     exists (select 1 from public.skills s where s.id = skill_id and s.owner_id = (select auth.uid()))
   );
 
--- learning_resources ---------------------------------------------------------
 drop policy if exists "Public can view learning_resources" on public.learning_resources;
 drop policy if exists "Users can insert learning_resources" on public.learning_resources;
 

@@ -165,11 +165,9 @@ function PhotoViewer({
 
 interface ProgressPhotosProps {
   skill: Skill;
-  /** Null for guests: photos need an account. */
   api: ProgressPhotosApi | null;
 }
 
-/** "Before & after" photos for a skill, private to the learner. */
 export function ProgressPhotos({ skill, api }: ProgressPhotosProps) {
   const [viewing, setViewing] = useState<PhotoKind | "compare" | null>(null);
   const photos = api?.get(skill.id) ?? {};
@@ -177,7 +175,6 @@ export function ProgressPhotos({ skill, api }: ProgressPhotosProps) {
 
   useEffect(() => {
     api?.loadUrls(skill.id);
-    // Only refetch when the files change, not on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skill.id, pathsKey]);
 

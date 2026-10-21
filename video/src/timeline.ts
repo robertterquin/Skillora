@@ -1,7 +1,6 @@
 export const FPS = 30;
-export const DURATION = 450; // 15 seconds
+export const DURATION = 450;
 
-/** Absolute start frame and length of each scene. Scenes overlap so transitions play across the cut. */
 export const SCENES = {
   intro: { from: 0, dur: 64 },
   owl: { from: 52, dur: 62 },
@@ -20,5 +19,4 @@ export const CHAPTERS = [
   { at: SCENES.cert.from, label: "05 — Prove it" },
 ];
 
-/** Bento → certificate cube turn, in absolute frames. */
 export const CUBE = { from: SCENES.cert.from, dur: 12 };

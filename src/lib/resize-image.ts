@@ -1,8 +1,3 @@
-/**
- * Shrinks a photo before upload: longest edge `maxEdge`, JPEG, respecting the
- * camera's orientation. Throws if the browser can't decode the file (e.g.
- * HEIC outside Safari).
- */
 export async function resizeImage(file: File, maxEdge = 1600, quality = 0.85): Promise<Blob> {
   const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
   const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));

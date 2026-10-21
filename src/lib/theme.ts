@@ -2,10 +2,6 @@ export type ThemePreference = "system" | "light" | "dark";
 
 export const THEME_STORAGE_KEY = "skillora_theme";
 
-/**
- * Runs in <head> before the page paints so the saved theme applies with no
- * flash of the light palette. Keep it dependency-free.
- */
 export const THEME_INIT_SCRIPT = `(function(){try{var p=localStorage.getItem("${THEME_STORAGE_KEY}");var d=p==="dark"||((!p||p==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 export function readThemePreference(): ThemePreference {

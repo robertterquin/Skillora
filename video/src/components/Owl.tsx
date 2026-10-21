@@ -3,11 +3,8 @@ import { C } from "../theme";
 
 interface OwlProps {
   size: number;
-  /** 0 → 1: outline strokes drawing on. */
   draw?: number;
-  /** 0 → 1: fills and accent feather fading in. */
   fill?: number;
-  /** 0 = eyes open, 1 = closed. */
   lidLeft?: number;
   lidRight?: number;
   pupil?: { x: number; y: number };
@@ -18,7 +15,6 @@ const BODY = "M 28 42 C 28 24 42 16 60 16 C 78 16 92 24 92 42 V 70 C 92 90 78 10
 const WING = "M 28 60 C 40 57 49 65 49 79 C 49 90 41 98 32 100";
 const FEATHER = "M 56 87 C 59 71 73 64 79 65 C 80 76 71 88 56 90 Z";
 
-/** Archimedes, Skillora's owl, driven entirely by props so every frame is deterministic. */
 export const Owl: React.FC<OwlProps> = ({
   size,
   draw = 1,
@@ -30,7 +26,6 @@ export const Owl: React.FC<OwlProps> = ({
 }) => {
   const dash = (delay: number) => {
     const p = Math.min(1, Math.max(0, (draw - delay) / (1 - delay)));
-    // Round caps on a zero-length dash still paint a dot, so hide undrawn strokes.
     return { strokeDasharray: 1, strokeDashoffset: 1 - p, pathLength: 1, strokeOpacity: p > 0.01 ? 1 : 0 } as const;
   };
   const eye = (cx: number, lid: number, id: string) => (

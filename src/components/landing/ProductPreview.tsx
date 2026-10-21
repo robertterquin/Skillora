@@ -10,7 +10,6 @@ import { CurriculumCard } from "../chat/CurriculumCard";
 import { LearningPath } from "../learning";
 import { ContinueCard, StatsStrip } from "../studio";
 
-/** A light "app window" around a live component so it reads as a product shot. */
 function PreviewFrame({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <figure
@@ -43,7 +42,6 @@ function StepCopy({ n, title, children }: { n: number; title: string; children: 
   );
 }
 
-/** A sample week: today, yesterday and three days ago count as practised. */
 function sampleWeek() {
   const today = new Date();
   const dates = [0, 1, 3]
@@ -57,18 +55,11 @@ function sampleWeek() {
 }
 
 interface ProductPreviewProps {
-  /** Skill shown as Archimedes' draft plan. */
   draftSkill: Skill;
-  /** What the learner asks for in the sample chat. */
   draftPrompt: string;
-  /** Skill shown on the learning path and in the Studio. */
   pathSkill: Skill;
 }
 
-/**
- * "How it works", told with the real components and sample data, so the
- * landing page always matches the product.
- */
 export function ProductPreview({ draftSkill, draftPrompt, pathSkill }: ProductPreviewProps) {
   const router = useRouter();
   const toSignup = () => router.push("/signup");
@@ -117,7 +108,6 @@ export function ProductPreview({ draftSkill, draftPrompt, pathSkill }: ProductPr
         </PreviewFrame>
       </div>
 
-      {/* The Studio needs room for its stats row, so this one stacks at every width. */}
       <div className="space-y-10">
         <StepCopy n={3} title="Practise a little, most days">
           <p>

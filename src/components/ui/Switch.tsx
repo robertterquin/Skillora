@@ -6,13 +6,11 @@ import { cn } from "@/lib/cn";
 interface SwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  /** Id of the element that names this switch. */
   labelledBy: string;
   describedBy?: string;
   disabled?: boolean;
 }
 
-/** An on/off toggle (role="switch"). */
 export function Switch({ checked, onChange, labelledBy, describedBy, disabled }: SwitchProps) {
   return (
     <button

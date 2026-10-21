@@ -38,8 +38,6 @@ export function createAdminClient(): SupabaseClient {
       persistSession: false,
       autoRefreshToken: false,
     },
-    // Next caches server-side fetches by default. Database reads must always be
-    // live (e.g. switching certificate sharing off has to take effect at once).
     global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
   });
 }
@@ -61,15 +59,9 @@ export interface EdgeFunctionResult<T = any> {
   data: T | null;
   error: Error | null;
   fromEdgeFunction: boolean;
-  /** HTTP status when the edge function answered with an error (429 = daily AI limit reached). */
   status?: number;
 }
 
-/**
- * Calls the "ai" edge function on behalf of a signed-in user. The edge
- * function only serves signed-in users, so without a token it's skipped and
- * the caller falls back to its own OpenAI call.
- */
 export async function invokeEdgeFunction<T = any>(
   action: string,
   payload: Record<string, any>,

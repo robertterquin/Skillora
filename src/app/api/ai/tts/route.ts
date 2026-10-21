@@ -42,7 +42,6 @@ async function handleTTS(userId: string, text: string, voice = "onyx", speed = 1
     });
   }
 
-  // Cached audio is free; only new speech counts towards the daily limit.
   if (!(await consumeAiQuota(userId))) return aiLimitReached();
 
   const mp3 = await openai.audio.speech.create({

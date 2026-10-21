@@ -4,14 +4,6 @@ import { getRequestUser } from "@/lib/server-auth";
 
 const PHOTO_BUCKET = "progress-photos";
 
-/**
- * Permanently deletes the signed-in learner's account.
- *
- * Deleting the auth user cascades to every table that holds their data
- * (profile, enrollments, progress, notes, chats, certificates, personal skill
- * copies, reminders, feedback, photos rows, AI usage). Photo files live in
- * Storage, which doesn't cascade, so they are removed first.
- */
 export async function POST(req: NextRequest) {
   const user = await getRequestUser(req);
   if (!user) return NextResponse.json({ error: "Sign in to delete your account." }, { status: 401 });
@@ -24,7 +16,6 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
 
   try {
-    // Photo files: everything under the learner's folder (<userId>/<skillId>/<file>).
     const storage = admin.storage.from(PHOTO_BUCKET);
     const paths = new Set<string>();
     const { data: rows } = await admin.from("progress_photos").select("storage_path").eq("user_id", user.id);

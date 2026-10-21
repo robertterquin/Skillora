@@ -2,7 +2,6 @@ import React from "react";
 import { expoOut, tween } from "../motion";
 import { FONT } from "../theme";
 
-/** Text that rises out of a mask, one character (or word) at a time. */
 export const RiseText: React.FC<{
   text: string;
   frame: number;
@@ -51,7 +50,6 @@ export const RiseText: React.FC<{
   );
 };
 
-/** Small uppercase monospace label used across scenes. */
 export const Eyebrow: React.FC<{ children: React.ReactNode; color: string; style?: React.CSSProperties }> = ({
   children,
   color,

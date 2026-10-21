@@ -33,15 +33,12 @@ const STARTERS: { icon: string; label: string; prompt: string }[] = [
 interface ChatWelcomeProps {
   examples: Skill[];
   disabled?: boolean;
-  /** Conversation starters need Archimedes, so they're hidden for guests. */
   showStarters?: boolean;
   onStarter: (prompt: string) => void;
   onExample: (skill: Skill) => void;
-  /** Rendered under the example plans (e.g. the skill bundles). */
   extra?: React.ReactNode;
 }
 
-/** First screen of a new chat: conversation starters and example plans. */
 export function ChatWelcome({ examples, disabled, showStarters = true, onStarter, onExample, extra }: ChatWelcomeProps) {
   return (
     <div className="w-full space-y-10">

@@ -17,15 +17,10 @@ type TimerState = { status: "idle" } | { status: "running"; endsAt: number } | {
 interface FocusTimerProps {
   minutes: number;
   isDone: boolean;
-  /** Called once when the full time runs out. */
   onFinish: () => void;
   onMarkDone: () => void;
 }
 
-/**
- * An optional focus timer for one step, sized to the step's own estimate.
- * Counts against an end time, so it stays accurate in a background tab.
- */
 export function FocusTimer({ minutes, isDone, onFinish, onMarkDone }: FocusTimerProps) {
   const total = Math.max(1, minutes) * 60_000;
   const [state, setState] = useState<TimerState>({ status: "idle" });

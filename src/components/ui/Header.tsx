@@ -46,7 +46,6 @@ const THEME_CYCLE: Record<ThemePreference, { next: ThemePreference; icon: string
 };
 
 export function Header({ activePath }: HeaderProps = {}) {
-  // All hooks run before any early return (Rules of Hooks).
   const router = useRouter();
   const pathname = usePathname();
   const { user: currentUser, isLoading: loadingUser, signOut } = useAuth();
@@ -160,7 +159,6 @@ export function Header({ activePath }: HeaderProps = {}) {
         )}
 
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          {/* On phones these two move into the menu, so the header never overlaps the logo. */}
           <IconButton
             icon={THEME_CYCLE[theme].icon}
             label={`Theme: ${THEME_CYCLE[theme].label}. Switch to ${THEME_CYCLE[THEME_CYCLE[theme].next].label}`}

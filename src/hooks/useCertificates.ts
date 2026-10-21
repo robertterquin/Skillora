@@ -5,10 +5,6 @@ import { isValidUuid, normalizeSkillId } from "@/lib/catalog-data";
 import { getSupabase } from "@/lib/supabase";
 import { readJSON, writeJSON, STORAGE_KEYS } from "@/lib/storage";
 
-/**
- * Skills the learner has earned a certificate for (passed the assessment).
- * Local certificates earned while signed out are uploaded once the user signs in.
- */
 export interface CertificateShare {
   token: string;
   isPublic: boolean;
@@ -17,7 +13,6 @@ export interface CertificateShare {
 
 export function useCertificates(userId: string | null, authReady: boolean) {
   const [certifiedSkillIds, setCertifiedSkillIds] = useState<string[]>([]);
-  // Share settings per skill (signed-in only; empty until share_certificates.sql is applied).
   const [shares, setShares] = useState<Record<string, CertificateShare>>({});
 
   useEffect(() => {
@@ -91,7 +86,6 @@ export function useCertificates(userId: string | null, authReady: boolean) {
             console.warn("Note: user_certifications sync:", error.message);
             return;
           }
-          // New certificates get their share code straight away (sharing stays off).
           if (data?.share_token) {
             setShares((prev) => ({
               ...prev,
@@ -111,7 +105,6 @@ export function useCertificates(userId: string | null, authReady: boolean) {
 
   const getShare = useCallback((skillId: string) => shares[normalizeSkillId(skillId)], [shares]);
 
-  /** Turns the public link on or off. Resolves false if it couldn't be saved. */
   const setShared = useCallback(
     async (skillId: string, isPublic: boolean): Promise<boolean> => {
       const target = normalizeSkillId(skillId);

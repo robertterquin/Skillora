@@ -356,7 +356,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Hand-written exams above are free for everyone; generating one needs an account.
     const auth = await getRequestAuth(req);
     if (!auth) return authRequired("Sign in to take the assessment for this skill.");
 

@@ -16,9 +16,7 @@ interface VoiceGrade {
 }
 
 interface PronunciationToolsProps {
-  /** The text the learner should say. */
   sample: string;
-  /** Language code for grading, e.g. "ru". */
   language: string;
   isSpeaking: boolean;
   onSpeak: (text: string) => void;
@@ -27,12 +25,7 @@ interface PronunciationToolsProps {
 const pill =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition cursor-pointer";
 
-/**
- * Listen and record-to-grade controls for language steps. Remount with
- * `key={step.id}` so the last grade clears when the step changes.
- */
 export function PronunciationTools({ sample, language, isSpeaking, onSpeak }: PronunciationToolsProps) {
-  // Grading a recording is an AI call, so it needs an account; listening works for everyone.
   const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [isGrading, setIsGrading] = useState(false);

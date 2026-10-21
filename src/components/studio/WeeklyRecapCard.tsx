@@ -8,10 +8,6 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-/**
- * Last week, shown on Mondays only. The rest of the week the stats strip
- * already shows this week's practice days, so a card would repeat it.
- */
 function recapWeek(today = new Date()): { label: string; start: string; end: string } | null {
   if (today.getDay() !== 1) return null;
   const monday = new Date(today);
@@ -23,11 +19,9 @@ function recapWeek(today = new Date()): { label: string; start: string; end: str
 
 interface WeeklyRecapCardProps {
   practiceDates: string[];
-  /** Normalised step id -> ISO completion time. */
   completedAt: Record<string, string>;
 }
 
-/** A quiet look back at last week, shown on Mondays until dismissed. */
 export function WeeklyRecapCard({ practiceDates, completedAt }: WeeklyRecapCardProps) {
   const week = useMemo(() => recapWeek(), []);
   const [dismissed, setDismissed] = useState(true);

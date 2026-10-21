@@ -7,15 +7,12 @@ import { AppIcon } from "../ui/AppIcon";
 interface SimulatorFrameProps {
   icon: string;
   title: React.ReactNode;
-  /** Short status or target on the right of the header, e.g. "4/4" or "2 of 3 checked". */
   meta?: React.ReactNode;
-  /** Text colour for the header icon, usually the skill's category colour. */
   accentClass?: string;
   className?: string;
   children: React.ReactNode;
 }
 
-/** The quiet card every practice aid sits in: a small header and a body. */
 export function SimulatorFrame({
   icon,
   title,
@@ -52,7 +49,6 @@ interface ReadoutProps {
   children?: React.ReactNode;
 }
 
-/** A labelled number tile, e.g. shot time or reps done. */
 export function Readout({ label, value, hint, valueClassName, children }: ReadoutProps) {
   return (
     <div className="p-3.5 rounded-xl bg-canvas border border-surface-border text-center flex flex-col items-center justify-between gap-1">
@@ -66,7 +62,6 @@ export function Readout({ label, value, hint, valueClassName, children }: Readou
   );
 }
 
-/** A soft status pill for simulator results. */
 export function SimulatorStatus({
   tone,
   children,

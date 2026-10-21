@@ -8,7 +8,6 @@ import { AppIcon } from "../ui/AppIcon";
 import { useToast } from "../ui/Toast";
 import { extractYouTubeId } from "../modals/VideoPlayerModal";
 
-/** Provided by the Studio for signed-in learners; feedback buttons only show when set. */
 export const ResourceFeedbackContext = createContext<ResourceFeedbackApi | null>(null);
 
 function FeedbackButtons({ res, stepId }: { res: LearningResource; stepId: string }) {
@@ -59,13 +58,10 @@ export interface WatchRequest {
 interface StepResourcesProps {
   resources: LearningResource[];
   stepTitle: string;
-  /** Lets feedback be tied to the step it was given on. */
   stepId?: string;
-  /** Opens YouTube links in the in-app player. */
   onWatch: (video: WatchRequest) => void;
 }
 
-/** Links for a step: YouTube opens in the in-app player, everything else in a new tab. */
 export function StepResources({ resources, stepTitle, stepId = "", onWatch }: StepResourcesProps) {
   if (resources.length === 0) return null;
 

@@ -6,7 +6,6 @@ interface EmptyStateProps {
   icon?: string;
   title: string;
   description?: React.ReactNode;
-  /** Buttons or links shown below the description. */
   action?: React.ReactNode;
   className?: string;
 }

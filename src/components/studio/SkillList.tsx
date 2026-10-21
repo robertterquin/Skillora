@@ -67,7 +67,6 @@ export function SkillList({
   );
 }
 
-/** Placeholder shown while Studio data loads, so the empty state never flashes. */
 export function StudioSkeleton() {
   return (
     <div className="space-y-6 animate-pulse" aria-hidden="true">

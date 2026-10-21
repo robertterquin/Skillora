@@ -82,8 +82,6 @@ create policy "Public can view categories" on public.categories for select using
 drop policy if exists "Public can view skills" on public.skills;
 create policy "Public can view skills" on public.skills for select using (true);
 
--- No open insert policy: catalog skills are written by the server and learners
--- can only write their own copies. secure_skills.sql adds the owner-only rules.
 drop policy if exists "Users can insert skills" on public.skills;
 
 drop policy if exists "Public can view skill_steps" on public.skill_steps;
@@ -137,7 +135,6 @@ begin
 end;
 $$ language plpgsql security definer set search_path = '';
 
--- Only the trigger should run this, never a direct API call.
 revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created on auth.users;

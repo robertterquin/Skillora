@@ -53,7 +53,6 @@ export const LinkIcon: React.FC<IconProps> = (p) => (
     <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
   </Svg>
 );
-/** Trophy cup strokes, for embedding inside another SVG. */
 export const CupPaths: React.FC = () => (
   <>
     <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
@@ -73,7 +72,6 @@ export const RefreshIcon: React.FC<IconProps> = (p) => (
   </Svg>
 );
 
-/** A check mark whose stroke draws on as `progress` goes 0 → 1. */
 export const CheckDraw: React.FC<{ size: number; progress: number; color: string; strokeWidth?: number }> = ({
   size,
   progress,

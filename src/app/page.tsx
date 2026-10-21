@@ -29,7 +29,6 @@ const PRINCIPLES = [
   },
 ];
 
-// Catalog skills used in the product preview (guitar for the path, knife sharpening for the draft).
 const PATH_SKILL = INITIAL_SKILLS[0];
 const DRAFT_SKILL = INITIAL_SKILLS.find((s) => s.slug.includes("knife")) ?? INITIAL_SKILLS[1];
 
@@ -39,7 +38,6 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchLiveSkills(createClient()).then((data) => {
-      // Public page: hand-made catalog only, never learners' own Archimedes plans.
       const catalog = onlyCatalogSkills(data || []);
       if (catalog.length > 0) setSkills(catalog);
     });

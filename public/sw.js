@@ -1,5 +1,3 @@
-// Skillora service worker: keeps the app and recently opened pages usable offline.
-// Progress already saves to localStorage first, so completions made offline sync later.
 const CACHE = "skillora-v1";
 const APP_SHELL = ["/dashboard", "/library", "/icons/icon-192.png", "/logo.svg"];
 
@@ -61,7 +59,6 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(cacheFirst(request));
     return;
   }
-  // Supabase, AI calls and other services always go to the network.
   if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
 
   if (isStaticAsset(url)) {

@@ -6,7 +6,6 @@ import { BUNDLES, SkillBundle, bundleSkills } from "@/lib/bundles";
 import { BundleCard } from "./BundleCard";
 
 interface BundleListProps {
-  /** Loaded skills to resolve bundle members from (catalog, live versions). */
   skills: Skill[];
   isEnrolled: (skillId: string) => boolean;
   onAddAll: (bundle: SkillBundle, skills: Skill[]) => Promise<void> | void;
@@ -14,7 +13,6 @@ interface BundleListProps {
   title?: string;
 }
 
-/** The curated skill bundles as a titled grid. */
 export function BundleList({ skills, isEnrolled, onAddAll, onPreview, title = "Bundles" }: BundleListProps) {
   const bundles = BUNDLES.map((bundle) => ({ bundle, skills: bundleSkills(bundle, skills) })).filter(
     (b) => b.skills.length > 0

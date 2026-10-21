@@ -10,12 +10,6 @@ import { getSupabase } from "@/lib/supabase";
 import { authedFetch } from "@/lib/authed-fetch";
 import { cn } from "@/lib/cn";
 
-/**
- * Email reminders stay hidden until a sending domain is verified in Resend:
- * until then Resend only delivers to the account owner. Set
- * NEXT_PUBLIC_EMAIL_REMINDERS=on (in Vercel and .env) to show them to everyone.
- * Accounts that already have reminder settings (the owner's) keep seeing them.
- */
 const EMAIL_REMINDERS_ON = process.env.NEXT_PUBLIC_EMAIL_REMINDERS === "on";
 
 const DAYS = [
@@ -81,7 +75,6 @@ function Row({
   );
 }
 
-/** Permanently deletes the account after the learner types DELETE. */
 function DeleteAccount({ email }: { email: string }) {
   const router = useRouter();
   const toast = useToast();
@@ -102,14 +95,12 @@ function DeleteAccount({ email }: { email: string }) {
       setBusy(false);
       return;
     }
-    // The account is gone; also clear this browser's copy of the learner's data.
     await getSupabase().auth.signOut().catch(() => undefined);
     try {
       Object.keys(localStorage)
         .filter((k) => k.startsWith("skillora"))
         .forEach((k) => localStorage.removeItem(k));
     } catch {
-      // Storage can be unavailable; nothing else to clean up.
     }
     toast({ message: "Your account and its data were deleted.", tone: "info" });
     router.push("/");

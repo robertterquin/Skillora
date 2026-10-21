@@ -8,14 +8,13 @@ import { cubeFace } from "../components/cube";
 import { CUBE, SCENES } from "../timeline";
 import { useLayout } from "../layout";
 
-const COVER = 17; // frame at which the stripe wipe fully covers the previous scene
+const COVER = 17;
 const GAP = 22;
 const GRID = {
   landscape: { left: 84, top: 268, bottom: 96, cols: 4, rows: 2 },
   portrait: { left: 60, top: 420, bottom: 150, cols: 2, rows: 4 },
 };
 type Area = [col: number, row: number, cols?: number, rows?: number];
-/** Where each tile sits in each orientation. */
 const AREAS: Record<"focus" | "recap" | "reminder" | "sharp" | "photos", { landscape: Area; portrait: Area }> = {
   focus: { landscape: [0, 0, 1, 2], portrait: [0, 1, 1, 2] },
   recap: { landscape: [1, 0, 2, 1], portrait: [0, 0, 2, 1] },
@@ -69,7 +68,6 @@ const label: React.CSSProperties = {
   textTransform: "uppercase",
 };
 
-/** Everything that keeps a learner going, as a bento grid of live micro-interactions. */
 export const Bento: React.FC = () => {
   const frame = useCurrentFrame();
   const { W, H, portrait } = useLayout();
@@ -77,17 +75,12 @@ export const Bento: React.FC = () => {
   const f = frame - COVER;
   const cube = tween(SCENES.bento.from + frame, CUBE.from, CUBE.dur, inOut);
 
-  // Focus timer
   const focus = Math.max(0, 600 - Math.max(0, f - 6) * 6);
   const focusP = focus / 600;
-  // Weekly recap
   const bars = [0.45, 0.8, 0, 0.92, 0.6, 1, 0.35];
   const days = Math.round(map(f, [10, 34], [0, 5]));
-  // Keep it sharp
   const travel = tween(f, 16, 34, inOut);
-  // Before & after
   const slider = map(f, [18, 48], [92, 50], inOut);
-  // Reminder
   const note = pop(f, 20, { damping: 13 });
   const ring = f >= 24 && f < 44 ? Math.sin((f - 24) * 1.6) * 18 * (1 - (f - 24) / 20) : 0;
 
@@ -106,7 +99,6 @@ export const Bento: React.FC = () => {
             </div>
           </div>
 
-          {/* Focus timer */}
           <Tile frame={frame} order={0} style={{ ...cell("focus"), background: C.ink, color: "#fff", padding: 36 }}>
             <div style={{ ...label, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 10 }}>
               <ClockIcon size={20} color="rgba(255,255,255,0.6)" /> Focus timer
@@ -147,7 +139,6 @@ export const Bento: React.FC = () => {
             </div>
           </Tile>
 
-          {/* Weekly recap */}
           <Tile frame={frame} order={1} style={{ ...cell("recap"), background: "#fff", border: `2px solid ${C.border}`, padding: 34 }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>
@@ -180,7 +171,6 @@ export const Bento: React.FC = () => {
             </div>
           </Tile>
 
-          {/* Email reminder */}
           <Tile frame={frame} order={2} style={{ ...cell("reminder"), background: C.vermilion, color: "#fff", padding: 32 }}>
             <div style={{ ...label, color: "rgba(255,255,255,0.75)", display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ display: "inline-flex", transform: `rotate(${ring}deg)`, transformOrigin: "50% 10%" }}>
@@ -215,7 +205,6 @@ export const Bento: React.FC = () => {
             </div>
           </Tile>
 
-          {/* Keep it sharp */}
           <Tile frame={frame} order={3} style={{ ...cell("sharp"), background: C.paperWarm, padding: 32 }}>
             <div style={{ ...label, color: C.muted, display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ display: "inline-flex", transform: `rotate(${f * 9}deg)` }}>
@@ -253,7 +242,6 @@ export const Bento: React.FC = () => {
             </div>
           </Tile>
 
-          {/* Before & after */}
           <Tile frame={frame} order={4} style={{ ...cell("photos"), background: C.night }}>
             <BeforeAfter slider={slider} />
             <div style={{ position: "absolute", left: 22, top: 20, ...label, color: "#fff", display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 999, background: "rgba(21,20,19,0.7)" }}>
@@ -263,7 +251,6 @@ export const Bento: React.FC = () => {
         </AbsoluteFill>
       )}
 
-      {/* Stripe wipe from the previous scene. */}
       {DECK.map((color, k) => {
         const inP = tween(frame, k * 1.5, 9, inOut);
         const outP = tween(frame, COVER + k * 1.5, 11, expoIn);

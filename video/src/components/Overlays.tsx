@@ -4,7 +4,6 @@ import { FONT } from "../theme";
 import { CHAPTERS, DURATION, FPS, SCENES } from "../timeline";
 import { map, tween } from "../motion";
 
-/** Animated film grain: a new noise seed every frame. */
 export const Grain: React.FC = () => {
   const frame = useCurrentFrame();
   return (
@@ -31,7 +30,6 @@ export const Vignette: React.FC = () => (
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Showreel chrome: crop marks, timecode, chapter label and a progress rail. Inverts over any background. */
 export const Hud: React.FC = () => {
   const frame = useCurrentFrame();
   const enter = tween(frame, 4, 16);

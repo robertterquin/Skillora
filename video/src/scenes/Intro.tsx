@@ -15,14 +15,12 @@ const FLASHES = [
 ];
 const FLASH_START = 12;
 const FLASH_LEN = 4;
-const TITLE_AT = FLASH_START + FLASHES.length * FLASH_LEN; // 36
+const TITLE_AT = FLASH_START + FLASHES.length * FLASH_LEN;
 
-/** Cold open: a line becomes a strobe of skills, which resolves into "Master anything." */
 export const Intro: React.FC = () => {
   const frame = useCurrentFrame();
   const { H, portrait, pick } = useLayout();
 
-  // 0–12: a vermilion hairline stretches across the dark frame, then opens to fill it.
   const lineW = tween(frame, 1, 8, inOut);
   const lineH = tween(frame, 8, 5, expoIn);
 
@@ -30,7 +28,6 @@ export const Intro: React.FC = () => {
   const flash = frame >= FLASH_START && frame < TITLE_AT ? FLASHES[flashIndex] : null;
   const flashAge = (frame - FLASH_START) % FLASH_LEN;
 
-  // Title: the full stop grows into a vermilion iris that hands over to the owl scene.
   const dot = tween(frame, TITLE_AT + 6, 8, backOut);
   const dotGrow = tween(frame, TITLE_AT + 10, 10, expoIn);
   const camera = map(frame, [TITLE_AT, 64], [1.06, 1]);
@@ -162,7 +159,6 @@ export const Intro: React.FC = () => {
         </AbsoluteFill>
       )}
 
-      {/* Speed lines between flashes. */}
       {flash && flashAge < 2 && (
         <AbsoluteFill style={{ pointerEvents: "none" }}>
           {[0.18, 0.42, 0.66, 0.84].map((y, i) => (

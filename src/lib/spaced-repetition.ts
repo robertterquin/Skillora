@@ -24,11 +24,9 @@ export interface SpacedRepetitionStore {
   lastActiveDate: string;
   totalPracticeSecondsToday: number;
   practiceDates: string[];
-  /** "Keep it sharp" refreshers: skill id -> dates (YYYY-MM-DD) a refresher was done. */
   refreshers?: Record<string, string[]>;
 }
 
-// Refreshers ride along in the sm2_records cloud column under this reserved key.
 const REFRESHERS_KEY = "__refreshers";
 
 export interface WeekDayActivity {
@@ -113,7 +111,6 @@ export function logPracticeDay(): void {
   saveSpacedRepetitionStore(store);
 }
 
-/** Records a finished refresher for a skill (and counts today as practised). */
 export function logRefresher(skillId: string): SpacedRepetitionStore {
   const store = getSpacedRepetitionStore();
   const today = getTodayString();

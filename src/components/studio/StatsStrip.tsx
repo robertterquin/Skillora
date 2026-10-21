@@ -10,7 +10,6 @@ interface StatsStripProps {
 
 const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-/** Practice days this week as seven dots, e.g. 4 of 7. */
 function WeekDots({ week }: { week: WeekDayActivity[] }) {
   return (
     <ol className="mt-2 flex items-center gap-1.5" aria-label="Practice this week">
@@ -36,7 +35,6 @@ function WeekDots({ week }: { week: WeekDayActivity[] }) {
   );
 }
 
-/** One quiet row of progress numbers. */
 export function StatsStrip({ week, stepsDone, masteredCount }: StatsStripProps) {
   const daysThisWeek = week.filter((d) => d.practiced).length;
   const stats = [

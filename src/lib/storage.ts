@@ -1,8 +1,3 @@
-/**
- * Safe localStorage helpers. Storage can be unavailable (private mode, SSR,
- * blocked site data), so every access is guarded and falls back quietly.
- */
-
 export const STORAGE_KEYS = {
   enrolledSkills: "skillora_enrolled_skills",
   completedSteps: "skillora_completed_steps",
@@ -31,7 +26,6 @@ export function writeJSON(key: string, value: unknown): void {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Storage full or blocked: progress still lives in memory and in the cloud.
   }
 }
 
@@ -49,6 +43,5 @@ export function writeString(key: string, value: string): void {
   try {
     window.localStorage.setItem(key, value);
   } catch {
-    // ignore
   }
 }

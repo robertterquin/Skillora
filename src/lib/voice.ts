@@ -232,8 +232,6 @@ export function speakWithUniformMaleVoice(
     window.speechSynthesis.speak(utterance);
   };
 
-  // Archimedes' voice needs an account (it's an OpenAI call), so the audio is
-  // fetched with the login token; guests and any failure use the browser voice.
   const play = (audioUrl: string) => {
     const audio = new Audio(audioUrl);
     activeAudioElement = audio;

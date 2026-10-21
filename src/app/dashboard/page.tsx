@@ -53,7 +53,6 @@ import { readString, writeString, STORAGE_KEYS } from "@/lib/storage";
 import { playChime, playMechanicalClick, playStampThud, playWoodenThud } from "@/lib/workbench-audio";
 import { Skill, SkillStep } from "@/types/database";
 
-/** Show search and filters only once the Studio is big enough to need them. */
 const FILTERS_MIN_SKILLS = 5;
 
 export default function DashboardPage() {
@@ -85,7 +84,6 @@ function Studio() {
   const resourceFeedback = useResourceFeedback(userId);
   const progressPhotos = useProgressPhotos(userId);
   const { refreshers, markDone: markRefresherDone } = useRefreshers(userId, authReady, practice.practiceDates);
-  // "Later" hides a refresher until tomorrow (per skill, in this browser).
   const [refresherLater, setRefresherLater] = useState<string | null>(null);
   useEffect(() => setRefresherLater(readString(STORAGE_KEYS.refresherLater)), []);
 
@@ -98,7 +96,6 @@ function Studio() {
   const [practiceStepId, setPracticeStepId] = useState<string | undefined>();
   const [stepsSkill, setStepsSkill] = useState<Skill | null>(null);
   const [previewSkill, setPreviewSkill] = useState<Skill | null>(null);
-  // Opens the steps modal in edit mode right after making a personal copy.
   const [editOnOpen, setEditOnOpen] = useState(false);
   const [examSkill, setExamSkill] = useState<Skill | null>(null);
   const [isCertificatesOpen, setIsCertificatesOpen] = useState(false);
@@ -184,7 +181,6 @@ function Studio() {
     playChime();
     toggleStep(stepId);
 
-    // Was this the last step of its skill? Let the step animation play, then celebrate.
     const skill = studioSkills.find((s) => s.steps?.some((st) => st.id === stepId));
     const others = skill?.steps?.filter((st) => st.id !== stepId) ?? [];
     if (skill && others.every((st) => isStepCompleted(st.id, completedStepIds))) {
@@ -237,7 +233,6 @@ function Studio() {
         estimatedMinutes: step.estimated_minutes,
         direction,
       });
-      // Keep the step's id and resources; only its content changes.
       return { ...step, ...rewritten };
     } catch (err) {
       console.error(err);

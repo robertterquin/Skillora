@@ -5,7 +5,6 @@ import { RouteProgressBar } from "@/components/ui/RouteProgressBar";
 import { Providers } from "@/components/ui/Providers";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
-// Loaded from <head> (not a CSS @import) so the browser can fetch it in parallel.
 const FONTS_URL =
   "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap";
 
@@ -18,7 +17,6 @@ export const metadata: Metadata = {
     shortcut: "/logo.svg",
     apple: "/icons/apple-touch-icon.png",
   },
-  // Installed on iPhone: open full screen with Skillora's name under the icon.
   appleWebApp: { capable: true, title: "Skillora", statusBarStyle: "default" },
 };
 
@@ -35,7 +33,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // The init script sets the "dark" class before React hydrates.
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
