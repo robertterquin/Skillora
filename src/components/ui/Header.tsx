@@ -203,23 +203,6 @@ function HeaderContent({ activePath }: HeaderProps = {}) {
 
         {/* Right: Actions & User Capsule */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <IconButton
-            icon={THEME_CYCLE[theme].icon}
-            label={`Theme: ${THEME_CYCLE[theme].label}. Switch to ${THEME_CYCLE[THEME_CYCLE[theme].next].label}`}
-            title={`Theme: ${THEME_CYCLE[theme].label}`}
-            onClick={() => setTheme(THEME_CYCLE[theme].next)}
-            className="hidden sm:inline-flex rounded-full border border-[#E7E2D6] dark:border-surface-border bg-[#F8F6F0] dark:bg-surface hover:bg-white hover:border-brand-300/70 shadow-2xs"
-            size="sm"
-          />
-          <IconButton
-            icon={soundOn ? "volume-loud-linear" : "volume-cross-linear"}
-            label={soundOn ? "Mute interface sounds" : "Turn on interface sounds"}
-            pressed={soundOn}
-            onClick={toggleSound}
-            className="hidden sm:inline-flex rounded-full border border-[#E7E2D6] dark:border-surface-border bg-[#F8F6F0] dark:bg-surface hover:bg-white hover:border-brand-300/70 shadow-2xs"
-            size="sm"
-          />
-
           {loadingUser ? (
             <div className="w-8 h-8 rounded-full bg-surface-muted animate-pulse" aria-hidden="true" />
           ) : currentUser ? (
@@ -268,7 +251,27 @@ function HeaderContent({ activePath }: HeaderProps = {}) {
                     ))}
                   </div>
 
-                  <div className="pt-1 mt-1 border-t border-surface-border">
+                  <div className="pt-2 mt-1 border-t border-surface-border">
+                    <div className="grid grid-cols-2 gap-1.5 px-1 pb-2">
+                      <button
+                        type="button"
+                        onClick={() => setTheme(THEME_CYCLE[theme].next)}
+                        className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-surface-border text-xs font-semibold text-ink-secondary hover:bg-canvas transition cursor-pointer"
+                      >
+                        <AppIcon name={THEME_CYCLE[theme].icon} className="w-3.5 h-3.5" />
+                        <span>{THEME_CYCLE[theme].label}</span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={soundOn}
+                        onClick={toggleSound}
+                        className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-surface-border text-xs font-semibold text-ink-secondary hover:bg-canvas transition cursor-pointer"
+                      >
+                        <AppIcon name={soundOn ? "volume-loud-linear" : "volume-cross-linear"} className="w-3.5 h-3.5" />
+                        <span>Sound {soundOn ? "on" : "off"}</span>
+                      </button>
+                    </div>
+
                     <button
                       type="button"
                       role="menuitem"
@@ -283,21 +286,13 @@ function HeaderContent({ activePath }: HeaderProps = {}) {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-1.5">
-              <Link
-                href="/signin"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold text-ink-muted hover:text-ink hover:bg-black/5 dark:hover:bg-white/5 transition"
-              >
-                <AppIcon name="login-linear" className="w-3.5 h-3.5" />
-                <span>Sign in</span>
-              </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-[13px] font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-sm transition"
-              >
-                Get started
-              </Link>
-            </div>
+            <Link
+              href="/signin"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-ink bg-[#F8F6F0] dark:bg-surface border border-[#E7E2D6] dark:border-surface-border hover:bg-white dark:hover:bg-surface-elevated hover:border-brand-400/60 transition shadow-2xs"
+            >
+              <AppIcon name="login-linear" className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Sign in</span>
+            </Link>
           )}
 
           {/* Mobile Menu Toggle (< md) */}
